@@ -1,0 +1,116 @@
+// Happy Cube Solver - Building and designing models for the Happy cube puzzles
+// Copyright (C) 1995-2006 Shy Shalom, shooshX@gmail.com
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+#ifndef __CUBE_H_INCLUDED__
+#define __CUBE_H_INCLUDED__
+
+#include "Pieces.h"
+#include "Shape.h"
+#include "Solutions.h"
+#include "CubeAcc.h"
+
+#include "Configuration.h"
+
+/** \file
+	Declares the Cube class which holds the solution engine.
+*/
+
+class MyObject;
+class LinesCollection;
+class SolveThread;
+
+/** Cube holds the solution engine which integrates Shape and PicsSet to produce instances of SlvCube.
+	Cube is constructed on demand when the user presses the "Solve It!" button. it is
+	constructed with a Shape just generated from the current BuildWorld and with a
+	PicsSet produced from the current pieces selection. puttgr() is the entry point
+	of the solution engine. it is called from within a SolveThread which is a worker thread
+	dedicated for finding solutions. The solution engine output is fed through the Solutions instance
+	given to puttgr() and signaled out through SolveThread's signals.
+	An instance of this class is created in SolveThread::run() for the main solution engine. Another
+	temporary instnce is created in SlvCube::genPainter() for creating line objects.
+*/
+class Cube
+{
+public:
+	Cube(const Shape* shapeset, const PicsSet* picset, const EngineConf* conf); 
+	~Cube();
+
+	void puttgr(Solutions *slvs, SolveThread *thread); // main function
+	void prnSolves(Solutions *solve);
+
+	// getSolveIFS has to run on a different cube then the solutions running cube since it's on another thread
+	void genLinesIFS(SlvCube *slvc, LinesCollection &ifs);
+
+	inline int &cub(int x, int y, int z) { return cub_[x + (xsz * y) + (xTysz * z)].val; }
+	inline int cub(int x, int y, int z) const { return cub_[x + (xsz * y) + (xTysz * z)].val; }
+
+
+private:
+
+	EngineConf lconf; ///< a local copy of the options
+
+	/// this PicsSet was created on demand in CubeDoc::solveGo() according
+	/// to the current piece selection.
+	const PicsSet *pics; 
+	const Shape *shape; ///< a pointer to the instance in CubeDoc
+
+	/// CubeCell is the basic voxel value in the Cube 3D space.
+	struct CubeCell
+	{
+		CubeCell(): val(0) {}
+		int val;    // original cube value (summed upon putpic)
+		            // while genIFS - the number of the face present in this cell
+	};
+
+	// TBD: use Space3D
+	inline CubeCell &cell(int x, int y, int z) { return cub_[x + (xsz * y) + (xTysz * z)]; }
+	int uncub(int p, int x, int y);
+
+	void placeInto(int pntn, int f, Coord3df *shpp, Coord3df *pnti1, Coord3df *pnti2);
+
+	float getLineColor(int p, int l);
+	void placeSidePolygon(int b, MyObject& obj, int f, int curf, bool is1, int x, int y, bool backface);
+
+	const int xsz, ysz, zsz;
+	const int xTysz; ///< the value of xsz times ysz. keep the sized close by for optimizations. 
+
+	CubeCell *cub_;	///< main 3d ploting area
+	ShapePlace *plc;	///< places data, size sn, in each a size pn try bool array
+	
+	UsedPieces use;	///< pn sized array. which pieces are in use in this cube. 
+
+	void symetricGetNextRtn(int sc, int fc, int &nextrt);
+	void clear(int cl = 0);
+
+	inline void putPic(const int n, const int r, const int p);	// put piece n in place p
+	inline void putorig(const int n, const int r, const int p); 
+	void rmvPic(const int p);
+
+	bool superCheck(const int fc);
+	bool novaAnotherpic(ShapePlace &plcfc, int fc);
+	bool novaAssemble(int fc);
+
+
+/////////// code tables
+
+	static const int whichKJ[3][2][3]; // optimization of add/remove
+
+};
+
+
+#endif // __CUBE_H_INCLUDED__
+

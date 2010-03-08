@@ -1,0 +1,479 @@
+<ui version="4.0" >
+ <author></author>
+ <comment></comment>
+ <exportmacro></exportmacro>
+ <class>GrpColor</class>
+ <widget class="QDialog" name="GrpColor" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>291</width>
+    <height>478</height>
+   </rect>
+  </property>
+  <property name="sizePolicy" >
+   <sizepolicy>
+    <hsizetype>0</hsizetype>
+    <vsizetype>0</vsizetype>
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle" >
+   <string>Piece Group Color</string>
+  </property>
+  <widget class="QPushButton" name="resetButton" >
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>440</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Reset</string>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_2" >
+   <property name="geometry" >
+    <rect>
+     <x>150</x>
+     <y>13</y>
+     <width>131</width>
+     <height>421</height>
+    </rect>
+   </property>
+   <property name="title" >
+    <string>Background</string>
+   </property>
+   <widget class="QLabel" name="label_7" >
+    <property name="geometry" >
+     <rect>
+      <x>49</x>
+      <y>20</y>
+      <width>31</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Green</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_8" >
+    <property name="geometry" >
+     <rect>
+      <x>95</x>
+      <y>20</y>
+      <width>27</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Blue</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_9" >
+    <property name="geometry" >
+     <rect>
+      <x>13</x>
+      <y>20</y>
+      <width>26</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Red</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="BackRedL" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>390</y>
+      <width>31</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="frameShape" >
+     <enum>QFrame::Box</enum>
+    </property>
+    <property name="frameShadow" >
+     <enum>QFrame::Sunken</enum>
+    </property>
+    <property name="text" >
+     <string>0</string>
+    </property>
+    <property name="alignment" >
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="BackGreenL" >
+    <property name="geometry" >
+     <rect>
+      <x>50</x>
+      <y>390</y>
+      <width>31</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="frameShape" >
+     <enum>QFrame::Box</enum>
+    </property>
+    <property name="frameShadow" >
+     <enum>QFrame::Sunken</enum>
+    </property>
+    <property name="text" >
+     <string>0</string>
+    </property>
+    <property name="alignment" >
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="BackBlueL" >
+    <property name="geometry" >
+     <rect>
+      <x>90</x>
+      <y>390</y>
+      <width>31</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="frameShape" >
+     <enum>QFrame::Box</enum>
+    </property>
+    <property name="frameShadow" >
+     <enum>QFrame::Sunken</enum>
+    </property>
+    <property name="text" >
+     <string>0</string>
+    </property>
+    <property name="alignment" >
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="BackGreenEdit" >
+    <property name="geometry" >
+     <rect>
+      <x>50</x>
+      <y>363</y>
+      <width>31</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="alignment" >
+     <set>Qt::AlignHCenter</set>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="BackBlueEdit" >
+    <property name="geometry" >
+     <rect>
+      <x>90</x>
+      <y>363</y>
+      <width>31</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="alignment" >
+     <set>Qt::AlignHCenter</set>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="BackRedEdit" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>363</y>
+      <width>31</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="alignment" >
+     <set>Qt::AlignHCenter</set>
+    </property>
+   </widget>
+   <widget class="QSlider" name="BackRedSlide" >
+    <property name="geometry" >
+     <rect>
+      <x>14</x>
+      <y>40</y>
+      <width>21</width>
+      <height>311</height>
+     </rect>
+    </property>
+    <property name="maximum" >
+     <number>255</number>
+    </property>
+    <property name="orientation" >
+     <enum>Qt::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="QSlider" name="BackGreenSlide" >
+    <property name="geometry" >
+     <rect>
+      <x>54</x>
+      <y>40</y>
+      <width>21</width>
+      <height>311</height>
+     </rect>
+    </property>
+    <property name="maximum" >
+     <number>255</number>
+    </property>
+    <property name="orientation" >
+     <enum>Qt::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="QSlider" name="BackBlueSlide" >
+    <property name="geometry" >
+     <rect>
+      <x>95</x>
+      <y>40</y>
+      <width>21</width>
+      <height>311</height>
+     </rect>
+    </property>
+    <property name="maximum" >
+     <number>255</number>
+    </property>
+    <property name="orientation" >
+     <enum>Qt::Vertical</enum>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox" >
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>13</y>
+     <width>131</width>
+     <height>421</height>
+    </rect>
+   </property>
+   <property name="title" >
+    <string>Foreground</string>
+   </property>
+   <widget class="QLabel" name="label_2" >
+    <property name="geometry" >
+     <rect>
+      <x>49</x>
+      <y>20</y>
+      <width>31</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Green</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3" >
+    <property name="geometry" >
+     <rect>
+      <x>95</x>
+      <y>20</y>
+      <width>27</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Blue</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label" >
+    <property name="geometry" >
+     <rect>
+      <x>13</x>
+      <y>20</y>
+      <width>26</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Red</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ForeBlueL" >
+    <property name="geometry" >
+     <rect>
+      <x>90</x>
+      <y>390</y>
+      <width>31</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="frameShape" >
+     <enum>QFrame::Box</enum>
+    </property>
+    <property name="frameShadow" >
+     <enum>QFrame::Sunken</enum>
+    </property>
+    <property name="text" >
+     <string>0</string>
+    </property>
+    <property name="alignment" >
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ForeGreenL" >
+    <property name="geometry" >
+     <rect>
+      <x>50</x>
+      <y>390</y>
+      <width>31</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="frameShape" >
+     <enum>QFrame::Box</enum>
+    </property>
+    <property name="frameShadow" >
+     <enum>QFrame::Sunken</enum>
+    </property>
+    <property name="text" >
+     <string>0</string>
+    </property>
+    <property name="alignment" >
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ForeRedL" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>390</y>
+      <width>31</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="frameShape" >
+     <enum>QFrame::Box</enum>
+    </property>
+    <property name="frameShadow" >
+     <enum>QFrame::Sunken</enum>
+    </property>
+    <property name="text" >
+     <string>0</string>
+    </property>
+    <property name="alignment" >
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="ForeRedEdit" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>363</y>
+      <width>31</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="alignment" >
+     <set>Qt::AlignHCenter</set>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="ForeGreenEdit" >
+    <property name="geometry" >
+     <rect>
+      <x>50</x>
+      <y>363</y>
+      <width>31</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="alignment" >
+     <set>Qt::AlignHCenter</set>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="ForeBlueEdit" >
+    <property name="geometry" >
+     <rect>
+      <x>90</x>
+      <y>363</y>
+      <width>31</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="alignment" >
+     <set>Qt::AlignHCenter</set>
+    </property>
+   </widget>
+   <widget class="QSlider" name="ForeBlueSlide" >
+    <property name="geometry" >
+     <rect>
+      <x>95</x>
+      <y>40</y>
+      <width>21</width>
+      <height>311</height>
+     </rect>
+    </property>
+    <property name="maximum" >
+     <number>255</number>
+    </property>
+    <property name="orientation" >
+     <enum>Qt::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="QSlider" name="ForeGreenSlide" >
+    <property name="geometry" >
+     <rect>
+      <x>54</x>
+      <y>40</y>
+      <width>21</width>
+      <height>311</height>
+     </rect>
+    </property>
+    <property name="maximum" >
+     <number>255</number>
+    </property>
+    <property name="orientation" >
+     <enum>Qt::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="QSlider" name="ForeRedSlide" >
+    <property name="geometry" >
+     <rect>
+      <x>14</x>
+      <y>40</y>
+      <width>21</width>
+      <height>311</height>
+     </rect>
+    </property>
+    <property name="maximum" >
+     <number>255</number>
+    </property>
+    <property name="orientation" >
+     <enum>Qt::Vertical</enum>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QPushButton" name="switchButton" >
+   <property name="geometry" >
+    <rect>
+     <x>120</x>
+     <y>440</y>
+     <width>51</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Switch</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="copyButton" >
+   <property name="geometry" >
+    <rect>
+     <x>234</x>
+     <y>440</y>
+     <width>51</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Copy</string>
+   </property>
+  </widget>
+ </widget>
+ <pixmapfunction></pixmapfunction>
+ <resources/>
+ <connections/>
+</ui>

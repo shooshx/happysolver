@@ -1,0 +1,267 @@
+
+---- Environment ---------------
+- double click a file to open in the same window
+- priority of process
+- registering file icons with OS??? different for slv.
+   - on MAC
+- application Icon on finder - OSX - better resolution
+- uninstall link in Start menu (windows installer)
+
+
+---- Engine --------------------
+- multiple threads
+- accessing the opt struct during run.
+- flatenning of the shape ?
+- identify rtns by their absolute rtn value, not the compressed one. to get rid of sym in solutions
+- first part rotate???
+- advanced: use only X pieces of this set
+- remove luck if more then X time.
+  - OR - more dynamic luck?
+- advanced pieces selection - not more then X of this cube.
+
+- move the production of the PicsSet to the thread? large latency when solving with 1000 pieces.
+- non scalability of solution engine with extreme pics sets
+  move to a more efficient representation instead of replication?
+
+- better shape heuristic:
+  - different plane is better
+  - not resizing the bounding box is better
+     - by less volume
+  - capping volumes is better
+  - open circumference
+
+- BUG: counting twice as much as real changes. (single pic shape)
+
+---- GUI -----------------------
+- load/save progress bar, long operations progress bar
+- help file.
+- continuous ?
+- Save VS Save As.
+- kid mode? side bar with ready made shapes, "what do you want to do?"
+- black texture pixelized
+- backwards slashes in recent
+- solve it after changing the desing when there are solutions. should be a better message on what's going on.
+- new menu - pieces
+   - save, load pieces set (via registry)
+   - save new size of sidebars in registry - difficult...
+- resize of opengl is only vertical - opengl problem...
+- move lights to up and down ?
+- splash screen?
+- white frame for black piece on pic view
+- tab stops? in main gui, in pics view
+- tooltips on all buttons
+- status bar - "Add" or "Remove" fixed indicator
+- Add, Remove buttons add "(ctrl)"
+- label next to spinbox in PicsView
+- generate error with divided shape, color one of the shapes
+   - special case - a body with a complete hole
+- disable fade during run..
+   - automatically detect if we don't do the fade right ?
+- BuildView - when is it centeralizes? why? when else?
+- steps not in a seperate dialog (???)
+- grey out the remove button when there is only one cube, explain in tooltip
+- Advanced pieces - close to have an X icon
+- in model label of piece resized every time.
+
+-* pressing the name of the pieces is a hyper link when in advanced.
+- solution sidebar - pressing next on last solution runs engine. (with msg box?)
+- when pressing start when in the solution view, don't go to the first solution when it arrives. ???
+- shouldn't do anything else while generation pieces, except close.
+- edit in build while running should say "you can't edit while running"
+
+
+- BUG:? after two loads, changes becomes -4000000000 ??
+- BUG: build helper- on build error, the error message comes over the pics select. QT Layout bug?
+
+- change colors - also little genious (?)
+
+- QTBUG: step slider not fitting 1..6. resize does not change ticks, 6 pieces not showing ticks.
+
+
+QT4.3:
+    * [158951] Buttons with icons now center their content to be more
+      consistent with buttons that do not have icons in most styles.
+    * [134164] Ensured that top-level widgets configured with
+      MSWindowsFixedSizeDialogHint are centered properly.
+
+
+---- 3D engine -----------------
+- flat10x10 - edges not quite right. - not much can be done?
+- problems with step by step in solution: - same
+   - white framed pieces are likely to change on all wrapped
+   - missing lines due to single piece rendering
+- redesign rendering scheme, piece based.
+  - half - miscoloring
+  - more optimized? unify pieces?   
+- configurable pool size?
+- better textures of sides, not randomly turend.
+- fade of blue tiles is slow when rotating.
+
+- bad textures on mac.
+- further perspective
+- background color
+
+---- Document Model ------------
+- export to VRML ?
+- export to PNG
+- "not too many pieces" for large structures, not linear..
+- maybe: reset the pieces selection when a build is loaded (it's not reseted now)
+- unification of Shape & Solves files:
+  - a way to extrapulate the build from a shape
+     - use when there is no build on open
+- undo?
+- loaded structures that are on the rim - move them.
+
+
+---- SI ------------------------
+- QRegion - intersects
+- SI: use opengl painter??
+
+---- Code ----------------------
+- GPL notice for new files
+- seperate to more files
+- compare floats?
+- what is memory going for?
+- Cleanup ShapeIFS, public, private
+- maybe make lightVector<T, Max> ?
+- move generateIFS away from Cube
+- code cleanup
+   - public members
+   - lists which are not lists
+
+
+
+QT bugs:
+- not able to float floating toolbars, windows QT bug?
+vX- not able to draw a line on a QImage
+v- native file dialog doesn't support default extension
+v- can't make a native file dialog with QFileDialog objects
+- after floating on a menu, the blue stays on
+- disabled menu items still lights when hover
+- when in modal dialog, clicking the father window, focus does not return. fix in 4.1.1??
+vOK- wglMakeCurrent failed ignored silently as far as the API is concerned
+xv- dock windows resizing if not processEvents, looses XP [X]
+xv- moc: types of signals are enum of a class, fully qualified name needed in definition
+vOK- tooltip time
+xv- layoutitem in layout
+v- qbutton missing features - center image, image on top
+xv- qthread delete self (pics thread)
+xv- updateGL calles painGL even though setUpdatesEnabled(false) (modelhelp)
+v- unsuported gif - infinite loop
+v- mng playing infinite
+v- dialog does not close when parent closes
+vOK- toolbutton not pressed
+v- crash (1) under X
+xv- same texture bound to two QGLWidgets
+vOK- QLabel with colored text get disabled badly
+- OpenGL textures on Intel
+
+
+QT:
+- opengl failed? what to do? (compuware) - wglMakeCurrent failing ignored.
+- tune fonts?
+
+
+QT4.2
+
+- check AA_ImmediateWidgetCreation
+- toNativeSeparators
+
+
+Future versions:
+- QTBUG- don't reimplement FileDialog overwrite
+
+
+
+## for Rational: linker /fixed:no
+## for minGW: link with minGW qt, only in release.
+## qmake -project -r
+## qmake "QT+=opengl xml" "RC_FILE=happysolver.rc"
+## 
+## qmake "QT+=opengl xml" "RC_FILE=happysolver.rc" -tp vc -spec win32-msvc2005
+##
+## add to .pro:
+##   QT += opengl xml
+##   CONFIG += debug
+##   #QTPLUGIN += qmng #mng plugin as static
+##   #ICON = xxx.icns
+##   CONFIG += ppc x86
+##   RC_FILE = happysolver.rc
+
+
+## tooth paste for noah cinimine
+
+screen savers
+youtube video
+wikipedia article
+qtcenter contest
+
+OpenGL:
+- use glHint?
+
+Linux
+- fonts in gl in 0/0 solves, color
+- texture doesn't show in the solution sidebar
+
+OSX
+- check wheel response
+
+tests on other platforms:
+- colors of star-little.slv
+- background of pieces view - scroll+tab
+- fonts!!!
+- dialogs.. labels
+- quickly press Ctrl and watch if remove get confused...
+- command line solution, are the pieces loaded ok?
+- pics thread
+
+before final:
+- update the examples directory. fix the shapes with new limits.
+- test for memory steppings, memory leaks
+- test all examples. eliminate unneeded files. (shapes)
+
+Strange:
+- dangerous to use QFont outside the GUI thread???
+
+
+- move to xml!
+- a Dialog that tells info about the shape
+	- number of faces
+	- number of corners
+	- number or sides (find other name)
+	- volume
+	- closing box metrics
+	- number of solutions
+	(when xml)
+	- last created
+	- last modified
+	- last generated
+  current solution
+    - symetrics - none, inside, outside (change)
+	(when xml)
+	- created
+
+	- if not generated try to generate, if unable show blanks
+
+
+
+
+
+No:
+- intel compiler
+- translate + rotate does something sensible
+- static build? of QT
+- move MainFrame to UI ??? - no actiongroups
+- lines belong to more then one piece
+- (MFC) fade effect leaves marks on display
+- return to last view on buttons - bad GUI
+- better flood fill, with queue - test 50x50x50 (no optimization needed...)
+- move shapeIFS to OpenGL call lists, for every piece. (probably consume much more memory, need two for everything, with target and without)
+- save solutions - current, all, specific select
+- ModelSidebar - name of the grp of the current pic ???
+- PicsView - solve button ???
+- have to ability to change the background.
+- 3d options in model and build, cullface
+- grey out Zoom when there are no solves
+- recalc size->move somehow make is smooth??
+- ??? options - tiled/boxed, with/without fade 

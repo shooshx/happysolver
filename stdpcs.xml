@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pieces>
+	<textures>
+		<texture filename="black64.png"/>
+		<texture filename="marbleg2_2.png"/>
+		<texture filename="littlegenious128_2.png"/>
+		<texture copy="2" x1="850" y1="20"/>
+	</textures>
+	<outlines>
+		<family name="Happy Cube" index="1" onResetSetCount="1" icon="images/sampleHappyCube.png">
+			<group name="HC-Milano">
+				<fill type="COLOR" k="0" r="73" g="129" b="255"/>
+				<piece>1 0 1 0 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
+				<piece>0 1 0 1 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  1 1 0 1 0</piece>
+				<piece>0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>
+				<piece>0 1 0 1 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 1 0 1 1</piece>
+				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 1 0 1 1</piece>
+				<piece>0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 0 1 0 0</piece>
+			</group>
+			<group name="HC-NewYork">
+				<fill type="COLOR" k="0" r="43" g="221" b="56"/>
+				<piece>1 1 0 1 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
+				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 0 0</piece>
+				<piece>0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 1</piece>
+				<piece>0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 0</piece>
+				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 1 0 1 0</piece>
+				<piece>0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 1 0 1 1</piece>
+			</group>
+			<group name="HC-Tokyo">
+				<fill type="COLOR" k="0" r="255" g="255" b="0"/>
+				<piece>0 0 1 1 1  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 0</piece>
+				<piece>0 0 0 1 1  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 0</piece>
+				<piece>0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 1</piece>
+				<piece>0 0 1 0 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  0 1 0 1 0</piece>
+				<piece>1 1 0 1 1  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 1</piece>
+				<piece>0 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 1</piece>
+			</group>
+			<group name="HC-Amsterdam">
+				<fill type="COLOR" k="0" r="255" g="140" n="0"/>
+				<piece>0 1 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 1</piece>
+				<piece>0 1 0 1 0  0 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
+				<piece>0 0 1 0 0  1 1 1 1 1  1 1 1 1 1  0 1 1 1 0  0 0 1 0 0</piece>
+				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
+				<piece>0 0 1 0 0  0 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 0</piece>
+				<piece>0 1 0 0 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
+			</group>
+			<group name="HC-Paris">
+				<fill type="COLOR" k="0" r="255" g="43" b="48"/>
+				<piece>0 0 1 0 0  0 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
+				<piece>0 1 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 1</piece>
+				<piece>0 1 1 0 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 0 1 1</piece>
+				<piece>0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>
+				<piece>0 1 0 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 0</piece>
+				<piece>1 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 1 0</piece>
+			</group>
+			<group name="HC-Brussels">
+				<fill type="COLOR" k="0" r="148" g="0" b="136"/>
+				<piece>1 1 0 1 1  0 1 1 1 1  1 1 1 1 0  0 1 1 1 0  0 1 0 1 0</piece>
+				<piece>0 0 1 0 0  0 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 0</piece>
+				<piece>0 0 1 0 0  0 1 1 1 1  1 1 1 1 0  1 1 1 1 0  1 1 0 1 0</piece>
+				<piece>0 1 0 1 1  0 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 1 0 1 0</piece>
+				<piece>0 1 1 0 1  0 1 1 1 1  1 1 1 1 1  1 1 1 1 0  1 0 1 0 0</piece>
+				<piece>0 0 0 1 1  1 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>
+			</group>
+		</family>
+		<family name="Black Profi Cube" index="2" onResetSetCount="0" icon="images/sampleBlackProfi.png">
+			<group name="PC-Confusius">
+				<fill type="TEXTURE_BLEND" texind="0" k="2" r="0" g="0" b="202" exR="20" exG="20" exB="20"/>
+				<piece>0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 0</piece>
+				<piece>0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 1</piece>
+				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 0 0</piece>
+				<piece>0 0 1 0 1  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  1 1 0 1 1</piece>
+				<piece>0 1 0 1 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  1 1 0 1 1</piece>
+				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 0 1</piece>
+			</group>
+			<group name="PC-DaVinci">
+				<fill type="TEXTURE_BLEND" texind="0" k="2" r="244" g="236" b="20" exR="20" exG="20" exB="20"/>
+				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
+				<piece>0 0 1 0 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  0 1 0 1 0</piece>
+				<piece>0 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 1</piece>
+				<piece>0 0 1 0 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  1 1 0 1 0</piece>
+				<piece>0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>
+				<piece>0 1 0 1 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
+			</group>
+			<group name="PC-MarcoPolo">
+				<fill type="TEXTURE_BLEND" texind="0" k="2" r="236" g="6" b="17" exR="20" exG="20" exB="20"/>
+				<piece>0 0 1 0 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
+				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 0 0</piece>
+				<piece>1 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 1</piece>
+				<piece>0 0 1 0 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  1 1 0 1 0</piece>
+				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 1 0 1 0</piece>
+				<piece>0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 1</piece>
+			</group>
+			<group name="PC-Rubens">
+				<fill type="TEXTURE_BLEND" texind="0" k="2" r="130" g="0" b="100" exR="20" exG="20" exB="20"/>
+				<piece>0 1 0 1 1  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 0</piece>
+				<piece>0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 1 0 1 1</piece>
+				<piece>0 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 1</piece>
+				<piece>1 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 1</piece>
+				<piece>0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 0</piece>
+				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 0 0</piece>
+			</group>
+			<group name="PC-Watt">
+				<fill type="TEXTURE_BLEND" texind="0" k="2" r="100" g="100" b="100" exR="20" exG="20" exB="20"/>
+				<piece>1 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
+				<piece>0 1 0 1 0  1 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 1</piece>
+				<piece>0 0 1 0 0  1 1 1 1 0  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
+				<piece>0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  1 1 1 1 0  0 1 0 1 0</piece>
+				<piece>0 0 1 0 0  1 1 1 1 0  0 1 1 1 0  1 1 1 1 1  1 1 0 1 0</piece>
+				<piece>0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 1</piece>
+			</group>
+			<group name="PC-Newton">
+				<fill type="COLOR" k="2" r="40" g="40" b="40"/>
+				<piece>0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 1 0 0</piece>
+				<piece>1 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 1 0 1 1</piece>
+				<piece>0 0 1 0 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  0 1 0 1 1</piece>
+				<piece>0 0 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 1</piece>
+				<piece>0 0 1 0 0  0 1 1 1 1  1 1 1 1 0  1 1 1 1 1  0 1 0 1 0</piece>
+				<piece>0 0 1 0 0  1 1 1 1 0  0 1 1 1 0  1 1 1 1 1  1 1 0 1 0</piece>
+			</group>
+		</family>
+		<family name="Marble Cube" index="4" onResetSetCount="0" icon="images/sampleMarble.png">
+			<group name="MC-Martin L. King">
+				<fill type="TEXTURE_BLEND" texind="1" k="0" r="55" g="120" b="255" exR="139" exG="217" exB="255"/>
+				<piece>0 0 1 0 1  0 1 1 1 1  0 1 1 1 0  1 1 1 1 0  1 1 0 1 1</piece>
+				<piece>0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  1 1 1 1 0  0 0 0 1 0</piece>
+				<piece>0 1 0 1 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 1  0 0 1 0 0</piece>
+				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 1 0 1 0</piece>
+				<piece>0 1 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 1 0 0</piece>
+				<piece>1 1 0 1 1  1 1 1 1 0  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
+			</group>
+			<group name="MC-Omar Khayyam">
+				<fill type="TEXTURE_BLEND" texind="1" k="0" r="68" g="209" b="21" exR="167" exG="255" exB="136"/>
+				<piece>1 1 0 1 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  0 1 0 1 0</piece>
+				<piece>0 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 1</piece>
+				<piece>0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 1 0 1 1</piece>
+				<piece>0 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 0</piece>
+				<piece>0 0 1 0 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 1 0 1 0</piece>
+				<piece>0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 0 1 0 0</piece>
+			</group>
+			<group name="MC-Marie Curie">
+				<fill type="TEXTURE_BLEND" texind="1" k="0" r="255" g="244" b="153" exR="255" exG="231" exB="8"/>
+				<piece>1 1 0 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 1 0 1 1</piece>
+				<piece>1 1 0 0 0  1 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>
+				<piece>0 1 1 0 0  0 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 1 0 1 0</piece>
+				<piece>0 0 0 1 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 0  1 1 0 1 1</piece>
+				<piece>0 1 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>
+				<piece>0 0 1 0 0  1 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 1 0 0</piece>
+			</group>
+			<group name="MC-Buckminster Fuller">
+				<fill type="TEXTURE_BLEND" texind="1" k="0" r="244" g="38" b="116" exR="252" exG="179" exB="198"/>
+				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 1 0 1 0</piece>
+				<piece>0 0 0 1 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
+				<piece>0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  1 1 1 1 0  1 0 1 0 0</piece>
+				<piece>0 0 1 0 1  0 1 1 1 1  1 1 1 1 0  0 1 1 1 0  0 1 0 1 0</piece>
+				<piece>0 1 0 1 1  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  1 1 0 1 1</piece>
+				<piece>0 0 1 0 0  0 1 1 1 1  1 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>
+			</group>
+			<group name="MC-Mahatma Gandhi">
+				<fill type="TEXTURE_BLEND" texind="1" k="0" r="255" g="144" b="122" exR="255" exG="12" exB="0"/>
+				<piece>0 1 0 1 1  0 1 1 1 1  1 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
+				<piece>0 1 0 1 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 0  0 0 1 1 0</piece>
+				<piece>0 0 1 0 0  0 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 0 1 1 1</piece>
+				<piece>0 0 1 0 0  0 1 1 1 1  0 1 1 1 0  1 1 1 1 0  1 1 0 1 0</piece>
+				<piece>0 0 1 0 0  0 1 1 1 1  1 1 1 1 1  1 1 1 1 0  1 0 1 0 0</piece>
+				<piece>1 1 0 1 0  1 1 1 1 0  0 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>
+			</group>
+			<group name="MC-Albert Einstein">
+				<fill type="TEXTURE_BLEND" texind="1" k="0" r="142" g="10" b="217" exR="222" exG="157" exB="255"/>
+				<piece>0 0 0 1 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 0  0 1 0 1 0</piece>
+				<piece>0 1 1 0 0  0 1 1 1 0  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
+				<piece>0 1 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 0 1 1 1</piece>
+				<piece>0 1 1 0 0  0 1 1 1 0  1 1 1 1 1  1 1 1 1 0  0 0 0 1 1</piece>
+				<piece>0 0 1 1 1  1 1 1 1 1  1 1 1 1 0  0 1 1 1 0  0 1 0 1 0</piece>
+				<piece>1 0 0 1 1  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 0</piece>
+			</group>
+		</family>
+		<family name="Little Genius" index="0" onResetSetCount="0" icon="images/sampleLittleGenius.png">
+			<group name="LG-Nature">
+				<fill type="TEXTURE_INDIVIDUAL_HALF" texind="2" k="0" r="43" g="221" b="56" sideTexInd="3" sideX="11" sideY="12"/>
+				<piece x1="32"  y1="32" x2="159" y2="159">0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 0 1</piece>
+				<piece x1="160" y1="32" x2="287" y2="159">0 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 1</piece>
+				<piece x1="288" y1="32" x2="415" y2="159">0 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 0</piece>
+				<piece x1="416" y1="32" x2="543" y2="159">0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 0</piece>
+				<piece x1="544" y1="32" x2="671" y2="159">1 1 0 1 1  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 0</piece>
+				<piece x1="672" y1="32" x2="799" y2="159">0 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 1</piece>
+			</group>
+			<group name="LG-Fruits">
+				<fill type="TEXTURE_INDIVIDUAL_HALF" texind="2" k="0" r="65" g="154" b="232" sideTexInd="3" sideX="52" sideY="12"/>
+				<piece x1="32"  y1="192" x2="159" y2="319">0 0 1 0 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  1 1 0 1 0</piece>
+				<piece x1="160" y1="192" x2="287" y2="319">1 1 0 1 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  0 0 1 0 0</piece>
+				<piece x1="288" y1="192" x2="415" y2="319">0 0 1 0 1  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  0 1 0 1 0</piece>
+				<piece x1="416" y1="192" x2="543" y2="319">0 0 1 0 1  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  1 1 0 1 1</piece>
+				<piece x1="544" y1="192" x2="671" y2="319">1 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 0</piece>
+				<piece x1="672" y1="192" x2="799" y2="319">1 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 0</piece>
+			</group>
+			<group name="LG-Animals">
+				<fill type="TEXTURE_INDIVIDUAL_HALF" texind="2" k="0" r="248" g="166" b="50" sideTexInd="3" sideX="92" sideY="12"/>
+				<piece x1="32"  y1="352" x2="159" y2="479">1 1 0 1 1  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  0 0 1 0 0</piece>
+				<piece x1="160" y1="352" x2="287" y2="479">0 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>
+				<piece x1="288" y1="352" x2="415" y2="479">1 1 0 1 1  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 0 1 0 0</piece>
+				<piece x1="416" y1="352" x2="543" y2="479">0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 0 0</piece>
+				<piece x1="544" y1="352" x2="671" y2="479">1 1 0 1 1  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  0 0 1 0 0</piece>
+				<piece x1="672" y1="352" x2="799" y2="479">1 1 0 1 1  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 0 1 0 0</piece>
+			</group>
+			<group name="LG-Emotions">
+				<fill type="TEXTURE_INDIVIDUAL_HALF" texind="2" k="0" r="255" g="255" b="0" sideTexInd="3" sideX="11" sideY="56"/>
+				<piece x1="32"  y1="512" x2="159" y2="639">0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 0 1 0 0</piece>
+				<piece x1="160" y1="512" x2="287" y2="639">0 1 0 1 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 1 0 1 1</piece>
+				<piece x1="288" y1="512" x2="415" y2="639">0 0 1 0 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  0 0 1 0 1</piece>
+				<piece x1="416" y1="512" x2="542" y2="639">0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 1</piece>
+				<piece x1="544" y1="512" x2="671" y2="639">0 0 1 0 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  0 0 1 0 1</piece>
+				<piece x1="672" y1="512" x2="799" y2="639">1 1 0 1 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 1 0 1 0</piece>
+			</group>
+			<group name="LG-Transport">
+				<fill type="TEXTURE_INDIVIDUAL_HALF" texind="2" k="0" r="188" g="0" b="177" sideTexInd="3" sideX="52" sideY="56"/>
+				<piece x1="32"  y1="672" x2="159" y2="799">1 0 1 0 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 1 0 1 1</piece>
+				<piece x1="160" y1="672" x2="287" y2="799">0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 0</piece>
+				<piece x1="288" y1="672" x2="415" y2="799">0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 0 1 0 0</piece>
+				<piece x1="416" y1="672" x2="542" y2="799">0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 0 1 0 0</piece>
+				<piece x1="544" y1="672" x2="671" y2="799">1 0 1 0 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 1 0 1 1</piece>
+				<piece x1="672" y1="672" x2="799" y2="799">0 0 1 0 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  0 1 0 1 0</piece>
+			</group>
+			<group name="LG-Symbols">
+				<fill type="TEXTURE_INDIVIDUAL_HALF" texind="2" k="0" r="255" g="61" b="61" sideTexInd="3" sideX="92" sideY="56"/>
+				<piece x1="32"  y1="832" x2="159" y2="926">0 1 0 1 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 0 0</piece>
+				<piece x1="160" y1="832" x2="287" y2="926">1 1 0 1 1  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 0 1 0 0</piece>
+				<piece x1="288" y1="832" x2="415" y2="926">1 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 1 0 1 0</piece>
+				<piece x1="416" y1="832" x2="542" y2="926">0 0 1 0 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 1 0 1 0</piece>
+				<piece x1="544" y1="832" x2="671" y2="926">1 1 0 1 1  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 0 1 0 0</piece>
+				<piece x1="672" y1="832" x2="799" y2="926">1 1 0 1 1  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 0 1 0 0</piece>
+			</group>
+		</family>
+		<family name ="Color Profi Cube" index="3" onResetSetCount="0" icon="images/sampleColorProfi.png">
+			<group name="CPC-Confusius">
+				<fill type="TEXTURE_BLEND" texind="0" k="0" r="111" g="185" b="210" exR="15" exG="146" exB="159"/>
+				<pieces copy="PC-Confusius"/> 
+			</group>
+			<group name="CPC-DaVinci">
+				<fill type="TEXTURE_BLEND" texind="0" k="0" r="94" g="255" b="65" exR="0" exG="216" exB="173"/>
+				<pieces copy="PC-DaVinci"/>
+			</group>
+			<group name="CPC-MarcoPolo">
+				<fill type="TEXTURE_BLEND" texind="0" k="0" r="251" g="251" b="7" exR="0" exG="213" exB="203"/>
+				<pieces copy="PC-MarcoPolo"/>
+			</group>
+			<group name="CPC-Rubens">
+				<fill type="TEXTURE_BLEND" texind="0" k="0" r="255" g="114" b="0" exR="255" exG="163" exB="0"/>
+				<pieces copy="PC-Rubens"/>
+			</group>
+			<group name="CPC-Watt">
+				<fill type="TEXTURE_BLEND" texind="0" k="0" r="255" g="116" b="0" exR="246" exG="0" exB="0"/>
+				<pieces copy="PC-Watt"/>
+			</group>
+			<group name="CPC-Newton">
+				<fill type="TEXTURE_BLEND" texind="0" k="0" r="167" g="20" b="153" exR="255" exG="37" exB="56"/>
+				<pieces copy="PC-Newton"/>
+			</group>
+		</family>
+	</outlines>
+</pieces>

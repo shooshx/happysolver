@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "happysolver_qt", "happysolver_qt.vcproj", "{D98C1DD4-008F-34B2-A980-0998ECF8427E}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "HappyCubeInstaller", "HappyCubeInstaller.vdproj", "{DF8E49DD-F4CB-4F34-81E7-6F8F1F44C506}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D98C1DD4-008F-34B2-A980-0998ECF8427E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D98C1DD4-008F-34B2-A980-0998ECF8427E}.Debug|Win32.Build.0 = Debug|Win32
+		{D98C1DD4-008F-34B2-A980-0998ECF8427E}.Release|Win32.ActiveCfg = Release|Win32
+		{D98C1DD4-008F-34B2-A980-0998ECF8427E}.Release|Win32.Build.0 = Release|Win32
+		{DF8E49DD-F4CB-4F34-81E7-6F8F1F44C506}.Debug|Win32.ActiveCfg = Debug
+		{DF8E49DD-F4CB-4F34-81E7-6F8F1F44C506}.Release|Win32.ActiveCfg = Release
+		{DF8E49DD-F4CB-4F34-81E7-6F8F1F44C506}.Release|Win32.Build.0 = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
