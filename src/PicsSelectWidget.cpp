@@ -40,7 +40,6 @@
 #define EDIT_THICK 20
 
 #define NUM_DEFS 6
-#define MAX_IDENTICAL 10 // maximum number of identical pics permitted
 
 
 
@@ -55,7 +54,7 @@ PicsSelectWidget::PicsSelectWidget(QWidget *parent, CubeDoc *document)
 	m_layout->setMargin(0);
 
 
-	m_selectAllBot = new QPushButton("Select All");
+	m_selectAllBot = new QPushButton("Set all to 1");
 	m_selectAllBot->setMinimumSize(70, MIN_BOT_HEIGHT);
 	m_selectNoneBot = new QPushButton("Select None");
 	m_selectNoneBot->setMinimumSize(70, MIN_BOT_HEIGHT);
@@ -100,7 +99,7 @@ PicsSelectWidget::PicsSelectWidget(QWidget *parent, CubeDoc *document)
 	m_selectCurrent = new DataSpinBox(0);
 	m_selectCurrent->setMaximumSize(45, 23);
 	m_selectCurrent->setButtonSymbols(QAbstractSpinBox::PlusMinus);
-	m_selectCurrent->setRange(-1, 10); // TBD
+	m_selectCurrent->setRange(-1, MAX_IDENTICAL_PIECES);
 	m_selectCurrent->setSpecialValueText("X");
 
 	QPushButton *back = new QPushButton(QIcon(":/images/buildview.png"), "Close");
@@ -180,7 +179,7 @@ void PicsSelectWidget::continueCreate()
 			grpctrl.num->move(grp->numPics() * BOT_TOTAL_X + BOT_OFFS_X + FRAME_OFFS_SPACE_RIGHT - 65, BOT_OFFS_Y + normg*BOT_TOTAL_Y + 40);
 			grpctrl.num->resize(45, 23);
 			grpctrl.num->setButtonSymbols(QAbstractSpinBox::PlusMinus);
-			grpctrl.num->setRange(-1, 10); // TBD
+			grpctrl.num->setRange(-1, MAX_IDENTICAL_PIECES); 
 			grpctrl.num->setSpecialValueText("X");
 
 			connect(grpctrl.num, SIGNAL(dvalueChanged(int, int)), this, SLOT(changedGrpBox(int, int)));
@@ -202,7 +201,7 @@ void PicsSelectWidget::continueCreate()
 
 				DataSpinBox *spinbox = new DataSpinBox(data, tab);
 				picctrl.num = spinbox;
-				spinbox->setRange(0, MAX_IDENTICAL);
+				spinbox->setRange(0, MAX_IDENTICAL_PIECES);
 				spinbox->move(BOT_OFFS_X + p*BOT_TOTAL_X + (BOT_X/5*2 + 2), BOT_OFFS_Y + normg*BOT_TOTAL_Y + BOT_Y + 5);
 				spinbox->resize(BOT_X/5*3 - 4, EDIT_THICK + 1);
 				spinbox->setButtonSymbols(QAbstractSpinBox::PlusMinus);

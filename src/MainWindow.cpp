@@ -395,36 +395,38 @@ void MainWindow::createMenus()
 	m_fileMenu->addAction(m_exitAct);
 
 	m_viewMenu = menuBar()->addMenu(tr("&View"));
-	m_toobarsPopMenu = new QMenu(tr("&Toolbars"), m_viewMenu);
-	m_toobarsPopMenu->addAction(m_3DviewToolbar->toggleViewAction());
-	m_toobarsPopMenu->addAction(m_viewsToolbar->toggleViewAction());
-	m_toobarsPopMenu->addAction(m_buildToolbar->toggleViewAction());
-	m_toobarsPopMenu->addAction(m_solvesToolbar->toggleViewAction());
-	m_toobarsPopMenu->addSeparator();
-	m_toobarsPopMenu->addAction(m_dock->toggleViewAction());
-	m_viewMenu->addMenu(m_toobarsPopMenu);
+	//m_toobarsPopMenu = new QMenu(tr("&Toolbars"), m_viewMenu);
+	//m_toobarsPopMenu->addAction(m_3DviewToolbar->toggleViewAction());
+	//m_toobarsPopMenu->addAction(m_viewsToolbar->toggleViewAction());
+	//m_toobarsPopMenu->addAction(m_buildToolbar->toggleViewAction());
+	//m_toobarsPopMenu->addAction(m_solvesToolbar->toggleViewAction());
+	//m_toobarsPopMenu->addSeparator();
+	//m_viewMenu->addMenu(m_toobarsPopMenu);
+	m_viewMenu->addAction(m_dock->toggleViewAction());
 	m_viewMenu->addAction(m_statusBarTriggered);
 	m_viewMenu->addSeparator();
 	//m_viewMenu->addActions(m_viewActs->actions());
 	//m_viewMenu->addSeparator();
 	m_viewMenu->addAction(m_editOptionsAct);
 	m_viewMenu->addAction(m_showSlvDlgAct);
-	m_viewMenu->addAction(m_showGrpColorAct);
+	//m_viewMenu->addAction(m_showGrpColorAct);
 	m_viewMenu->addAction(m_showAsmDlgAct);
 
-	m_actionsMenu = menuBar()->addMenu(tr("&3D"));
-	m_actionsMenu->addAction(m_resetViewAct);
-	m_actionsMenu->addSeparator();
-	m_actionsMenu->addActions(m_actionsActs->actions());
-	m_actionsMenu->addSeparator();
-	m_actionsMenu->addActions(m_axisActs->actions());
-	m_actionsMenu->addSeparator();
-	m_actionsMenu->addActions(m_spaceActs->actions());
-	m_actionsMenu->addSeparator();
-	m_actionsMenu->addActions(m_viewFrustrumActs->actions());
+// 	m_actionsMenu = menuBar()->addMenu(tr("&3D"));
+// 	m_actionsMenu->addAction(m_resetViewAct);
+// 	m_actionsMenu->addSeparator();
+// 	m_actionsMenu->addActions(m_actionsActs->actions());
+// 	m_actionsMenu->addSeparator();
+// 	m_actionsMenu->addActions(m_axisActs->actions());
+// 	m_actionsMenu->addSeparator();
+// 	m_actionsMenu->addActions(m_spaceActs->actions());
+// 	m_actionsMenu->addSeparator();
+// 	m_actionsMenu->addActions(m_viewFrustrumActs->actions());
 
-	m_actionMenu = menuBar()->addMenu(tr("&Action"));
+	m_actionMenu = menuBar()->addMenu(tr("&Tools"));
 	m_actionMenu->addAction(m_goAct);
+	m_actionMenu->addAction(m_resetViewAct);
+	m_actionMenu->addAction(m_selectYellowAct);
 
 	m_helpMenu = menuBar()->addMenu(tr("&Help"));
 	m_helpMenu->addAction(m_helpUsage);
@@ -713,7 +715,7 @@ void MainWindow::doModalAboutDlg()
 	pal.setCurrentColorGroup(QPalette::Active);
 	pal.setColor(QPalette::Base, pal.color(QPalette::Disabled, QPalette::Base));
 	ui.emailEdit->setPalette(pal);
-	ui.icqEdit->setPalette(pal);
+//	ui.icqEdit->setPalette(pal);
 
 	QMovie anim(":/images/cube_ts.mng");
 	anim.setCacheMode(QMovie::CacheAll); //needed for looping
@@ -964,18 +966,18 @@ void MainWindow::SwitchView(int nSwitchTo, bool bToLast)
 	}
 
 	// needed in order for the actions to depress
-	QList<QAction*> acts = m_viewActs->actions();
-	for(int i = 0; i < 3; ++i)
-	{
-		if (i != active)
-			acts[i]->setChecked(false);
-		else
-			acts[i]->setChecked(true);
-	}
+ 	QList<QAction*> acts = m_viewActs->actions();
+ 	for(int i = 0; i < 3; ++i)
+ 	{
+ 		if (i != active)
+ 			acts[i]->setChecked(false);
+ 		else
+ 			acts[i]->setChecked(true);
+ 	}
 
 
-	setUpdatesEnabled(false);
-	m_docktab->blockSignals(true);
+	//setUpdatesEnabled(false);
+	//m_docktab->blockSignals(true);
 
 	if ((m_lastViewIndex == BuildView) && (active != BuildView))
 		m_buildGlWidget->switchOut();
@@ -983,7 +985,7 @@ void MainWindow::SwitchView(int nSwitchTo, bool bToLast)
 	switch (active)
 	{
 	case ModelView:
-		m_dock->show(); // ensure it is shown (TBD... unless?)
+		//m_dock->show(); // ensure it is shown (TBD... unless?)
 		m_docktab->setCurrentIndex(1);
 
 		m_currentGlWidget = m_modelGlWidget;
@@ -996,7 +998,7 @@ void MainWindow::SwitchView(int nSwitchTo, bool bToLast)
 		break;
 
 	case BuildView:
-		m_dock->show(); // ensure it is shown (TBD... unless?)
+		//m_dock->show(); // ensure it is shown (TBD... unless?)
 		m_docktab->setCurrentIndex(0);
 
 		m_currentGlWidget = m_buildGlWidget;
@@ -1010,18 +1012,18 @@ void MainWindow::SwitchView(int nSwitchTo, bool bToLast)
 		break;
 
 	case PicsView:
-	//	m_docktab->setCurrentIndex(0); // pics selection wants the design dialog
+		m_docktab->setCurrentIndex(0); // pics selection wants the design dialog
 		Enable3DActions(false);
 		EnableBuildActs(false);
 		break;
 	}
 
-	m_docktab->blockSignals(false);
+	//m_docktab->blockSignals(false);
 	m_stack->setCurrentIndex(active);
 	// the last call only posted a paint event, didn't call it yet, so the new view isn't current yet.
 
-	flushAllEvents();
-	setUpdatesEnabled(true);
+	//flushAllEvents();
+	//setUpdatesEnabled(true);
 
 
 }

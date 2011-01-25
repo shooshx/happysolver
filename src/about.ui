@@ -71,7 +71,7 @@
     </font>
    </property>
    <property name="text" >
-    <string>Version 2.0.2</string>
+    <string>Version 2.1.0</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_4" >
@@ -95,7 +95,7 @@
     </font>
    </property>
    <property name="text" >
-    <string>Designed and implemented by Shy Shalom, Israel (1995 - 2007)</string>
+    <string>Designed and implemented by Shy Shalom, Israel (1995 - 2010)</string>
    </property>
    <property name="scaledContents" >
     <bool>false</bool>
@@ -167,36 +167,6 @@
     <bool>true</bool>
    </property>
   </widget>
-  <widget class="QLabel" name="label_7" >
-   <property name="geometry" >
-    <rect>
-     <x>10</x>
-     <y>120</y>
-     <width>41</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="font" >
-    <font>
-     <family>Tahoma</family>
-     <pointsize>9</pointsize>
-     <weight>75</weight>
-     <italic>false</italic>
-     <bold>true</bold>
-     <underline>false</underline>
-     <strikeout>false</strikeout>
-    </font>
-   </property>
-   <property name="text" >
-    <string>ICQ:</string>
-   </property>
-   <property name="scaledContents" >
-    <bool>false</bool>
-   </property>
-   <property name="wordWrap" >
-    <bool>true</bool>
-   </property>
-  </widget>
   <widget class="QLabel" name="label_6" >
    <property name="geometry" >
     <rect>
@@ -218,7 +188,7 @@
     </font>
    </property>
    <property name="text" >
-    <string>EMAIL:</string>
+    <string>e-mail:</string>
    </property>
    <property name="scaledContents" >
     <bool>false</bool>
@@ -277,32 +247,6 @@
    </property>
    <property name="text" >
     <string>shooshX@gmail.com</string>
-   </property>
-   <property name="frame" >
-    <bool>false</bool>
-   </property>
-   <property name="readOnly" >
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="icqEdit" >
-   <property name="geometry" >
-    <rect>
-     <x>40</x>
-     <y>121</y>
-     <width>161</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="font" >
-    <font>
-     <pointsize>9</pointsize>
-     <weight>75</weight>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="text" >
-    <string>12207397</string>
    </property>
    <property name="frame" >
     <bool>false</bool>

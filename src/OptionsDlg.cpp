@@ -33,8 +33,8 @@ OptionsDlg::OptionsDlg(QWidget *parent, Configuration *conf)
 	int i;
 	ui.setupUi(this);
 
-	setMinimumSize(size());
-	setMaximumSize(size());
+	//setMinimumSize(size());
+	//setMaximumSize(size());
 
 	connect(ui.SM_rand, SIGNAL(toggled(bool)), this, SLOT(updateSEEnables()));
 	connect(ui.SM_seq, SIGNAL(toggled(bool)), this, SLOT(updateSEEnables()));

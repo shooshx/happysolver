@@ -42,4 +42,8 @@ extern QWidget* g_main;
 #define MIN_BOT_HEIGHT 30
 #endif
 
+
+#define MAX_IDENTICAL_PIECES 10000 // maximum number of identical pics permitted
+
+
 #endif

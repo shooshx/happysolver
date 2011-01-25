@@ -191,7 +191,7 @@ void BuildHelpDlg::completePicsWidgets() // SLOT
 		ctrl.num = new DataSpinBox(f, m_picSel);
 		ctrl.num->setMinimumSize(40, 22);
 		ctrl.num->setButtonSymbols(QAbstractSpinBox::PlusMinus);
-		ctrl.num->setRange(-1, 10); // TBD #define
+		ctrl.num->setRange(-1, MAX_IDENTICAL_PIECES); 
 		ctrl.num->setSpecialValueText("X");
 		ctrl.num->setToolTip(QString("Number of %1 sets").arg(fam.name));
 		glayout->addWidget(ctrl.num, f + 1, 3);

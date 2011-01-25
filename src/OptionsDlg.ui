@@ -9,871 +9,862 @@
     <height>293</height>
    </rect>
   </property>
-  <property name="sizePolicy" >
-   <sizepolicy>
-    <hsizetype>0</hsizetype>
-    <vsizetype>0</vsizetype>
-    <horstretch>0</horstretch>
-    <verstretch>0</verstretch>
-   </sizepolicy>
-  </property>
   <property name="windowTitle" >
    <string>Options</string>
   </property>
   <property name="windowIcon" >
-   <iconset/>
+   <iconset>
+    <normaloff/>
+   </iconset>
   </property>
   <property name="modal" >
    <bool>true</bool>
   </property>
-  <widget class="QWidget" name="layoutWidget" >
-   <property name="geometry" >
-    <rect>
-     <x>10</x>
-     <y>260</y>
-     <width>471</width>
-     <height>33</height>
-    </rect>
+  <layout class="QVBoxLayout" name="verticalLayout" >
+   <property name="spacing" >
+    <number>3</number>
    </property>
-   <layout class="QHBoxLayout" >
-    <property name="margin" >
-     <number>0</number>
-    </property>
-    <property name="spacing" >
-     <number>6</number>
-    </property>
-    <item>
-     <widget class="QPushButton" name="defaultsButton" >
-      <property name="text" >
-       <string>Reset To Defaults</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <spacer>
-      <property name="orientation" >
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" >
-       <size>
-        <width>131</width>
-        <height>31</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item>
-     <widget class="QPushButton" name="cancelButton" >
-      <property name="text" >
-       <string>Cancel</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="okButton" >
-      <property name="text" >
-       <string>OK</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QTabWidget" name="TabWidget" >
-   <property name="geometry" >
-    <rect>
-     <x>8</x>
-     <y>10</y>
-     <width>481</width>
-     <height>251</height>
-    </rect>
+   <property name="bottomMargin" >
+    <number>6</number>
    </property>
-   <property name="currentIndex" >
-    <number>2</number>
-   </property>
-   <widget class="QWidget" name="SEtab" >
-    <attribute name="title" >
-     <string>Solution Engine</string>
-    </attribute>
-    <widget class="QGroupBox" name="groupBox" >
-     <property name="geometry" >
-      <rect>
-       <x>227</x>
-       <y>7</y>
-       <width>241</width>
-       <height>208</height>
-      </rect>
+   <item>
+    <widget class="QTabWidget" name="TabWidget" >
+     <property name="currentIndex" >
+      <number>0</number>
      </property>
-     <property name="title" >
-      <string>Solution Persistance</string>
-     </property>
-     <widget class="QFrame" name="frame" >
-      <property name="geometry" >
-       <rect>
-        <x>4</x>
-        <y>123</y>
-        <width>231</width>
-        <height>81</height>
-       </rect>
-      </property>
-      <property name="frameShape" >
-       <enum>QFrame::NoFrame</enum>
-      </property>
-      <property name="frameShadow" >
-       <enum>QFrame::Raised</enum>
-      </property>
-      <property name="lineWidth" >
-       <number>0</number>
-      </property>
-      <widget class="QRadioButton" name="SP_safter" >
+     <widget class="QWidget" name="SEtab" >
+      <attribute name="title" >
+       <string>Solution Engine</string>
+      </attribute>
+      <widget class="QGroupBox" name="groupBox" >
        <property name="geometry" >
         <rect>
-         <x>12</x>
-         <y>51</y>
-         <width>78</width>
-         <height>19</height>
+         <x>227</x>
+         <y>7</y>
+         <width>241</width>
+         <height>208</height>
+        </rect>
+       </property>
+       <property name="title" >
+        <string>Solution Persistance</string>
+       </property>
+       <widget class="QFrame" name="frame" >
+        <property name="geometry" >
+         <rect>
+          <x>4</x>
+          <y>123</y>
+          <width>231</width>
+          <height>81</height>
+         </rect>
+        </property>
+        <property name="frameShape" >
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <property name="frameShadow" >
+         <enum>QFrame::Raised</enum>
+        </property>
+        <property name="lineWidth" >
+         <number>0</number>
+        </property>
+        <widget class="QRadioButton" name="SP_safter" >
+         <property name="geometry" >
+          <rect>
+           <x>12</x>
+           <y>51</y>
+           <width>78</width>
+           <height>19</height>
+          </rect>
+         </property>
+         <property name="text" >
+          <string>Stop after</string>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="SP_afterNum" >
+         <property name="geometry" >
+          <rect>
+           <x>91</x>
+           <y>51</y>
+           <width>51</width>
+           <height>20</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label" >
+         <property name="geometry" >
+          <rect>
+           <x>10</x>
+           <y>8</y>
+           <width>141</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text" >
+          <string>Engine Stop condition</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_solutions" >
+         <property name="geometry" >
+          <rect>
+           <x>148</x>
+           <y>52</y>
+           <width>81</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text" >
+          <string>solutions</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="SP_cont" >
+         <property name="geometry" >
+          <rect>
+           <x>12</x>
+           <y>30</y>
+           <width>221</width>
+           <height>19</height>
+          </rect>
+         </property>
+         <property name="text" >
+          <string>Continue until "Stop" is pressed</string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QFrame" name="frame" >
+        <property name="geometry" >
+         <rect>
+          <x>10</x>
+          <y>57</y>
+          <width>221</width>
+          <height>71</height>
+         </rect>
+        </property>
+        <property name="frameShape" >
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <property name="frameShadow" >
+         <enum>QFrame::Raised</enum>
+        </property>
+        <widget class="QRadioButton" name="SP_upto" >
+         <property name="geometry" >
+          <rect>
+           <x>6</x>
+           <y>42</y>
+           <width>78</width>
+           <height>19</height>
+          </rect>
+         </property>
+         <property name="text" >
+          <string>Allow up to</string>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="SP_uptoHow" >
+         <property name="geometry" >
+          <rect>
+           <x>88</x>
+           <y>42</y>
+           <width>51</width>
+           <height>20</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_upto" >
+         <property name="geometry" >
+          <rect>
+           <x>146</x>
+           <y>44</y>
+           <width>71</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text" >
+          <string>of a series</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="SP_one" >
+         <property name="geometry" >
+          <rect>
+           <x>6</x>
+           <y>21</y>
+           <width>211</width>
+           <height>19</height>
+          </rect>
+         </property>
+         <property name="text" >
+          <string>Allow only the First in a series</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="SP_all" >
+         <property name="geometry" >
+          <rect>
+           <x>6</x>
+           <y>0</y>
+           <width>211</width>
+           <height>19</height>
+          </rect>
+         </property>
+         <property name="text" >
+          <string>Find all solutions in a series</string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QLabel" name="label" >
+        <property name="geometry" >
+         <rect>
+          <x>14</x>
+          <y>15</y>
+          <width>221</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="text" >
+         <string>After a solution is found, what should be done with the rest of the series?</string>
+        </property>
+        <property name="wordWrap" >
+         <bool>true</bool>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="groupBox" >
+       <property name="geometry" >
+        <rect>
+         <x>10</x>
+         <y>7</y>
+         <width>211</width>
+         <height>208</height>
+        </rect>
+       </property>
+       <property name="title" >
+        <string>Search Mode</string>
+       </property>
+       <widget class="QLabel" name="label_restart1" >
+        <property name="geometry" >
+         <rect>
+          <x>25</x>
+          <y>95</y>
+          <width>64</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text" >
+         <string>restart every</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_luck1" >
+        <property name="geometry" >
+         <rect>
+          <x>23</x>
+          <y>146</y>
+          <width>81</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text" >
+         <string>Luck offset from full solution</string>
+        </property>
+        <property name="wordWrap" >
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QDoubleSpinBox" name="SM_rEvery" >
+        <property name="geometry" >
+         <rect>
+          <x>93</x>
+          <y>95</y>
+          <width>51</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="decimals" >
+         <number>1</number>
+        </property>
+        <property name="minimum" >
+         <double>0.100000000000000</double>
+        </property>
+        <property name="maximum" >
+         <double>100.000000000000000</double>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_luck2" >
+        <property name="geometry" >
+         <rect>
+          <x>156</x>
+          <y>155</y>
+          <width>46</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text" >
+         <string>% of tiles</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_restart2" >
+        <property name="geometry" >
+         <rect>
+          <x>153</x>
+          <y>97</y>
+          <width>51</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text" >
+         <string>seconds</string>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="SM_lOffset" >
+        <property name="geometry" >
+         <rect>
+          <x>109</x>
+          <y>153</y>
+          <width>42</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="minimum" >
+         <number>1</number>
+        </property>
+        <property name="maximum" >
+         <number>100</number>
+        </property>
+       </widget>
+       <widget class="QRadioButton" name="SM_seq" >
+        <property name="geometry" >
+         <rect>
+          <x>16</x>
+          <y>27</y>
+          <width>111</width>
+          <height>19</height>
+         </rect>
+        </property>
+        <property name="text" >
+         <string>Sequential</string>
+        </property>
+       </widget>
+       <widget class="QRadioButton" name="SM_rand" >
+        <property name="geometry" >
+         <rect>
+          <x>16</x>
+          <y>50</y>
+          <width>121</width>
+          <height>19</height>
+         </rect>
+        </property>
+        <property name="text" >
+         <string>Randomized</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="SM_restart" >
+        <property name="geometry" >
+         <rect>
+          <x>23</x>
+          <y>74</y>
+          <width>111</width>
+          <height>19</height>
+         </rect>
+        </property>
+        <property name="text" >
+         <string>Use Restart</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="SM_luck" >
+        <property name="geometry" >
+         <rect>
+          <x>23</x>
+          <y>125</y>
+          <width>111</width>
+          <height>19</height>
+         </rect>
+        </property>
+        <property name="text" >
+         <string>Use Luck</string>
+        </property>
+       </widget>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="ATab" >
+      <attribute name="title" >
+       <string>Assembly</string>
+      </attribute>
+      <widget class="QGroupBox" name="groupBox" >
+       <property name="geometry" >
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>411</width>
+         <height>91</height>
+        </rect>
+       </property>
+       <property name="title" >
+        <string>Asymmetric Pieces</string>
+       </property>
+       <widget class="QRadioButton" name="AP_face" >
+        <property name="geometry" >
+         <rect>
+          <x>20</x>
+          <y>60</y>
+          <width>167</width>
+          <height>19</height>
+         </rect>
+        </property>
+        <property name="text" >
+         <string>Have the texture always face:</string>
+        </property>
+       </widget>
+       <widget class="QRadioButton" name="AP_any" >
+        <property name="geometry" >
+         <rect>
+          <x>20</x>
+          <y>40</y>
+          <width>171</width>
+          <height>19</height>
+         </rect>
+        </property>
+        <property name="text" >
+         <string>Treat like any other piece</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label" >
+        <property name="geometry" >
+         <rect>
+          <x>20</x>
+          <y>20</y>
+          <width>381</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text" >
+         <string>Asymmetric Pieces are pieces with texture on only one side</string>
+        </property>
+       </widget>
+       <widget class="QComboBox" name="AP_faceWhere" >
+        <property name="geometry" >
+         <rect>
+          <x>190</x>
+          <y>59</y>
+          <width>91</width>
+          <height>22</height>
+         </rect>
+        </property>
+       </widget>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="SDtab" >
+      <attribute name="title" >
+       <string>Solution Display</string>
+      </attribute>
+      <attribute name="toolTip" >
+       <string>SDtab</string>
+      </attribute>
+      <widget class="QGroupBox" name="SD_custom" >
+       <property name="geometry" >
+        <rect>
+         <x>10</x>
+         <y>34</y>
+         <width>271</width>
+         <height>181</height>
+        </rect>
+       </property>
+       <property name="title" >
+        <string>Custom</string>
+       </property>
+       <widget class="QLabel" name="label" >
+        <property name="geometry" >
+         <rect>
+          <x>118</x>
+          <y>18</y>
+          <width>46</width>
+          <height>14</height>
+         </rect>
+        </property>
+        <property name="text" >
+         <string>Round</string>
+        </property>
+        <property name="alignment" >
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QFrame" name="frame" >
+        <property name="geometry" >
+         <rect>
+          <x>6</x>
+          <y>38</y>
+          <width>161</width>
+          <height>25</height>
+         </rect>
+        </property>
+        <property name="frameShape" >
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <property name="frameShadow" >
+         <enum>QFrame::Raised</enum>
+        </property>
+        <widget class="QRadioButton" name="SD_p1s" >
+         <property name="geometry" >
+          <rect>
+           <x>77</x>
+           <y>4</y>
+           <width>21</width>
+           <height>18</height>
+          </rect>
+         </property>
+         <property name="text" >
+          <string/>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="SD_p1r" >
+         <property name="geometry" >
+          <rect>
+           <x>129</x>
+           <y>4</y>
+           <width>21</width>
+           <height>18</height>
+          </rect>
+         </property>
+         <property name="text" >
+          <string/>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="SD_pass1" >
+         <property name="geometry" >
+          <rect>
+           <x>5</x>
+           <y>4</y>
+           <width>66</width>
+           <height>18</height>
+          </rect>
+         </property>
+         <property name="text" >
+          <string>Pass 1</string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QFrame" name="frame" >
+        <property name="geometry" >
+         <rect>
+          <x>6</x>
+          <y>63</y>
+          <width>161</width>
+          <height>25</height>
+         </rect>
+        </property>
+        <property name="frameShape" >
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <property name="frameShadow" >
+         <enum>QFrame::Raised</enum>
+        </property>
+        <widget class="QCheckBox" name="SD_pass2" >
+         <property name="geometry" >
+          <rect>
+           <x>5</x>
+           <y>4</y>
+           <width>66</width>
+           <height>18</height>
+          </rect>
+         </property>
+         <property name="text" >
+          <string>Pass 2</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="SD_p2s" >
+         <property name="geometry" >
+          <rect>
+           <x>77</x>
+           <y>4</y>
+           <width>21</width>
+           <height>18</height>
+          </rect>
+         </property>
+         <property name="text" >
+          <string/>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="SD_p2r" >
+         <property name="geometry" >
+          <rect>
+           <x>129</x>
+           <y>4</y>
+           <width>21</width>
+           <height>18</height>
+          </rect>
+         </property>
+         <property name="text" >
+          <string/>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QFrame" name="frame" >
+        <property name="geometry" >
+         <rect>
+          <x>6</x>
+          <y>88</y>
+          <width>161</width>
+          <height>25</height>
+         </rect>
+        </property>
+        <property name="frameShape" >
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <property name="frameShadow" >
+         <enum>QFrame::Raised</enum>
+        </property>
+        <widget class="QCheckBox" name="SD_pass3" >
+         <property name="geometry" >
+          <rect>
+           <x>5</x>
+           <y>4</y>
+           <width>66</width>
+           <height>18</height>
+          </rect>
+         </property>
+         <property name="text" >
+          <string>Pass 3</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="SD_p3s" >
+         <property name="geometry" >
+          <rect>
+           <x>77</x>
+           <y>4</y>
+           <width>21</width>
+           <height>18</height>
+          </rect>
+         </property>
+         <property name="text" >
+          <string/>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="SD_p3r" >
+         <property name="geometry" >
+          <rect>
+           <x>129</x>
+           <y>4</y>
+           <width>21</width>
+           <height>18</height>
+          </rect>
+         </property>
+         <property name="text" >
+          <string/>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QFrame" name="frame" >
+        <property name="geometry" >
+         <rect>
+          <x>6</x>
+          <y>113</y>
+          <width>161</width>
+          <height>25</height>
+         </rect>
+        </property>
+        <property name="frameShape" >
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <property name="frameShadow" >
+         <enum>QFrame::Raised</enum>
+        </property>
+        <widget class="QCheckBox" name="SD_pass4" >
+         <property name="geometry" >
+          <rect>
+           <x>5</x>
+           <y>4</y>
+           <width>66</width>
+           <height>18</height>
+          </rect>
+         </property>
+         <property name="text" >
+          <string>Pass 4</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="SD_p4r" >
+         <property name="geometry" >
+          <rect>
+           <x>129</x>
+           <y>4</y>
+           <width>21</width>
+           <height>18</height>
+          </rect>
+         </property>
+         <property name="text" >
+          <string/>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="SD_p4s" >
+         <property name="geometry" >
+          <rect>
+           <x>77</x>
+           <y>4</y>
+           <width>21</width>
+           <height>18</height>
+          </rect>
+         </property>
+         <property name="text" >
+          <string/>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QComboBox" name="SD_lines" >
+        <property name="geometry" >
+         <rect>
+          <x>170</x>
+          <y>96</y>
+          <width>81</width>
+          <height>22</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="SD_light" >
+        <property name="geometry" >
+         <rect>
+          <x>169</x>
+          <y>39</y>
+          <width>81</width>
+          <height>18</height>
+         </rect>
+        </property>
+        <property name="text" >
+         <string>Lighting</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="SD_vtxNormals" >
+        <property name="geometry" >
+         <rect>
+          <x>30</x>
+          <y>147</y>
+          <width>151</width>
+          <height>18</height>
+         </rect>
+        </property>
+        <property name="text" >
+         <string>Vertex Normals</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label" >
+        <property name="geometry" >
+         <rect>
+          <x>68</x>
+          <y>18</y>
+          <width>46</width>
+          <height>14</height>
+         </rect>
+        </property>
+        <property name="text" >
+         <string>Square</string>
+        </property>
+        <property name="alignment" >
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label" >
+        <property name="geometry" >
+         <rect>
+          <x>170</x>
+          <y>77</y>
+          <width>61</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text" >
+         <string>Lines:</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QLabel" name="label" >
+       <property name="geometry" >
+        <rect>
+         <x>10</x>
+         <y>13</y>
+         <width>91</width>
+         <height>16</height>
         </rect>
        </property>
        <property name="text" >
-        <string>Stop after</string>
+        <string>Render detail:</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="SP_afterNum" >
+      <widget class="QComboBox" name="SD_highLevel" >
        <property name="geometry" >
         <rect>
-         <x>91</x>
-         <y>51</y>
-         <width>51</width>
-         <height>20</height>
+         <x>111</x>
+         <y>10</y>
+         <width>191</width>
+         <height>22</height>
         </rect>
        </property>
       </widget>
       <widget class="QLabel" name="label" >
        <property name="geometry" >
         <rect>
-         <x>10</x>
-         <y>8</y>
-         <width>141</width>
+         <x>300</x>
+         <y>60</y>
+         <width>61</width>
          <height>16</height>
         </rect>
        </property>
        <property name="text" >
-        <string>Engine Stop condition</string>
+        <string>Color Flip:</string>
        </property>
       </widget>
-      <widget class="QLabel" name="label_solutions" >
+      <widget class="QComboBox" name="SD_colorFlip" >
        <property name="geometry" >
         <rect>
-         <x>148</x>
-         <y>52</y>
-         <width>81</width>
-         <height>16</height>
+         <x>371</x>
+         <y>57</y>
+         <width>91</width>
+         <height>22</height>
         </rect>
-       </property>
-       <property name="text" >
-        <string>solutions</string>
-       </property>
-      </widget>
-      <widget class="QRadioButton" name="SP_cont" >
-       <property name="geometry" >
-        <rect>
-         <x>12</x>
-         <y>30</y>
-         <width>221</width>
-         <height>19</height>
-        </rect>
-       </property>
-       <property name="text" >
-        <string>Continue until "Stop" is pressed</string>
        </property>
       </widget>
      </widget>
-     <widget class="QFrame" name="frame" >
-      <property name="geometry" >
-       <rect>
-        <x>10</x>
-        <y>57</y>
-        <width>221</width>
-        <height>71</height>
-       </rect>
-      </property>
-      <property name="frameShape" >
-       <enum>QFrame::NoFrame</enum>
-      </property>
-      <property name="frameShadow" >
-       <enum>QFrame::Raised</enum>
-      </property>
-      <widget class="QRadioButton" name="SP_upto" >
-       <property name="geometry" >
-        <rect>
-         <x>6</x>
-         <y>42</y>
-         <width>78</width>
-         <height>19</height>
-        </rect>
-       </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" >
+     <property name="spacing" >
+      <number>6</number>
+     </property>
+     <property name="margin" >
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QPushButton" name="defaultsButton" >
        <property name="text" >
-        <string>Allow up to</string>
+        <string>Reset To Defaults</string>
+       </property>
+       <property name="autoDefault" >
+        <bool>false</bool>
        </property>
       </widget>
-      <widget class="QLineEdit" name="SP_uptoHow" >
-       <property name="geometry" >
-        <rect>
-         <x>88</x>
-         <y>42</y>
-         <width>51</width>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer" >
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0" >
+        <size>
+         <width>40</width>
          <height>20</height>
-        </rect>
+        </size>
        </property>
-      </widget>
-      <widget class="QLabel" name="label_upto" >
-       <property name="geometry" >
-        <rect>
-         <x>146</x>
-         <y>44</y>
-         <width>71</width>
-         <height>16</height>
-        </rect>
-       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="cancelButton" >
        <property name="text" >
-        <string>of a series</string>
+        <string>Cancel</string>
        </property>
       </widget>
-      <widget class="QRadioButton" name="SP_one" >
-       <property name="geometry" >
-        <rect>
-         <x>6</x>
-         <y>21</y>
-         <width>211</width>
-         <height>19</height>
-        </rect>
-       </property>
+     </item>
+     <item>
+      <widget class="QPushButton" name="okButton" >
        <property name="text" >
-        <string>Allow only the First in a series</string>
+        <string>OK</string>
        </property>
       </widget>
-      <widget class="QRadioButton" name="SP_all" >
-       <property name="geometry" >
-        <rect>
-         <x>6</x>
-         <y>0</y>
-         <width>211</width>
-         <height>19</height>
-        </rect>
-       </property>
-       <property name="text" >
-        <string>Find all solutions in a series</string>
-       </property>
-      </widget>
-     </widget>
-     <widget class="QLabel" name="label" >
-      <property name="geometry" >
-       <rect>
-        <x>14</x>
-        <y>15</y>
-        <width>221</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="text" >
-       <string>After a solution is found, what should be done with the rest of the series?</string>
-      </property>
-      <property name="wordWrap" >
-       <bool>true</bool>
-      </property>
-     </widget>
-    </widget>
-    <widget class="QGroupBox" name="groupBox" >
-     <property name="geometry" >
-      <rect>
-       <x>10</x>
-       <y>7</y>
-       <width>211</width>
-       <height>208</height>
-      </rect>
-     </property>
-     <property name="title" >
-      <string>Search Mode</string>
-     </property>
-     <widget class="QLabel" name="label_restart1" >
-      <property name="geometry" >
-       <rect>
-        <x>25</x>
-        <y>95</y>
-        <width>64</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="text" >
-       <string>restart every</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_luck1" >
-      <property name="geometry" >
-       <rect>
-        <x>23</x>
-        <y>146</y>
-        <width>81</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text" >
-       <string>Luck offset from full solution</string>
-      </property>
-      <property name="wordWrap" >
-       <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QDoubleSpinBox" name="SM_rEvery" >
-      <property name="geometry" >
-       <rect>
-        <x>93</x>
-        <y>95</y>
-        <width>51</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="decimals" >
-       <number>1</number>
-      </property>
-      <property name="maximum" >
-       <double>100.000000000000000</double>
-      </property>
-      <property name="minimum" >
-       <double>0.100000000000000</double>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_luck2" >
-      <property name="geometry" >
-       <rect>
-        <x>156</x>
-        <y>155</y>
-        <width>46</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text" >
-       <string>% of tiles</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_restart2" >
-      <property name="geometry" >
-       <rect>
-        <x>153</x>
-        <y>97</y>
-        <width>51</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text" >
-       <string>seconds</string>
-      </property>
-     </widget>
-     <widget class="QSpinBox" name="SM_lOffset" >
-      <property name="geometry" >
-       <rect>
-        <x>109</x>
-        <y>153</y>
-        <width>42</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="maximum" >
-       <number>100</number>
-      </property>
-      <property name="minimum" >
-       <number>1</number>
-      </property>
-     </widget>
-     <widget class="QRadioButton" name="SM_seq" >
-      <property name="geometry" >
-       <rect>
-        <x>16</x>
-        <y>27</y>
-        <width>111</width>
-        <height>19</height>
-       </rect>
-      </property>
-      <property name="text" >
-       <string>Sequential</string>
-      </property>
-     </widget>
-     <widget class="QRadioButton" name="SM_rand" >
-      <property name="geometry" >
-       <rect>
-        <x>16</x>
-        <y>50</y>
-        <width>121</width>
-        <height>19</height>
-       </rect>
-      </property>
-      <property name="text" >
-       <string>Randomized</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="SM_restart" >
-      <property name="geometry" >
-       <rect>
-        <x>23</x>
-        <y>74</y>
-        <width>111</width>
-        <height>19</height>
-       </rect>
-      </property>
-      <property name="text" >
-       <string>Use Restart</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="SM_luck" >
-      <property name="geometry" >
-       <rect>
-        <x>23</x>
-        <y>125</y>
-        <width>111</width>
-        <height>19</height>
-       </rect>
-      </property>
-      <property name="text" >
-       <string>Use Luck</string>
-      </property>
-     </widget>
-    </widget>
-   </widget>
-   <widget class="QWidget" name="ATab" >
-    <attribute name="title" >
-     <string>Assembly</string>
-    </attribute>
-    <widget class="QGroupBox" name="groupBox" >
-     <property name="geometry" >
-      <rect>
-       <x>10</x>
-       <y>10</y>
-       <width>411</width>
-       <height>91</height>
-      </rect>
-     </property>
-     <property name="title" >
-      <string>Asymmetric Pieces</string>
-     </property>
-     <widget class="QRadioButton" name="AP_face" >
-      <property name="geometry" >
-       <rect>
-        <x>20</x>
-        <y>60</y>
-        <width>167</width>
-        <height>19</height>
-       </rect>
-      </property>
-      <property name="text" >
-       <string>Have the texture always face:</string>
-      </property>
-     </widget>
-     <widget class="QRadioButton" name="AP_any" >
-      <property name="geometry" >
-       <rect>
-        <x>20</x>
-        <y>40</y>
-        <width>171</width>
-        <height>19</height>
-       </rect>
-      </property>
-      <property name="text" >
-       <string>Treat like any other piece</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label" >
-      <property name="geometry" >
-       <rect>
-        <x>20</x>
-        <y>20</y>
-        <width>381</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text" >
-       <string>Asymmetric Pieces are pieces with texture on only one side</string>
-      </property>
-     </widget>
-     <widget class="QComboBox" name="AP_faceWhere" >
-      <property name="geometry" >
-       <rect>
-        <x>190</x>
-        <y>59</y>
-        <width>91</width>
-        <height>22</height>
-       </rect>
-      </property>
-     </widget>
-    </widget>
-   </widget>
-   <widget class="QWidget" name="SDtab" >
-    <attribute name="title" >
-     <string>Solution Display</string>
-    </attribute>
-    <attribute name="toolTip" >
-     <string>SDtab</string>
-    </attribute>
-    <widget class="QGroupBox" name="SD_custom" >
-     <property name="geometry" >
-      <rect>
-       <x>10</x>
-       <y>34</y>
-       <width>271</width>
-       <height>181</height>
-      </rect>
-     </property>
-     <property name="title" >
-      <string>Custom</string>
-     </property>
-     <widget class="QLabel" name="label" >
-      <property name="geometry" >
-       <rect>
-        <x>118</x>
-        <y>18</y>
-        <width>46</width>
-        <height>14</height>
-       </rect>
-      </property>
-      <property name="text" >
-       <string>Round</string>
-      </property>
-      <property name="alignment" >
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-     <widget class="QFrame" name="frame" >
-      <property name="geometry" >
-       <rect>
-        <x>6</x>
-        <y>38</y>
-        <width>161</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="frameShape" >
-       <enum>QFrame::NoFrame</enum>
-      </property>
-      <property name="frameShadow" >
-       <enum>QFrame::Raised</enum>
-      </property>
-      <widget class="QRadioButton" name="SD_p1s" >
-       <property name="geometry" >
-        <rect>
-         <x>77</x>
-         <y>4</y>
-         <width>21</width>
-         <height>18</height>
-        </rect>
-       </property>
-       <property name="text" >
-        <string/>
-       </property>
-      </widget>
-      <widget class="QRadioButton" name="SD_p1r" >
-       <property name="geometry" >
-        <rect>
-         <x>129</x>
-         <y>4</y>
-         <width>21</width>
-         <height>18</height>
-        </rect>
-       </property>
-       <property name="text" >
-        <string/>
-       </property>
-      </widget>
-      <widget class="QCheckBox" name="SD_pass1" >
-       <property name="geometry" >
-        <rect>
-         <x>5</x>
-         <y>4</y>
-         <width>66</width>
-         <height>18</height>
-        </rect>
-       </property>
-       <property name="text" >
-        <string>Pass 1</string>
-       </property>
-      </widget>
-     </widget>
-     <widget class="QFrame" name="frame" >
-      <property name="geometry" >
-       <rect>
-        <x>6</x>
-        <y>63</y>
-        <width>161</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="frameShape" >
-       <enum>QFrame::NoFrame</enum>
-      </property>
-      <property name="frameShadow" >
-       <enum>QFrame::Raised</enum>
-      </property>
-      <widget class="QCheckBox" name="SD_pass2" >
-       <property name="geometry" >
-        <rect>
-         <x>5</x>
-         <y>4</y>
-         <width>66</width>
-         <height>18</height>
-        </rect>
-       </property>
-       <property name="text" >
-        <string>Pass 2</string>
-       </property>
-      </widget>
-      <widget class="QRadioButton" name="SD_p2s" >
-       <property name="geometry" >
-        <rect>
-         <x>77</x>
-         <y>4</y>
-         <width>21</width>
-         <height>18</height>
-        </rect>
-       </property>
-       <property name="text" >
-        <string/>
-       </property>
-      </widget>
-      <widget class="QRadioButton" name="SD_p2r" >
-       <property name="geometry" >
-        <rect>
-         <x>129</x>
-         <y>4</y>
-         <width>21</width>
-         <height>18</height>
-        </rect>
-       </property>
-       <property name="text" >
-        <string/>
-       </property>
-      </widget>
-     </widget>
-     <widget class="QFrame" name="frame" >
-      <property name="geometry" >
-       <rect>
-        <x>6</x>
-        <y>88</y>
-        <width>161</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="frameShape" >
-       <enum>QFrame::NoFrame</enum>
-      </property>
-      <property name="frameShadow" >
-       <enum>QFrame::Raised</enum>
-      </property>
-      <widget class="QCheckBox" name="SD_pass3" >
-       <property name="geometry" >
-        <rect>
-         <x>5</x>
-         <y>4</y>
-         <width>66</width>
-         <height>18</height>
-        </rect>
-       </property>
-       <property name="text" >
-        <string>Pass 3</string>
-       </property>
-      </widget>
-      <widget class="QRadioButton" name="SD_p3s" >
-       <property name="geometry" >
-        <rect>
-         <x>77</x>
-         <y>4</y>
-         <width>21</width>
-         <height>18</height>
-        </rect>
-       </property>
-       <property name="text" >
-        <string/>
-       </property>
-      </widget>
-      <widget class="QRadioButton" name="SD_p3r" >
-       <property name="geometry" >
-        <rect>
-         <x>129</x>
-         <y>4</y>
-         <width>21</width>
-         <height>18</height>
-        </rect>
-       </property>
-       <property name="text" >
-        <string/>
-       </property>
-      </widget>
-     </widget>
-     <widget class="QFrame" name="frame" >
-      <property name="geometry" >
-       <rect>
-        <x>6</x>
-        <y>113</y>
-        <width>161</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="frameShape" >
-       <enum>QFrame::NoFrame</enum>
-      </property>
-      <property name="frameShadow" >
-       <enum>QFrame::Raised</enum>
-      </property>
-      <widget class="QCheckBox" name="SD_pass4" >
-       <property name="geometry" >
-        <rect>
-         <x>5</x>
-         <y>4</y>
-         <width>66</width>
-         <height>18</height>
-        </rect>
-       </property>
-       <property name="text" >
-        <string>Pass 4</string>
-       </property>
-      </widget>
-      <widget class="QRadioButton" name="SD_p4r" >
-       <property name="geometry" >
-        <rect>
-         <x>129</x>
-         <y>4</y>
-         <width>21</width>
-         <height>18</height>
-        </rect>
-       </property>
-       <property name="text" >
-        <string/>
-       </property>
-      </widget>
-      <widget class="QRadioButton" name="SD_p4s" >
-       <property name="geometry" >
-        <rect>
-         <x>77</x>
-         <y>4</y>
-         <width>21</width>
-         <height>18</height>
-        </rect>
-       </property>
-       <property name="text" >
-        <string/>
-       </property>
-      </widget>
-     </widget>
-     <widget class="QComboBox" name="SD_lines" >
-      <property name="geometry" >
-       <rect>
-        <x>170</x>
-        <y>96</y>
-        <width>81</width>
-        <height>22</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="SD_light" >
-      <property name="geometry" >
-       <rect>
-        <x>169</x>
-        <y>39</y>
-        <width>81</width>
-        <height>18</height>
-       </rect>
-      </property>
-      <property name="text" >
-       <string>Lighting</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="SD_vtxNormals" >
-      <property name="geometry" >
-       <rect>
-        <x>30</x>
-        <y>147</y>
-        <width>151</width>
-        <height>18</height>
-       </rect>
-      </property>
-      <property name="text" >
-       <string>Vertex Normals</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label" >
-      <property name="geometry" >
-       <rect>
-        <x>68</x>
-        <y>18</y>
-        <width>46</width>
-        <height>14</height>
-       </rect>
-      </property>
-      <property name="text" >
-       <string>Square</string>
-      </property>
-      <property name="alignment" >
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label" >
-      <property name="geometry" >
-       <rect>
-        <x>170</x>
-        <y>77</y>
-        <width>61</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text" >
-       <string>Lines:</string>
-      </property>
-     </widget>
-    </widget>
-    <widget class="QLabel" name="label" >
-     <property name="geometry" >
-      <rect>
-       <x>10</x>
-       <y>13</y>
-       <width>91</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text" >
-      <string>Render detail:</string>
-     </property>
-    </widget>
-    <widget class="QComboBox" name="SD_highLevel" >
-     <property name="geometry" >
-      <rect>
-       <x>111</x>
-       <y>10</y>
-       <width>191</width>
-       <height>22</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QLabel" name="" >
-     <property name="geometry" >
-      <rect>
-       <x>300</x>
-       <y>60</y>
-       <width>61</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text" >
-      <string>Color Flip:</string>
-     </property>
-    </widget>
-    <widget class="QComboBox" name="SD_colorFlip" >
-     <property name="geometry" >
-      <rect>
-       <x>371</x>
-       <y>57</y>
-       <width>91</width>
-       <height>22</height>
-      </rect>
-     </property>
-    </widget>
-   </widget>
-  </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
  </widget>
  <resources>
   <include location="../resources.qrc" />
