@@ -237,6 +237,8 @@ void MainWindow::createActions()
 
 	m_openAct = new QAction(QIcon(":/images/opensolve.png"), tr("&Open..."), this);
 	m_saveAct = new QAction(QIcon(":/images/savesolve.png"), tr("&Save As..."), this);
+	m_exportAct = new QAction(QIcon(":/images/savesolve.png"), tr("&Export..."), this);
+	m_exportAct->setToolTip("Export current solution");
 	m_goAct = new QAction("&Solve It!", this);
 
 	m_resetSolAct = new QAction(QIcon(":/images/resetsolves.png"), tr("&Reset Solutions"), this);
@@ -381,6 +383,7 @@ void MainWindow::createMenus()
 	m_fileMenu->addAction(m_newShapeAct);
 	m_fileMenu->addAction(m_openAct);
 	m_fileMenu->addAction(m_saveAct);
+	m_fileMenu->addAction(m_exportAct);
 	m_fileMenu->addAction(m_resetSolAct);
 	m_fileMenu->addSeparator();
 //	m_recentFilesMenu = new QMenu(tr("Recent &Files"), m_fileMenu);
@@ -574,6 +577,7 @@ void MainWindow::connectActions()
 	connect(m_resetSolAct, SIGNAL(triggered(bool)), m_doc, SLOT(OnFileResetsolves()));
 	connect(m_openAct, SIGNAL(triggered(bool)), m_doc, SLOT(OnFileOpen()));
 	connect(m_saveAct, SIGNAL(triggered(bool)), m_doc, SLOT(OnFileSave()));
+	connect(m_exportAct, SIGNAL(triggered(bool)), m_doc, SLOT(OnFileExport()));
 	connect(m_newShapeAct, SIGNAL(triggered(bool)), m_doc, SLOT(OnNewBuild()));
 	connect(this, SIGNAL(openFile(QString)), m_doc, SLOT(OnOpenDocument(QString)));
 	
@@ -842,6 +846,7 @@ void MainWindow::updateFileEnables()
 	bool running = m_doc->isSlvEngineRunning();
 
 	m_resetSolAct->setEnabled(m_doc->solvesExist());
+	m_exportAct->setEnabled(m_doc->solvesExist());
 	m_editOptionsAct->setEnabled(!running);
 
 	// solutions tab in the dock

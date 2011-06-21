@@ -80,7 +80,7 @@ class PicGroupDef;
 class PicDef
 {
 public:
-	PicDef() : mygrp(NULL), pixmap(TEX_X + 1, TEX_Y + 1), 
+	PicDef() : mygrp(NULL), pixmap(1, 1), 
 		xOffs(-1), yOffs(-1), painter(this), tex(NULL), nUsed(0), lastnSelected(1), nSelected(0), pathlen(0)
 	{} // + 1 for the outlined line
 

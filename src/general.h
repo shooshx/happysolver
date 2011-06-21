@@ -76,6 +76,7 @@ inline Coord3d operator-(const Coord3d &a, const Coord3d &b)
 	return Coord3d(a.x - b.x, a.y - b.y, a.z - b.z);
 }
 
+#define EPSILON (1e-5)
 
 /** Coord3df is a general purpose three dimentional vector of floats.
 	It is used mostly for purposes related to openGL coordinates system
@@ -139,8 +140,20 @@ struct Coord3df
 		v[0] /= len; v[1] /= len; v[2] /= len;
 	}
 
-private:
-	float v[3];
+	bool isNear(const Coord3df& vert) const
+	{
+		return (abs(vert.x - x) < EPSILON) && 
+			   (abs(vert.y - y) < EPSILON) &&
+			   (abs(vert.z - z) < EPSILON);
+	}
+
+
+	union {
+		float v[3];
+		struct {
+			float x,y,z;
+		};
+	};
 };
 
 inline Coord3df operator+(const Coord3df &a, const Coord3df &b)
@@ -163,6 +176,26 @@ inline bool operator==(const Coord3df& a, const Coord3df& b)
 {
 	return ((a.v[0] == b.v[0]) && (a.v[1] == b.v[1]) && (a.v[2] == b.v[2]));
 }
+
+struct Coord2df
+{
+public:
+
+	Coord2df() : x(0.0f), y(0.0f) {}
+	Coord2df(float nx, float ny) : x(nx), y(ny) {}
+
+
+	bool isNear(const Coord2df& vert) const
+	{
+		return (abs(vert.x - x) < EPSILON) &&
+			   (abs(vert.y - y) < EPSILON);
+	}
+
+	float x, y;
+
+};
+
+
 
 /// takes a number and transforms it to a quoted string such as 1,234,567.09.
 /// which is much more readable for humans.

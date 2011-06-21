@@ -19,6 +19,8 @@
 #define __PICPAINTER_H_INCLUDED__
 
 #include "MyObject.h"
+#include "MyFile.h"
+#include "Configuration.h"
 
 /** \file
 	Declares the PicPainter class used for configuration editing.
@@ -71,19 +73,30 @@ public:
 	/// Cube::genLinesIFS() also uses this table for creating the lines objects.
 	static const BuildFrame build[17];
 
+	bool exportToObj(QTextStream& meshFile, QTextStream& materialsFiles, uint& numVerts,
+					 uint &numTexVerts, uint &numNormals, uint &numObjs,
+					 float fMatrix[16]) const;
 
 private:
 
-	bool uncub(int x, int y);
-	void placeSidePolygon(MyObject& obj, int b, bool is1, int x, int y);
+	bool uncub(int x, int y) const;
+	void placeSidePolygon(MyObject& obj, int b, bool is1, int x, int y) const;
 	enum EPlaceType { PLACE_NORM, PLACE_X, PLACE_Y };
 
-	void PlaceInto(int pntn, Coord3df *shpp, Coord3df *pnti1, Coord3df *pnti2, EPlaceType type);
+	void PlaceInto(int pntn, Coord3df *shpp, Coord3df *pnti1, Coord3df *pnti2, EPlaceType type) const;
 	void realPaint(MyObject& obj, bool fTargets, GLWidget *context);
+
+	bool realExportToObj(QTextStream& meshFile, MyObject& obj, uint& numVerts,
+						 uint &numTexVerts, uint &numNormals,
+						 float fMatrix[16]) const;
+	void generateStraightShape(const DisplayConf& dpc, MyObject& obj) const;
 
 	PicDef *m_pdef;
 	int m_displayLst;
 	static MyAllocator g_smoothAllocator;
+
+	DisplayConf m_displayConf;
+
 };
 
 

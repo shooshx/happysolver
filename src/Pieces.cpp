@@ -395,7 +395,7 @@ bool PicBucket::loadXML(const QString& xmlname)
 				if (img.isNull())
 				{
 					QMessageBox::critical(g_main, APP_NAME, "Failed to load texture file: " + txname, QMessageBox::Ok, 0);
-					return 0;
+					return false;
 				}
 			}
 		    
@@ -533,6 +533,12 @@ bool PicBucket::loadXML(const QString& xmlname)
 			{
 				QDomElement pics = cube.firstChildElement("pieces");
 				QString copyfrom = pics.attribute("copy");
+				if (grpnames.find(copyfrom) == grpnames.end())
+				{
+					QMessageBox::critical(g_main, APP_NAME, "can't copy piece from: " + copyfrom, QMessageBox::Ok, 0);
+					return false;
+				}
+				
 				int ifrom = grpnames[copyfrom];
 				defs[i].pics.resize(defs[ifrom].numPics());
 				for (int picn = 0; picn < defs[i].numPics(); ++picn)

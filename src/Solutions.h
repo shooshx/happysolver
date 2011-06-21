@@ -59,6 +59,8 @@ public:
 	SlvPainter(const SlvCube* _scube) :scube(_scube) {}
 	void paint(GLWidget* context, bool fTargets, int singleChoise, int upToStep, ELinesDraw cfgLines) const;
 
+	bool exportToObj(QTextStream& meshFile, QTextStream& materialsFiles) const;
+
 	bool isNull() const { return scube == NULL; }
 	void setSlvCube(const SlvCube *sc) { scube = sc; }
 
@@ -68,6 +70,9 @@ public:
 private:
 	void paintPiece(int f, GLWidget* context, bool fTargets) const;
 	void paintLines(const MyObject& obj, bool singleChoise, GLWidget *context, ELinesDraw cfgLines) const;
+
+	bool exportPieceToObj(QTextStream& meshFile, QTextStream& materialsFiles, int i, uint& numVerts,
+						  uint &numTexVerts, uint &numNormals, uint &numObjs) const;
 
 	const SlvCube* scube;
 };

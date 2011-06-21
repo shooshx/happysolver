@@ -166,6 +166,7 @@ public slots:
 	void OnFileOpen();
 	bool OnGenShape(); 
 	void OnFileSave(); 
+	void OnFileExport(); 
 
 	void slvTrigger(QAction* act);
 	void slvSetIndex(int ind);

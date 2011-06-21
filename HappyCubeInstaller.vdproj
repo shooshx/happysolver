@@ -21,7 +21,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_09037FF128C71A0B1270D41120F62A61"
+        "MsmKey" = "8:_0B51DDCEA6FC4BBCFC1B2B7B8AB3EAF1"
         "OwnerKey" = "8:_19B589B0DBFE4E348A265F099D18E934"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -159,13 +159,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_480C9AFE7BBE8BAD426C5A059289092E"
-        "OwnerKey" = "8:_19B589B0DBFE4E348A265F099D18E934"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_4E2644B768DD6ECF542E26A8E39F8062"
+        "MsmKey" = "8:_45C89D35A9522CFC9734B76E88F20D1A"
         "OwnerKey" = "8:_19B589B0DBFE4E348A265F099D18E934"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -209,12 +203,6 @@
         {
         "MsmKey" = "8:_5C4DADD53151449994F28E16E8D5D83C"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_5D2231A7D2644E6CAE3D1255E4873EF7"
-        "OwnerKey" = "8:_A6D70604C7A54A9F90750AF4EDC61378"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -345,6 +333,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_97FE944D855B0446D6073EF079A05F71"
+        "OwnerKey" = "8:_19B589B0DBFE4E348A265F099D18E934"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_980C43D071A44A6FAC44A189245C6557"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -369,13 +363,13 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_A6D70604C7A54A9F90750AF4EDC61378"
+        "MsmKey" = "8:_A6E6671130BC62371BCFB874E06D447E"
         "OwnerKey" = "8:_19B589B0DBFE4E348A265F099D18E934"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_A88A8A72302E19038DE69E737CF70E3A"
+        "MsmKey" = "8:_A97B18E55818847711633AB16EEB3206"
         "OwnerKey" = "8:_19B589B0DBFE4E348A265F099D18E934"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -401,6 +395,18 @@
         {
         "MsmKey" = "8:_B986594058A54844AA77AE52C413C3E1"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_BABD5002E26142C99DACDDAB79612419"
+        "OwnerKey" = "8:_19B589B0DBFE4E348A265F099D18E934"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_BC93CFF00CC3D481F191191B1E26E34D"
+        "OwnerKey" = "8:_19B589B0DBFE4E348A265F099D18E934"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -447,12 +453,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_D301C4ECB60AB1871170235C0F8BF3C7"
-        "OwnerKey" = "8:_19B589B0DBFE4E348A265F099D18E934"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_D9A6055A69FE4833A62B7A3F929F59C5"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -485,12 +485,6 @@
         {
         "MsmKey" = "8:_E6EC3678F0A44131B95DF03EE444DDC8"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E6FFB272C0EB79D99FC23A9099784CB6"
-        "OwnerKey" = "8:_19B589B0DBFE4E348A265F099D18E934"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -571,11 +565,6 @@
             "ComponentsUrl" = "8:"
                 "Items"
                 {
-                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Net.Framework.2.0"
-                    {
-                    "Name" = "8:Microsoft .NET Framework 2.0"
-                    "ProductCode" = "8:Microsoft.Net.Framework.2.0"
-                    }
                 }
             }
         }
@@ -619,7 +608,7 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_09037FF128C71A0B1270D41120F62A61"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0B51DDCEA6FC4BBCFC1B2B7B8AB3EAF1"
             {
             "SourcePath" = "8:GLU32.dll"
             "TargetName" = "8:GLU32.dll"
@@ -1059,30 +1048,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_480C9AFE7BBE8BAD426C5A059289092E"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_45C89D35A9522CFC9734B76E88F20D1A"
             {
-            "SourcePath" = "8:OPENGL32.dll"
-            "TargetName" = "8:OPENGL32.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_8090F70E828C4708A0D946A856F3D174"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4E2644B768DD6ECF542E26A8E39F8062"
-            {
-            "SourcePath" = "8:QtCore4.dll"
-            "TargetName" = "8:QtCore4.dll"
+            "SourcePath" = "8:QtOpenGL4.dll"
+            "TargetName" = "8:QtOpenGL4.dll"
             "Tag" = "8:"
             "Folder" = "8:_8090F70E828C4708A0D946A856F3D174"
             "Condition" = "8:"
@@ -1659,6 +1628,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_97FE944D855B0446D6073EF079A05F71"
+            {
+            "SourcePath" = "8:OPENGL32.dll"
+            "TargetName" = "8:OPENGL32.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_8090F70E828C4708A0D946A856F3D174"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_980C43D071A44A6FAC44A189245C6557"
             {
             "SourcePath" = "8:Examples\\dualmouth.shp"
@@ -1739,10 +1728,30 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A88A8A72302E19038DE69E737CF70E3A"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A6E6671130BC62371BCFB874E06D447E"
             {
-            "SourcePath" = "8:QtXml4.dll"
-            "TargetName" = "8:QtXml4.dll"
+            "SourcePath" = "8:QtGui4.dll"
+            "TargetName" = "8:QtGui4.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_8090F70E828C4708A0D946A856F3D174"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A97B18E55818847711633AB16EEB3206"
+            {
+            "SourcePath" = "8:QtCore4.dll"
+            "TargetName" = "8:QtCore4.dll"
             "Tag" = "8:"
             "Folder" = "8:_8090F70E828C4708A0D946A856F3D174"
             "Condition" = "8:"
@@ -1837,6 +1846,26 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BC93CFF00CC3D481F191191B1E26E34D"
+            {
+            "SourcePath" = "8:QtXml4.dll"
+            "TargetName" = "8:QtXml4.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_8090F70E828C4708A0D946A856F3D174"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BCB8EB24A8034B3EA6B07194E7E0D53C"
@@ -1979,26 +2008,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D301C4ECB60AB1871170235C0F8BF3C7"
-            {
-            "SourcePath" = "8:QtOpenGL4.dll"
-            "TargetName" = "8:QtOpenGL4.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_8090F70E828C4708A0D946A856F3D174"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D9A6055A69FE4833A62B7A3F929F59C5"
             {
             "SourcePath" = "8:littlegenious128_2.png"
@@ -2117,26 +2126,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E6FFB272C0EB79D99FC23A9099784CB6"
-            {
-            "SourcePath" = "8:QtGui4.dll"
-            "TargetName" = "8:QtGui4.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_8090F70E828C4708A0D946A856F3D174"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E808702EA70243FFA078C42982EECD88"
@@ -2355,8 +2344,9 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Happy Cube Solver"
         "ProductCode" = "8:{0AE844AA-1CC5-4C7D-9937-8B9D2BD65982}"
-        "PackageCode" = "8:{8DA515B2-F076-4CC2-B3D0-1BA87699DEDF}"
+        "PackageCode" = "8:{C0812A84-E01C-48A1-AE7B-6999A033D1FA}"
         "UpgradeCode" = "8:{502CD3D7-F7D8-4838-AFF1-63C86B034A32}"
+        "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:TRUE"
@@ -2934,25 +2924,11 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_5D2231A7D2644E6CAE3D1255E4873EF7"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_BABD5002E26142C99DACDDAB79612419"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:microsoft_vc90_crt_x86.msm"
-                "Properties"
-                {
-                }
-            "LanguageId" = "3:0"
-            "Exclude" = "11:FALSE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_A6D70604C7A54A9F90750AF4EDC61378"
-            {
-            "UseDynamicProperties" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:policy_9_0_Microsoft_VC90_CRT_x86.msm"
+            "SourcePath" = "8:Microsoft_VC100_CRT_x86.msm"
                 "Properties"
                 {
                 }
@@ -2967,7 +2943,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_19B589B0DBFE4E348A265F099D18E934"
             {
-            "SourcePath" = "8:release\\happysolver.exe"
+            "SourcePath" = "8:Release\\happysolver.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_8090F70E828C4708A0D946A856F3D174"

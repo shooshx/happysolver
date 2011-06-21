@@ -20,7 +20,8 @@
 
 #include "GLWidget.h"
 #include "Configuration.h" // DisplayConf
-
+#include <vector>
+using namespace std;
  
 MyAllocator PicPainter::g_smoothAllocator;
 
@@ -61,12 +62,12 @@ static const int half_orient_data[8][4] = { {0, 1, 2, 3}, {3, 2, 1, 0}, {1, 2, 3
 
 
 // return 1 or 0
-bool PicPainter::uncub(int x, int y)
+bool PicPainter::uncub(int x, int y) const
 {
 	return (m_pdef->v.axx(x, y));
 }
 
-void PicPainter::PlaceInto(int pntn, Coord3df *shpp, Coord3df *pnti1, Coord3df *pnti2, EPlaceType type)
+void PicPainter::PlaceInto(int pntn, Coord3df *shpp, Coord3df *pnti1, Coord3df *pnti2, EPlaceType type) const
 {
 	int i;
 
@@ -92,7 +93,7 @@ void PicPainter::PlaceInto(int pntn, Coord3df *shpp, Coord3df *pnti1, Coord3df *
 
 
 
-void PicPainter::placeSidePolygon(MyObject& obj, int b, bool is1, int x, int y)
+void PicPainter::placeSidePolygon(MyObject& obj, int b, bool is1, int x, int y) const
 {
 	static Coord3df pnti1[4], pnti2[4], pntiA[4], pntiB[4], pntiC[4], pntiD[4];
 
@@ -220,29 +221,13 @@ void PicPainter::init(const DisplayConf& dpc, GLWidget *mainContext)
 	if (m_displayLst != 0)
 		glDeleteLists(m_displayLst, 1);
 
-	// needed anyway. used by the basic object
-	g_smoothAllocator.clear();
+	m_displayConf = dpc;
 
 	MyObject obj(&g_smoothAllocator);
 	
-	int i;
-	for (i = 0; i < 3; ++i)
-	{
-		for (int j = 0; j < 3; ++j)
-		{
-			placeSidePolygon(obj, -1, true, 1 + i, 1 + j);
-		}
-	}
+	generateStraightShape(dpc, obj);
 
-	for (int b = 0; b < 16; ++b)
-	{
-		bool is1 = uncub(build[b].pnt.x, build[b].pnt.y); // the face number in this slot
-		placeSidePolygon(obj, b, is1, build[b].pnt.x, build[b].pnt.y);
-	}
-
-	obj.vectorify();
-
-	for(i = 0; i < dpc.numberOfPasses; ++i)
+	for(int i = 0; i < dpc.numberOfPasses; ++i)
 	{
 		obj.subdivide(dpc.passRound[i]);
 	}
@@ -368,4 +353,229 @@ void PicPainter::realPaint(MyObject& obj, bool fTargets, GLWidget *context)
 	//qDebug("%d", ch);
 	glDisable(GL_TEXTURE_2D);
 
+}
+
+bool PicPainter::exportToObj(QTextStream& meshout, QTextStream& mtlout, uint& numVerts,
+							 uint &numTexVerts, uint &numNormals, uint &numObjs,
+							 float fMatrix[16]) const
+{
+	// 1. Generate Mesh
+	MyObject obj(&g_smoothAllocator);
+	generateStraightShape(m_displayConf, obj);
+	g_smoothAllocator.clear();
+
+	// not very efficient...
+	if (m_pdef->mygrp->drawtype == DRAW_COLOR)
+	{
+		PicGroupDef *def = m_pdef->mygrp;
+		mtlout << "newmtl material" << ++numObjs << "\n";
+		mtlout << "  Ns 32\n  d 1\n  Tr 1\n  Tf 1 1 1\n  illum 2\n  Ka 0.0000 0.0000 0.0000\n  Ks 0.3500 0.3500 0.3500\n";
+		mtlout << "  Kd " << def->r << " " << def->g << " " <<  def->b << "\n";
+	}
+
+	meshout << "g Object" << numObjs << "\n";
+
+	if (m_pdef->mygrp->drawtype == DRAW_COLOR)
+	{
+		meshout << "usemtl material" << numObjs << "\n";
+	} 
+	// others not supported...
+
+	// Now we've got mesh
+	// 2. Generate Mesh
+	return realExportToObj(meshout, obj, numVerts, numTexVerts, numNormals, fMatrix);
+}
+
+
+void transformVector(const float fMatrix[16], const Coord3df vec, Coord3df& outVec)
+{
+	outVec[0] = fMatrix[0] * vec[0] + fMatrix[4] * vec[1] + fMatrix[8 ] * vec[2] + fMatrix[12];
+	outVec[1] = fMatrix[1] * vec[0] + fMatrix[5] * vec[1] + fMatrix[9 ] * vec[2] + fMatrix[13];
+	outVec[2] = fMatrix[2] * vec[0] + fMatrix[6] * vec[1] + fMatrix[10] * vec[2] + fMatrix[14];
+}
+
+float filterZero(float x) // don't allow numbers like 1.1e-16 to the output
+{
+	if (abs(x) < EPSILON)
+		return 0.0f;
+	return x;
+}
+
+bool PicPainter::realExportToObj(QTextStream& meshout, MyObject& obj, uint& numVerts,
+								 uint &numTexVerts, uint &numNormals,
+								 float fMatrix[16]) const
+{
+	// TODO:
+	PicGroupDef *def = m_pdef->mygrp;
+	bool hasTex = def->isTexExist();
+
+	//switch (m_pdef->mygrp->drawtype) 
+	//{
+	//case DRAW_COLOR:
+	//	glDisable(GL_TEXTURE_2D);
+	//	glColor3f(def->r, def->g, def->b);
+	//	break;
+	//case DRAW_TEXTURE_BLEND:
+	//	glColor3f(1.0f, 1.0f, 1.0f);
+	//case DRAW_TEXTURE_NORM:
+	//	glEnable(GL_TEXTURE_2D);
+	//	//	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); is default
+	//	glBindTexture(GL_TEXTURE_2D, texId);
+	//	break;
+	//case DRAW_TEXTURE_INDIVIDUAL_HALF:
+	//	// the enable texture comes later
+	//	glDisable(GL_TEXTURE_2D);
+	//	//	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); is default
+	//	//glBindTexture(GL_TEXTURE_2D, texId); sides have a different texture.
+	//	break; // handle for every polygon
+	//}
+
+
+	//int ch = 0;
+//	Texture *lastTex = NULL; // start disabled
+
+	vector<Coord3df> vertices(obj.nPolys * 4);
+	int realNumVers = 0;
+
+	vector<Coord2df> texVertices(obj.nPolys * 4);
+	int realNumTexVers = 0;
+
+	vector<int> triangles(obj.nPolys * 8);
+	int triCounter = 0;
+
+	for(int pli = 0; pli < obj.nPolys; ++pli) //polygons
+	{
+		MyPolygon &curpl = *obj.poly[pli];
+
+		for(int pni = 0; pni < 4; ++pni) //points
+		{
+			MyPoint *curpn = curpl.vtx[pni];
+
+			Coord3df vert;
+			transformVector(fMatrix, curpn->p, vert);
+
+			int j = 0;
+			for (j = 0; j < realNumVers; ++j)
+			{
+				if (vertices[j].isNear(vert))
+					break;
+			}
+			if (j >= realNumVers)
+			{
+				vertices[realNumVers++] = vert;
+			}
+			triangles[triCounter++] = j;
+
+			if (hasTex)
+			{
+				Coord2df texVert(curpl.texAncs[pni].x, curpl.texAncs[pni].y);
+				int j = 0;
+				for (j = 0; j < realNumTexVers; ++j)
+				{
+					if (texVertices[j].isNear(texVert))
+					{
+						break;
+					}
+				}
+				if (j >= realNumTexVers)
+				{
+					texVertices[realNumTexVers++] = texVert;
+				}
+
+				triangles[triCounter++] = j;
+			}
+			else
+			{
+
+				triangles[triCounter++] = 0;
+			}
+		}
+	}
+
+	// We found unique vertices. Now let's put them to file
+	for (int i = 0; i < realNumVers; ++i)
+	{
+		meshout << "v " << filterZero(vertices[i].x) << " " << filterZero(vertices[i].y) << " " << filterZero(vertices[i].z) << "\n";
+	}
+
+	if (hasTex)
+	{
+		for (int i = 0; i < realNumTexVers; ++i)
+		{
+			meshout << "vt " << texVertices[i].x << " " << texVertices[i].y << "\n";
+		}
+	}
+
+	triCounter = 0;
+
+	for(int pli = 0; pli < obj.nPolys; ++pli) //polygons
+	{
+		// Now add 2 triangles
+		if (hasTex)
+		{
+			meshout << "f " << triangles[triCounter + 0] + numVerts << "/" <<
+			 				triangles[triCounter + 1] + numTexVerts << " " <<
+							triangles[triCounter + 2] + numVerts << "/" <<
+							triangles[triCounter + 3] + numTexVerts << " " <<
+							triangles[triCounter + 4] + numVerts << "/" <<
+							triangles[triCounter + 5] + numTexVerts << " " <<
+							triangles[triCounter + 6] + numVerts << "/" <<
+							triangles[triCounter + 7] + numTexVerts << "\n";
+		}
+		else
+		{
+			meshout << "f " << triangles[triCounter + 0] + numVerts << " " <<
+				  			 triangles[triCounter + 2] + numVerts << " " <<
+							 triangles[triCounter + 4] + numVerts << " " <<
+							 triangles[triCounter + 6] + numVerts << "\n";
+		}
+
+
+		/*if (hasTex)
+		{
+			sprintf(buf, "f %d/%d %d/%d %d/%d\n", triangles[triCounter + 0] + numVerts,
+												  triangles[triCounter + 1] + numTexVerts,
+												  triangles[triCounter + 4] + numVerts,
+												  triangles[triCounter + 5] + numTexVerts,
+												  triangles[triCounter + 6] + numVerts,
+												  triangles[triCounter + 7] + numTexVerts);
+		}
+		else
+		{
+			sprintf(buf, "f %d %d %d\n", triangles[triCounter + 0] + numVerts,
+										 triangles[triCounter + 4] + numVerts,
+										 triangles[triCounter + 6] + numVerts);
+		}
+		meshFile.writeStr(buf);*/
+
+		triCounter += 8;
+	}
+	numVerts += realNumVers;
+	numTexVerts += realNumTexVers;
+
+	return true;
+}
+
+void PicPainter::generateStraightShape(const DisplayConf& dpc, MyObject& obj) const
+{
+	// needed anyway. used by the basic object
+	g_smoothAllocator.clear();
+
+	int i;
+	for (i = 0; i < 3; ++i)
+	{
+		for (int j = 0; j < 3; ++j)
+		{
+			placeSidePolygon(obj, -1, true, 1 + i, 1 + j);
+		}
+	}
+
+	for (int b = 0; b < 16; ++b)
+	{
+		bool is1 = uncub(build[b].pnt.x, build[b].pnt.y); // the face number in this slot
+		placeSidePolygon(obj, b, is1, build[b].pnt.x, build[b].pnt.y);
+	}
+
+	obj.vectorify();
+	obj.clacNormals(dpc.bVtxNormals);
 }

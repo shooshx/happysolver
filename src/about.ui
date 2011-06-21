@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>AboutDlg</class>
- <widget class="QDialog" name="AboutDlg" >
-  <property name="geometry" >
+ <widget class="QDialog" name="AboutDlg">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,20 +10,20 @@
     <height>272</height>
    </rect>
   </property>
-  <property name="sizePolicy" >
-   <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>About Happy Cube Solver</string>
   </property>
-  <property name="modal" >
+  <property name="modal">
    <bool>true</bool>
   </property>
-  <widget class="QLabel" name="movie" >
-   <property name="geometry" >
+  <widget class="QLabel" name="movie">
+   <property name="geometry">
     <rect>
      <x>10</x>
      <y>16</y>
@@ -30,15 +31,15 @@
      <height>56</height>
     </rect>
    </property>
-   <property name="text" >
+   <property name="text">
     <string>Movie</string>
    </property>
-   <property name="alignment" >
+   <property name="alignment">
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QPushButton" name="okButton" >
-   <property name="geometry" >
+  <widget class="QPushButton" name="okButton">
+   <property name="geometry">
     <rect>
      <x>360</x>
      <y>10</y>
@@ -46,12 +47,12 @@
      <height>25</height>
     </rect>
    </property>
-   <property name="text" >
+   <property name="text">
     <string>OK</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_2" >
-   <property name="geometry" >
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
     <rect>
      <x>96</x>
      <y>40</y>
@@ -59,7 +60,7 @@
      <height>31</height>
     </rect>
    </property>
-   <property name="font" >
+   <property name="font">
     <font>
      <family>Tahoma</family>
      <pointsize>10</pointsize>
@@ -70,12 +71,12 @@
      <strikeout>false</strikeout>
     </font>
    </property>
-   <property name="text" >
-    <string>Version 2.1.0</string>
+   <property name="text">
+    <string>Version 2.2.1</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_4" >
-   <property name="geometry" >
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
     <rect>
      <x>10</x>
      <y>80</y>
@@ -83,7 +84,7 @@
      <height>21</height>
     </rect>
    </property>
-   <property name="font" >
+   <property name="font">
     <font>
      <family>Tahoma</family>
      <pointsize>9</pointsize>
@@ -94,18 +95,18 @@
      <strikeout>false</strikeout>
     </font>
    </property>
-   <property name="text" >
-    <string>Designed and implemented by Shy Shalom, Israel (1995 - 2010)</string>
+   <property name="text">
+    <string>Designed and implemented by Shy Shalom, Israel (1995 - 2011)</string>
    </property>
-   <property name="scaledContents" >
+   <property name="scaledContents">
     <bool>false</bool>
    </property>
-   <property name="wordWrap" >
+   <property name="wordWrap">
     <bool>true</bool>
    </property>
   </widget>
-  <widget class="QLabel" name="label_3" >
-   <property name="geometry" >
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
     <rect>
      <x>10</x>
      <y>230</y>
@@ -113,7 +114,7 @@
      <height>41</height>
     </rect>
    </property>
-   <property name="font" >
+   <property name="font">
     <font>
      <family>Tahoma</family>
      <pointsize>7</pointsize>
@@ -124,21 +125,21 @@
      <strikeout>false</strikeout>
     </font>
    </property>
-   <property name="text" >
-    <string>Puzzles copyright (C) Dirk Laureyssens 1986-2007. All rights reserved.  Happy Cube, Little Genius, Profi Cube and Marble Cube are registered  trademarks of Happy n.v., Zoersel, Belgium. See &lt;a href="http://www.happycube.com">http://www.happycube.com&lt;/a> for more information. </string>
+   <property name="text">
+    <string>Puzzles copyright (C) Dirk Laureyssens 1986-2011. All rights reserved.  Happy Cube, Little Genius, Profi Cube and Marble Cube are registered  trademarks of Happy n.v., Zoersel, Belgium. See &lt;a href=&quot;http://www.happycube.com&quot;&gt;http://www.happycube.com&lt;/a&gt; for more information. </string>
    </property>
-   <property name="textFormat" >
+   <property name="textFormat">
     <enum>Qt::RichText</enum>
    </property>
-   <property name="wordWrap" >
+   <property name="wordWrap">
     <bool>true</bool>
    </property>
-   <property name="openExternalLinks" >
+   <property name="openExternalLinks">
     <bool>true</bool>
    </property>
   </widget>
-  <widget class="QLabel" name="label" >
-   <property name="geometry" >
+  <widget class="QLabel" name="label">
+   <property name="geometry">
     <rect>
      <x>90</x>
      <y>10</y>
@@ -146,7 +147,7 @@
      <height>31</height>
     </rect>
    </property>
-   <property name="font" >
+   <property name="font">
     <font>
      <family>Tahoma</family>
      <pointsize>12</pointsize>
@@ -157,18 +158,18 @@
      <strikeout>false</strikeout>
     </font>
    </property>
-   <property name="text" >
-    <string>&lt;a href="http://happysolver.sourceforge.net/">Happy Cube Solver</string>
+   <property name="text">
+    <string>&lt;a href=&quot;http://happysolver.sourceforge.net/&quot;&gt;Happy Cube Solver</string>
    </property>
-   <property name="textFormat" >
+   <property name="textFormat">
     <enum>Qt::RichText</enum>
    </property>
-   <property name="openExternalLinks" >
+   <property name="openExternalLinks">
     <bool>true</bool>
    </property>
   </widget>
-  <widget class="QLabel" name="label_6" >
-   <property name="geometry" >
+  <widget class="QLabel" name="label_6">
+   <property name="geometry">
     <rect>
      <x>10</x>
      <y>100</y>
@@ -176,7 +177,7 @@
      <height>21</height>
     </rect>
    </property>
-   <property name="font" >
+   <property name="font">
     <font>
      <family>Tahoma</family>
      <pointsize>9</pointsize>
@@ -187,18 +188,18 @@
      <strikeout>false</strikeout>
     </font>
    </property>
-   <property name="text" >
+   <property name="text">
     <string>e-mail:</string>
    </property>
-   <property name="scaledContents" >
+   <property name="scaledContents">
     <bool>false</bool>
    </property>
-   <property name="wordWrap" >
+   <property name="wordWrap">
     <bool>true</bool>
    </property>
   </widget>
-  <widget class="QLabel" name="label_8" >
-   <property name="geometry" >
+  <widget class="QLabel" name="label_8">
+   <property name="geometry">
     <rect>
      <x>8</x>
      <y>142</y>
@@ -206,15 +207,15 @@
      <height>22</height>
     </rect>
    </property>
-   <property name="text" >
-    <string>Project page: &lt;a href="http://happysolver.sourceforge.net/">http://happysolver.sourceforge.net/&lt;/a></string>
+   <property name="text">
+    <string>Project page: &lt;a href=&quot;http://happysolver.sourceforge.net/&quot;&gt;http://happysolver.sourceforge.net/&lt;/a&gt;</string>
    </property>
-   <property name="openExternalLinks" >
+   <property name="openExternalLinks">
     <bool>true</bool>
    </property>
   </widget>
-  <widget class="QLabel" name="label_5" >
-   <property name="geometry" >
+  <widget class="QLabel" name="label_5">
+   <property name="geometry">
     <rect>
      <x>10</x>
      <y>160</y>
@@ -222,15 +223,15 @@
      <height>61</height>
     </rect>
    </property>
-   <property name="text" >
+   <property name="text">
     <string>This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation.</string>
    </property>
-   <property name="wordWrap" >
+   <property name="wordWrap">
     <bool>true</bool>
    </property>
   </widget>
-  <widget class="QLineEdit" name="emailEdit" >
-   <property name="geometry" >
+  <widget class="QLineEdit" name="emailEdit">
+   <property name="geometry">
     <rect>
      <x>60</x>
      <y>100</y>
@@ -238,26 +239,26 @@
      <height>20</height>
     </rect>
    </property>
-   <property name="font" >
+   <property name="font">
     <font>
      <pointsize>9</pointsize>
      <weight>75</weight>
      <bold>true</bold>
     </font>
    </property>
-   <property name="text" >
+   <property name="text">
     <string>shooshX@gmail.com</string>
    </property>
-   <property name="frame" >
+   <property name="frame">
     <bool>false</bool>
    </property>
-   <property name="readOnly" >
+   <property name="readOnly">
     <bool>true</bool>
    </property>
   </widget>
  </widget>
  <resources>
-  <include location="../resources.qrc" />
+  <include location="../resources.qrc"/>
  </resources>
  <connections>
   <connection>
@@ -266,11 +267,11 @@
    <receiver>AboutDlg</receiver>
    <slot>accept()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>343</x>
      <y>24</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>278</x>
      <y>18</y>
     </hint>

@@ -315,6 +315,59 @@ void CubeDoc::OnFileSave()
 	realSave();
 }
 
+void CubeDoc::OnFileExport()
+{
+	QString retname;
+	if (!generalSaveFile("obj", "Alias Wavefront Object (*.obj)", 
+		"Alias Wavefront Object (*.obj)", "Export Solution", 
+		retname))
+	{
+		return; // pressed cancel
+	}
+
+	QFileInfo fi(retname);
+	QString matFileName = fi.path() + "/" + fi.baseName() + ".mtl";
+
+	QFile wrfl(retname), matFile(matFileName);
+
+	if (!wrfl.open(QIODevice::WriteOnly | QIODevice::Text))
+	{
+		QMessageBox::critical(g_main, APP_NAME, tr("Error opening file for writing\nCheck that the file isn't locked by another program and try again"), QMessageBox::Ok, 0);
+		return;
+	}
+		
+	if (!matFile.open(QIODevice::WriteOnly | QIODevice::Text))
+	{
+		QMessageBox::critical(g_main, APP_NAME, tr("Error opening file for writing\nCheck that the file isn't locked by another program and try again"), QMessageBox::Ok, 0);
+		return;
+	}
+
+	QFileInfo mfi(matFileName);
+	matFileName = mfi.fileName();
+
+	QTextStream wrout(&wrfl);
+	QTextStream matout(&matFile);
+
+	wrout << "mtllib " << matFileName << "\n";
+
+	const SlvCube* pSolution = getCurrentSolve();
+	if (pSolution == NULL)
+	{
+		QMessageBox::critical(g_main, APP_NAME, tr("Error exporting current solution\nThere's no current solution"), QMessageBox::Ok, 0);
+		return;
+	}
+
+	if (!pSolution->painter.exportToObj(wrout, matout))
+	{
+		QMessageBox::critical(g_main, APP_NAME, tr("Error while exporting current solution"), QMessageBox::Ok, 0);
+		return;
+	}
+
+	wrfl.close();
+	matFile.close();
+}
+
+
 bool CubeDoc::realSave(int unGenSlvAnswer)
 {
 	bool hasSolves = solvesExist(); // sample it here once, do we actually have any solves?
@@ -440,7 +493,7 @@ bool CubeDoc::realSave(int unGenSlvAnswer)
 
 void CubeDoc::setShowUpToStep(int step) 
 { 
-    if (step == m_nUpToStep)
+	if (step == m_nUpToStep)
 		return;
 	m_nUpToStep = step; 
 	emit updateViews(HINT_BLD_PAINT | HINT_SLV_PAINT | HINT_PIC_NULL); 

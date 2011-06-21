@@ -198,6 +198,7 @@ public:
 	QAction *m_resetSolAct;
 	QAction *m_openAct;
 	QAction *m_saveAct;
+	QAction *m_exportAct;
 	QAction *m_exitAct;
 	QAction *m_goAct;
 

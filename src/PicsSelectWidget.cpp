@@ -196,7 +196,7 @@ void PicsSelectWidget::continueCreate()
 				button->setCheckable(true);
 				button->move(BOT_OFFS_X + p*BOT_TOTAL_X, BOT_OFFS_Y + normg * BOT_TOTAL_Y); // g normalized to start of family
 				button->resize(BOT_X, BOT_Y);
-				button->setIconSize(QSize(TEX_X + 1, TEX_Y + 1)); // +1 because it's the texture + line, from Pieces.h
+				button->setIconSize(pic->pixmap.size()); // +1 because it's the texture + line, from Pieces.h
 				connect(button, SIGNAL(pclicked(int, bool)), this, SLOT(pressedPicButton(int, bool)));
 
 				DataSpinBox *spinbox = new DataSpinBox(data, tab);
