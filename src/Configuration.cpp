@@ -204,7 +204,7 @@ void DisplayConf::fromRegistry(QSettings &reg)
 	if (swapRes == -1)
 	{
 #ifdef Q_WS_MAC
-		bSwapTexEndians = 1234; // on Mac it needs to be true
+		nSwapTexEndians = 1234; // on Mac it needs to be true
 #else
 		nSwapTexEndians = 1234;
 #endif

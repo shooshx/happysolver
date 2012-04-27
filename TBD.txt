@@ -102,7 +102,6 @@ QT4.3:
 - background color
 
 ---- Document Model ------------
-- export to VRML ?
 - export to PNG
 - "not too many pieces" for large structures, not linear..
 - maybe: reset the pieces selection when a build is loaded (it's not reseted now)
@@ -189,12 +188,27 @@ Future versions:
 ##   RC_FILE = happysolver.rc
 
 
+Add to .pro:
+
+  MAC_SDK  = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.6.sdk
+  if( !exists( $$MAC_SDK) ) {
+    error("The selected Mac OSX SDK does not exist at $$MAC_SDK!")
+  }
+  macx:QMAKE_MAC_SDK = $$MAC_SDK
+
+set arch to x86_64
+run qmake
+upgrade the project file
+in project settings set the derived directory to be relative to project
+use macdeployqt!
+
+
 ## tooth paste for noah cinimine
 
 screen savers
 youtube video
-wikipedia article
-qtcenter contest
+
+
 
 OpenGL:
 - use glHint?

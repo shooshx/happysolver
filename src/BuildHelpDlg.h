@@ -99,7 +99,7 @@ private:
 	QLabel *m_buildTilesLabel;
 	QLabel *m_selPieces;
 	QLabel *m_warnLabel;
-	QGroupBox *m_picSel; // container for pics widgets
+	QWidget *m_picSel; // container for pics widgets
 	QMovie *m_cubeAnim;
 	QLabel *m_animLabel;
 	ActionPushButton *m_goBot;

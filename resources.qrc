@@ -33,7 +33,7 @@
         <file>images/solvedlg.png</file>
         <file>images/options.png</file>
         <file>images/resetsolves.png</file>
-        <file>images/cube_ts.mng</file>
+        <file>images/cube_ts.gif</file>
         <file>images/openshape.png</file>
         <file>images/opensolve.png</file>
         <file>images/saveshape.png</file>
@@ -52,5 +52,12 @@
         <file>images/sampleMicro.png</file>
         <file>images/sampleBaub.png</file>
         <file>images/sampleConstruct.png</file>
+		<file>images/sampleNewLittleGenius.png</file>
+
+		<file>stdpcs.xml</file>
+		<file>black64.png</file>
+		<file>marbleg2_2.png</file>
+		<file>littlegenious128_2.png</file>
+		<file>new_genious128.png</file>
     </qresource>
 </RCC>

@@ -72,7 +72,7 @@
     </font>
    </property>
    <property name="text">
-    <string>Version 2.2.1</string>
+    <string>Version 2.2.2</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_4">
@@ -96,7 +96,7 @@
     </font>
    </property>
    <property name="text">
-    <string>Designed and implemented by Shy Shalom, Israel (1995 - 2011)</string>
+    <string>Designed and implemented by Shy Shalom, Israel (1995 - 2012)</string>
    </property>
    <property name="scaledContents">
     <bool>false</bool>
@@ -126,7 +126,11 @@
     </font>
    </property>
    <property name="text">
-    <string>Puzzles copyright (C) Dirk Laureyssens 1986-2011. All rights reserved.  Happy Cube, Little Genius, Profi Cube and Marble Cube are registered  trademarks of Happy n.v., Zoersel, Belgium. See &lt;a href=&quot;http://www.happycube.com&quot;&gt;http://www.happycube.com&lt;/a&gt; for more information. </string>
+    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Puzzles copyright (C) Dirk Laureyssens 1986-2012. All rights reserved. Happy Cube, Little Genius, Profi Cube and Marble Cube are registered trademarks of Happy n.v., Zoersel, Belgium. See &lt;a href=&quot;http://www.happycube.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://www.happycube.com&lt;/span&gt;&lt;/a&gt; for more information. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="textFormat">
     <enum>Qt::RichText</enum>

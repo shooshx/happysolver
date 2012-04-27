@@ -38,7 +38,7 @@ extern QWidget* g_main;
 #define MIN_HLP_PANE_WIDTH 271
 #define MIN_BOT_HEIGHT 35
 #else
-#define MIN_HLP_PANE_WIDTH 225
+#define MIN_HLP_PANE_WIDTH 245
 #define MIN_BOT_HEIGHT 30
 #endif
 

@@ -26,7 +26,7 @@ QWidget* g_main = NULL;
 
 
 #if (defined(Q_WS_MAC) || defined(Q_WS_X11)) // on mac OS the mng plugin is static
-Q_IMPORT_PLUGIN(QMngPlugin) //mng plugin as static
+//Q_IMPORT_PLUGIN(QMngPlugin) //mng plugin as static
 #endif
 
 extern QGLFormat g_format;
@@ -34,6 +34,7 @@ extern QGLFormat g_format;
 #include <QDialog>
 #include <QVBoxLayout>
 #include <QGroupBox>
+
 
 int main(int argc, char *argv[])
 {
@@ -116,8 +117,4 @@ int main(int argc, char *argv[])
 	and view.
 
 	This manual is the code documentation of the Happy %Cube Solver.
-
-	
-
 */
-

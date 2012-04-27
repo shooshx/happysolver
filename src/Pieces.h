@@ -43,7 +43,7 @@ public:
 	void turn();
 	void revY();
 	void copyTo(PicArr &dest) const;
-	bool equalTo(PicArr &dest, bool bSym) const;
+	bool equalTo(const PicArr &dest, bool bSym = false) const;
 
 	int& set(int x, int y) { return v[x * 5 + y]; }
 	int axx(int x, int y) const { return v[(x << 2)+x + y]; }
@@ -56,12 +56,17 @@ public:
 /// Defines the way a piece is rendered and textured
 enum EDrawType 
 {
+	DRAW_UKNOWN = -1,
 	DRAW_COLOR = 0, ///< a single uniform color (Happy Cube)
-	DRAW_TEXTURE_NORM, ///< a normal unblended texture. Not used nowadays
-	DRAW_TEXTURE_BLEND, ///< a texture blended with a background and foreground color (Marble Cube, Profi Cube)
-	DRAW_TEXTURE_INDIVIDUAL_HALF, // half piece uniformly colored and half with an unblended texture (Little Genius)
-	DRAW_MAX
+	DRAW_TEXTURE_NORM = 1, ///< a normal unblended texture. Not used nowadays
+	DRAW_TEXTURE_BLEND = 2, ///< a texture blended with a background and foreground color (Marble Cube, Profi Cube)
+	DRAW_TEXTURE_INDIVIDUAL_HALF = 0x14, ///< half piece uniformly colored and half with an unblended texture (Little Genius)
+	DRAW_TEXTURE_INDIVIDUAL_WHOLE = 0x18,
 };
+
+inline bool isIndividual(EDrawType dt) {
+	return (dt & 0x10) != 0;
+}
 
 
 
@@ -163,7 +168,7 @@ class PicGroupDef
 {
 public:
 	PicGroupDef() 
-	: tex(NULL), baseTex(NULL), drawtype(DRAW_MAX), r(1.0), g(1.0), b(1.0),   
+	: tex(NULL), baseTex(NULL), drawtype(DRAW_UKNOWN), r(1.0), g(1.0), b(1.0),   
 	  exR(0), exG(0), exB(0), sideTex(NULL), sideTexX(0), sideTexY(0), blackness(BLACK_NOT)
 	{}
 
@@ -184,7 +189,7 @@ public:
 
 	EBlackness blackness; // means that the color is a dark one. use white lines with this group
 
-	bool isTexExist() { return ((drawtype == DRAW_TEXTURE_NORM) || (drawtype == DRAW_TEXTURE_BLEND) || (drawtype == DRAW_TEXTURE_INDIVIDUAL_HALF)); }
+	bool isTexExist() { return ((drawtype == DRAW_TEXTURE_NORM) || (drawtype == DRAW_TEXTURE_BLEND) || isIndividual(drawtype)); }
 	
 };
 

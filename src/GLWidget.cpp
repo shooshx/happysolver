@@ -123,6 +123,7 @@ void GLWidget::doUpdateTexture(int index, QImage img)
 
 void GLWidget::initializeGL()
 {
+	checkErrors("init start");
 	// specify black as clear color
 	glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
 	// specify the back of the buffer as clear depth (0 closest, 1 farmost)
@@ -144,7 +145,7 @@ void GLWidget::initializeGL()
 	BuildFont();
 
 	DoReset();
-
+	checkErrors("init end");
 }
 
 
@@ -198,6 +199,7 @@ bool GLWidget::SetupViewingOrthoConstAspect()
 
 void GLWidget::reCalcProj(bool fFromScratch) // = true default
 {
+	
 
 	if (fFromScratch)
 	{
@@ -300,12 +302,10 @@ void GLWidget::reCalcLight()
 		glLightfv(GL_LIGHT0, GL_AMBIENT, ly_ambient);
 		glLightfv(GL_LIGHT0, GL_DIFFUSE, ly_diffuse);
 		glLightfv(GL_LIGHT0, GL_SPECULAR, ly_specular);
-		glLightfv(GL_LIGHT0, GL_SHININESS, ly_shininess);
 
 		glLightfv(GL_LIGHT1, GL_AMBIENT, ly_ambient);
 		glLightfv(GL_LIGHT1, GL_DIFFUSE, ly_diffuse);
 		glLightfv(GL_LIGHT1, GL_SPECULAR, ly_specular);
-		glLightfv(GL_LIGHT1, GL_SHININESS, ly_shininess);
 
 		float mat_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f }; // no specular.
 		float mat_shininess[] = { 128.0f };
@@ -393,7 +393,7 @@ void GLWidget::paintGL()
 	myPaintGL();
 
 	glPopMatrix();
-
+	checkErrors("paint");
 }
 
 void GLWidget::callDrawTargets()
@@ -751,4 +751,80 @@ void GLWidget::mglPrint(const QString &str)			// Custom GL "Print" Routine
 	glListBase(m_fontBase);					// Sets The Base Character to 32
 	glCallLists(str.length(), GL_UNSIGNED_BYTE, str.toAscii());	// Draws The Display List Text
 	glPopAttrib();										// Pops The Display List Bits
+}
+
+
+
+const char* errorText(uint code)
+{
+	switch(code)
+	{
+	case GL_NO_ERROR: return "GL_NO_ERROR";
+	case GL_INVALID_ENUM: return "GL_INVALID_ENUM";
+	case GL_INVALID_VALUE: return "GL_INVALID_VALUE";
+	case GL_INVALID_OPERATION: return "GL_INVALID_OPERATION";
+	case GL_STACK_OVERFLOW: return "GL_STACK_OVERFLOW";
+	case GL_STACK_UNDERFLOW: return "GL_STACK_UNDERFLOW";
+	case GL_OUT_OF_MEMORY: return "GL_OUT_OF_MEMORY";
+	default: return "-Unknown Error Code-";
+	}
+}
+
+
+void mglCheckErrors(const char* place = NULL)
+{
+	QString s;
+	GLenum code;
+	while ((code = glGetError()) != GL_NO_ERROR)
+		s += QString("  0x%1: %2\n").arg(code, 0, 16).arg(errorText(code));
+	if (!s.isNull())
+	{
+		QString ps =  "\n";
+		if (place != NULL)
+			ps = QString(place) + "\n";
+		s.sprintf("GLError: %s%s", ps.toAscii().data(), s.toAscii().data());
+		int ret = QMessageBox::critical(NULL, "GLError", s, "Continue", "Exit", "Break");
+#ifdef Q_WS_WIN
+		if (ret == 1)
+			TerminateProcess(GetCurrentProcess(), 1);
+		if (ret == 2)
+			__asm int 3;
+#else
+		if (ret == 1 || ret == 2)
+			exit(1);
+#endif
+	}
+}
+void mglCheckErrors(const QString& s)
+{
+	mglCheckErrors(s.toAscii().data());
+}
+
+
+void mglCheckErrorsC(const char* place = NULL)
+{
+	QString s;
+	GLenum code;
+	while ((code = glGetError()) != GL_NO_ERROR)
+		s += QString("  0x%1: %2\n").arg(code, 0, 16).arg(errorText(code));
+	if (!s.isNull())
+	{
+		QString ps =  "\n";
+		if (place != NULL)
+			ps = QString(place) + "\n";
+		printf("GLError: %s%s", ps.toAscii().data(), s.toAscii().data());
+	}
+}
+void mglCheckErrorsC(const QString& s)
+{
+	mglCheckErrorsC(s.toAscii().data());
+}
+
+void GLWidget::checkErrors(const char* place)
+{
+	if (!context()->isValid()) {
+		QMessageBox::critical(NULL, "Error", "invalid context");
+		return;
+	}
+	mglCheckErrors(place);
 }

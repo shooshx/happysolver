@@ -153,7 +153,7 @@ bool MainWindow::initialize()
 	PicBucket::mutableInstance().setSwapEndians(m_doc->m_conf.disp.nSwapTexEndians);
 
 	// needs to be here because only here we have the glwidget
-	if (!PicBucket::mutableInstance().loadXML("stdpcs.xml"))
+	if (!PicBucket::mutableInstance().loadXML(":/stdpcs.xml"))
 		return false;
 
 	m_picsInitThread = new PicInitThread();
@@ -721,7 +721,10 @@ void MainWindow::doModalAboutDlg()
 	ui.emailEdit->setPalette(pal);
 //	ui.icqEdit->setPalette(pal);
 
-	QMovie anim(":/images/cube_ts.mng");
+	// NOTE: how to make this gif
+	// use camtasia to capture the screen
+	// Use "Easy GIF Animator 5 (Karlis Blumentals) to set the transparency color for all frames
+	QMovie anim(":/images/cube_ts.gif");
 	anim.setCacheMode(QMovie::CacheAll); //needed for looping
 	ui.movie->setMovie(&anim);
 	anim.start();

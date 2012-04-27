@@ -182,7 +182,7 @@ ModelHelpDlg::ModelHelpDlg(QWidget *parent, MainWindow* main, CubeDoc *doc, QGLW
 
 	m_animLabel = new QLabel("");
 	m_animLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-	m_cubeAnim = new QMovie(":/images/cube_ts.mng");
+	m_cubeAnim = new QMovie(":/images/cube_ts.gif");
 	m_cubeAnim->setCacheMode(QMovie::CacheAll); //needed for looping
 	m_animLabel->setMovie(m_cubeAnim);
 

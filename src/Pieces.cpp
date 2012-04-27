@@ -154,7 +154,7 @@ void PicBucket::makeBitmapList()
 			PicDef &p = defs[gind].pics[pind];
 
 			QImage pimg; // needs to be in this scope so it won't get destroyed
-			if (defs[gind].drawtype == DRAW_TEXTURE_INDIVIDUAL_HALF)
+			if (isIndividual(defs[gind].drawtype))
 			{
 				pimg = p.tex->img.mirrored(false, true); // transform it back 
 				origcbuf = (unsigned char*)pimg.bits(); // move to unsigned, rid of const.
@@ -353,6 +353,19 @@ QImage PicGroupDef::blendImage()
 	return img;	
 }
 
+
+static EDrawType getDrawType(const QString& s) {
+	if (s == "COLOR") return DRAW_COLOR;
+	if (s == "TEXTURE_NORM") return DRAW_TEXTURE_NORM;
+	if (s == "TEXTURE_BLEND") return DRAW_TEXTURE_BLEND;
+	if (s == "TEXTURE_INDIVIDUAL_HALF") return DRAW_TEXTURE_INDIVIDUAL_HALF;
+	if (s == "TEXTURE_INDIVIDUAL_WHOLE") return DRAW_TEXTURE_INDIVIDUAL_WHOLE;
+	Q_ASSERT(false);
+	return (EDrawType)0;
+}
+
+
+
 bool PicBucket::loadXML(const QString& xmlname)
 {
 //	unsigned int xxx1 = GetTickCount();
@@ -418,7 +431,6 @@ bool PicBucket::loadXML(const QString& xmlname)
 	////////////////////// pics ////////////////////////////////
 	QDomElement fams = docElem.firstChildElement("outlines");
 
-	families.resize(fams.childNodes().size());
 	int i = 0;
 	int count = 0;
 	// count the number of cubes (groups) we have
@@ -426,6 +438,8 @@ bool PicBucket::loadXML(const QString& xmlname)
 	while (!fam.isNull())
 	{
 		int ind = fam.attribute("index").toInt();
+		if (ind >= families.size())
+			families.resize(ind + 1);
 		families[ind].startIndex = count;
 		families[ind].numGroups = fam.elementsByTagName("group").size();
 		families[ind].name = fam.attribute("name");
@@ -453,15 +467,7 @@ bool PicBucket::loadXML(const QString& xmlname)
 	
 			QDomElement fill = cube.firstChildElement("fill");
 
-			QString drawtypestr = fill.attribute("type");
-
-			char *drawTypeStrings[] = { "COLOR", "TEXTURE_NORM", "TEXTURE_BLEND", "TEXTURE_INDIVIDUAL_HALF" };
-			int sel = 0;
-			while ((sel < DRAW_MAX) && (drawtypestr != drawTypeStrings[sel]))
-				++sel;
-			Q_ASSERT(sel < DRAW_MAX);
-
-			defs[i].drawtype = EDrawType(sel);
+			defs[i].drawtype = getDrawType(fill.attribute("type"));
 
 			if (fill.hasAttribute("texind"))
 			{
@@ -518,14 +524,12 @@ bool PicBucket::loadXML(const QString& xmlname)
 
 						}
 					}
-					if (defs[i].drawtype == DRAW_TEXTURE_INDIVIDUAL_HALF)
+					if (isIndividual(defs[i].drawtype))
 					{
 						curdef.xOffs = ep.attribute("x1").toInt();
 						curdef.yOffs = ep.attribute("y1").toInt();
 						curdef.tex = newTexture(defs[i].tex->img.copy(curdef.xOffs, curdef.yOffs, 128, 128).mirrored(false, true));
 					}
-
-				//	curdef.painter.init();
 
 				}
 			}
@@ -544,11 +548,19 @@ bool PicBucket::loadXML(const QString& xmlname)
 				for (int picn = 0; picn < defs[i].numPics(); ++picn)
 				{
 					PicDef &curdef = defs[i].pics[picn];
-					curdef.v = defs[ifrom].pics[picn].v; // copy only the data of the piece
+					const PicDef &fromDef = defs[ifrom].pics[picn];
+					curdef.v = fromDef.v; // copy only the data of the piece
 					curdef.mygrp = &defs[i];
-				//	curdef.painter.init();
+
+					if (isIndividual(defs[i].drawtype))
+					{
+						curdef.xOffs = fromDef.xOffs;
+						curdef.yOffs = fromDef.yOffs;
+						curdef.tex = newTexture(defs[i].tex->img.copy(curdef.xOffs, curdef.yOffs, 128, 128).mirrored(false, true));
+					}
 				}
-				// it won't be DRAW_TEXTURE_INDIVIDUAL_HALF
+				
+
 			}
 
 			sumPics += defs[i].numPics();
@@ -667,7 +679,7 @@ void PicType::load(int _gind, int _pind, bool bCsym)
 	thedef = &(PicBucket::instance().defs[gind].pics[pind]);
 	thegrp = &(PicBucket::instance().defs[gind]);
 
-	bool bSym = (bCsym) && (thegrp->drawtype == DRAW_TEXTURE_INDIVIDUAL_HALF); // determine if it's symetric according to if it's half-texturized
+	bool bSym = (bCsym && isIndividual(thegrp->drawtype)); // determine if it's symetric according to if it's half-texturized
 		
 	thedef->v.copyTo(tmppic);
 		
@@ -741,7 +753,7 @@ void PicArr::revY()
 	tmp.copyTo(*this);
 }
 
-bool PicArr::equalTo(PicArr &dest, bool bSym) const
+bool PicArr::equalTo(const PicArr &dest, bool bSym) const
 {
 	for(int x = 0; x < 5; ++x)
 	{
@@ -838,8 +850,8 @@ void PicsSet::makereps()
 			// we need to have the comparison with 'turned' only if both i and j are 
 			// asymmetric since only in this case pieces can't cover for one another
 			bool bSym = bConsiderSymetric && 
-				(pics[i].thegrp->drawtype == DRAW_TEXTURE_INDIVIDUAL_HALF) &&
-				(pics[j].thegrp->drawtype == DRAW_TEXTURE_INDIVIDUAL_HALF);
+				isIndividual(pics[i].thegrp->drawtype) &&
+				isIndividual(pics[j].thegrp->drawtype);
 				
 			int rt = 0;
 			bool found = false;

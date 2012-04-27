@@ -266,7 +266,7 @@ bool Cube::superCheck(const int fc)
 
 void Cube::symetricGetNextRtn(int sc, int fc, int &nextrt)
 {
-	if (pics->pics[sc].thegrp->drawtype != DRAW_TEXTURE_INDIVIDUAL_HALF)
+	if (!isIndividual(pics->pics[sc].thegrp->drawtype) )
 		return;
 
 	const PicType& ppp = pics->pics[sc];

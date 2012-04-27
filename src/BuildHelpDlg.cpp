@@ -28,6 +28,18 @@
 #include "MainWindow.h"
 
 
+class MyVBoxLayout : public QVBoxLayout {
+public:
+	virtual QSize maximumSize() { return QSize(0,0); }
+};
+
+class MyScrollArea : public QScrollArea {
+public:
+	MyScrollArea(QWidget *parent) : QScrollArea(parent) {};
+	virtual QSize sizeHint() const { return QSize(0,0); }
+	virtual QSize minimumSizeHint() const { return QSize(0,0); }
+};
+
 
 BuildHelpDlg::BuildHelpDlg(QWidget* parent, MainWindow* main, CubeDoc *doc) 
 	:SizedWidget(QSize(MIN_HLP_PANE_WIDTH, 0), parent), m_doc(doc), m_main(main), m_curPressedId(-1)
@@ -94,7 +106,7 @@ BuildHelpDlg::BuildHelpDlg(QWidget* parent, MainWindow* main, CubeDoc *doc)
 	QHBoxLayout *iconLayout = new QHBoxLayout; // contains the icon and a warning
 	slvrLayout->addLayout(iconLayout); 
 	m_animLabel = new QLabel("");
-	m_cubeAnim = new QMovie(":/images/cube_ts.mng");
+	m_cubeAnim = new QMovie(":/images/cube_ts.gif");
 	m_cubeAnim->setCacheMode(QMovie::CacheAll); //needed for looping
 	iconLayout->addWidget(m_animLabel);
 
@@ -113,7 +125,21 @@ BuildHelpDlg::BuildHelpDlg(QWidget* parent, MainWindow* main, CubeDoc *doc)
 	m_goBot->setMinimumSize(50, 35);
 	slvrLayout->addWidget(m_goBot);
 
-	m_picSel = new QGroupBox("Pieces Selector", this);
+	QGroupBox *picGroups = new QGroupBox("Pieces Selector", this);
+	QScrollArea *picsScroll = new QScrollArea(picGroups);
+	picsScroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	//picsScroll->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+	picsScroll->setFrameShape(QFrame::NoFrame);
+	m_picSel = new QWidget(picsScroll);
+	picsScroll->setWidget(m_picSel);
+	QVBoxLayout *picgLayout = new QVBoxLayout;
+	picgLayout->setMargin(0);
+	picGroups->setLayout(picgLayout);
+	picgLayout->addWidget(picsScroll);
+
+	picsScroll->viewport()->setAutoFillBackground(false);
+	picGroups->setAutoFillBackground(false);
+	m_picSel->setAutoFillBackground(false);
 
 	QVBoxLayout *blayout = new QVBoxLayout;
 	blayout->setMargin(0);
@@ -139,8 +165,9 @@ BuildHelpDlg::BuildHelpDlg(QWidget* parent, MainWindow* main, CubeDoc *doc)
 
 	layout->setSizeConstraint(QLayout::SetMinimumSize); // keeps it from squashing
 	layout->addWidget(editGrp);
-	layout->addWidget(m_picSel);
-	layout->addStretch();
+	layout->addWidget(picGroups);
+	//layout->setStretchFactor(picGroups, 1);
+	//layout->addStretch();
 	layout->addWidget(solverGrp);
 	layout->addLayout(blayout);
 
@@ -164,7 +191,7 @@ void BuildHelpDlg::completePicsWidgets() // SLOT
 //	m_picSel->setMinimumWidth(200);
 	QGridLayout *glayout = new QGridLayout;
 	glayout->setSpacing(8);
-	glayout->setSizeConstraint(QLayout::SetMinimumSize);
+	glayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
 	m_picSel->setLayout(glayout);
 
 	glayout->setColumnStretch(0, 1);

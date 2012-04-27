@@ -20,6 +20,9 @@
 
 #include <QGLWidget>
 #include "general.h"
+#ifdef Q_WS_MAC
+#include <OpenGL/glu.h>
+#endif
 
 /** \file
 	Declares the GLWidget class which serves as a parent class to all OpenGL widgets.
@@ -78,6 +81,8 @@ public:
 	EMouseAction currentMouseAction() const { return m_mouseAct; }
 	EAxis currentAxis() const { return m_axis; }
 	ETransformType currentTransformType() const { return m_transformType; }
+
+	void checkErrors(const char* place);
  
 public slots:
 	void rotateTimeout();

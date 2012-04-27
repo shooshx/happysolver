@@ -279,6 +279,7 @@ void PicPainter::realPaint(MyObject& obj, bool fTargets, GLWidget *context)
 				glBindTexture(GL_TEXTURE_2D, texId);
 				break;
 			case DRAW_TEXTURE_INDIVIDUAL_HALF:
+			case DRAW_TEXTURE_INDIVIDUAL_WHOLE:
 				// the enable texture comes later
 				glDisable(GL_TEXTURE_2D);
 			//	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); is default
@@ -293,7 +294,7 @@ void PicPainter::realPaint(MyObject& obj, bool fTargets, GLWidget *context)
 	{
 		MyPolygon &curpl = *obj.poly[pli];
 
-		if ((!fTargets) && (def->drawtype == DRAW_TEXTURE_INDIVIDUAL_HALF) && (curpl.tex != lastTex))
+		if ((!fTargets) && (isIndividual(def->drawtype)) && (curpl.tex != lastTex))
 		{
 			if (curpl.tex == NULL)
 			{
@@ -304,8 +305,6 @@ void PicPainter::realPaint(MyObject& obj, bool fTargets, GLWidget *context)
 				glEnable(GL_TEXTURE_2D); // sides have a different texture
 				if ((curpl.tex->ind < context->m_textures.size()) && (curpl.tex->ind != -1))
 					glBindTexture(GL_TEXTURE_2D, context->m_textures[curpl.tex->ind]);
-
-
 			}
 			lastTex = curpl.tex;
 			++ch;
@@ -327,7 +326,7 @@ void PicPainter::realPaint(MyObject& obj, bool fTargets, GLWidget *context)
 				// in blend and color, stay with the same color all the way.
 				if ((def->drawtype != DRAW_TEXTURE_BLEND) && (def->drawtype != DRAW_COLOR)) 
 				{
-					if ( (def->drawtype == DRAW_TEXTURE_INDIVIDUAL_HALF) && (curpl.tex != NULL))
+					if (isIndividual(def->drawtype) && (curpl.tex != NULL))
 					{
 						glColor3f(1.0f, 1.0f, 1.0f); // background for whole textures needs to be white
 					}

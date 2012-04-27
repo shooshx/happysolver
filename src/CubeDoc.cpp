@@ -285,7 +285,8 @@ bool CubeDoc::generalSaveFile(const char *defext, const char *selfilter, const c
 	// their overwrite check is not what I want as well.
 	while (1)
 	{
-		QString name = QFileDialog::getSaveFileName(g_main, title, QString(), filter, &QString(selfilter), QFileDialog::DontConfirmOverwrite);
+		QString filterstr(selfilter);
+		QString name = QFileDialog::getSaveFileName(g_main, title, QString(), filter, &filterstr, QFileDialog::DontConfirmOverwrite);
 		if (name.isNull())
 			break;
 
