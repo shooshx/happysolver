@@ -93,25 +93,28 @@ void SolveDlg::updateSol(int n)
 void SolveDlg::updatePart(int argn)
 {
 	// sample it.
-	volatile bool lucky = m_doc->getRunningStats()->lucky;
+	auto* state = m_doc->getRunningStats();
+	volatile bool lucky = state->lucky;
 	// dear compiler, don't optimize me out...
-	volatile qint64 tms = m_doc->getRunningStats()->tms;
+	volatile qint64 tms = state->tms;
 	volatile int n = argn;
 	volatile qint64 show = (n != -1)?n:tms;
-	// TBD: check this in release!
-
-//	qDebug() << show << tms << n; // PATCH! sabotage some optimations which makes this go kuku.
+	volatile int maxp = state->maxp;
 
 	ui.changes->setText(humanCount(show));
 	
-
 	float avg = 0;
 	int howmany = 0;
 	// assume the intervals are 1 second
-	for (int i = 0; i < SPEED_AVG_SIZE; ++i) if (m_speed[i] != -1) { avg += m_speed[i]; ++howmany; }
-	if (howmany != 0) avg /= (float)howmany;
+	for (int i = 0; i < SPEED_AVG_SIZE; ++i) 
+		if (m_speed[i] != -1) { 
+			avg += m_speed[i]; ++howmany; 
+		}
+	if (howmany != 0) 
+		avg /= (float)howmany;
 	QString spd = humanCount(avg, 1) + "  ch/s";
-	if (lucky) spd = "<font color=\"#CF1111\">" + spd; // luck parameter changes color of speed to red
+	if (lucky) 
+		spd = "<font color=\"#CF1111\">" + spd; // luck parameter changes color of speed to red
 
 	ui.speed->setText(spd);
 
@@ -123,6 +126,7 @@ void SolveDlg::updatePart(int argn)
 	QString str = QString("%1:%2:%3:%4").arg(days).arg(hours, 2, 10, QChar('0')).arg(minutes, 2, 10, QChar('0')).arg(seconds, 2, 10, QChar('0'));
 	ui.CPUTime->setText(str);
 
+	ui.maxPlace->setText(QString("%1").arg(maxp));
 
 }
 

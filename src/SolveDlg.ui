@@ -1,41 +1,40 @@
-<ui version="4.0" >
- <author></author>
- <comment></comment>
- <exportmacro></exportmacro>
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>SolveDlg</class>
- <widget class="QDialog" name="SolveDlg" >
-  <property name="geometry" >
+ <widget class="QDialog" name="SolveDlg">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>271</width>
-    <height>123</height>
+    <width>269</width>
+    <height>145</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Cube Solve Progress</string>
   </property>
-  <property name="windowIcon" >
-   <iconset resource="..\resources.qrc" >:/images/HappySolver.png</iconset>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>:/images/HappySolver.png</normaloff>:/images/HappySolver.png</iconset>
   </property>
-  <widget class="QPushButton" name="resetButton" >
-   <property name="geometry" >
+  <widget class="QPushButton" name="resetButton">
+   <property name="geometry">
     <rect>
      <x>10</x>
-     <y>90</y>
+     <y>110</y>
      <width>91</width>
      <height>25</height>
     </rect>
    </property>
-   <property name="text" >
+   <property name="text">
     <string>Reset</string>
    </property>
-   <property name="autoDefault" >
+   <property name="autoDefault">
     <bool>false</bool>
    </property>
   </widget>
-  <widget class="QPushButton" name="goButton" >
-   <property name="geometry" >
+  <widget class="QPushButton" name="goButton">
+   <property name="geometry">
     <rect>
      <x>10</x>
      <y>10</y>
@@ -43,15 +42,15 @@
      <height>51</height>
     </rect>
    </property>
-   <property name="text" >
+   <property name="text">
     <string>Go</string>
    </property>
-   <property name="autoDefault" >
+   <property name="autoDefault">
     <bool>false</bool>
    </property>
   </widget>
-  <widget class="QLabel" name="" >
-   <property name="geometry" >
+  <widget class="QLabel" name="label5">
+   <property name="geometry">
     <rect>
      <x>10</x>
      <y>68</y>
@@ -59,12 +58,12 @@
      <height>16</height>
     </rect>
    </property>
-   <property name="text" >
+   <property name="text">
     <string>Status:</string>
    </property>
   </widget>
-  <widget class="QLabel" name="" >
-   <property name="geometry" >
+  <widget class="QLabel" name="label4">
+   <property name="geometry">
     <rect>
      <x>117</x>
      <y>14</y>
@@ -72,7 +71,7 @@
      <height>16</height>
     </rect>
    </property>
-   <property name="font" >
+   <property name="font">
     <font>
      <family>MS Shell Dlg</family>
      <pointsize>8</pointsize>
@@ -83,12 +82,12 @@
      <strikeout>false</strikeout>
     </font>
    </property>
-   <property name="text" >
+   <property name="text">
     <string>Solutions:</string>
    </property>
   </widget>
-  <widget class="QLabel" name="solutions" >
-   <property name="geometry" >
+  <widget class="QLabel" name="solutions">
+   <property name="geometry">
     <rect>
      <x>181</x>
      <y>14</y>
@@ -96,7 +95,7 @@
      <height>16</height>
     </rect>
    </property>
-   <property name="font" >
+   <property name="font">
     <font>
      <family>MS Shell Dlg</family>
      <pointsize>8</pointsize>
@@ -107,15 +106,15 @@
      <strikeout>false</strikeout>
     </font>
    </property>
-   <property name="text" >
+   <property name="text">
     <string>TextLabel</string>
    </property>
-   <property name="textFormat" >
+   <property name="textFormat">
     <enum>Qt::PlainText</enum>
    </property>
   </widget>
-  <widget class="QLabel" name="status" >
-   <property name="geometry" >
+  <widget class="QLabel" name="status">
+   <property name="geometry">
     <rect>
      <x>50</x>
      <y>70</y>
@@ -123,27 +122,27 @@
      <height>14</height>
     </rect>
    </property>
-   <property name="text" >
+   <property name="text">
     <string>TextLabel</string>
    </property>
-   <property name="textFormat" >
+   <property name="textFormat">
     <enum>Qt::PlainText</enum>
    </property>
   </widget>
-  <widget class="QGroupBox" name="groupBoxStats" >
-   <property name="geometry" >
+  <widget class="QGroupBox" name="groupBoxStats">
+   <property name="geometry">
     <rect>
      <x>110</x>
      <y>34</y>
      <width>151</width>
-     <height>81</height>
+     <height>101</height>
     </rect>
    </property>
-   <property name="title" >
+   <property name="title">
     <string>Run Statistics</string>
    </property>
-   <widget class="QLabel" name="" >
-    <property name="geometry" >
+   <widget class="QLabel" name="label1">
+    <property name="geometry">
      <rect>
       <x>10</x>
       <y>18</y>
@@ -151,12 +150,12 @@
       <height>16</height>
      </rect>
     </property>
-    <property name="text" >
+    <property name="text">
      <string>Changes:</string>
     </property>
    </widget>
-   <widget class="QLabel" name="" >
-    <property name="geometry" >
+   <widget class="QLabel" name="label2">
+    <property name="geometry">
      <rect>
       <x>10</x>
       <y>58</y>
@@ -164,12 +163,12 @@
       <height>16</height>
      </rect>
     </property>
-    <property name="text" >
+    <property name="text">
      <string>CPU time:</string>
     </property>
    </widget>
-   <widget class="QLabel" name="" >
-    <property name="geometry" >
+   <widget class="QLabel" name="label3">
+    <property name="geometry">
      <rect>
       <x>10</x>
       <y>38</y>
@@ -177,12 +176,12 @@
       <height>16</height>
      </rect>
     </property>
-    <property name="text" >
+    <property name="text">
      <string>Speed:</string>
     </property>
    </widget>
-   <widget class="QLabel" name="changes" >
-    <property name="geometry" >
+   <widget class="QLabel" name="changes">
+    <property name="geometry">
      <rect>
       <x>62</x>
       <y>18</y>
@@ -190,15 +189,15 @@
       <height>16</height>
      </rect>
     </property>
-    <property name="text" >
+    <property name="text">
      <string>TextLabel</string>
     </property>
-    <property name="textFormat" >
+    <property name="textFormat">
      <enum>Qt::PlainText</enum>
     </property>
    </widget>
-   <widget class="QLabel" name="CPUTime" >
-    <property name="geometry" >
+   <widget class="QLabel" name="CPUTime">
+    <property name="geometry">
      <rect>
       <x>62</x>
       <y>58</y>
@@ -206,15 +205,15 @@
       <height>16</height>
      </rect>
     </property>
-    <property name="text" >
+    <property name="text">
      <string>TextLabel</string>
     </property>
-    <property name="textFormat" >
+    <property name="textFormat">
      <enum>Qt::PlainText</enum>
     </property>
    </widget>
-   <widget class="QLabel" name="speed" >
-    <property name="geometry" >
+   <widget class="QLabel" name="speed">
+    <property name="geometry">
      <rect>
       <x>58</x>
       <y>38</y>
@@ -222,18 +221,47 @@
       <height>16</height>
      </rect>
     </property>
-    <property name="text" >
-     <string>&lt;font color="#CF1111">TextLabel</string>
+    <property name="text">
+     <string>&lt;font color=&quot;#CF1111&quot;&gt;TextLabel</string>
     </property>
-    <property name="textFormat" >
+    <property name="textFormat">
      <enum>Qt::RichText</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>78</y>
+      <width>61</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Max Place:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="maxPlace">
+    <property name="geometry">
+     <rect>
+      <x>72</x>
+      <y>78</y>
+      <width>61</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::PlainText</enum>
     </property>
    </widget>
   </widget>
  </widget>
- <pixmapfunction></pixmapfunction>
  <resources>
-  <include location="../resources.qrc" />
+  <include location="../resources.qrc"/>
+  <include location="../resources.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -60,14 +60,6 @@ public:
 
 
 private:
-
-	EngineConf lconf; ///< a local copy of the options
-
-	/// this PicsSet was created on demand in CubeDoc::solveGo() according
-	/// to the current piece selection.
-	const PicsSet *pics; 
-	const Shape *shape; ///< a pointer to the instance in CubeDoc
-
 	/// CubeCell is the basic voxel value in the Cube 3D space.
 	struct CubeCell
 	{
@@ -85,14 +77,6 @@ private:
 	float getLineColor(int p, int l);
 	void placeSidePolygon(int b, MyObject& obj, int f, int curf, bool is1, int x, int y, bool backface);
 
-	const int xsz, ysz, zsz;
-	const int xTysz; ///< the value of xsz times ysz. keep the sized close by for optimizations. 
-
-	CubeCell *cub_;	///< main 3d ploting area
-	ShapePlace *plc;	///< places data, size sn, in each a size pn try bool array
-	
-	UsedPieces use;	///< pn sized array. which pieces are in use in this cube. 
-
 	void symetricGetNextRtn(int sc, int fc, int &nextrt);
 	void clear(int cl = 0);
 
@@ -101,8 +85,32 @@ private:
 	void rmvPic(const int p);
 
 	bool superCheck(const int fc);
-	bool novaAnotherpic(ShapePlace &plcfc, int fc);
-	bool novaAssemble(int fc);
+	bool anotherpic(ShapePlace &plcfc, int fc);
+	bool assemble(int fc);
+
+	TPicBits getCurrentCirc(int fc);
+	bool makePossibilities(int fc, ShapePlace &plcfc);
+	bool makePossibilities2(int fc, ShapePlace &plcfc);
+	bool maskAssemble(int fc);
+
+	SlvCube* generateConcreteSlv();
+
+private:
+
+	EngineConf lconf; ///< a local copy of the options
+
+	/// this PicsSet was created on demand in CubeDoc::solveGo() according
+	/// to the current piece selection.
+	const PicsSet *pics; 
+	const Shape *shape; ///< a pointer to the instance in CubeDoc
+
+	const int xsz, ysz, zsz;
+	const int xTysz; ///< the value of xsz times ysz. keep the sized close by for optimizations. 
+
+	CubeCell *cub_;	///< main 3d ploting area
+	vector<ShapePlace> plc;	///< places data, size sn, in each a size pn try bool array
+
+	UsedPieces use;	///< pn sized array. which pieces are in use in this cube. 
 
 
 /////////// code tables

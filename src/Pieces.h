@@ -21,6 +21,7 @@
 #include "general.h"
 #include "Texture.h"
 #include "PicPainter.h"
+#include "PicArr.h"
 
 /** \file
 	Declares all classes involved in piece decleration and storage.
@@ -29,29 +30,7 @@
 */
 
 
-#define TEX_X 64
-#define TEX_Y 64
 
-/** PicArr is the most basic definition of the layout a piece.
-	it defines a single 5x5 piece which can be turned, reversed, copied, changed and accessed
-*/
-class PicArr
-{
-public:
-	PicArr() :turned(false), rtnindx(-1) {} // array uninitialized
- 
-	void turn();
-	void revY();
-	void copyTo(PicArr &dest) const;
-	bool equalTo(const PicArr &dest, bool bSym = false) const;
-
-	int& set(int x, int y) { return v[x * 5 + y]; }
-	int axx(int x, int y) const { return v[(x << 2)+x + y]; }
-
-	int v[25];
-	bool turned; // is this rtn turned up-side-down or not. (used in genIFS)
-	int rtnindx;	 // also used in getIFS, original rotation index
-};
 
 /// Defines the way a piece is rendered and textured
 enum EDrawType 
@@ -85,7 +64,7 @@ class PicGroupDef;
 class PicDef
 {
 public:
-	PicDef() : mygrp(NULL), pixmap(1, 1), 
+	PicDef() : mygrpi(-1), indexInGroup(-1), pixmap(1, 1),
 		xOffs(-1), yOffs(-1), painter(this), tex(NULL), nUsed(0), lastnSelected(1), nSelected(0), pathlen(0)
 	{} // + 1 for the outlined line
 
@@ -95,7 +74,10 @@ public:
 	void addSelected(int n) const { nSelected += n; }
 	int getSelected() const { return nSelected; }
 
-	PicGroupDef *mygrp; // to which group do I belong
+	// to which group do I belong
+	const PicGroupDef *mygrp() const; 
+	int mygrpi; // index of the group this piece is part of
+	int indexInGroup;  // index of this piece in the group it is part of
 	PicArr v;
 	QPixmap pixmap;
 
@@ -142,6 +124,10 @@ public:
 
 	int pathlen;
 	PathCoord path[MAX_PATH_LEN]; // bounding path - includes the last point which equals the first
+
+private:
+	//DISALLOW_COPY(PicDef);
+
 };
 
 /**	The blackness properties of a pieces color.
@@ -174,8 +160,12 @@ public:
 
 	QImage blendImage(); // produce an image from the texture, and the colors in blend mode
 
-	int numPics() const { return pics.size(); }
-	QVector<PicDef> pics;
+	PicDef& getPic(int myi);
+	const PicDef& getPic(int myi) const;
+
+	int numPics() const { return picsi.size(); }
+
+	QVector<int> picsi; // indices of this group pics in the bucket
 	Texture *tex;  // the texture used
 	Texture *baseTex; // the basic texture, before modulation
 
@@ -189,7 +179,7 @@ public:
 
 	EBlackness blackness; // means that the color is a dark one. use white lines with this group
 
-	bool isTexExist() { return ((drawtype == DRAW_TEXTURE_NORM) || (drawtype == DRAW_TEXTURE_BLEND) || isIndividual(drawtype)); }
+	bool isTexExist() const { return ((drawtype == DRAW_TEXTURE_NORM) || (drawtype == DRAW_TEXTURE_BLEND) || isIndividual(drawtype)); }
 	
 };
 
@@ -209,7 +199,7 @@ struct PicFamily
 	PicFamily() :startIndex(-1), numGroups(-1), onResetSetCount(0), nSetsSelected(0), nSelected(0) {}
 
 	QString name;
-	int startIndex; // index of the first cube in the family in the groups array
+	int startIndex; // index of the first cube (picgroup) in the family in the groups array
 	int numGroups; // number of groups in this family;
 	int onResetSetCount; // number of instances of this family upon reset
 	QString iconFilename;
@@ -245,16 +235,23 @@ public:
 	void buildMeshes(const DisplayConf& dpc, bool showStop, GLWidget* listContext);
 
 	int selectedCount() const;
-	const PicDef& getPic(int gind, int pind) const { return defs[gind].pics[pind]; }
+
+	const PicDef& getPic(int gind, int pind) const { return pdefs[getPicInd(gind, pind)]; }
+	int getPicInd(int gind, int pind) const { return grps[gind].picsi[pind]; }
+	void getGP(int picInd, int* gind, int* pind) const {
+		*gind = pdefs[picInd].mygrpi;
+		*pind = pdefs[picInd].indexInGroup;
+	}
 
 	void setSwapEndians(int v) { nSwapEndians = v; }
 	void updateSwapEndian(int v);
 
-	int numDefs() const { return defs.size(); }
+	//int numDefs() const { return defs.size(); }
 	void setToFamResetSel(); ///< reset the selected count to the reset number from the config
 
 	int sumPics; ///< how many cubes, how many pics in total
-	QVector<PicGroupDef> defs; ///< group definitions, inside them the piece definitions
+	QVector<PicGroupDef> grps; ///< (defs) group definitions, inside them the piece definitions
+	QVector<PicDef> pdefs;
 
 	QList<Texture*> texs;
 
@@ -272,66 +269,11 @@ private:
 	PicBucket() : sumPics(-1), nSwapEndians(1234) 
 	{ }
 	/// private unimplemented copy semantics
-	PicBucket(const PicBucket&);
-	PicBucket& operator=(const PicBucket&);
+	Q_DISABLE_COPY(PicBucket);
 
 	static PicBucket *g_instance; // can't be a real instance because it needs to be created after the QApplication
 	int nSwapEndians; // the numerical representation of the octet order normal is 1234
 
-};
-
-/**	PicType represents a piece when it is a part of an active piece set.
-	when a piece is selected to take part in a construction and the 
-	construction engine begins, it is loaded into a PicType instance
-	as a PicType the piece has some more information which has to do 
-	with piece repetition and rotation
-	\see PicSet
-*/
-class PicType
-{	// hold one piece
-public:
-	
-	PicType() :repnum(0), rep(NULL), rtnnum(0), gind(-1), pind(-1), thedef(NULL), thegrp(NULL) {}
-	~PicType() { delete[] rep; }
-
-	/// load a piece from the bucket to this instance
-	/// \arg bCsym the what-to-do-with-Asymmetric-pieces option
-	void load(int gind, int pind, bool bCsym);
-
-	int repnum;		///< repetition number
-	int *rep;		///< repetitioning pics in the pic array TBD-move to QVerctor
-	
-	int rtnnum;
-	PicArr rtns[8];
-
-	int gind, pind; ///< used solely for interaction with the solutions in SlvCube::SlvCube
-	const PicDef *thedef; ///< who is it in the PicBucket
-	const PicGroupDef *thegrp; ///< who is it in the PicBucket
-};
-
-class SlvCube;
-
-/** PicsSet holds all the pieces of an active solving session.
-	When the used hits "Solve It" a PicsSet is constructed with the currently selected
-	pieces and the solution engine is ran using it.
-*/
-class PicsSet
-{	
-public:
-	/// this ctor takes the selection from the Solution
-	PicsSet(const SlvCube *scube); 
-
-	///	this ctor takes the selection from the bucket
-	///	with bSym == true, there are more rtns for every pic.
-	PicsSet(bool bSym); 	
-						
-	int size() const { return pics.size(); }
-
-	/// create the rotated version of all pieces in the set
-	void makereps();
-
-	bool bConsiderSymetric;
-	QVector<PicType> pics;
 };
 
 

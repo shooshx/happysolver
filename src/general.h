@@ -21,6 +21,9 @@
 #include <QtGlobal>
 #include <QVector>
 #include <cmath>
+#include <vector>
+
+using namespace std;
 
 /** \file
 	Declares various classes and types which are used widely across the code base.
@@ -221,6 +224,11 @@ inline uint bXor(uint a, uint b)
 
 /// used by several different files which don't include each other. no better place to declare this.
 typedef QVector<int> TTransformVec;
+
+#define DISALLOW_COPY(className) \
+	 className(const className &); \
+     className &operator=(const className &)
+
 
 // profile command line VC6
 // /SF ?CubeEngineProc@@YAIPAX@Z

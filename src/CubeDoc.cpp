@@ -29,6 +29,8 @@
 #include "MainWindow.h"
 #include "SolveThread.h"
 #include "SIDlg.h"
+#include "PicsSet.h"
+#include "SlvCube.h"
 
 
 QString extractExtension(QString &path)
@@ -739,13 +741,13 @@ void CubeDoc::solveGo()
 		// the snapshot of the EngineConf is captured in Cube::Cube()
 		// in the thread itself. (is that too late?)
 		PicsSet *pics = new PicsSet(m_conf.engine.nAsym != ASYM_REGULAR);
-		if (pics->size() < m_shp->fcn)
+		if (pics->addedSize() < m_shp->fcn)
 		{
 			QMessageBox::critical(g_main, APP_NAME, tr("Unable to complay, too few pieces for this shape"), QMessageBox::Ok, 0);
 			return;
 		}
 
-		if (pics->size() == m_shp->fcn + 42 + 1) // 42 is too easy to come by.
+		if (pics->addedSize() == m_shp->fcn + 42 + 1) // 42 is too easy to come by.
 			easter();
 
 		// we're all good to go!

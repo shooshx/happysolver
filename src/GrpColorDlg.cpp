@@ -18,6 +18,7 @@
 #include "GrpColorDlg.h"
 #include "CubeDoc.h"
 #include "Pieces.h"
+#include "SlvCube.h"
 
 #include <QIntValidator>
 
@@ -80,7 +81,7 @@ void GrpColorDlg::update()
 	blockSignals(true); // avoid update to cycle back to the view
 	SlvCube *slv = m_doc->getCurrentSolve();
 	m_gind = slv->picdt[0].gind;
-	m_grp = &PicBucket::mutableInstance().defs[m_gind];
+	m_grp = &PicBucket::mutableInstance().grps[m_gind];
 	ui.ForeRedSlide->setValue((int)(m_grp->r * 255.0));
 	s = QString("%1").arg(m_grp->r * 255.0);
 	ui.ForeRedL->setText(s);

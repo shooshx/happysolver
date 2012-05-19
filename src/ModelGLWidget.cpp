@@ -24,6 +24,7 @@
 #include "Solutions.h"
 #include "Cube.h"
 #include "Texture.h"
+#include "SlvCube.h"
 
 
 ModelGLWidget::ModelGLWidget(QWidget *parent, CubeDoc *document)

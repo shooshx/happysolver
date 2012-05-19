@@ -25,6 +25,7 @@
 #include "Shape.h"
 #include "MainWindow.h"
 #include "ActFocusComboBox.h"
+#include "SlvCube.h"
 
 PieceGLWidget::PieceGLWidget(QWidget *parent, CubeDoc *doc, QGLWidget *shareFrom) 
 	:GLWidget(parent, shareFrom), m_doc(doc), m_lastSelectedPiece(-1), m_selectedPiece(-1),  

@@ -29,6 +29,9 @@
 #include "MainWindow.h" ///< MainWindow::wasClosed() is being used.
 
 
+
+#define TEX_X 64
+#define TEX_Y 64
 #define TEX_BUF_SIZE (TEX_X * TEX_Y * 4) 
 
 // the singleton
@@ -103,7 +106,7 @@ void PicDef::makeBoundingPath()
 
 void PicBucket::makeBitmapList()
 {	
-	Q_ASSERT(defs.size() > 0);
+	Q_ASSERT(grps.size() > 0);
 
 	int gind, pind, i, x, y, tmp;
 
@@ -112,10 +115,11 @@ void PicBucket::makeBitmapList()
 	QSize origsize(0, 0);
 	int origfactor = 1;
 
-	for(gind = 0; gind < numDefs(); ++gind)
-	{			
-		const QImage &gimg = defs[gind].tex->img;
-		switch (defs[gind].drawtype)
+	for(gind = 0; gind < grps.size(); ++gind)
+	{
+		PicGroupDef &cgrp = grps[gind];
+		const QImage &gimg = cgrp.tex->img;
+		switch (cgrp.drawtype)
 		{
 		case DRAW_COLOR:
 			origcbuf = staticbuf;
@@ -124,9 +128,9 @@ void PicBucket::makeBitmapList()
 			tmp = origsize.width() * origsize.height() * 4;
 			for (i = 0; i < tmp; i += 4)
 			{// little endian images
-				origcbuf[i + 0] = int(defs[gind].b * 255.0); 
-				origcbuf[i + 1] = int(defs[gind].g * 255.0);
-				origcbuf[i + 2] = int(defs[gind].r * 255.0);
+				origcbuf[i + 0] = int(cgrp.b * 255.0); 
+				origcbuf[i + 1] = int(cgrp.g * 255.0);
+				origcbuf[i + 2] = int(cgrp.r * 255.0);
 				origcbuf[i + 3] = 255; //alpha
 			}
 			break;
@@ -137,9 +141,9 @@ void PicBucket::makeBitmapList()
 			tmp = origsize.width() * origsize.height() * 4;
 			for (i = 0;  i < tmp; i += 4)
 			{
-				origcbuf[i + 0] = int( float(gimg.bits()[i]) * defs[gind].b);
-				origcbuf[i + 1] = int( float(gimg.bits()[i + 1]) * defs[gind].g);
-				origcbuf[i + 2] = int( float(gimg.bits()[i + 2]) * defs[gind].r);
+				origcbuf[i + 0] = int( float(gimg.bits()[i]) * cgrp.b);
+				origcbuf[i + 1] = int( float(gimg.bits()[i + 1]) * cgrp.g);
+				origcbuf[i + 2] = int( float(gimg.bits()[i + 2]) * cgrp.r);
 				origcbuf[i + 3] = 255;
 			}
 			break;
@@ -149,14 +153,14 @@ void PicBucket::makeBitmapList()
 			origfactor = (gimg.width() == 64)?1:2; // otherwise its 128.
 		}
 
-		for(pind = 0; pind < defs[gind].numPics(); ++pind)
+		for(pind = 0; pind < cgrp.numPics(); ++pind)
 		{ // TBD: for every other then INDIVIDUAL do this for only one time for grp
-			PicDef &p = defs[gind].pics[pind];
+			PicDef &cpic = cgrp.getPic(pind); //'p'
 
 			QImage pimg; // needs to be in this scope so it won't get destroyed
-			if (isIndividual(defs[gind].drawtype))
+			if (isIndividual(cgrp.drawtype))
 			{
-				pimg = p.tex->img.mirrored(false, true); // transform it back 
+				pimg = cpic.tex->img.mirrored(false, true); // transform it back 
 				origcbuf = (unsigned char*)pimg.bits(); // move to unsigned, rid of const.
 				origsize = pimg.size();
 				origfactor = (pimg.width() == 64)?1:2; // otherwise its 128.
@@ -185,7 +189,7 @@ void PicBucket::makeBitmapList()
 				for (int ry = 0; ry < 5; ++ry)
 				{
 					y = ry; // inversion of DIB
-					if (defs[gind].pics[pind].v.axx(x,ry) == 0)
+					if (cpic.v.axx(x,ry) == 0)
 					{
 						int px = int( double(x)/5.0 * double(TEX_X) );
 						int py = int( double(y)/5.0 * double(TEX_Y) );
@@ -203,16 +207,16 @@ void PicBucket::makeBitmapList()
 				}
 			}
 
-			p.makeBoundingPath();
+			cpic.makeBoundingPath();
 
-			p.pixmap = QPixmap::fromImage(img);
+			cpic.pixmap = QPixmap::fromImage(img);
 			QPolygon poly;
-			for (i = 0; i < p.pathlen; ++i)
+			for (i = 0; i < cpic.pathlen; ++i)
 			{ // path includes last point == first point
-				poly.push_back(QPoint( (int)((p.path[i].x / 5.0)*64), (int)((p.path[i].y / 5.0)*64)));
+				poly.push_back(QPoint( (int)((cpic.path[i].x / 5.0)*64), (int)((cpic.path[i].y / 5.0)*64)));
 			}
 
-			QPainter painter(&p.pixmap);
+			QPainter painter(&cpic.pixmap);
 			//painter.drawImage(0,0,img);
 			//QPen pen(Qt::red, 2);                 // red solid line, 2 pixels wide
 			//painter.setPen(pen);              // set the red, wide pen
@@ -266,15 +270,15 @@ QImage endianSwapped(const QImage& src, int n)
 
 void PicBucket::updateTexture(int gind)
 {
-	if (defs[gind].tex != NULL)
+	if (grps[gind].tex != NULL)
 	{
-		QImage img = defs[gind].blendImage();
-		int texind = defs[gind].tex->ind;
+		QImage img = grps[gind].blendImage();
+		int texind = grps[gind].tex->ind;
 		texs[texind]->img = img;
 		
 		QImage b;
 		//if (nSwapEndians != 1234)
-			b = endianSwapped(img, nSwapEndians);
+		b = endianSwapped(img, nSwapEndians);
 		//else
 		//	b = img;
 		emit updateTexture(texind, b);
@@ -288,22 +292,22 @@ void PicBucket::updateSwapEndian(int newen)
 		return;
 	nSwapEndians = newen;
 
-	QProgressDialog pdlg("Updating...", "", 0, numDefs(), g_main);
+	QProgressDialog pdlg("Updating...", "", 0, grps.size(), g_main);
 	pdlg.setWindowTitle("Happy Cube Solver");
 	pdlg.setMinimumDuration(0);
 	pdlg.setCancelButton(NULL);
 
-	for (int g = 0; g < numDefs() ; ++g)
+	for (int g = 0; g < grps.size(); ++g)
 	{
 		pdlg.setValue(g);
-		if ((defs[g].tex == NULL) || (!defs[g].tex->bound))
+		if ((grps[g].tex == NULL) || (!grps[g].tex->bound))
 			continue;
-		int texind = defs[g].tex->ind;
+		int texind = grps[g].tex->ind;
 
 		QImage img = texs[texind]->img;
 		QImage b;
 		//if (nSwapEndians != 1234)
-			b = endianSwapped(img, nSwapEndians);
+		b = endianSwapped(img, nSwapEndians);
 		//else
 		//	b = img;
 
@@ -322,7 +326,7 @@ Texture* PicBucket::newTexture(QImage im, bool emitb)
 	{
 		QImage b;
 		//if (nSwapEndians != 1234)
-			b = endianSwapped(t->img, nSwapEndians);
+		b = endianSwapped(t->img, nSwapEndians);
 		//else
 		//	b = t->img;
 		emit boundTexture(texind, b);
@@ -364,6 +368,17 @@ static EDrawType getDrawType(const QString& s) {
 	return (EDrawType)0;
 }
 
+
+PicDef& PicGroupDef::getPic(int myi) {
+	return PicBucket::mutableInstance().pdefs[picsi[myi]];
+}
+const PicDef& PicGroupDef::getPic(int myi) const {
+	return PicBucket::mutableInstance().pdefs[picsi[myi]];
+}
+
+const PicGroupDef* PicDef::mygrp() const {
+	return &PicBucket::instance().grps[mygrpi];
+}
 
 
 bool PicBucket::loadXML(const QString& xmlname)
@@ -429,90 +444,92 @@ bool PicBucket::loadXML(const QString& xmlname)
 //	unsigned int xxx3 = GetTickCount();
 
 	////////////////////// pics ////////////////////////////////
-	QDomElement fams = docElem.firstChildElement("outlines");
+	QDomElement xfams = docElem.firstChildElement("outlines");
 
-	int i = 0;
-	int count = 0;
+	int grpCount = 0;
 	// count the number of cubes (groups) we have
-	QDomElement fam = fams.firstChildElement("family");
-	while (!fam.isNull())
+	QDomElement xfam = xfams.firstChildElement("family");
+	while (!xfam.isNull())
 	{
-		int ind = fam.attribute("index").toInt();
+		int ind = xfam.attribute("index").toInt(); // the index it should show at the main build helper menu
 		if (ind >= families.size())
 			families.resize(ind + 1);
-		families[ind].startIndex = count;
-		families[ind].numGroups = fam.elementsByTagName("group").size();
-		families[ind].name = fam.attribute("name");
-		families[ind].onResetSetCount = fam.attribute("onResetSetCount").toInt();
-		families[ind].iconFilename = fam.attribute("icon");
-		count += families[ind].numGroups;
-		fam = fam.nextSiblingElement(); // next family
-		++i;
-	}
-	defs.resize(count);
+		PicFamily &cfam = families[ind];
+		cfam.startIndex = grpCount;
+		cfam.numGroups = xfam.elementsByTagName("group").size();
+		cfam.name = xfam.attribute("name");
+		cfam.onResetSetCount = xfam.attribute("onResetSetCount").toInt();
+		cfam.iconFilename = xfam.attribute("icon");
 
-//	unsigned int xxx4 = GetTickCount();
+		grpCount += cfam.numGroups;
+		xfam = xfam.nextSiblingElement(); // next family
+	}
+	//defs.resize(count);
+	pdefs = QVector<PicDef>(grpCount * 6); // assume ever group has 6 pieces
 
 	sumPics = 0;
-	i = 0; // group number
+	int grpi = 0; // (i) group number
+	int pdefi = 0;
 
-	fam = fams.firstChildElement("family");
-	while (!fam.isNull())
+	xfam = xfams.firstChildElement("family");
+	while (!xfam.isNull())
 	{
-		QDomElement cube = fam.firstChildElement("group"); // a group of pieces is a cube
+		QDomElement cube = xfam.firstChildElement("group"); // a group of pieces is a cube
 		while (!cube.isNull())
 		{
-			defs[i].name = cube.attribute("name");
-			grpnames[defs[i].name] = i;
+			PicGroupDef cgrp;
+			cgrp.name = cube.attribute("name");
+			grpnames[cgrp.name] = grpi;
 	
 			QDomElement fill = cube.firstChildElement("fill");
 
-			defs[i].drawtype = getDrawType(fill.attribute("type"));
+			cgrp.drawtype = getDrawType(fill.attribute("type"));
 
 			if (fill.hasAttribute("texind"))
 			{
 				int txind = fill.attribute("texind").toInt();
 				Q_ASSERT((txind >= 0) && (txind <= texs.size()));
-				defs[i].baseTex = texs[txind];
+				cgrp.baseTex = texs[txind];
 			}
 			else
-				defs[i].baseTex = NULL;
-			defs[i].tex = defs[i].baseTex;
+				cgrp.baseTex = NULL;
+			cgrp.tex = cgrp.baseTex;
 
-			defs[i].r = float(fill.attribute("r").toInt()) / 255.0f; 
-			defs[i].g = float(fill.attribute("g").toInt()) / 255.0f; 
-			defs[i].b = float(fill.attribute("b").toInt()) / 255.0f;
-			defs[i].exR = float(fill.attribute("exR").toInt()) / 255.0f; 
-			defs[i].exG = float(fill.attribute("exG").toInt()) / 255.0f; 
-			defs[i].exB = float(fill.attribute("exB").toInt()) / 255.0f;
-			defs[i].blackness = (EBlackness)fill.attribute("k").toInt();
+			cgrp.r = float(fill.attribute("r").toInt()) / 255.0f; 
+			cgrp.g = float(fill.attribute("g").toInt()) / 255.0f; 
+			cgrp.b = float(fill.attribute("b").toInt()) / 255.0f;
+			cgrp.exR = float(fill.attribute("exR").toInt()) / 255.0f; 
+			cgrp.exG = float(fill.attribute("exG").toInt()) / 255.0f; 
+			cgrp.exB = float(fill.attribute("exB").toInt()) / 255.0f;
+			cgrp.blackness = (EBlackness)fill.attribute("k").toInt();
 	
-			if (defs[i].drawtype == DRAW_TEXTURE_INDIVIDUAL_HALF)
+			if (cgrp.drawtype == DRAW_TEXTURE_INDIVIDUAL_HALF)
 			{
-				defs[i].sideTexX = fill.attribute("sideX").toInt();
-				defs[i].sideTexY = fill.attribute("sideY").toInt();
+				cgrp.sideTexX = fill.attribute("sideX").toInt();
+				cgrp.sideTexY = fill.attribute("sideY").toInt();
 				int stxind = fill.attribute("sideTexInd").toInt();
 				Q_ASSERT((stxind >= 0) && (stxind <= texs.size()));
-				defs[i].sideTex = texs[stxind];
+				cgrp.sideTex = texs[stxind];
 			}
-			if (defs[i].drawtype == DRAW_TEXTURE_BLEND)
+			if (cgrp.drawtype == DRAW_TEXTURE_BLEND)
 			{
-				defs[i].tex = newTexture(defs[i].blendImage());
+				cgrp.tex = newTexture(cgrp.blendImage());
 			}
 
-			QDomNodeList pics = cube.elementsByTagName("piece");
-			if (pics.size() > 0)
+			QDomNodeList xpics = cube.elementsByTagName("piece");
+			if (xpics.size() > 0)
 			{
-				defs[i].pics.resize(pics.size());
+				//cgrp.pics.resize();
 
-				for (int picn = 0; picn < defs[i].numPics(); ++picn)
+				for (int pici = 0; pici < xpics.size(); ++pici)
 				{
-					QDomElement ep = pics.at(picn).toElement();
+					PicDef& curdef = pdefs[pdefi];
+					curdef.mygrpi = grpi;
+					curdef.indexInGroup = pici;
+
+					QDomElement ep = xpics.at(pici).toElement();
 					QString text = ep.text();
 					text.remove(' ');
-					PicDef &curdef = defs[i].pics[picn];
-					curdef.mygrp = &defs[i];
-
 					for (int y = 0; y < 5; ++y)
 					{
 						for (int x = 0; x < 5; ++x)
@@ -524,13 +541,14 @@ bool PicBucket::loadXML(const QString& xmlname)
 
 						}
 					}
-					if (isIndividual(defs[i].drawtype))
+					if (isIndividual(cgrp.drawtype))
 					{
 						curdef.xOffs = ep.attribute("x1").toInt();
 						curdef.yOffs = ep.attribute("y1").toInt();
-						curdef.tex = newTexture(defs[i].tex->img.copy(curdef.xOffs, curdef.yOffs, 128, 128).mirrored(false, true));
+						curdef.tex = newTexture(cgrp.tex->img.copy(curdef.xOffs, curdef.yOffs, 128, 128).mirrored(false, true));
 					}
-
+					cgrp.picsi.push_back(pdefi); // the index in the bucket
+					++pdefi;
 				}
 			}
 			else // no "piece" elements
@@ -544,30 +562,37 @@ bool PicBucket::loadXML(const QString& xmlname)
 				}
 				
 				int ifrom = grpnames[copyfrom];
-				defs[i].pics.resize(defs[ifrom].numPics());
-				for (int picn = 0; picn < defs[i].numPics(); ++picn)
+				int copyCount = grps[ifrom].numPics();
+				//defs[i].pics.resize(defs[ifrom].numPics());
+				for (int pici = 0; pici < copyCount; ++pici)
 				{
-					PicDef &curdef = defs[i].pics[picn];
-					const PicDef &fromDef = defs[ifrom].pics[picn];
-					curdef.v = fromDef.v; // copy only the data of the piece
-					curdef.mygrp = &defs[i];
+					PicDef &curdef = pdefs[pdefi];
+					curdef.mygrpi = grpi;
+					curdef.indexInGroup = pici;
 
-					if (isIndividual(defs[i].drawtype))
+					const PicDef &fromDef = grps[ifrom].getPic(pici);
+					curdef.v = fromDef.v; // copy only the data of the piece
+
+
+					if (isIndividual(cgrp.drawtype))
 					{
 						curdef.xOffs = fromDef.xOffs;
 						curdef.yOffs = fromDef.yOffs;
-						curdef.tex = newTexture(defs[i].tex->img.copy(curdef.xOffs, curdef.yOffs, 128, 128).mirrored(false, true));
+						curdef.tex = newTexture(cgrp.tex->img.copy(curdef.xOffs, curdef.yOffs, 128, 128).mirrored(false, true));
 					}
+
+					cgrp.picsi.push_back(pdefi);
+					++pdefi;
 				}
-				
 
 			}
 
-			sumPics += defs[i].numPics();
-			++i;
+			grps.push_back(cgrp);
+			sumPics += cgrp.numPics();
+			++grpi;
 			cube = cube.nextSiblingElement();
 		} // cubes
-		fam = fam.nextSiblingElement(); // next family
+		xfam = xfam.nextSiblingElement(); // next family
 	} // families
 
 	// set the reset selection
@@ -591,10 +616,10 @@ void PicBucket::setToFamResetSel()
 		int setTo = fam.onResetSetCount;
 		for (int g = fam.startIndex; g < fam.startIndex + fam.numGroups; ++g)
 		{
-			const PicGroupDef &grp = defs[g];
+			PicGroupDef &grp = grps[g];
 			for (int p = 0; p < grp.numPics(); ++p)
 			{
-				grp.pics[p].setSelected(setTo);
+				grp.getPic(p).setSelected(setTo);
 			}
 		}
 	}
@@ -622,7 +647,7 @@ static PoolStats poolStats[] = {
 
 void PicBucket::buildMeshes(const DisplayConf& dpc, bool showStop, GLWidget *mainContext)
 {
-	QProgressDialog pdlg("Building the pieces. Please Wait...", "Stop", 0, sumPics, g_main);
+	QProgressDialog pdlg("Building the pieces. Please Wait...", "Stop", 0, pdefs.size(), g_main);
 	pdlg.setSizeGripEnabled(false);
 	pdlg.setWindowTitle("Happy Cube Solver");
 	pdlg.setMinimumDuration(1500);
@@ -636,243 +661,28 @@ void PicBucket::buildMeshes(const DisplayConf& dpc, bool showStop, GLWidget *mai
 
 	int cnt = 0;
 	bool cancel = false;
-	for (int g = 0; (g < numDefs()) && (!cancel); ++g)
-	{
-		PicGroupDef *gp = &(defs[g]);
-		for (int p = 0; (p < gp->numPics()) && (!cancel); ++p)
-		{
-            pdlg.setValue(cnt++);
-			gp->pics[p].painter.init(dpc, mainContext);
 
-            qApp->processEvents(); // must call
-			cancel = ((showStop && pdlg.wasCanceled()) || (((MainWindow*)g_main)->wasClosed()));
-		}
+	for (int pi = 0; pi < pdefs.size() && !cancel; ++pi)
+	{
+        pdlg.setValue(cnt++);
+		pdefs[pi].painter.init(dpc, mainContext);
+
+        qApp->processEvents(); // must call
+		cancel = ((showStop && pdlg.wasCanceled()) || (((MainWindow*)g_main)->wasClosed()));
 	}
-    pdlg.setValue(cnt);
+
+	pdlg.setValue(cnt);
 	PicPainter::getAllocator().checkMaxAlloc();
 }
 
 
 int PicBucket::selectedCount() const
 {
-	int g,p;
 	int count = 0;
-	for (g = 0; g < numDefs() ; ++g)
+	for (int pi = 0; pi < pdefs.size(); ++pi)
 	{
-		const PicGroupDef *gp = &(defs[g]);
-		for (p = 0; p < gp->numPics(); ++p)
-		{
-			count += gp->pics[p].getSelected();
-		}
+		count += pdefs[pi].getSelected();
 	}
 	return count;
-}
-
-
-void PicType::load(int _gind, int _pind, bool bCsym)
-{
-	PicArr tmppic;
-	int i,j;
-
-	gind = _gind; // members
-	pind = _pind;
-	thedef = &(PicBucket::instance().defs[gind].pics[pind]);
-	thegrp = &(PicBucket::instance().defs[gind]);
-
-	bool bSym = (bCsym && isIndividual(thegrp->drawtype)); // determine if it's symetric according to if it's half-texturized
-		
-	thedef->v.copyTo(tmppic);
-		
-	tmppic.turned = true;
-	for(i = 0; i < 8; ++i)
-	{ // make all it's rotations
-		tmppic.copyTo(rtns[i]);
-		rtns[i].rtnindx = i;
-		if (i != 3) 
-			tmppic.turn();
-		else 
-		{
-			tmppic.turned = false;
-			tmppic.revY();
-		}
-	}
-	rtnnum = 8;
-
-	bool dflag[8] = { false };
-	for(i = 0; i < 7; ++i)
-	{
-		for(j = i + 1; j < 8; ++j)
-		{
-			if (rtns[i].equalTo(rtns[j], bSym))
-				dflag[j] = true;
-		}
-	}
-	for(i = 7; i >= 0; --i)
-	{
-		if (dflag[i]) 
-		{
-			rtnnum--;
-			for(j = i; j < 7; j++)
-				rtns[j + 1].copyTo(rtns[j]);
-		}
-	}
-}
-
-
-void PicArr::turn()
-{
-	int tx = 4 ,ty = 0;
-	PicArr tmp;
-	tmp.turned = turned;
-
-	for(int y = 0; y < 5; ++y)
-	{
-		for(int x = 0; x < 5; ++x) 
-		{
-			tmp.set(tx,ty) = axx(x,y);
-			ty = ty+1;
-		}
-		ty = 0;
-		tx = tx-1;
-	}
-	tmp.copyTo(*this);
-}
-
-void PicArr::revY()
-{
-	int ty = 4;
-	PicArr tmp;
-	tmp.turned = turned;
-
-	for(int y = 0; y < 5; ++y) 
-	{
-		for(int x = 0; x < 5; ++x)
-			tmp.set(x,ty) = axx(x,y);
-		ty = ty-1;
-	}
-	tmp.copyTo(*this);
-}
-
-bool PicArr::equalTo(const PicArr &dest, bool bSym) const
-{
-	for(int x = 0; x < 5; ++x)
-	{
-		for(int y = 0; y < 5; ++y)
-		{
-			if (dest.axx(x,y) != axx(x,y)) return false;
-		}
-	}
-
-	if (bSym && (turned != dest.turned))
-		return false;
-
-	return true;
-}
-
-
-
-void PicArr::copyTo(PicArr &dest) const
-{
-	for(int x = 0; x < 5; ++x)
-	{ 
-		for(int y = 0; y < 5; ++y)
-		{
-			dest.set(x,y) = axx(x,y);
-		}
-	}
-	dest.turned = turned;
-	dest.rtnindx = rtnindx;
-}
-
-
-PicsSet::PicsSet(const SlvCube *scube)
-	: bConsiderSymetric(scube->bConsidersSym), pics(scube->picssz)
-{
-	
-	for (int i = 0; i < scube->picssz; ++i)
-	{	
-		pics[i].load(scube->picdt[i].gind, scube->picdt[i].pind, bConsiderSymetric);
-	}
-
-	makereps();
-}
-
-
-PicsSet::PicsSet(bool bSym) 
-	: bConsiderSymetric(bSym)
-{
-	int idef, ipic, pn = 0;
-	const PicBucket &bucket = PicBucket::instance();
-	for(idef = 0; idef < bucket.numDefs(); ++idef) 
-	{
-		for(ipic = 0; ipic < bucket.defs[idef].numPics(); ++ipic)
-		{
-			pn += bucket.defs[idef].pics[ipic].getSelected();
-		}
-	}
-	
-	int pi = 0; //pi -- the current pic loaded
-
-	pics.resize(pn);
-	for(idef = 0; idef < bucket.numDefs(); ++idef) 
-	{
-		for(ipic = 0; ipic < bucket.defs[idef].numPics(); ++ipic)
-		{
-			// if the piece is selected a number of times, load it that number
-			// of times in to the set.
-			for (int i = 0; i < bucket.defs[idef].pics[ipic].getSelected(); ++i)
-			{
-				pics[pi++].load(idef, ipic, bConsiderSymetric);
-			}
-		}
-	}
-
-	makereps();
-
-}
-
-///	Construct the repetitions of pieces.
-/// construct the "rep" member of PicType. rep is an array of containing the indexes of
-/// all other pics that are similar in shape to the current one.
-void PicsSet::makereps()
-{
-	// temp repetitions
-	int *trep = new int[PicBucket::instance().sumPics];
-
-	for(int i = 0; i < size(); ++i)
-	{
-		// setting the repetitions of i
-		pics[i].repnum = 0;
-		int j;
-		for(j = 0; j < size(); ++j)
-		{
-			// checking if j is the same
-			// we need to have the comparison with 'turned' only if both i and j are 
-			// asymmetric since only in this case pieces can't cover for one another
-			bool bSym = bConsiderSymetric && 
-				isIndividual(pics[i].thegrp->drawtype) &&
-				isIndividual(pics[j].thegrp->drawtype);
-				
-			int rt = 0;
-			bool found = false;
-			while ((rt < pics[i].rtnnum) && (!found))
-			{
-				found = pics[j].rtns[rt].equalTo(pics[i].rtns[0], bSym); // sure there is a need for turned
-				rt++;
-			}
-			if (found) 
-			{
-				trep[pics[i].repnum++] = j;
-			}
-		}
-
-		pics[i].rep = new int[pics[i].repnum];
-		for(j = 0; j < pics[i].repnum; ++j)
-		{
-			pics[i].rep[j] = trep[j];
-		}
-	}
-
-	delete trep;
 }
 

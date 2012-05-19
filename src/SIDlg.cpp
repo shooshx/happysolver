@@ -73,8 +73,8 @@ GameWidget::GameWidget(QWidget *parent)
 	// draw soser pixmap
 	m_soser.fill(Qt::transparent);
 	QPainter p(&m_soser);
-	QPixmap a = PicBucket::instance().defs[4].pics[0].pixmap;
-	QPixmap b = PicBucket::instance().defs[4].pics[3].pixmap;
+	QPixmap a = PicBucket::instance().getPic(4, 0).pixmap;
+	QPixmap b = PicBucket::instance().getPic(4, 3).pixmap;
 	p.drawPixmap(0, 0, a);
 	p.drawPixmap(51, 0, b.transformed(QMatrix().rotate(270), Qt::SmoothTransformation).transformed(
 		QMatrix(QMatrix(1, 0, 0, -1, 0, 0)), Qt::SmoothTransformation)); // flip it, looks better
@@ -108,7 +108,7 @@ void GameWidget::initLevel(int level)
 		{
 			int def = (((level - 1) % 5) * 6) + ((row+col*level))%6;
 			int pic = (row*col+salt)%6;
-			m_ships.push_back(Ship(col * 75, startY + row * 70, row, col, &PicBucket::instance().defs[def].pics[pic].pixmap));
+			m_ships.push_back(Ship(col * 75, startY + row * 70, row, col, &PicBucket::instance().getPic(def, pic).pixmap));
 			salt += (rand() % 4);
 		}
 	}
@@ -167,7 +167,7 @@ void GameWidget::paintEvent(QPaintEvent *e)
 		p.drawEllipse(x - 7, y - 7, 14, 14);
 	}
 
-	p.drawPixmap(m_gunX-32, m_gunY, PicBucket::instance().defs[1].pics[2].pixmap);
+	p.drawPixmap(m_gunX-32, m_gunY, PicBucket::instance().getPic(1, 2).pixmap);
 	m_shotspreg = QRegion();
 
 	if (m_lives == 0)
@@ -522,7 +522,7 @@ SIDlg::SIDlg(QWidget *parent)
 	m_level->setFont(font);
 	m_score->setFont(font);
 
-	m_lifePix = PicBucket::instance().defs[1].pics[2].pixmap.scaled(QSize(25, 25), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+	m_lifePix = PicBucket::instance().getPic(1, 2).pixmap.scaled(QSize(25, 25), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 	updateLives(3);
 }
 

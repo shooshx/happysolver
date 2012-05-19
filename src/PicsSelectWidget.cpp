@@ -22,6 +22,7 @@
 #include "BuildWorld.h"
 #include "Pieces.h"
 #include "DataWidgets.h"
+#include "SlvCube.h"
 
 #include <QLabel>
 
@@ -141,7 +142,7 @@ void PicsSelectWidget::continueCreate()
 	m_tabs = new QTabWidget(this);
 	connect(m_tabs, SIGNAL(currentChanged(int)), this, SLOT(updateSetsSpinBox(int)));
 	m_layout->addWidget(m_tabs);
-	m_groups.resize(bucket.numDefs());
+	m_groups.resize(bucket.grps.size());
 
 	for (int f = 0; f < bucket.families.size(); ++f)
 	{
@@ -167,7 +168,7 @@ void PicsSelectWidget::continueCreate()
 
 		for (int g = fam.startIndex; g < fam.startIndex + fam.numGroups; ++g)
 		{
-			const PicGroupDef *grp = &(bucket.defs[g]);
+			const PicGroupDef *grp = &(bucket.grps[g]);
 			GroupCtrl &grpctrl = m_groups[g];
 			int normg = (g - fam.startIndex); // normalized g with start of family
 
@@ -185,9 +186,9 @@ void PicsSelectWidget::continueCreate()
 			connect(grpctrl.num, SIGNAL(dvalueChanged(int, int)), this, SLOT(changedGrpBox(int, int)));
 
 
-			for (int p = 0; p < bucket.defs[g].numPics(); ++p)
+			for (int p = 0; p < bucket.grps[g].numPics(); ++p)
 			{
-				const PicDef *pic = &(grp->pics[p]);
+				const PicDef *pic = &(grp->getPic(p));
 				PicCtrl picctrl;
 				int data = (g << 16) | p;
 
@@ -245,11 +246,11 @@ void PicsSelectWidget::changedGrpBox(int count, int g)
 
 	int p;
 	const PicBucket& bucket = PicBucket::instance();
-	const PicGroupDef &grp = bucket.defs[g];
+	const PicGroupDef &grp = bucket.grps[g];
 
 	for (p = 0; p < grp.numPics(); ++p)
 	{
-		grp.pics[p].setSelected(count);
+		grp.getPic(p).setSelected(count);
 	}
 
 	setUpdatesEnabled(false);
@@ -369,18 +370,19 @@ void PicsSelectWidget::updateFamSelected() // update the fam count according the
 	for (int f = 0; f < bucket.families.size(); ++f)
 	{
 		const PicFamily &fam = bucket.families[f];
-		int equalSel = bucket.defs[fam.startIndex].pics[0].getSelected();
+		int equalSel = bucket.getPic(fam.startIndex, 0).getSelected();
 		bool equal = true;
 		fam.nSelected = 0;
 
 		for (int g = fam.startIndex; g < fam.startIndex + fam.numGroups; ++g)
 		{
-			const PicGroupDef &grp = bucket.defs[g];
+			const PicGroupDef &grp = bucket.grps[g];
 			for (int p = 0; p < grp.numPics(); ++p)
 			{
-				if (grp.pics[p].getSelected() != equalSel)
+				int gNSel = grp.getPic(p).getSelected();
+				if (gNSel != equalSel)
 					equal = false;
-				fam.nSelected += grp.pics[p].getSelected();
+				fam.nSelected += gNSel;
 			}
 		}
 		if (equal) 
@@ -394,13 +396,13 @@ int PicsSelectWidget::calcGrpSelected(int g) // return the count of the pics of 
 {
 	const PicBucket& bucket = PicBucket::instance();
 
-	const PicGroupDef &grp = bucket.defs[g];
-	int equalSel = grp.pics[0].getSelected();
+	const PicGroupDef &grp = bucket.grps[g];
+	int equalSel = grp.getPic(0).getSelected();
 	bool equal = true;
 
 	for (int p = 1; (p < grp.numPics()) && equal; ++p)
 	{
-		if (grp.pics[p].getSelected() != equalSel)
+		if (grp.getPic(p).getSelected() != equalSel)
 			equal = false;	
 	}
 	if (equal)
@@ -415,7 +417,7 @@ void PicsSelectWidget::pressedPicButton(int data, bool checked)
 {
 	int g = (data >> 16) & 0xFFFF, p = data & 0xFFFF;
 
-	const PicDef *pd = &(PicBucket::instance().defs[g].pics[p]); 
+	const PicDef *pd = &(PicBucket::instance().getPic(g, p)); 
 
 	if (pd->getSelected() > 0)
 	{
@@ -436,7 +438,7 @@ void PicsSelectWidget::changedNumBox(int num, int data)
 {
 	int g = (data >> 16) & 0xFFFF, p = data & 0xFFFF;
 	
-	const PicDef *pd = &(PicBucket::instance().defs[g].pics[p]); 
+	const PicDef *pd = &(PicBucket::instance().getPic(g, p)); 
 
 	pd->setSelected(num); // index and actual number are the same
 	updatePic(g, p, num);
@@ -505,20 +507,20 @@ void PicsSelectWidget::famSignalBlock(bool block)
 void PicsSelectWidget::pressedGlobalAll()
 {
 	int g, p;
-	for (g = 0; g < PicBucket::instance().numDefs() ; ++g)
+	for (g = 0; g < PicBucket::instance().grps.size() ; ++g)
 	{
-		const PicGroupDef &gp = PicBucket::instance().defs[g];
+		const PicGroupDef &gp = PicBucket::instance().grps[g];
 		for (p = 0; p < gp.numPics(); ++p)
 		{
-			gp.pics[p].setSelected(1);
+			gp.getPic(p).setSelected(1);
 		}
 	}
 
 	globalSignalBlock(true);
 	setUpdatesEnabled(false);
-	for (g = 0; g < PicBucket::instance().numDefs() ; ++g) // UpdateCount optimization
+	for (g = 0; g < PicBucket::instance().grps.size() ; ++g) // UpdateCount optimization
 	{
-		const PicGroupDef &gp = PicBucket::instance().defs[g];
+		const PicGroupDef &gp = PicBucket::instance().grps[g];
 		for (p = 0; p < gp.numPics(); ++p)
 		{
 			updatePic(g, p, 1);
@@ -533,21 +535,22 @@ void PicsSelectWidget::pressedGlobalAll()
 void PicsSelectWidget::pressedGlobalNone()
 {
 	int g, p;
-	for (g = 0; g < PicBucket::instance().numDefs() ; ++g)
+	for (g = 0; g < PicBucket::instance().grps.size() ; ++g)
 	{
-		const PicGroupDef &gp = PicBucket::instance().defs[g];
+		PicGroupDef &gp = PicBucket::mutableInstance().grps[g];
 		for (p = 0; p < gp.numPics(); ++p)
 		{
-			gp.pics[p].setSelected(0);
-			gp.pics[p].lastnSelected = 1;
+			PicDef& def = gp.getPic(p);
+			def.setSelected(0);
+			def.lastnSelected = 1;
 		}
 	}
 
 	globalSignalBlock(true);
 	setUpdatesEnabled(false);
-	for (g = 0; g < PicBucket::instance().numDefs() ; ++g) // UpdateCount optimization
+	for (g = 0; g < PicBucket::instance().grps.size() ; ++g) // UpdateCount optimization
 	{
-		const PicGroupDef &gp = PicBucket::instance().defs[g];
+		const PicGroupDef &gp = PicBucket::instance().grps[g];
 		for (p = 0; p < gp.numPics(); ++p)
 		{
 			updatePic(g, p, 0);
@@ -576,32 +579,29 @@ void PicsSelectWidget::updateView(int hint) // SLOT
 
 	int g, p;
 	// reset everything
-	for (g = 0; g < bucket.numDefs() ; ++g)
+	for (int pi = 0; pi < bucket.pdefs.size() ; ++pi)
 	{
-		for (p = 0; p < bucket.defs[g].numPics(); ++p)
+		const PicDef &def = bucket.pdefs[pi];
+		def.nUsed = 0;
+		if (doReadCheckFromSlv)
 		{
-			const PicDef &def = bucket.defs[g].pics[p];
-			def.nUsed = 0;
-			if (doReadCheckFromSlv)
-			{
-				def.setSelected(0);
-			}
+			def.setSelected(0);
 		}
 	}
 	if (curslv != NULL)
 	{ // make everybody in the solution light up
-		for (int plci = 0; plci < curslv->slvsz; ++plci)
+		for (int plci = 0; plci < curslv->dt.size(); ++plci)
 		{
-			int sc = curslv->dt[plci].sc;
-			++(bucket.defs[curslv->picdt[sc].gind].pics[curslv->picdt[sc].pind].nUsed);
+			int abs_sc = curslv->dt[plci].abs_sc;
+			++(bucket.getPic(curslv->picdt[abs_sc].gind, curslv->picdt[abs_sc].pind).nUsed);
 		}
 
 		if (doReadCheckFromSlv)
 		{
 			// make everybody that is selected be pressed
-			for (int pici = 0; pici < curslv->picssz; ++pici)
+			for (int pi = 0; pi < curslv->picdt.size(); ++pi)
 			{
-				bucket.defs[curslv->picdt[pici].gind].pics[curslv->picdt[pici].pind].addSelected(1);
+				bucket.getPic(curslv->picdt[pi].gind, curslv->picdt[pi].pind).addSelected(1);
 			}
 		}
 	}
@@ -610,11 +610,11 @@ void PicsSelectWidget::updateView(int hint) // SLOT
 	setUpdatesEnabled(false);
 
 	// this needs to be outside since we may have zeroed something. and UpdateCount optimization.
-	for (g = 0; g < bucket.numDefs() ; ++g)
+	for (g = 0; g < bucket.grps.size() ; ++g)
 	{	
-		for (p = 0; p < bucket.defs[g].numPics(); ++p)
+		for (p = 0; p < bucket.grps[g].numPics(); ++p)
 		{
-			const PicDef &def = bucket.defs[g].pics[p];
+			const PicDef &def = bucket.getPic(g, p);
 			updateSolNum(g, p, def.nUsed);
 			if (doReadCheckFromSlv || doUpdateCheck)
 			{
@@ -652,10 +652,10 @@ void PicsSelectWidget::changeFamBox(int count, int f) // SLOT
 	const PicFamily &fam = bucket.families[f];
 	for (g = fam.startIndex; g < fam.startIndex + fam.numGroups; ++g)
 	{
-		const PicGroupDef &grp = bucket.defs[g];
+		const PicGroupDef &grp = bucket.grps[g];
 		for (p = 0; p < grp.numPics(); ++p)
 		{
-			grp.pics[p].setSelected(count);
+			grp.getPic(p).setSelected(count);
 		}
 	}
 
@@ -668,7 +668,7 @@ void PicsSelectWidget::changeFamBox(int count, int f) // SLOT
 
 	for (g = fam.startIndex; g < fam.startIndex + fam.numGroups; ++g)
 	{
-		const PicGroupDef &grp = bucket.defs[g];
+		const PicGroupDef &grp = bucket.grps[g];
 		for (p = 0; p < grp.numPics(); ++p)
 		{
 			updatePic(g, p, count); // save all the UpdateCounts
@@ -696,7 +696,7 @@ void PicsSelectWidget::changeToResetValues() // SLOT
 		int setTo = fam.onResetSetCount;
 		for (g = fam.startIndex; g < fam.startIndex + fam.numGroups; ++g)
 		{
-			const PicGroupDef &grp = bucket.defs[g];
+			const PicGroupDef &grp = bucket.grps[g];
 			for (p = 0; p < grp.numPics(); ++p)
 			{
 				updatePic(g, p, setTo); // save all the UpdateCounts

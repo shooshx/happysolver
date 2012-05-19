@@ -74,9 +74,9 @@ OptionsDlg::OptionsDlg(QWidget *parent, Configuration *conf)
 	ui.SD_lines->addItem("All", (int)LINES_ALL);
 	ui.SD_lines->addItem("Whites", (int)LINES_WHITE);
 
-	for(i = 0; i < 24; ++i)
-		ui.SD_colorFlip->addItem(QString("%1").arg(colorPremut[i]), colorPremut[i]);
-	connect(ui.SD_colorFlip, SIGNAL(currentIndexChanged(int)), this, SLOT(colorFlipChanged()));
+// 	for(i = 0; i < 24; ++i)
+// 		ui.SD_colorFlip->addItem(QString("%1").arg(colorPremut[i]), colorPremut[i]);
+// 	connect(ui.SD_colorFlip, SIGNAL(currentIndexChanged(int)), this, SLOT(colorFlipChanged()));
 
 	updateAll(m_conf);
 }
@@ -114,7 +114,7 @@ void OptionsDlg::updateAll(Configuration *conf)
 	ui.SD_highLevel->setCurrentIndex(-1); // reset it so that the next call would cause a signal to be sent
 	ui.SD_highLevel->setCurrentIndex(ui.SD_highLevel->findData(conf->disp.preConf));
 
-	ui.SD_colorFlip->setCurrentIndex(ui.SD_colorFlip->findData(conf->disp.nSwapTexEndians));
+//	ui.SD_colorFlip->setCurrentIndex(ui.SD_colorFlip->findData(conf->disp.nSwapTexEndians));
 }
 
 // check out
@@ -164,7 +164,7 @@ void OptionsDlg::accept()
 	{
 		m_conf->disp.fromPreConf(m_conf->disp.preConf);
 	}
-	m_conf->disp.nSwapTexEndians = ui.SD_colorFlip->itemData(ui.SD_colorFlip->currentIndex()).toInt();
+//	m_conf->disp.nSwapTexEndians = ui.SD_colorFlip->itemData(ui.SD_colorFlip->currentIndex()).toInt();
 
 	m_conf->nOptionsSelTab = ui.TabWidget->currentIndex();
 
@@ -287,6 +287,6 @@ void OptionsDlg::updateSDhighLevel(int index)
 
 void OptionsDlg::colorFlipChanged()
 {
-	int n = ui.SD_colorFlip->itemData(ui.SD_colorFlip->currentIndex()).toInt();
-	PicBucket::mutableInstance().updateSwapEndian(n);
+//	int n = ui.SD_colorFlip->itemData(ui.SD_colorFlip->currentIndex()).toInt();
+//	PicBucket::mutableInstance().updateSwapEndian(n);
 }

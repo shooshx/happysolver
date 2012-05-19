@@ -23,6 +23,7 @@
 	Declares the UsedPieces and ShapePlace classes and their inline methods.
 */
 
+#include "PicsSet.h"
 
 /** UsedPieces is a bit array which indicated which pieces are in use.
 	It is used solely in the solution engine for the purpose of marking
@@ -32,96 +33,96 @@
 class UsedPieces
 {	// binary array
 public:
-	UsedPieces(int size_);
-	~UsedPieces();
-	void realloc(int newsize);
+	UsedPieces(const PicsSet* picSet) : m_dt(picSet->compSize()) {
+		clear();
+		for(int i = 0; i < m_dt.size(); ++i) {
+			m_dt[i].count = picSet->comp[i].count;
+		}
+	}
 
-	bool axx(const int n);
-	void set(const int n, const bool val);
-	void multset(const int* rep, const int rpsz);
-	void clear();
+	int get(int i) const { return m_dt[i].use; }
+	void addOne(int i) {
+		++m_dt[i].use;
+	}
+	void subOne(int i) {
+		--m_dt[i].use;
+	}
+	int size() const { return m_dt.size(); }
+
+	//void multset(const int* rep, const int rpsz);
+	void clear() {
+		//std::fill(m_dt.begin(), m_dt.end(), 0);
+		for(int i = 0; i < m_dt.size(); ++i) {
+			m_dt[i].use = 0;
+		}
+	}
+	inline bool allUsed(int i) const {
+		const UseEntry& e = m_dt[i];
+		return e.use >= e.count;
+	}
 	
-	static inline bool allones(UsedPieces& first, UsedPieces& second);
-
-	int cnt, size;
 private:
-	
-	bool *dt;
-
+	struct UseEntry {
+		int use;
+		int count;
+	};
+	vector<UseEntry> m_dt;    // number of used pieces of each PicType
 };
 
-inline UsedPieces::UsedPieces(int size_): cnt(0), size(size_), dt(NULL)
-{
-	if (size == 0)
-		return;
-	dt = new bool[size];
-	clear();
-}
+class TriedPieces {
+public:
+	TriedPieces() :cnt(0) {}
+	void realloc(int newsize) {
+		m_dt.resize(newsize);
+		clear();
+	}
 
-inline void UsedPieces::realloc(int newsize)
-{
-	delete[] dt;
-	size = newsize;
-	dt = new bool[size];
-	clear();
-}
+	int size() const { return m_dt.size(); }
 
-inline UsedPieces::~UsedPieces()
-{
-	delete[] dt;
-}
+	bool get(int i) const { return (bool)m_dt[i]; }
+	void set(int i, bool val);
 
-inline bool UsedPieces::axx(const int n)
-{
-	return dt[n];
-}
+	//void multset(const int* rep, const int rpsz);
+	inline void clear();
 
-inline void UsedPieces::set(const int n, const bool val)
+	bool tryedAll() const { return cnt == m_dt.size(); }
+
+	int cnt; // total count of tried pieces
+
+private:
+	vector<int> m_dt;
+};
+
+
+
+inline void TriedPieces::set(const int i, const bool val)
 {
-	if (val != dt[n])
+	if (val != (bool)m_dt[i])
 	{
-		dt[n] = val;
-		if (val) ++cnt;
-		else --cnt;
+		m_dt[i] = (bool)val;
+		if (val) 
+			++cnt;
+		else 
+			--cnt;
 	}
 }
 
 /// set a number of indexes to true, according to the list supplied.
 /// this list will most likely be the PicType::rep list of
 /// repeating pieces.
-inline void UsedPieces::multset(const int* list, const int lsz)
-{
-	for(int i = 0; i < lsz; ++i)
-	{
-		if (!dt[list[i]])
-		{
-			dt[list[i]] = true;
-			++cnt;
-		}
-	}
-}
+// inline void UsedPieces::multset(const int* list, const int lsz)
+// {
+// 	for(int i = 0; i < lsz; ++i)
+// 	{
+// 		if (!dt[list[i]])
+// 		{
+// 			dt[list[i]] = true;
+// 			++cnt;
+// 		}
+// 	}
+// }
 
-inline void UsedPieces::clear()
-{
-	for(int i = 0; i < size; ++i)
-	{
-		dt[i] = false;
-	}
-	cnt = 0;
-}
 
-/// check if the is an index in which both lists have a value of false.
-inline bool UsedPieces::allones(UsedPieces& first, UsedPieces& second)
-{
-	Q_ASSERT(first.size == second.size);
-	
-	for (int i = 0; i < first.size; ++i)
-	{
-		if ((!first.axx(i)) && (!second.axx(i))) // both are 0;
-			return false;
-	}
-	return true;
-}
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -143,25 +144,36 @@ inline bool UsedPieces::allones(UsedPieces& first, UsedPieces& second)
 class ShapePlace
 {
 public:
-	ShapePlace(int useSize = 0) :sc(-1), rt(0), tryd(useSize) {}
-	void realloc(int newsize); // needed since default ctor int he array receives 0 as size
-	void clear();
+	ShapePlace(int useSize = 0) :sc(-1), rt(0) {}
+
+// 	void clear() {
+// 		sc = -1;
+// 		rt = 0;
+// 		tryd.clear();
+// 	}
+
+	inline void mclear() {
+		sc = -1;
+		rt = 0;
+		mtryd.clear();
+	}
+
+	void allclear() {
+		sc = -1;
+		rt = 0;
+		mtryd.clear();
+		possible.clear();
+	}
+
 
 	int sc;		///< which part is now in this place
 	int rt;		///< what is it's rotation, index in rotation array
-	UsedPieces tryd;  ///< which pieces were already tried in this place in the current iteration.
+	//TriedPieces tryd;  ///< which pieces were already tried in this place in the current iteration.
+	TriedPieces mtryd; // should be the maximum size of 'possible' which is the total count or rtns in comp
+
+	vector<TypeRef> possible;
 };
 
-inline void ShapePlace::clear()
-{
-	sc = -1;
-	rt = 0;
-	tryd.clear();
-}
 
-inline void ShapePlace::realloc(int newsize)
-{
-	tryd.realloc(newsize);
-}
 
 #endif // __CUBEACC_H_INCLUDED__

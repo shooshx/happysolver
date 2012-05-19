@@ -36,15 +36,17 @@ class Shape;
 struct RunStats
 {
 public:
-	RunStats() : tms(0), lucky(false) {}
+	RunStats() : tms(0), lucky(false), maxp(0) {}
 	void reset() 
 	{
 		tms = 0;
 		lucky = false;
+		maxp = 0;
 	}
 
 	volatile qint64 tms; ///< number of piece changes
 	volatile bool lucky; ///< luck state of the engine.
+	volatile int maxp;  ///< the maximal place reached on the shape
 };
 
 

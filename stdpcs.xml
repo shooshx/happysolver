@@ -232,63 +232,6 @@
 				<piece x1="672" y1="832">1 1 0 1 1  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 0 1 0 0</piece>
 			</group>
 		</family>
-		<!-- these pieces are the same as little-genious but with different orientation-->
-		<family name="New Little Genius" index="1" onResetSetCount="0" size="8mm" icon="images/sampleNewLittleGenius.png">
-			<group name="NLG-Fruit">
-				<fill type="TEXTURE_INDIVIDUAL_WHOLE" texind="4" k="0" r="65" g="154" b="232"/>
-				<piece x1="32"  y1="32">0 0 1 0 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 0 0</piece>
-				<piece x1="160" y1="32">0 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 0</piece>
-				<piece x1="288" y1="32">0 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 0</piece>
-				<piece x1="416" y1="32">0 0 1 0 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 0 0</piece>
-				<piece x1="544" y1="32">0 0 1 0 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 0 0</piece>
-				<piece x1="672" y1="32">0 1 0 1 1  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 1</piece>
-			</group>
-			<group name="NLG-Animals">
-				<fill type="TEXTURE_INDIVIDUAL_WHOLE" texind="4" k="0" r="72" g="222" b="68"/>
-				<piece x1="32"  y1="192">1 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 0</piece>
-				<piece x1="160" y1="192">1 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 0</piece>
-				<piece x1="288" y1="192">0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 1</piece>
-				<piece x1="416" y1="192">1 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 0</piece>
-				<piece x1="544" y1="192">1 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 1 0 1 1</piece>
-				<piece x1="672" y1="192">0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 1</piece>
-			</group>
-			<group name="NLG-Vehicles">
-				<fill type="TEXTURE_INDIVIDUAL_WHOLE" texind="4" k="0" r="254" g="184" b="26"/>
-				<piece x1="32"  y1="352">0 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>
-				<piece x1="160" y1="352">1 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 1 0 1 0</piece>
-				<piece x1="288" y1="352">0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 0 0</piece>
-				<piece x1="416" y1="352">0 0 1 0 1  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  0 1 0 1 1</piece>
-				<piece x1="544" y1="352">1 1 0 1 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 0 1 0 0</piece>
-				<piece x1="672" y1="352">1 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 1 0 1 0</piece>
-			</group>
-			<group name="NLG-Sports">
-				<fill type="TEXTURE_INDIVIDUAL_WHOLE" texind="4" k="0" r="252" g="115" b="35"/>
-				<piece x1="32"  y1="512">0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 0 1 0 0</piece>
-				<piece x1="160" y1="512">0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 0 1 0 0</piece>
-				<piece x1="288" y1="512">0 1 0 1 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 1 0 1 1</piece>
-				<piece x1="416" y1="512">0 1 0 1 1  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 0 1 0 0</piece>
-				<piece x1="544" y1="512">0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 0</piece>
-				<piece x1="672" y1="512">0 1 0 1 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 1 0 1 1</piece>
-			</group>
-			<group name="NLG-Weather">
-				<fill type="TEXTURE_INDIVIDUAL_WHOLE" texind="4" k="0" r="255" g="61" b="61"/>
-				<piece x1="32"  y1="672">1 1 0 1 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
-				<piece x1="160" y1="672">0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>
-				<piece x1="288" y1="672">0 1 0 1 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 0 1 0 0</piece>
-				<piece x1="416" y1="672">0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 0</piece>
-				<piece x1="544" y1="672">1 1 0 1 1  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 1 0 1 1</piece>
-				<piece x1="672" y1="672">0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 0 1 0 0</piece>
-			</group>
-			<group name="NLG-Nature">
-				<fill type="TEXTURE_INDIVIDUAL_WHOLE" texind="4" k="0" r="188" g="0" b="177"/>
-				<piece x1="32"  y1="832">0 1 0 1 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 0</piece>
-				<piece x1="160" y1="832">0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 1</piece>
-				<piece x1="288" y1="832">0 1 0 1 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 0 0</piece>
-				<piece x1="416" y1="832">0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 1</piece>
-				<piece x1="544" y1="832">0 1 0 1 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  1 1 0 1 0</piece>
-				<piece x1="672" y1="832">0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 1</piece>
-			</group>
-		</family>
 		<family name ="Color Profi Cube" index="4" onResetSetCount="0" size="8mm" icon="images/sampleColorProfi.png">
 			<group name="CPC-Confusius">
 				<fill type="TEXTURE_BLEND" texind="0" k="0" r="111" g="185" b="210" exR="15" exG="146" exB="159"/>
@@ -373,7 +316,7 @@
 		</family>
 		<family name="Baubox" index="6" onResetSetCount="0" size="10mm" icon="images/sampleBaub.png">
 			<group name="BB-Blue"> <!-- blue -->
-				<fill type="COLOR" k="0" r="73" g="129" b="255"/>
+				<fill type="COLOR" k="0" r="51" g="204" b="204"/>
 				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 0 0</piece>
 				<piece>0 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>
 				<piece>1 0 1 0 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
@@ -382,23 +325,23 @@
 				<piece>0 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>
 			</group>
 			<group name="BB-Green"> <!-- green -->
-				<fill type="COLOR" k="0" r="43" g="221" b="56"/>
+				<fill type="COLOR" k="0" r="136" g="183" b="0"/>
 				<pieces copy="BB-Blue"/>
 			</group>
 			<group name="BB-Yellow"> <!-- yellow -->
-				<fill type="COLOR" k="0" r="255" g="255" b="0"/>
+				<fill type="COLOR" k="0" r="255" g="204" b="0"/>
 				<pieces copy="BB-Blue"/>
 			</group>
 			<group name="BB-Orange"> <!-- orange --> 
-				<fill type="COLOR" k="0" r="255" g="140" n="0"/>
+				<fill type="COLOR" k="0" r="255" g="102" n="0"/>
 				<pieces copy="BB-Blue"/>
 			</group>
 			<group name="BB-Red"> <!-- red -->
-				<fill type="COLOR" k="0" r="255" g="43" b="48"/>
+				<fill type="COLOR" k="0" r="255" g="0" b="0"/>
 				<pieces copy="BB-Blue"/>
 			</group>
 			<group name="BB-Purple"> <!-- purple -->
-				<fill type="COLOR" k="0" r="148" g="0" b="136"/>
+				<fill type="COLOR" k="0" r="153" g="51" b="102"/>
 				<pieces copy="BB-Blue"/>
 			</group>
 		</family>
@@ -433,5 +376,62 @@
 				<pieces copy="C-Blue"/>
 			</group>
 		</family>
+		<!-- these pieces are the same as little-genious but with different orientation-->
+		<family name="New Little Genius" index="1" onResetSetCount="0" size="8mm" icon="images/sampleNewLittleGenius.png">
+			<group name="NLG-Fruit">
+				<fill type="TEXTURE_INDIVIDUAL_WHOLE" texind="4" k="0" r="65" g="154" b="232"/>
+				<piece x1="32"  y1="32">0 0 1 0 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 0 0</piece>
+				<piece x1="160" y1="32">0 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 0</piece>
+				<piece x1="288" y1="32">0 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 0</piece>
+				<piece x1="416" y1="32">0 0 1 0 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 0 0</piece>
+				<piece x1="544" y1="32">0 0 1 0 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 0 0</piece>
+				<piece x1="672" y1="32">0 1 0 1 1  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 1</piece>
+			</group>
+			<group name="NLG-Animals">
+				<fill type="TEXTURE_INDIVIDUAL_WHOLE" texind="4" k="0" r="72" g="222" b="68"/>
+				<piece x1="32"  y1="192">1 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 0</piece>
+				<piece x1="160" y1="192">1 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 0</piece>
+				<piece x1="288" y1="192">0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 1</piece>
+				<piece x1="416" y1="192">1 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 0</piece>
+				<piece x1="544" y1="192">1 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 1 0 1 1</piece>
+				<piece x1="672" y1="192">0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 1</piece>
+			</group>
+			<group name="NLG-Vehicles">
+				<fill type="TEXTURE_INDIVIDUAL_WHOLE" texind="4" k="0" r="254" g="184" b="26"/>
+				<piece x1="32"  y1="352">0 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>
+				<piece x1="160" y1="352">1 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 1 0 1 0</piece>
+				<piece x1="288" y1="352">0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 0 0</piece>
+				<piece x1="416" y1="352">0 0 1 0 1  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  0 1 0 1 1</piece>
+				<piece x1="544" y1="352">1 1 0 1 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 0 1 0 0</piece>
+				<piece x1="672" y1="352">1 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 1 0 1 0</piece>
+			</group>
+			<group name="NLG-Sports">
+				<fill type="TEXTURE_INDIVIDUAL_WHOLE" texind="4" k="0" r="252" g="115" b="35"/>
+				<piece x1="32"  y1="512">0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 0 1 0 0</piece>
+				<piece x1="160" y1="512">0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 0 1 0 0</piece>
+				<piece x1="288" y1="512">0 1 0 1 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 1 0 1 1</piece>
+				<piece x1="416" y1="512">0 1 0 1 1  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 0 1 0 0</piece>
+				<piece x1="544" y1="512">0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 0</piece>
+				<piece x1="672" y1="512">0 1 0 1 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 1 0 1 1</piece>
+			</group>
+			<group name="NLG-Weather">
+				<fill type="TEXTURE_INDIVIDUAL_WHOLE" texind="4" k="0" r="255" g="61" b="61"/>
+				<piece x1="32"  y1="672">1 1 0 1 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
+				<piece x1="160" y1="672">0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>
+				<piece x1="288" y1="672">0 1 0 1 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 0 1 0 0</piece>
+				<piece x1="416" y1="672">0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 0</piece>
+				<piece x1="544" y1="672">1 1 0 1 1  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 1 0 1 1</piece>
+				<piece x1="672" y1="672">0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 0 1 0 0</piece>
+			</group>
+			<group name="NLG-Nature">
+				<fill type="TEXTURE_INDIVIDUAL_WHOLE" texind="4" k="0" r="188" g="0" b="177"/>
+				<piece x1="32"  y1="832">0 1 0 1 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 0</piece>
+				<piece x1="160" y1="832">0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 1</piece>
+				<piece x1="288" y1="832">0 1 0 1 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 0 0</piece>
+				<piece x1="416" y1="832">0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 1</piece>
+				<piece x1="544" y1="832">0 1 0 1 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  1 1 0 1 0</piece>
+				<piece x1="672" y1="832">0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 1</piece>
+			</group>
+		</family>	
 	</outlines>
 </pieces>

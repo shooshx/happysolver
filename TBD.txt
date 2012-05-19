@@ -1,3 +1,9 @@
+BUGS:
+------
+Vista start menu short cut doesn't work
+
+
+
 
 ---- Environment ---------------
 - double click a file to open in the same window

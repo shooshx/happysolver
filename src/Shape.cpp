@@ -15,13 +15,16 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-#include <QMessageBox>
-#include <QLinkedList>
 
-#include "general.h"
 #include "Shape.h"
+#include "general.h"
 #include "Space3D.h"
 #include "BuildWorld.h"
+
+#include <QMessageBox>
+#include <QLinkedList>
+#include <stdio.h>
+
 
 
 #define HEADER_SHAPE "Shape Definition"
@@ -334,7 +337,7 @@ void Shape::readAxis(const BuildWorld *build, int iss, int jss, int pgss, EPlane
 	}
 }
 
-
+/*
 int Shape::faceNeiFirst(int whos, TransType trans[])
 {
 	for(int i = 0; i < 4; ++i)
@@ -344,7 +347,9 @@ int Shape::faceNeiFirst(int whos, TransType trans[])
 	}
 	return -1;
 }
+*/
 
+// create a translation of face neighbors according to the order of their importance.
 int Shape::faceNeiFirstOpt(int whos, TransType trans[])
 {
 	int win = -1, wrank = 0, cand, rank; // winner, candidate
@@ -539,26 +544,7 @@ EGenResult Shape::generate(const BuildWorld *build)
 
 	// to help the face travesal transform routine, set the face-sides information temporatly
 	// needed so faceNei() could work properly in O(1)
-	int *counters = new int[fcn]; // counts number of nei for every face for proper index
-	for (i = 0; i < fcn; ++i) 
-	{
-		counters[i] = 0;
-		for (j = 0; j < 4; ++j) // they can stay -1 even after all if the shape is open
-			faces[i].sides[j] = -1;
-	}
-
-	int fc;
-	for(i = 0; i < sdn; ++i)
-	{
-		fc = sides[i].nei[0];
-		faces[fc].sides[counters[fc]++] = i;
-		fc = sides[i].nei[1];
-		faces[fc].sides[counters[fc]++] = i;
-	}
-	delete[] counters; // possibly optimize? TBD
-
-	for (i = 0; i < fcn; ++i)
-		faceNei(i, faces[i].nei);
+	make_sides_facenei();
 
 	// prepare ground for transform
 	FaceDef *revis = new FaceDef[fcn];
@@ -604,6 +590,7 @@ EGenResult Shape::generate(const BuildWorld *build)
 
 	makeReverseNei();
 	makeVolumeAndFacing();
+	makePieceCheckBits();
 
 //	t6 = GetTickCount();
 //	QMessageBox::information(g_main, APP_NAME, QString("1=%1\n2=%2\n25=%3\n3=%4\n4=%5\n5=%6").arg(t1-s).arg(t2-t1).arg(t25-t2).arg(t3-t25).arg(t4-t3).arg(t5-t4).arg(t6-t5), QMessageBox::Ok);
@@ -611,10 +598,54 @@ EGenResult Shape::generate(const BuildWorld *build)
 	return GEN_RESULT_OK;
 }
 
+// make the check-bits mask for every face, according to its relative place in the placing order
+// pieces that are placed before a piece are added to the mask
+void Shape::makePieceCheckBits()
+{
+	for(int i = 0; i < fcn; ++i) {
+		faces[i].index = i;
+	}
+	// by this point, the faces are ordered according to the frameX-frameY order
+	for(int i = 0; i < fcn; ++i) 
+	{
+		FaceDef& f = faces[i];
+		TPicBits fmask = 0;
+		// does each neighbor face exist when we put this piece?
+		bool neiLow[] = { false, false, false, false };
+		
+		// check sides
+		TPicBits faceNeiMasker = 0x000E;
+		for (int j = 0; j < 4; ++j) {
+			int neiInd = f.nei[j];
+			neiLow[j] = (neiInd != -1 && faces[neiInd].index < f.index);
+			if (neiLow[j])
+				fmask |= faceNeiMasker;
+			faceNeiMasker <<= 4;
+		}
+
+		// check corners
+		faceNeiMasker = 0x0001;
+		for (int j = 0; j < 4; ++j) {
+			if (neiLow[(j-1+4)%4] && neiLow[j])
+				fmask |= faceNeiMasker;
+			faceNeiMasker <<= 4;
+		}
+
+		f.fmask = fmask;
+
+		printf("%3d  mask=%04x\n", i, fmask);
+	}
+	printf("\n");
+}
 
 
+// for each face, save if it's facing outside or inside, for example
+//    +--In--+
+// Out|    In|
+//    +-Out--+
 bool Shape::makeVolumeAndFacing()
 {
+	// space of cubes. the pieces are thin sheets between the cubes
 	BoundedBlockSpace3D space(size.x/4 + 2, size.y/4 + 2, size.z/4 + 2); // pad with one layer from every direction
 	int i, x, y, z, d;
 	for (i = 0; i < fcn; ++i)
@@ -631,12 +662,38 @@ bool Shape::makeVolumeAndFacing()
 //	QMessageBox::information(NULL, APP_NAME, QString("old: %1").arg(volume), QMessageBox::Ok);
 	
 	for (i = 0; i < fcn; ++i)
-	{	// front
+	{
 		faces[i].facing = (space.axx(faces[i].ex.x/4 + 1, faces[i].ex.y/4 + 1, faces[i].ex.z/4 + 1).fill)?FACING_IN:FACING_OUT;
 		if (faces[i].dr == XY_PLANE) faces[i].facing = (EFacing)(1 - faces[i].facing); // switch it's direction.
 		// I have no idea why that is like that.
 	}
 	return true;
+}
+
+
+void Shape::make_sides_facenei() {
+	vector<int> counters(fcn, 0);
+
+	for (int i = 0; i < fcn; ++i) 
+	{
+		for (int j = 0; j < 4; ++j)
+		{ // they can stay -1 even after all if the shape is open
+			faces[i].sides[j] = -1;
+		}
+	}
+
+	int fc;
+	for(int i = 0; i < sdn; ++i)
+	{
+		fc = sides[i].nei[0];
+		faces[fc].sides[counters[fc]++] = i;
+		fc = sides[i].nei[1];
+		faces[fc].sides[counters[fc]++] = i;
+	}
+
+	for (int i = 0; i < fcn; ++i) 
+		faceNei(i, faces[i].nei);
+
 }
 
 
@@ -646,26 +703,19 @@ bool Shape::makeReverseNei()
 {
 	int i, j, fc;
 
-	int *counters = new int[fcn];
+	// build face neibours according to the reverse nei
+	// we rearranged the faces since the last time this was done
+	make_sides_facenei();
+
+	vector<int> counters(fcn, 0);
+
 	for (i = 0; i < fcn; ++i) 
 	{
-		counters[i] = 0;
 		for (j = 0; j < 4; ++j)
 		{ // they can stay -1 even after all if the shape is open
-			faces[i].sides[j] = -1;
 			faces[i].corners[j] = -1;
 		}
 	}
-
-	for(i = 0; i < sdn; ++i)
-	{
-		fc = sides[i].nei[0];
-		faces[fc].sides[counters[fc]++] = i;
-		fc = sides[i].nei[1];
-		faces[fc].sides[counters[fc]++] = i;
-	}
-
-	for (i = 0; i < fcn; ++i) counters[i] = 0;
 
 	for (i = 0; i < cnn; ++i)
 	{
@@ -676,12 +726,6 @@ bool Shape::makeReverseNei()
 				faces[fc].corners[counters[fc]++] = i;
 		}
 	}
-
-	delete[] counters;
-
-	// build face neibours according to the reverse nei
-	for (i = 0; i < fcn; ++i) 
-		faceNei(i, faces[i].nei);
 
 
 	///////////// order them now ////////////////
@@ -712,6 +756,9 @@ bool Shape::makeReverseNei()
 			cfc.sides[j] = trans[j];
 			trans[j] = -1;
 		}
+
+		// rearrange face nei according to the new sides order
+		faceNei(fc, faces[fc].nei);
 		
 		// order corners
 		for (j = 0; j < 4; ++j)
@@ -737,12 +784,13 @@ bool Shape::makeReverseNei()
 
 
 // BFS
+/*
 void Shape::faceNei(int whos, int fnei[4])
 {
 	int nec=0, i;
 	for(i = 0; i < 4; ++i)
 	{
-		SideDef &sd = sides[faces[whos].sides[i]];
+		const SideDef &sd = sides[faces[whos].sides[i]];
 		if (sd.nei[0] == whos)
 		{
 			fnei[nec++] = sd.nei[1];
@@ -756,8 +804,31 @@ void Shape::faceNei(int whos, int fnei[4])
 	{
 		fnei[i] = -1;
 	}
+}*/
+
+// set the face nei according to the order of the sides
+void Shape::faceNei(int whos, int fnei[4])
+{
+	for(int i = 0; i < 4; ++i)
+	{
+		const SideDef &sd = sides[faces[whos].sides[i]];
+		if (sd.nei[0] == whos)
+		{
+			fnei[i] = sd.nei[1];
+		}
+		else if (sd.nei[1] ==  whos) // needed because it can be not one of them
+		{
+			fnei[i] = sd.nei[0];
+		}
+		else
+		{
+			fnei[i] = -1;
+		}
+	}
+
 }
 
+/*
 EGenResult Shape::reArrangeFacesBFS(FaceDef faces[], FaceDef revis[], TransType trans[])
 {
 	int fnei[4], revi = 1, j;
@@ -785,7 +856,7 @@ EGenResult Shape::reArrangeFacesBFS(FaceDef faces[], FaceDef revis[], TransType 
 	}
 	return GEN_RESULT_OK;
 }
-
+*/
 
 bool Shape::createTrasformTo(const Shape *news, TTransformVec& movedTo, bool* trivialTransform)
 {

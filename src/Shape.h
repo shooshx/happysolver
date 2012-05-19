@@ -20,8 +20,10 @@
 
 #include "general.h"
 #include "MyFile.h"
-#include <QLinkedList>
 #include "Space3D.h"
+#include "PicArr.h"
+
+#include <QLinkedList>
 
 class BuildWorld;
 struct SqrLimits;
@@ -90,6 +92,8 @@ public:
 		Coord3d ex;		///< start point of the face
 
 		EFacing facing;
+		int index; // in the shape faces array
+		TPicBits fmask;
 
 		// corners and sides of this face, reverse neibours
 		int corners[4]; 
@@ -176,6 +180,8 @@ private:
 
 	bool makeReverseNei(); // returns true if succesfull
 	bool makeVolumeAndFacing();
+	void makePieceCheckBits();
+	void make_sides_facenei() ;
 	int locateFace(EPlane ldr, Coord3d lex) const;	// locate a face, if not existing, return -1;
 
 	void faceNei(int whos, int fnei[4]);	// return a face's neibours

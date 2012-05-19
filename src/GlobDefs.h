@@ -46,4 +46,6 @@ extern QWidget* g_main;
 #define MAX_IDENTICAL_PIECES 10000 // maximum number of identical pics permitted
 
 
+#define WITH_EXPORT_OPTION
+
 #endif

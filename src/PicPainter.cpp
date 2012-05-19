@@ -106,7 +106,9 @@ void PicPainter::placeSidePolygon(MyObject& obj, int b, bool is1, int x, int y) 
 	rbx = bx = double(x)/5.0;
 	rby = by = double(y)/5.0;
 
-	if (m_pdef->mygrp->drawtype == DRAW_TEXTURE_INDIVIDUAL_HALF)
+	const PicGroupDef *mygrp = m_pdef->mygrp();
+
+	if (mygrp->drawtype == DRAW_TEXTURE_INDIVIDUAL_HALF)
 	{
 		rbx = 0.0; rby = 0.0; // side patches of this has their own coordinates
 	}
@@ -121,13 +123,13 @@ void PicPainter::placeSidePolygon(MyObject& obj, int b, bool is1, int x, int y) 
 	baseancs[2] = TexAnchor(rbx + 0.2, rby + 0.2);
 	baseancs[3] = TexAnchor(rbx, rby + 0.2);
 
-	if (m_pdef->mygrp->drawtype == DRAW_TEXTURE_INDIVIDUAL_HALF)
+	if (mygrp->drawtype == DRAW_TEXTURE_INDIVIDUAL_HALF)
 	{ // rescale it since the texture is a big one
-		double xfact = m_pdef->mygrp->sideTex->img.width(), yfact = m_pdef->mygrp->sideTex->img.height();
+		double xfact = mygrp->sideTex->img.width(), yfact = mygrp->sideTex->img.height();
 		for(i = 0; i < 4; ++i) // pntn == 4
 		{
-			baseancs[i].x += ((double)(m_pdef->mygrp->sideTexX) / xfact);
-			baseancs[i].y += ((double)(m_pdef->mygrp->sideTexY) / yfact);
+			baseancs[i].x += ((double)(mygrp->sideTexX) / xfact);
+			baseancs[i].y += ((double)(mygrp->sideTexY) / yfact);
 		}
 	}
 
@@ -150,7 +152,7 @@ void PicPainter::placeSidePolygon(MyObject& obj, int b, bool is1, int x, int y) 
 	if (b < 0)
 		return; // enough of this shananigan, we're not on the sides.
 
-	if (m_pdef->mygrp->drawtype == DRAW_TEXTURE_INDIVIDUAL_HALF)
+	if (mygrp->drawtype == DRAW_TEXTURE_INDIVIDUAL_HALF)
 	{
 		for (i = 0; i < 4; ++i)
 		{
@@ -199,18 +201,18 @@ void PicPainter::placeSidePolygon(MyObject& obj, int b, bool is1, int x, int y) 
 	}
 
 
-	if (polyf & POLY_A) obj.addPoly(pntiA, ancsR1, m_pdef->mygrp->sideTex); //if its an out of place, it's textured
-	if (polyf & POLY_B) obj.addPoly(pntiB, ancsR2, m_pdef->mygrp->sideTex);
-	if (polyf & POLY_C) obj.addPoly(pntiC, ancsR3, m_pdef->mygrp->sideTex); //if its an out of place, it's textured
-	if (polyf & POLY_D) obj.addPoly(pntiD, ancsR4, m_pdef->mygrp->sideTex);
+	if (polyf & POLY_A) obj.addPoly(pntiA, ancsR1, mygrp->sideTex); //if its an out of place, it's textured
+	if (polyf & POLY_B) obj.addPoly(pntiB, ancsR2, mygrp->sideTex);
+	if (polyf & POLY_C) obj.addPoly(pntiC, ancsR3, mygrp->sideTex); //if its an out of place, it's textured
+	if (polyf & POLY_D) obj.addPoly(pntiD, ancsR4, mygrp->sideTex);
 	qSwap(pntiA[1], pntiA[3]); qSwap(ancsR1[1], ancsR1[3]);
 	qSwap(pntiB[1], pntiB[3]); qSwap(ancsR2[1], ancsR2[3]);
 	qSwap(pntiC[1], pntiC[3]); qSwap(ancsR3[1], ancsR3[3]);
 	qSwap(pntiD[1], pntiD[3]); qSwap(ancsR4[1], ancsR4[3]);
-	if (polyf & POLY_UA) obj.addPoly(pntiA, ancsR1, m_pdef->mygrp->sideTex); //if its an out of place, it's textured
-	if (polyf & POLY_UB) obj.addPoly(pntiB, ancsR2, m_pdef->mygrp->sideTex);
-	if (polyf & POLY_UC) obj.addPoly(pntiC, ancsR3, m_pdef->mygrp->sideTex); //if its an out of place, it's textured
-	if (polyf & POLY_UD) obj.addPoly(pntiD, ancsR4, m_pdef->mygrp->sideTex);
+	if (polyf & POLY_UA) obj.addPoly(pntiA, ancsR1, mygrp->sideTex); //if its an out of place, it's textured
+	if (polyf & POLY_UB) obj.addPoly(pntiB, ancsR2, mygrp->sideTex);
+	if (polyf & POLY_UC) obj.addPoly(pntiC, ancsR3, mygrp->sideTex); //if its an out of place, it's textured
+	if (polyf & POLY_UD) obj.addPoly(pntiD, ancsR4, mygrp->sideTex);
 
 
 }
@@ -254,7 +256,7 @@ void PicPainter::realPaint(MyObject& obj, bool fTargets, GLWidget *context)
 {
 	glPolygonOffset(1.0, 1.0); // go backward, draw polygons TBD- move to slvpainter
 
-	PicGroupDef *def = m_pdef->mygrp;
+	const PicGroupDef *def = m_pdef->mygrp();
 	bool hasTex = def->isTexExist();
 	if (!fTargets)
 	{
@@ -265,7 +267,7 @@ void PicPainter::realPaint(MyObject& obj, bool fTargets, GLWidget *context)
 		else if ((def->tex != NULL) && (def->tex->ind < context->m_textures.size()) && (def->tex->ind != -1))
 			texId = context->m_textures[def->tex->ind];
 
-		switch (m_pdef->mygrp->drawtype) 
+		switch (def->drawtype) 
 		{
 			case DRAW_COLOR:
 				glDisable(GL_TEXTURE_2D);
@@ -363,10 +365,11 @@ bool PicPainter::exportToObj(QTextStream& meshout, QTextStream& mtlout, uint& nu
 	generateStraightShape(m_displayConf, obj);
 	g_smoothAllocator.clear();
 
+	const PicGroupDef *def = m_pdef->mygrp();
+
 	// not very efficient...
-	if (m_pdef->mygrp->drawtype == DRAW_COLOR)
+	if (def->drawtype == DRAW_COLOR)
 	{
-		PicGroupDef *def = m_pdef->mygrp;
 		mtlout << "newmtl material" << ++numObjs << "\n";
 		mtlout << "  Ns 32\n  d 1\n  Tr 1\n  Tf 1 1 1\n  illum 2\n  Ka 0.0000 0.0000 0.0000\n  Ks 0.3500 0.3500 0.3500\n";
 		mtlout << "  Kd " << def->r << " " << def->g << " " <<  def->b << "\n";
@@ -374,7 +377,7 @@ bool PicPainter::exportToObj(QTextStream& meshout, QTextStream& mtlout, uint& nu
 
 	meshout << "g Object" << numObjs << "\n";
 
-	if (m_pdef->mygrp->drawtype == DRAW_COLOR)
+	if (def->drawtype == DRAW_COLOR)
 	{
 		meshout << "usemtl material" << numObjs << "\n";
 	} 
@@ -405,7 +408,7 @@ bool PicPainter::realExportToObj(QTextStream& meshout, MyObject& obj, uint& numV
 								 float fMatrix[16]) const
 {
 	// TODO:
-	PicGroupDef *def = m_pdef->mygrp;
+	const PicGroupDef *def = m_pdef->mygrp();
 	bool hasTex = def->isTexExist();
 
 	//switch (m_pdef->mygrp->drawtype) 

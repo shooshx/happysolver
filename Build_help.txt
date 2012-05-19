@@ -1,0 +1,38 @@
+
+## for Rational: linker /fixed:no
+## for minGW: link with minGW qt, only in release.
+## qmake -project -r
+## qmake "QT+=opengl xml" "RC_FILE=happysolver.rc"
+## 
+## qmake "QT+=opengl xml" "RC_FILE=happysolver.rc" -tp vc -spec win32-msvc2005
+##
+## add to .pro:
+##   QT += opengl xml
+##   CONFIG += debug
+##   #QTPLUGIN += qmng #mng plugin as static
+##   #ICON = xxx.icns
+##   CONFIG += ppc x86
+##   RC_FILE = happysolver.rc
+
+
+Add to .pro:
+
+  MAC_SDK  = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.6.sdk
+  if( !exists( $$MAC_SDK) ) {
+    error("The selected Mac OSX SDK does not exist at $$MAC_SDK!")
+  }
+  macx:QMAKE_MAC_SDK = $$MAC_SDK
+
+set arch to x86_64
+run qmake
+upgrade the project file
+in project settings set the derived directory to be relative to project
+build for release
+use macdeployqt to add the frameworks to the .app
+remove unneeded frameworks and plugins
+use the applications->utilities->disk utility to create a dmg
+  create an empty dmg
+  set a good name
+  copy files to it
+  convert it to compressed
+  don't reuse dmgs
