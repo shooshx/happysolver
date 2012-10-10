@@ -146,11 +146,11 @@ class ShapePlace
 public:
 	ShapePlace(int useSize = 0) :sc(-1), rt(0) {}
 
-// 	void clear() {
-// 		sc = -1;
-// 		rt = 0;
-// 		tryd.clear();
-// 	}
+	void clear() {
+		sc = -1;
+		rt = 0;
+		tryd.clear();
+	}
 
 	inline void mclear() {
 		sc = -1;
@@ -168,7 +168,7 @@ public:
 
 	int sc;		///< which part is now in this place
 	int rt;		///< what is it's rotation, index in rotation array
-	//TriedPieces tryd;  ///< which pieces were already tried in this place in the current iteration.
+	TriedPieces tryd;  ///< which pieces were already tried in this place in the current iteration.
 	TriedPieces mtryd; // should be the maximum size of 'possible' which is the total count or rtns in comp
 
 	vector<TypeRef> possible;

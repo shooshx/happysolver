@@ -19,6 +19,7 @@
 #include <QMouseEvent>
 #include <QMessageBox>
 #include <QTimer>
+#include <set>
 
 #include "BuildGLWidget.h"
 
@@ -26,11 +27,12 @@
 #include "CubeDoc.h"
 
 
-#define MAKE_NAME(dim, page, x, y) (((dim) & 0xFF) | (((x) & 0xFF)<<8) | (((y) & 0xFF)<<16) | (((page) & 0xFF)<<24))
-#define GET_DIM(name) ((name) & 0xFF)
-#define GET_X(name) (((name) >> 8) & 0xFF)
-#define GET_Y(name) (((name) >> 16) & 0xFF)
-#define GET_PAGE(name) (((name) >> 24) & 0xFF)
+
+#define MAKE_NAME(dim, page, x, y)  (((dim) & 0x3) | (((x) & 0x7F)<<2) | (((y) & 0x7F)<<9) | (((page) & 0xFF)<<16))
+#define GET_DIM(name) ((name) & 0x3)
+#define GET_X(name) (((name) >> 2) & 0x7F)
+#define GET_Y(name) (((name) >> 9) & 0x7F)
+#define GET_PAGE(name) (((name) >> 16) & 0xFF)
 
 
 BuildGLWidget::BuildGLWidget(QWidget *parent, CubeDoc *document)
@@ -62,6 +64,13 @@ BuildGLWidget::BuildGLWidget(QWidget *parent, CubeDoc *document)
 
 	reCalcBldMinMax();
 	checkSides(); // build the initial test shape.
+
+	makeBuffers();
+}
+
+void BuildGLWidget::initialized()
+{
+	m_prog.init();
 }
 
 
@@ -76,7 +85,10 @@ void BuildGLWidget::myPaintGL()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	drawTargets(false); // actual job
+	{
+		ProgramUser use(&m_prog);
+		drawTargets(false);
+	}
 
 	QString str1("%1tiles: %2");
 	QString str2;
@@ -122,6 +134,157 @@ void BuildGLWidget::myPaintGL()
 	m_bDoneUpdate = true;
 
 }
+
+class QuadAdder
+{
+public:
+	QuadAdder(Mesh& mesh) : m_mesh(mesh) {
+		m_mesh.m_type = GL_QUADS;
+		m_mesh.m_hasColors = true;
+		m_mesh.m_hasNames = true;
+		m_mesh.m_hasIdx = false;
+		m_mesh.clear();
+	}
+
+	void add(const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d, const Vec4& color, uint name)
+	{
+		m_mesh.m_vtx.push_back(a);   m_mesh.m_vtx.push_back(b);   m_mesh.m_vtx.push_back(c);   m_mesh.m_vtx.push_back(d);
+		Vec3b nv = Vec3b::fromName(name);
+		m_mesh.m_name.push_back(nv); m_mesh.m_name.push_back(nv); m_mesh.m_name.push_back(nv); m_mesh.m_name.push_back(nv);
+		m_mesh.m_color4.push_back(color); m_mesh.m_color4.push_back(color);  m_mesh.m_color4.push_back(color); m_mesh.m_color4.push_back(color);
+	}
+
+private:
+	Mesh& m_mesh;
+
+};
+
+class LineAdder 
+{
+public:
+	LineAdder(Mesh& mesh) : m_mesh(mesh), m_rep(&mesh.m_vtx) {
+		m_mesh.m_type = GL_LINES;
+		m_mesh.m_hasColors = false;
+		m_mesh.m_hasNames = true;
+		m_mesh.m_hasIdx = true;
+		m_mesh.m_uniformColor = true;
+		m_mesh.clear();
+	}
+
+	struct SortedPair {
+		SortedPair(int _a, int _b) :a(_a), b(_b) {
+			if (b < a)
+				swap(a, b);
+		}
+		bool operator<(const SortedPair& o) const {
+			if (a == o.a)
+				return b < o.b;
+			return a < o.a;
+		}
+		int a, b;
+	};
+
+	void addPair(int a, int b) {
+		SortedPair s(a, b);
+		auto it = m_added.find(s);
+		if (it != m_added.end())
+			return;
+		m_mesh.m_idx.push_back(a);
+		m_mesh.m_idx.push_back(b);
+		m_added.insert(s);
+	}
+
+	void add(const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d, const Vec4& color)
+	{
+		int ia, ib, ic, id;
+		m_rep.add(a, &ia);
+		m_rep.add(b, &ib);
+		m_rep.add(c, &ic);
+		m_rep.add(d, &id);
+		addPair(ia, ib);
+		addPair(ib, ic);
+		addPair(ic, id);
+		addPair(id, ia);
+		m_mesh.m_uColor = color;
+	}
+
+private:
+	Mesh& m_mesh;
+	VecRep m_rep;
+	set<SortedPair> m_added;
+};
+
+
+void BuildGLWidget::makeBuffers() 
+{
+	const BuildWorld &build = m_doc->getBuild();
+	QuadAdder realTiles(m_realTiles);
+	QuadAdder transTiles(m_transTiles);
+	LineAdder realLines(m_realLines);
+	LineAdder transLines(m_transLines);
+
+	for(int dim = 0; dim < 3; ++dim)
+	{
+		const SqrLimits &lim = build.m_limits[dim];
+		for(int page = lim.minpage; page < lim.maxpage; ++page)
+		{
+			for(int x = lim.minx; x < lim.maxx ; ++x)
+			{
+				for(int y = lim.miny; y < lim.maxy; ++y)
+				{
+					int theget = build.get(dim, page, x, y);
+					if (GET_VAL(theget) == 0)
+						continue;
+					uint name = MAKE_NAME(dim, page, x, y);
+
+					Vec3 a,b,c,d;
+					switch (dim)
+					{
+					case YZ_PLANE:
+						a = Vec3(page, x, y);
+						b = Vec3(page, x + 1, y);
+						c = Vec3(page, x + 1, y + 1);
+						d = Vec3(page, x, y + 1);
+						break;
+					case XZ_PLANE:
+						a = Vec3(x, page, y);
+						b = Vec3(x + 1, page, y );
+						c = Vec3(x + 1, page, y + 1);
+						d = Vec3(x, page, y + 1);
+						break;
+					case XY_PLANE:
+						a = Vec3(x, y, page);
+						b = Vec3(x + 1, y, page);
+						c = Vec3(x + 1, y + 1, page);
+						d = Vec3(x, y + 1, page);
+						break;
+					}	
+
+					int valshow = GET_VAL_SHOW(theget);
+					Vec4 color;
+
+					if (GET_TYPE(theget) == TYPE_VIR)
+					{
+						color = Vec4(0.0f, 0.0f, 0.8f, 0.5f);
+						transTiles.add(a, b, c, d, color, name);
+						transLines.add(a, b, c, d, Vec4(0.2f, 0.2f, 1.0f, 0.5f));
+					}
+					else
+					{
+						if (valshow == FACE_NORM_SELR)
+							color = Vec4(1.0f, 1.0f - 0.25f*1.0f, 1.0f - 0.25f*1.0f, 1.0f);
+						else
+							color = Vec4(1.0f, 1.0f, 1.0f, 1.0f);
+						realTiles.add(a, b, c, d, color, name);
+						realLines.add(a, b, c, d, Vec4(0.2f, 0.2f, 0.2f, 1.0f));
+					}
+				}
+			}
+		}
+	}
+}
+			
+
 
 void BuildGLWidget::drawTargetsPart(bool fTrans, bool fLines)
 {
@@ -259,6 +422,33 @@ void BuildGLWidget::drawErrorCyliders()
 
 void BuildGLWidget::drawTargets(bool inChoise)
 {
+	glDisable(GL_TEXTURE_2D);
+
+	glEnable(GL_LINE_SMOOTH);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glEnable(GL_POLYGON_OFFSET_FILL);
+
+	glPolygonOffset(1.0, 1.0);
+	m_realTiles.paint(inChoise);
+
+	if (!inChoise) {
+		glPolygonOffset(0, 0);
+		m_realLines.paint();
+
+		glPolygonOffset(1.0, 1.0);
+		m_transTiles.paint();
+		glPolygonOffset(0, 0);
+		m_transLines.paint();
+
+	}
+}
+
+
+#if 0
+void BuildGLWidget::drawTargets(bool inChoise)
+{
 //	glEnable(GL_COLOR_MATERIAL);
 	glDisable(GL_TEXTURE_2D);
 
@@ -297,7 +487,7 @@ void BuildGLWidget::drawTargets(bool inChoise)
 		drawTargetsPart(true, true);
 	}
 }
-
+#endif
 
 void BuildGLWidget::checkSides()
 {
@@ -322,15 +512,16 @@ void BuildGLWidget::boxedDblClick(int choise, QMouseEvent *event)
 		return;
 
 	CoordBuild bb[6];
-	Coord3d g;
+	Vec3i g;
 	if (!getChoiseTiles(choise, remove, bb, g))
 		return; // out of bounds, do nothing
 
 	bool hasStrt = false;
 	int strtOrigDim = -1; // the original dimention of the strt tile
-	for (int j = 0; j < 6; ++j) // check if we're going to step on a start tile
+	for (int j = 0; j < 6; ++j) {// check if we're going to step on a start tile
 		if (GET_VAL(build.get(bb[j])) == FACE_STRT)
 		{ hasStrt = true; strtOrigDim = bb[j].dim; break; }
+	}
 		
 	int facePut = -1;
 	for (int j = 0; j < 6; ++j) 
@@ -371,19 +562,20 @@ void BuildGLWidget::boxedDblClick(int choise, QMouseEvent *event)
 	checkSides(); // testShape does the generate, created cyliders
 
 	emit changedTilesCount(build.nFaces);
-
+	
 	updateGL();
 
 	mouseMoveEvent(event); // simulate a move event to show the SELECT 
+	makeBuffers();
 }
 
 
-bool BuildGLWidget::getChoiseTiles(int choise, bool remove, CoordBuild bb[6], Coord3d& g)
+bool BuildGLWidget::getChoiseTiles(int choise, bool remove, CoordBuild bb[6], Vec3i& g)
 {
 	CoordBuild c(GET_DIM(choise), GET_PAGE(choise), GET_X(choise), GET_Y(choise));
 	BuildWorld& build = m_doc->getBuild();
 
-	Coord3d g1, g2;
+	Vec3i g1, g2;
 	BuildWorld::get3dCoords(c, g1, g2);
 
 	if (hXor(build.m_space.axx(g1).fill == 1, remove))
@@ -442,6 +634,7 @@ bool BuildGLWidget::doMouseMove(QMouseEvent *event, bool remove)
 	if (event != NULL) // support non-mouse updates
 	{
 		choise = DoChoise(event->x(), event->y());
+		//printf("%8X  dim=%d  page=%2d  x=%2d  y=%2d\n", choise, GET_DIM(choise), GET_PAGE(choise), GET_X(choise), GET_Y(choise));
 		if ((choise == m_lastChoise) && (remove == m_bLastBoxRemove))
 			return false; // check if remove state just changed so we need to redraw
 	}
@@ -457,7 +650,7 @@ bool BuildGLWidget::doMouseMove(QMouseEvent *event, bool remove)
 	{ // something chosen
 		int theget;
 		CoordBuild bb[6];
-		Coord3d g;
+		Vec3i g;
 		if ((getChoiseTiles(choise, remove, bb, g) && (g != m_lastCubeChoise)))
 		{ // selection was changed
 			if (m_bEditEnabled)
@@ -490,6 +683,8 @@ bool BuildGLWidget::doMouseMove(QMouseEvent *event, bool remove)
 				}
 				else
 					act = CANT_REMOVE;
+
+				makeBuffers();
 			}
 			else
 				act = EDIT_DISABLE;
@@ -503,7 +698,7 @@ bool BuildGLWidget::doMouseMove(QMouseEvent *event, bool remove)
 	{
 		// clean the trans place or remove from the last time
 		build.clean(BuildWorld::CLEAN_TRANS_SHOW);
-		m_lastCubeChoise = Coord3d(-1,-1,-1);
+		m_lastCubeChoise = Vec3i(-1,-1,-1);
 		emit changedTileHover(choise, act);
 	}
 
@@ -576,16 +771,16 @@ void BuildGLWidget::reCalcBldMinMax()
 	build.reClacLimits();
 
 	const SqrLimits &lYZ = build.m_limits[YZ_PLANE];
-	aqmin = Coord3df(lYZ.minpage, lYZ.minx, lYZ.miny);
-	aqmax = Coord3df(lYZ.maxpage, lYZ.maxx, lYZ.maxy);
+	aqmin = Vec3(lYZ.minpage, lYZ.minx, lYZ.miny);
+	aqmax = Vec3(lYZ.maxpage, lYZ.maxx, lYZ.maxy);
 
 	const SqrLimits &lXZ = build.m_limits[XZ_PLANE];
-	aqmin.pmin(Coord3df(lXZ.minx, lXZ.minpage, lXZ.miny));
-	aqmax.pmax(Coord3df(lXZ.maxx, lXZ.maxpage, lXZ.maxy));
+	aqmin.pmin(Vec3(lXZ.minx, lXZ.minpage, lXZ.miny));
+	aqmax.pmax(Vec3(lXZ.maxx, lXZ.maxpage, lXZ.maxy));
 
 	const SqrLimits &lXY = build.m_limits[XY_PLANE];
-	aqmin.pmin(Coord3df(lXY.minx, lXY.miny, lXY.minpage));
-	aqmax.pmax(Coord3df(lXY.maxx, lXY.maxy, lXY.maxpage));
+	aqmin.pmin(Vec3(lXY.minx, lXY.miny, lXY.minpage));
+	aqmax.pmax(Vec3(lXY.maxx, lXY.maxy, lXY.maxpage));
 
 	//double dx = aqmax[0] - aqmin[0], dy = aqmax[1] - aqmin[1], dz = aqmax[2] - aqmin[2];
 

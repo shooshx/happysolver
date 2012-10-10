@@ -35,6 +35,7 @@
 #include "ActFocusComboBox.h"
 #include "AssembleStepDlg.h"
 
+
 #include "ui_about.h"
 
 
@@ -83,7 +84,6 @@ MainWindow::MainWindow()
 	m_modelGlWidget = new ModelGLWidget(m_stack, m_doc); // views need to start with MainWindow as parent
 	m_buildGlWidget = new BuildGLWidget(m_stack, m_doc);
 	m_picsWidget = new PicsSelectWidget(m_stack, m_doc);
-
 
 	m_dock = new QDockWidget(this);
 	m_dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -152,6 +152,7 @@ bool MainWindow::initialize()
 {
 	PicBucket::mutableInstance().setSwapEndians(m_doc->m_conf.disp.nSwapTexEndians);
 
+	m_modelGlWidget->initTex();
 	// needs to be here because only here we have the glwidget
 	if (!PicBucket::mutableInstance().loadXML(":/stdpcs.xml"))
 		return false;

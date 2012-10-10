@@ -37,7 +37,7 @@ public:
 	public:
 		AddedRef(int _addedInd = -1, int _defRot = -1) : addedInd(_addedInd), defRot(_defRot) {}
 		int addedInd; // index to the added list
-		int defRot; // our rtn which the base shape in the def refers to. [0,7]
+		int defRot; // our rtn which is the base shape in the def refers to. [0,7]
 	};
 
 	vector<AddedRef> addedInds; ///< the index of the PicDef in the bucket
@@ -77,13 +77,17 @@ public:
 	///	this ctor takes the selection from the bucket
 	///	with bSym == true, there are more rtns for every pic.
 	/// \see CubeDoc::solveGo()
-	PicsSet(bool bSym); 	
+	PicsSet(bool bSym);
+
+	/// used in the initialization of PicBucket
+	PicsSet() : bConsiderSymetric(false), totalRtnCount(0)
+	{}
 						
 	int compSize() const { return comp.size(); }
 	int addedSize() const { return added.size(); }
 
 	/// create the rotated version of all pieces in the set
-	void makereps();
+	//void makereps();
 
 	bool bConsiderSymetric;
 	vector<PicType> comp;   // compressed list of distinct pieces, with references to the added list
@@ -99,7 +103,6 @@ public:
 // 	// all rtns of all types in one vector
 // 	vector<RtnInfo> allRtn;
 
-
-private:
+public:
 	void add(int defInd);
 };

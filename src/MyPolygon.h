@@ -89,7 +89,7 @@ public:
 
 	MyPoint *vtx[4]; ///< A vector list of the polygons points in their order
 	
-	Coord3df center; ///< The normal of polygon
+	Vec3 center; ///< The normal of polygon
 
 	TexAnchor texAncs[4]; ///< Texture anchors by the order of 0,0 - 1,0 - 1,1 - 0,1
 	Texture *tex; 

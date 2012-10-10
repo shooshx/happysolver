@@ -25,7 +25,8 @@
 #include "Cube.h"
 #include "Texture.h"
 #include "SlvCube.h"
-
+#include "NoiseGenerator.h"
+#include "OpenGL/glGlob.h"
 
 ModelGLWidget::ModelGLWidget(QWidget *parent, CubeDoc *document)
   :GLWidget(parent), m_doc(document)
@@ -46,6 +47,19 @@ ModelGLWidget::ModelGLWidget(QWidget *parent, CubeDoc *document)
 	
 }
 
+void ModelGLWidget::initialized()
+{
+	m_progFlat.init();
+	m_progNoise.init();
+
+}
+
+void ModelGLWidget::initTex()
+{
+	makeCurrent();
+	PicBucket::mutableInstance().gtexs.push_back(NoiseGenerator::make3Dnoise());
+}
+
 
 void ModelGLWidget::paint(GLWidget* that, CubeDoc *doc, SlvCube *scube, bool fTargets, int singleChoise, int upToStep)
 {	
@@ -56,7 +70,7 @@ void ModelGLWidget::paint(GLWidget* that, CubeDoc *doc, SlvCube *scube, bool fTa
 
 	if (!fTargets)
 	{
-		glEnable(GL_COLOR_MATERIAL);
+		//glEnable(GL_COLOR_MATERIAL);
 
 		if ((singleChoise >= 0) && (scube->getPieceGrpDef(singleChoise)->blackness > BLACK_NOT))
 			glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
@@ -66,17 +80,19 @@ void ModelGLWidget::paint(GLWidget* that, CubeDoc *doc, SlvCube *scube, bool fTa
 	}
 	else 
 	{ // only drawing targets, no need to bother with colors. maybe disable lighting as well?
-		glDisable(GL_COLOR_MATERIAL);
+		//glDisable(GL_COLOR_MATERIAL);
 	}
-
+	mglCheckErrors("~x4");
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_POLYGON_OFFSET_FILL);
 	glEnable(GL_LINE_SMOOTH);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // just make sure
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // just make sure
+	mglCheckErrors("~x3");
 
 	// call the SlvPainter to do its job.
 	scube->painter.paint(that, fTargets, singleChoise, upToStep, doc->m_conf.disp.nLines); 
+	mglCheckErrors("~x5");
 }
 
 
@@ -145,9 +161,12 @@ void ModelGLWidget::updateView(int lHint)
 
 
 // MOUSE HANDLERS ///////////////////////////////////////////
+bool forceChoice = false;
 
 void ModelGLWidget::drawTargets(bool inChoise)
 {
+	//makeCurrent();
+
 	SlvCube *slv = m_doc->getCurrentSolve();
 	if (slv == NULL)
 	{
@@ -156,13 +175,32 @@ void ModelGLWidget::drawTargets(bool inChoise)
 		return;
 	}
 
-	if (slv->painter.isNull()) 
-	{
+	if (slv->painter.isNull()) {
 		slv->genPainter();
 	}
 
-	paint(this, m_doc, slv, inChoise, m_nSingleChoise, m_doc->getUpToStep());
+	if (forceChoice)
+		inChoise = true;
+	
+	ShaderProgram* sel = NULL;
+	if (inChoise) {
+		glDisable(GL_BLEND);
+		sel = &m_progFlat;
+	}
+	else {
+		glEnable(GL_BLEND);
+		sel = &m_progNoise;
+	}
 
+	ProgramUser u(sel);
+	mglCheckErrors("~x2");
+	paint(this, m_doc, slv, inChoise, m_nSingleChoise, m_doc->getUpToStep());
+	mglCheckErrors("~x1");
+}
+
+void ModelGLWidget::keyPressEvent( QKeyEvent *k ) {
+	forceChoice = !forceChoice;
+	GLWidget::keyPressEvent(k);
 }
 
 void ModelGLWidget::mousePressEvent(QMouseEvent *event) 
@@ -198,6 +236,7 @@ void ModelGLWidget::mouseMoveEvent(QMouseEvent *event)
 	{
 		m_nLastHoveChs = m_nHoverChoise;
 		m_nHoverChoise = DoChoise(event->x(), event->y());
+		printf("%8X\n", m_nHoverChoise);
 		if (m_nHoverChoise != m_nLastHoveChs)
 			emit changedHoverPiece(m_nHoverChoise);
 	}

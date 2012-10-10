@@ -31,7 +31,7 @@ public:
 	bool isNull() const { return scube == NULL; }
 	void setSlvCube(const SlvCube *sc) { scube = sc; }
 
-	Coord3df qmin, qmax; // 2 opposites for bounding box
+	Vec3 qmin, qmax; // 2 opposites for bounding box
 
 	LinesCollection m_linesIFS;
 private:

@@ -36,8 +36,58 @@ extern QGLFormat g_format;
 #include <QGroupBox>
 
 
+
+static int rotationAdd(int base, int defRot) 
+{
+	if ((defRot < 4) == (base < 4))
+		return (base - defRot + 4) % 4;
+	else
+		return ((base + defRot) % 4) + 4;
+
+}
+
+static int rotationSub(int x, int defRot)
+{
+	if (defRot < 4) {
+		if (x < 4)
+			return (x + defRot + 4) % 4;
+		else
+			return ((x - defRot) % 4) + 4;
+	}
+	else {
+		if (x < 4)
+			return ((x + defRot) % 4) + 4;
+		else
+			return (x - defRot + 4) % 4;
+	}
+
+}
+
+
 int main(int argc, char *argv[])
 {
+// 	int res[8][8];
+// 	for(int base = 0; base < 8; ++base) {
+// 		for(int rot = 0; rot < 8; ++rot) {
+// 			int x = rotationAdd(base, rot);
+// 			int e = rotationSub(x, rot);
+// 
+// 			printf("%d + %d = %d -> %d\n", base, rot, x, e);
+// 
+// 			res[rot][x] = base;
+// 		}
+// 		printf("\n");
+// 	}
+// 
+// // 	for(int x = 0; x < 8; ++x) {
+// // 		for(int rot = 0; rot < 8; ++rot) {
+// // 			int e = rotationSub(x, rot);
+// // 			printf("%d - %d = %d : %d\n", rot, x, res[x][rot], e);
+// // 		}
+// // 		printf("\n");
+// // 	}
+// 
+// 	return 0;
 
 	QApplication app(argc, argv);
 
@@ -56,8 +106,8 @@ int main(int argc, char *argv[])
 
 	// do the icon as fast as possible.
 
-
 	flushAllEvents();
+
 
 	if (!window.initialize())
 		return 0;

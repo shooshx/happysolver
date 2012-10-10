@@ -60,8 +60,8 @@ public:
 	float nakedLinesColor; // color of the lines when the object is on its own (not in grpdef)
 	bool verterxNormals; // use normals for every vertex (belongs more in the ifs.. but object is the drawing unit)
 
-	void addPoly(Coord3df *inplst, TexAnchor *ancs = NULL, Texture *tex = NULL); //copy needed vertices, add poly
-	void addLine(Coord3df *inp1, Coord3df *inp2, double inR, double inG, double inB, MyLine::ELineType type);
+	void addPoly(Vec3 *inplst, TexAnchor *ancs = NULL, Texture *tex = NULL); //copy needed vertices, add poly
+	void addLine(Vec3 *inp1, Vec3 *inp2, double inR, double inG, double inB, MyLine::ELineType type);
 	void setNakedLineColor(float color) { nakedLinesColor = color; }
 	void vectorify();
 	void clacNormals(bool vtxNormals);
@@ -73,7 +73,7 @@ public:
 	
 private:
 	///////////////////// structures for startup
-	MyPoint* CopyCheckPoint(Coord3df *p);
+	MyPoint* CopyCheckPoint(Vec3 *p);
 
 	typedef QList<MyPolygon*> TPolyList;
 	typedef QLinkedList<MyLine> TLineList;

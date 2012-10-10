@@ -21,6 +21,8 @@
 #include "GLWidget.h"
 #include "BuildWorld.h"
 #include "Shape.h"
+#include "Mesh.h"
+#include "OpenGL/Shaders.h"
 
 /** @file
 	Declares the BuildGLWidget class.
@@ -126,7 +128,7 @@ private:
 
 	bool doMouseMove(QMouseEvent *event, bool remove);
 
-	bool getChoiseTiles(int choise, bool remove, CoordBuild bb[6], Coord3d &g);
+	bool getChoiseTiles(int choise, bool remove, CoordBuild bb[6], Vec3i &g);
 
 	void drawTargetsPart(bool fTrans, bool fLines);
 	void drawErrorCyliders();
@@ -134,6 +136,11 @@ private:
 
 	void reCalcBldMinMax();
 
+	void makeBuffers();
+
+	void initialized();
+
+private:
 	/// the document is needed for access to the current BuildWorld data
 	CubeDoc *m_doc;
 
@@ -148,7 +155,7 @@ private:
 
 	bool m_bLastBoxRemove; ///< used in mouseMoveEvent()
 	int m_lastChoise; ///< used in mouseMoveEvent()
-	Coord3d m_lastCubeChoise; ///< used in mouseMoveEvent()
+	Vec3i m_lastCubeChoise; ///< used in mouseMoveEvent()
 
 	/// number of valid tiles in m_curMarkedTiles
 	int m_nMarkedTiles;
@@ -168,6 +175,12 @@ private:
 
 	bool m_bDoneUpdate; ///< optmization. avoiding multiple updates in mouseMoveEvent()
 
+	Mesh m_realTiles;
+	Mesh m_transTiles;
+	Mesh m_realLines;
+	Mesh m_transLines;
+
+	BuildProgram m_prog;
 };
 
 

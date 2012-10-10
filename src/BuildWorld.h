@@ -154,6 +154,7 @@ public:
 		initializeNew(true);
 	}
 
+	void setBox(const Vec3i s);
 
 	bool set(int dim, int page, int x, int y, int set);
 	bool set(const CoordBuild& c, int set);
@@ -193,8 +194,8 @@ public:
 	EGenResult getTestResult() { return (m_bTested?m_testResult:GEN_RESULT_UNKNOWN); }
 	const Shape& getTestShape() { return m_testShape; } // needed for inspection of the sides
 
-	static void get3dCoords(CoordBuild s, Coord3d &g1, Coord3d &g2);
-	static void getBuildCoords(Coord3d g, CoordBuild b[6]);
+	static void get3dCoords(CoordBuild s, Vec3i &g1, Vec3i &g2);
+	static void getBuildCoords(Vec3i g, CoordBuild b[6]);
 	int getTestShapeFcInd(CoordBuild s) const;
 
 	void unGenerate(const Shape *shp);
@@ -209,7 +210,7 @@ public:
 	void clean(ECleanMethod meth); 
 
 
-	Coord3d size; //in faces, so far, should be x=y=z, so far should be constant == BUILD_SIZE;
+	Vec3i size; //in faces, so far, should be x=y=z, so far should be constant == BUILD_SIZE;
 	BoundedBlockSpace3D m_space;
 	int nFaces;
 	bool fClosed;

@@ -33,8 +33,8 @@ PieceGLWidget::PieceGLWidget(QWidget *parent, CubeDoc *doc, QGLWidget *shareFrom
 {
 	m_viewState = GLWidget::Perspective;
 
-	aqmin = Coord3df(0.0, 0.0, 0.0);
-	aqmax = Coord3df(5.0, 5.0, 1.0);
+	aqmin = Vec3(0.0, 0.0, 0.0);
+	aqmax = Vec3(5.0, 5.0, 1.0);
 }
 
 
@@ -56,8 +56,8 @@ void PieceGLWidget::setSelectedPiece(int p)
 	m_lastSelectedPiece = p;
 	m_selectedPiece = p;
 	const Shape::FaceDef &fdef = slv->shape->faces[m_selectedPiece];
-	Coord3df nmin(fdef.ex);
-	Coord3df nmax(nmin + Coord3df(fdef.size()));
+	Vec3 nmin(fdef.ex);
+	Vec3 nmax(nmin + Vec3(fdef.size()));
 
 	setNewMinMax(nmin, nmax, false);
 
@@ -85,7 +85,7 @@ void PieceGLWidget::setSelectAll(int piece)
 
 void PieceGLWidget::myPaintGL()
 {
-	SlvCube *slv = m_doc->getCurrentSolve();
+/*	SlvCube *slv = m_doc->getCurrentSolve();
 	if ((slv == NULL) || ((m_selectedPiece == -1) && (!m_bSelectAll)))
 	{ // clean the view from older things
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -94,6 +94,7 @@ void PieceGLWidget::myPaintGL()
 	}
 
 	ModelGLWidget::paint(this, m_doc, slv, false, m_selectedPiece, -1);
+	*/
 }
 
 /// we're moving independently from the main solution view.

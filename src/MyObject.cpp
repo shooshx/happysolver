@@ -32,7 +32,7 @@ void MyObject::MyPointWrapper::detach(MyAllocator *m_alloc) const
 
 // checks if a point is in m_tmppoints, if not, copy and insert it
 // returns the pointer to the permanent point
-MyPoint* MyObject::CopyCheckPoint(Coord3df *c)
+MyPoint* MyObject::CopyCheckPoint(Vec3 *c)
 {
 	static MyPoint p;
 	p.setp(*c);
@@ -42,7 +42,7 @@ MyPoint* MyObject::CopyCheckPoint(Coord3df *c)
 	return realpntw.ptr;
 }
 
-void MyObject::addLine(Coord3df *inp1, Coord3df *inp2, double inR, double inG, double inB, MyLine::ELineType type)
+void MyObject::addLine(Vec3 *inp1, Vec3 *inp2, double inR, double inG, double inB, MyLine::ELineType type)
 {	
 	MyLine pln(NULL, NULL, inR, inG, inB, type);
 
@@ -53,7 +53,7 @@ void MyObject::addLine(Coord3df *inp1, Coord3df *inp2, double inR, double inG, d
 }
 
 // copies the points in the points array
-void MyObject::addPoly(Coord3df *inplst, TexAnchor *ancs, Texture *tex)
+void MyObject::addPoly(Vec3 *inplst, TexAnchor *ancs, Texture *tex)
 {
 	MyPolygon *nply = m_alloc->m_polyPool.allocate();
 	nply->init(ancs, tex);
@@ -322,7 +322,7 @@ void MyObject::subdivide(bool smooth)
 				if (pol.vtx[i]->touched)
 					continue;
 
-				Coord3df F, E; // average of all Face points near of op[i]
+				Vec3 F, E; // average of all Face points near of op[i]
 
 				double n = 0;
 				he = pol.vtx[i]->he;

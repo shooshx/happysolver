@@ -20,6 +20,7 @@
 
 #include "GLWidget.h"
 #include "Texture.h"
+#include "OpenGL/Shaders.h"
 
 /** \file
 	Declares the ModelGLWidget class.
@@ -51,6 +52,7 @@ class ModelGLWidget :public GLWidget
 public:
 	ModelGLWidget(QWidget *parent, CubeDoc *document);
 	virtual ~ModelGLWidget() {}
+	void initTex();
 
 private:
 	CubeDoc *m_doc;
@@ -58,6 +60,10 @@ private:
 	Texture texture[2];
 	int m_nSingleChoise; // right click, show a single piece
 	int m_nHoverChoise, m_nLastHoveChs;
+
+	SlvProgram m_progLight;
+	NoiseSlvProgram m_progNoise;
+	FlatProgram m_progFlat; // for choice selection
 
 protected:
 	virtual void drawTargets(bool inChoise);
@@ -67,6 +73,8 @@ protected:
 	virtual void mouseReleaseEvent(QMouseEvent *event);
 	virtual void myPaintGL();
 	virtual void mouseMoveEvent(QMouseEvent *event);
+	virtual void initialized();
+	virtual void keyPressEvent( QKeyEvent *k );
 
 public slots:
 	virtual void updateView(int hint);

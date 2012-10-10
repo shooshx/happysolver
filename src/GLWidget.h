@@ -104,9 +104,9 @@ public slots:
 	void zoom(int v); // v between 0 and 100
 
 	void setUsingLight(bool use);
-	Coord3df lightPos() { return m_lightPos; }
-	void setLightPos(const Coord3df& c);
-	void setLightColor(const Coord3df& c);
+	Vec3 lightPos() { return m_lightPos; }
+	void setLightPos(const Vec3& c);
+	void setLightColor(const Vec3& c);
 	void reLight() { makeCurrent(); reCalcLight(); updateGL(); }
 
 signals:
@@ -127,11 +127,12 @@ protected:
 	/// perform actual selection of target.
 	int DoChoise(int chX, int chY);
 	void DoReset();
-	void setNewMinMax(const Coord3df& min, const Coord3df& max, bool scale); 
+	void setNewMinMax(const Vec3& min, const Vec3& max, bool scale); 
 
 	void mglPrint(const QString &str);			// Custom GL "Print" Routine
 
 	virtual void myPaintGL();
+	virtual void initialized() {} // called after the initialization is done for further gl-related init
 
 // events
 	virtual void initializeGL();
@@ -153,7 +154,7 @@ protected:
 
 	int m_nRotSens, m_nScaleSens, m_nTransSens;
 
-	Coord3df aqmin, aqmax; // bbox for everything, floats as an optinimazation, no conversion 
+	Vec3 aqmin, aqmax; // bbox for everything, floats as an optinimazation, no conversion 
 	QPoint m_lastPos;					// hold last mouse x,y coord
 
 	EViewState m_viewState;
@@ -163,7 +164,7 @@ protected:
 	int m_zoomVal;
 
 	bool m_fUseLight;
-	Coord3df m_lightPos, m_lightColor;
+	Vec3 m_lightPos, m_lightColor;
 	float m_lightAmbient, m_lightDiffuse, m_lightSpecular;
 	bool m_bSkewReset; // should the reset be slighty rotated for better view or not
 

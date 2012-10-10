@@ -21,6 +21,9 @@
 #include "MyObject.h"
 #include "MyFile.h"
 #include "Configuration.h"
+#include "Mat.h"
+#include "Mesh.h"
+#include "PicArr.h"
 
 /** \file
 	Declares the PicPainter class used for configuration editing.
@@ -31,27 +34,27 @@ class PicDef;
 class GLWidget;
 class DisplayConf;
 
-/** PicPainter creates the display list of the polygon mesh of a single piece in 
-	the 3D soultion view. It is the heart of the 3D engine and where most of the 
-	3D drawing logic is performed.
-	An instance of this class is contained in the PicDef instance of the piece
-	it is responsible for. It is called into creating the display list from 
-	PicBucket::buildMeshes() and into actual drawing by SlvPainter::paint()
-	\see SlvPainter MyAllocator MyObject
-*/
-class PicPainter
+
+
+// represents a piece shape which may be in multiple piece definitions
+class PicDisp
 {
 public:
-	PicPainter(PicDef* _pdef) :m_pdef(_pdef), m_displayLst(0) {}
-	
 	/// create the polygon mesh and the display list.
 	void init(const DisplayConf &dpc, GLWidget *mainContext);
 
-	/// do the actual painting
-	/// \arg \c bTargets draw for targets, no colors.
-	void paint(bool bTargets, GLWidget *context) const; 
-
 	static MyAllocator& getAllocator() { return g_smoothAllocator; }
+
+	void generateStraightShape(const DisplayConf& dpc, MyObject& obj) const;
+	void placeSidePolygon(MyObject& obj, int b, bool is1, int x, int y) const;
+
+	bool uncub(int x, int y) const;
+
+	enum EPlaceType { PLACE_NORM, PLACE_X, PLACE_Y };
+	void PlaceInto(int pntn, Vec3 *shpp, Vec3 *pnti1, Vec3 *pnti2, EPlaceType type) const;
+
+	void makeBuffers(const MyObject& obj, Mesh& mesh);
+
 
 	/// BuildFrame is the datum of the internal lookup table used while creating
 	/// the piece initial polygon mesh.
@@ -68,34 +71,54 @@ public:
 		} sds; // left and right
 
 	};
-
-	/// the actual internal lookup table.
-	/// Cube::genLinesIFS() also uses this table for creating the lines objects.
 	static const BuildFrame build[17];
 
+public:
+	Mesh m_mesh;
+	PicArr m_arr;
+
+private:
+	static MyAllocator g_smoothAllocator;
+};
+
+
+
+/** PicPainter creates the display list of the polygon mesh of a single piece in 
+	the 3D soultion view. It is the heart of the 3D engine and where most of the 
+	3D drawing logic is performed.
+	An instance of this class is contained in the PicDef instance of the piece
+	it is responsible for. It is called into creating the display list from 
+	PicBucket::buildMeshes() and into actual drawing by SlvPainter::paint()
+	\see SlvPainter MyAllocator MyObject
+*/
+class PicPainter
+{
+public:
+	PicPainter(PicDef* _pdef) :m_pdef(_pdef) {}
+	
+	/// do the actual painting
+	/// \arg \c bTargets draw for targets, no colors.
+	void paint(bool bTargets, GLWidget *context) const; 
+
 	bool exportToObj(QTextStream& meshFile, QTextStream& materialsFiles, uint& numVerts,
-					 uint &numTexVerts, uint &numNormals, uint &numObjs,
-					 float fMatrix[16]) const;
+		uint &numTexVerts, uint &numNormals, uint &numObjs,
+		const Mat4& fMatrix) const;
 
 private:
 
-	bool uncub(int x, int y) const;
-	void placeSidePolygon(MyObject& obj, int b, bool is1, int x, int y) const;
-	enum EPlaceType { PLACE_NORM, PLACE_X, PLACE_Y };
 
-	void PlaceInto(int pntn, Coord3df *shpp, Coord3df *pnti1, Coord3df *pnti2, EPlaceType type) const;
 	void realPaint(MyObject& obj, bool fTargets, GLWidget *context);
 
 	bool realExportToObj(QTextStream& meshFile, MyObject& obj, uint& numVerts,
 						 uint &numTexVerts, uint &numNormals,
-						 float fMatrix[16]) const;
-	void generateStraightShape(const DisplayConf& dpc, MyObject& obj) const;
+						 const Mat4& fMatrix) const;
 
 	PicDef *m_pdef;
-	int m_displayLst;
-	static MyAllocator g_smoothAllocator;
+
+
 
 	DisplayConf m_displayConf;
+
 
 };
 

@@ -335,7 +335,7 @@ bool Cube::maskAssemble(int fc)
 			plcfc.mclear();
 			return false;
 		}
-		//selPoss = 1; // TBD: random
+
 		if (lconf.fRand)
 			selPoss = SillyRand::silly_rand() % possCount;
 		else
@@ -478,6 +478,8 @@ SlvCube* Cube::generateConcreteSlv()
 		counts[ti]++;
 		abs_plc[i].sc = added.addedInd;
 
+//		int dr = rotationAdd(pt.rtns[plc[i].rt].rtnindx, added.defRot);
+
 
 		int br = pt.rtns[plc[i].rt].rtnindx; // base rotation
 		int ds = added.defRot; // Piece definition start 
@@ -486,6 +488,7 @@ SlvCube* Cube::generateConcreteSlv()
 			dr = (br - ds + 4) % 4;
 		else
 			dr = ((br + ds) % 4) + 4;
+
 
 		abs_plc[i].rt = dr;
 	}
@@ -533,19 +536,19 @@ int Cube::uncub(int p, int k, int j)
 
 
 // this is really where most of the magic happens.
-void Cube::placeInto(int pntn, int f, Coord3df *shpp, Coord3df *pnti1, Coord3df *pnti2)
+void Cube::placeInto(int pntn, int f, Vec3 *shpp, Vec3 *pnti1, Vec3 *pnti2)
 {
 	int i;
 	int dr = shape->faces[f].dr;
 
 	for (i = 0; i < pntn; ++i)
 	{
-		Coord3df &p = pnti1[i];
+		Vec3 &p = pnti1[i];
 		p[0] = double(shape->faces[f].ex.x + (shpp[i][0] * (dr == XY_PLANE)) + (shpp[i][0] * (dr == XZ_PLANE)) + (shpp[i][2] * (dr == YZ_PLANE)));
 		p[1] = double(shape->faces[f].ex.y + (shpp[i][1] * (dr == XY_PLANE)) + (shpp[i][2] * (dr == XZ_PLANE)) + (shpp[i][1] * (dr == YZ_PLANE)));
 		p[2] = double(shape->faces[f].ex.z + (shpp[i][2] * (dr == XY_PLANE)) + (shpp[i][1] * (dr == XZ_PLANE)) + (shpp[i][0] * (dr == YZ_PLANE)));
 
-		Coord3df &np = pnti2[pntn - i - 1];
+		Vec3 &np = pnti2[pntn - i - 1];
 		np = p;
 		np[0] += (1*(dr == YZ_PLANE)); 
 		np[1] += (1*(dr == XZ_PLANE));
@@ -580,8 +583,8 @@ float Cube::getLineColor(int p, int l)
 void Cube::genLinesIFS(SlvCube *slvc, LinesCollection &ifs)
 { 
 	int f, p, b, lp;
-	Coord3df pnti1[4], pnti2[4];
-	Coord3df shpp[4];
+	Vec3 pnti1[4], pnti2[4];
+	Vec3 shpp[4];
 	int curf, curp, lcurp;
 
 
@@ -598,14 +601,14 @@ void Cube::genLinesIFS(SlvCube *slvc, LinesCollection &ifs)
 		MyObject &obj = ifs[f];
 		obj.setNakedLineColor(getLineColor(curf, -1));
 
-		p = uncub(f, PicPainter::build[15].pnt.x, PicPainter::build[15].pnt.y);
+		p = uncub(f, PicDisp::build[15].pnt.x, PicDisp::build[15].pnt.y);
 		curp = (p != -1)?plc[p].sc:-1; // restart the lcurp
 		//ASSERT(curp != -1);
 		for (b = 0; b < 16; ++b)
 		{
 			lp = p;
 			lcurp = curp; // curp - the pic that this specific small-block belongs too.
-			p = uncub(f, PicPainter::build[b].pnt.x, PicPainter::build[b].pnt.y); // the face number in this slot
+			p = uncub(f, PicDisp::build[b].pnt.x, PicDisp::build[b].pnt.y); // the face number in this slot
 
 			curp = (p != -1)?plc[p].sc:-1; 
 
@@ -613,8 +616,8 @@ void Cube::genLinesIFS(SlvCube *slvc, LinesCollection &ifs)
 			{ // seperation lines - prependiculars
 				float linecol = getLineColor(curp, lcurp);
 
-				shpp[0][0] = PicPainter::build[b].ln[0].x; shpp[0][1] = PicPainter::build[b].ln[0].y; shpp[0][2] = 0.0;
-				shpp[1][0] = PicPainter::build[b].ln[1].x; shpp[1][1] = PicPainter::build[b].ln[1].y; shpp[1][2] = 0.0;
+				shpp[0][0] = PicDisp::build[b].ln[0].x; shpp[0][1] = PicDisp::build[b].ln[0].y; shpp[0][2] = 0.0;
+				shpp[1][0] = PicDisp::build[b].ln[1].x; shpp[1][1] = PicDisp::build[b].ln[1].y; shpp[1][2] = 0.0;
 
 				placeInto(2, f, shpp, pnti1, pnti2);
 
@@ -628,12 +631,12 @@ void Cube::genLinesIFS(SlvCube *slvc, LinesCollection &ifs)
 					obj.addLine(&pnti1[0], &pnti2[1], linecol, linecol, linecol, v);
 				}
 			}
-			if ((curp != curf) && (PicPainter::build[b].bot[0].x != -1)) // bottom seperating lines
+			if ((curp != curf) && (PicDisp::build[b].bot[0].x != -1)) // bottom seperating lines
 			{                     // ^^ basically that its not a corner
 				float linecol = getLineColor(curp, curf);
 
-				shpp[0][0] = PicPainter::build[b].bot[0].x; shpp[0][1] = PicPainter::build[b].bot[0].y; shpp[0][2] = 0.0;
-				shpp[1][0] = PicPainter::build[b].bot[1].x; shpp[1][1] = PicPainter::build[b].bot[1].y; shpp[1][2] = 0.0;
+				shpp[0][0] = PicDisp::build[b].bot[0].x; shpp[0][1] = PicDisp::build[b].bot[0].y; shpp[0][2] = 0.0;
+				shpp[1][0] = PicDisp::build[b].bot[1].x; shpp[1][1] = PicDisp::build[b].bot[1].y; shpp[1][2] = 0.0;
 
 				placeInto(2, f, shpp, pnti1, pnti2);
 				obj.addLine(&pnti1[0], &pnti1[1], linecol, linecol, linecol, MyLine::LINE_ALWAYS);

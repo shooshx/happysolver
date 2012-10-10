@@ -69,13 +69,13 @@ public:
 
 	/// explicit conversion from Coord3df. we don't want to convert it to MyPoint 
 	/// by accident
-	explicit MyPoint(const Coord3df& c) 
+	explicit MyPoint(const Vec3& c) 
 		:p(c), he(NULL), touched(false) { ++g_ctorCount; }
 
 	~MyPoint() { ++g_dtorCount; }
 	
 	void clear() { p.clear(); n.clear(); }
-	void setp(const Coord3df &c) { p = c; }
+	void setp(const Vec3 &c) { p = c; }
 	uint hash() const { const uint *up = reinterpret_cast<const uint*>(p.ptr()); return (bXor(up[0], bXor(up[1] >> 8, up[2] >> 16))); }
 
 	MyPoint &operator+=(const MyPoint& a) { p += a.p; return *this; }
@@ -83,8 +83,8 @@ public:
 	MyPoint &operator*=(float s) { p *= s; return *this; }
 	MyPoint &operator=(const MyPoint& a) { p = a.p; return *this; }
 
-	Coord3df p; ///< actual coordinate value
-	Coord3df n; ///< normal of this point.
+	Vec3 p; ///< actual coordinate value
+	Vec3 n; ///< normal of this point.
 
 	// temporarys
 	HalfEdge *he; ///< HalfEdge originating from this point. - used in MyObject::subdivide()
@@ -109,7 +109,7 @@ inline bool operator==(const MyPoint &p1, const MyPoint &p2) { return (p1.p == p
 class MyLine  
 {
 public:
-	Coord3df color;
+	Vec3 color;
 	MyPoint *p1, *p2; 
 
 	enum ELineType

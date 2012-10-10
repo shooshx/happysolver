@@ -71,7 +71,7 @@ public:
 	/// \returns A result code according to success or failure of the operation.
 	EGenResult generate(const BuildWorld *build); 
 
-	int locateFaceHardWay(EPlane ldr, Coord3d lex) const;	// locate a face, if not existing, return -1;
+	int locateFaceHardWay(EPlane ldr, Vec3i lex) const;	// locate a face, if not existing, return -1;
 	bool createTrasformTo(const Shape *news, TTransformVec& movedTo, bool* trivialTransform);
 	void deallocate();
 	bool saveTo(MyFile *wrfl);
@@ -86,10 +86,10 @@ public:
 	struct FaceDef
 	{
 		FaceDef() :dr(PLANE_NONE), facing(FACING_UNKNOWN) {}
-		FaceDef(EPlane setdr, Coord3d setex) :dr(setdr), ex(setex), facing(FACING_UNKNOWN) {}
+		FaceDef(EPlane setdr, Vec3i setex) :dr(setdr), ex(setex), facing(FACING_UNKNOWN) {}
 
 		EPlane dr;		///< directions of the face	
-		Coord3d ex;		///< start point of the face
+		Vec3i ex;		///< start point of the face
 
 		EFacing facing;
 		int index; // in the shape faces array
@@ -108,15 +108,15 @@ public:
 		}
 
 		// should only be used offline
-		Coord3d size() const
+		Vec3i size() const
 		{
 			switch (dr)
 			{
-			case XY_PLANE: return Coord3d(5, 5, 1);
-			case XZ_PLANE: return Coord3d(5, 1, 5);
-			case YZ_PLANE: return Coord3d(1, 5, 5);
+			case XY_PLANE: return Vec3i(5, 5, 1);
+			case XZ_PLANE: return Vec3i(5, 1, 5);
+			case YZ_PLANE: return Vec3i(1, 5, 5);
 			}
-			return Coord3d(-1, -1, -1); // shouldn't happen.
+			return Vec3i(-1, -1, -1); // shouldn't happen.
 		}
 	};
 
@@ -127,14 +127,14 @@ public:
 	struct SideDef
 	{
 		SideDef() :dr(AXIS_NONE) { nei[0] = -1; nei[1] = -1; }
-		SideDef(EAxis setdr, Coord3d setex, int *setnei)
+		SideDef(EAxis setdr, Vec3i setex, int *setnei)
 			:dr(setdr), ex(setex)
 		{
 			nei[0] = setnei[0];
 			nei[1] = setnei[1];
 		}
 		EAxis dr;		///< direction of the side
-		Coord3d ex;		///< start point of the side
+		Vec3i ex;		///< start point of the side
 		int nei[2];		///< indexes of the faces bordering with this side. may be two or one (empty is -1)
 	};
 
@@ -146,7 +146,7 @@ public:
 	struct CornerDef
 	{
 		CornerDef() :numnei(0) { for(int i = 0; i < 6; ++i) nei[i] = -1; }
-		CornerDef(Coord3d setex, int *setnei)
+		CornerDef(Vec3i setex, int *setnei)
 			:ex(setex), numnei(0)
 		{
 			for(int i = 0; i < 6; ++i)
@@ -154,7 +154,7 @@ public:
 				if ((nei[i] = setnei[i]) != -1) numnei++;
 			}
 		}		
-		Coord3d ex;		///< start point
+		Vec3i ex;		///< start point
 		int numnei;
 		int nei[6];		///< can have any number of 1,2,3,4,5,6 neibours. (empty is -1)
 	};
@@ -182,7 +182,7 @@ private:
 	bool makeVolumeAndFacing();
 	void makePieceCheckBits();
 	void make_sides_facenei() ;
-	int locateFace(EPlane ldr, Coord3d lex) const;	// locate a face, if not existing, return -1;
+	int locateFace(EPlane ldr, Vec3i lex) const;	// locate a face, if not existing, return -1;
 
 	void faceNei(int whos, int fnei[4]);	// return a face's neibours
 	int faceNeiFirst(int whos, TransType trans[]);
@@ -197,7 +197,7 @@ private:
 	Space3D<int> m_opt_facesLoc[3];
 	
 public:
-	Coord3d size;	///< size in basic units
+	Vec3i size;	///< size in basic units
 
 	int fcn;		///< number of faces
 	int sdn;		///< number of sides (edges)

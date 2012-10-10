@@ -3,13 +3,17 @@
 #include "GLWidget.h"
 #include "Shape.h"
 #include "SlvCube.h"
+#include "OpenGL/glGlob.h"
 
 
 void SlvPainter::paintPiece(int f, GLWidget* context, bool fTargets) const
 {
 	const PicDef *pdef = scube->dt[f].sdef;
 	Shape::FaceDef *face = &scube->shape->faces[f];
-	int rtnindx = scube->dt[f].abs_rt;
+
+	//int rtnindx = scube->dt[f].abs_rt;
+	//rtnindx += pdef->dispRot;
+	int rtnindx = rotationSub(scube->dt[f].abs_rt, pdef->dispRot);
 
 	glPushMatrix();
 
@@ -40,10 +44,14 @@ void SlvPainter::paintPiece(int f, GLWidget* context, bool fTargets) const
 
 	glTranslatef(-0.5, -2.5, -2.5);
 
-	glLoadName(f);
+	//glLoadName(f);
+	Vec3b name = Vec3b::fromName(f);
+	//printf("%d %d %d\n", name.x, name.y, name.z);
+	//glColor3bv((GLbyte*)name.v);
+	glColor3f(name.x/255.0, name.y/255.0, name.z/255.0);
+	mglCheckErrors("~x6");
 	pdef->painter.paint(fTargets, context);
-
-
+	mglCheckErrors("~x7");
 	glPopMatrix();
 }
 
@@ -121,48 +129,6 @@ void SlvPainter::paint(GLWidget* context, bool fTargets, int singleChoise, int u
 }
 
 
-// C = A * B
-void MultiplyMatrices(const float matA[16], float matB[16], float matC[16])
-{
-	for (unsigned int i = 0; i < 4; ++i)
-	{
-		for (unsigned int j = 0; j < 4; ++j)
-		{
-			float res = 0.0f;
-			for (unsigned int k = 0; k < 4; ++k)
-			{
-				res += matA[i + k * 4] * matB[k + j * 4];
-			}
-			matC[i + j * 4] = res;
-		}
-	}
-}
-
-void CopyMatrix(const float from[16], float to[16])
-{
-	for (unsigned int i = 0; i < 16; ++i)
-	{
-		to[i] = from[i];
-	}
-}
-
-void RotationMatrix(float m[16], float angle, float x, float y, float z)
-{
-	float c = cos(angle / 180.0f * M_PI);
-	float s = sin(angle / 180.0f * M_PI);
-	m[0] = x * x * (1 - c) + c    ; m[4] = x * y * (1 - c) - z * s; m[8 ] = x * z * (1 - c) + y * s; m[12] = 0.0f;
-	m[1] = y * x * (1 - c) + z * s; m[5] = y * y * (1 - c) + c;		m[9 ] = y * z * (1 - c) - x * s; m[13] = 0.0f;
-	m[2] = x * z * (1 - c) - y * s; m[6] = y * z * (1 - c) + x * s; m[10] = z * z * (1 - c) + c;	 m[14] = 0.0f;
-	m[3] = 0.0f;					m[7] = 0.0f;					m[11] = 0.0f;					 m[15] = 1.0f;
-}
-
-void TranslationMatrix(float m[16], float x, float y, float z)
-{
-	m[0] = 1.0f; m[4] = 0.0f; m[8 ] = 0.0f; m[12] = x;
-	m[1] = 0.0f; m[5] = 1.0f; m[9 ] = 0.0f; m[13] = y;
-	m[2] = 0.0f; m[6] = 0.0f; m[10] = 1.0f; m[14] = z;
-	m[3] = 0.0f; m[7] = 0.0f; m[11] = 0.0f; m[15] = 1.0f;
-}
 
 bool SlvPainter::exportPieceToObj(QTextStream& meshFile, QTextStream& materialsFiles, int i, unsigned int& numVerts,
 								  unsigned int &numTexVerts, unsigned int &numNormals, unsigned int &numObjs) const
@@ -171,75 +137,35 @@ bool SlvPainter::exportPieceToObj(QTextStream& meshFile, QTextStream& materialsF
 	Shape::FaceDef *face = &scube->shape->faces[i];
 	int rtnindx = scube->dt[i].abs_rt;
 
-//	glPushMatrix();
-
-	float curMatrix[16], A[16], B[16];
-
-//	glTranslated(face->ex.x, face->ex.y, face->ex.z);
-	TranslationMatrix(curMatrix, face->ex.x, face->ex.y, face->ex.z);
+	Mat4 curMatrix = Mat4::translation(face->ex.x, face->ex.y, face->ex.z);
 
 	switch (face->dr)
 	{
 	case XY_PLANE: 
-//		glTranslated(0, 0, 1);
-		CopyMatrix(curMatrix, A);
-		TranslationMatrix(B, 0, 0, 1);
-		MultiplyMatrices(A, B, curMatrix);
-		
-//		glRotated(90, 0, 1, 0); 
-		CopyMatrix(curMatrix, A);
-		RotationMatrix(B, 90, 0, 1, 0);
-		MultiplyMatrices(A, B, curMatrix);
+		curMatrix.translate(0, 0, 1);
+		curMatrix.rotate(90, 0, 1, 0);
 		break;
 	case XZ_PLANE: 
-//		glRotated(90, 0, 1, 0);
-		CopyMatrix(curMatrix, A);
-		RotationMatrix(B, 90, 0, 1, 0);
-		MultiplyMatrices(A, B, curMatrix);
-
-
-//		glRotated(90, 0, 0, 1); 
-		CopyMatrix(curMatrix, A);
-		RotationMatrix(B, 90, 0, 0, 1);
-		MultiplyMatrices(A, B, curMatrix);
+		curMatrix.rotate(90, 0, 1, 0);
+		curMatrix.rotate(90, 0, 0, 1);
 		break;
 	case YZ_PLANE: 
+		// no need to do any rotation
 		break;
 	}
 
-//	glTranslatef(0.5, 2.5, 2.5);
-	CopyMatrix(curMatrix, A);
-	TranslationMatrix(B, 0.5, 2.5, 2.5);
-	MultiplyMatrices(A, B, curMatrix);
-
-//	glRotated(rtnindx * -90, 1, 0, 0);
-	CopyMatrix(curMatrix, A);
-	RotationMatrix(B, rtnindx * -90, 1, 0, 0);
-	MultiplyMatrices(A, B, curMatrix);
+	curMatrix.translate(0.5, 2.5, 2.5);
+	curMatrix.rotate(rtnindx * -90, 1, 0, 0);
 
 	if (rtnindx >= 4)
 	{
-//		glRotated(180, 0, 0, 1);
-		CopyMatrix(curMatrix, A);
-		RotationMatrix(B, 180, 0, 0, 1);
-		MultiplyMatrices(A, B, curMatrix);
-
-//		glRotated(90, 1, 0, 0);
-		CopyMatrix(curMatrix, A);
-		RotationMatrix(B, 90, 1, 0, 0);
-		MultiplyMatrices(A, B, curMatrix);
+		curMatrix.rotate(180, 0, 0, 1);
+		curMatrix.rotate(90, 1, 0, 0);
 	}
 
-//	glTranslatef(-0.5, -2.5, -2.5);
-	CopyMatrix(curMatrix, A);
-	TranslationMatrix(B, -0.5, -2.5, -2.5);
-	MultiplyMatrices(A, B, curMatrix);
-
-//	glLoadName(f);
+	curMatrix.translate(-0.5, -2.5, -2.5);
 	return pdef->painter.exportToObj(meshFile, materialsFiles, numVerts, numTexVerts, numNormals, numObjs, curMatrix);
 
-
-//	glPopMatrix();
 }
 
 

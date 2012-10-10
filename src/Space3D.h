@@ -63,12 +63,12 @@ public:
 	}
 
 	T& axx(int x, int y, int z) { return data[x + (szx * y) + (szxTy * z)]; }
-	T& axx(Coord3d c) { return data[c.x + (szx * c.y) + (szxTy * c.z)]; }
-	T& axx(Coord3d c, int factor) { return data[(c.x/factor) + (szx * (c.y/factor)) + (szxTy * (c.z/factor))]; }
+	T& axx(Vec3i c) { return data[c.x + (szx * c.y) + (szxTy * c.z)]; }
+	T& axx(Vec3i c, int factor) { return data[(c.x/factor) + (szx * (c.y/factor)) + (szxTy * (c.z/factor))]; }
 
 	const T& axx(int x, int y, int z) const { return data[x + (szx * y) + (szxTy * z)]; }
-	const T& axx(Coord3d c) const { return data[c.x + (szx * c.y) + (szxTy * c.z)]; }
-	const T& axx(Coord3d c, int factor) const { return data[(c.x/factor) + (szx * (c.y/factor)) + (szxTy * (c.z/factor))]; }
+	const T& axx(Vec3i c) const { return data[c.x + (szx * c.y) + (szxTy * c.z)]; }
+	const T& axx(Vec3i c, int factor) const { return data[(c.x/factor) + (szx * (c.y/factor)) + (szxTy * (c.z/factor))]; }
 
 	const int szx, szy, szz;
 
@@ -110,7 +110,7 @@ public:
 		:Space3D<BoundedBlock>(_szx, _szy, _szz) {}
 
 	int FloodFill(int x, int y, int z);
-	void ErectWalls(int dim, Coord3d front, Coord3d back);
+	void ErectWalls(int dim, Vec3i front, Vec3i back);
 };
 
 

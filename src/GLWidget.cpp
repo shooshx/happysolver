@@ -73,11 +73,11 @@ GLWidget::GLWidget(QWidget *parent, QGLWidget *sharefrom)
 	m_osf = 1.0;
 
 	// some defaults to get things started
-	aqmin = Coord3df(-3, -3, -3);
-	aqmax = Coord3df(3, 3, 3);
+	aqmin = Vec3(-3, -3, -3);
+	aqmax = Vec3(3, 3, 3);
 
-	m_lightPos = Coord3df(0.0f, 0.0f, 1000.0f);
-	m_lightColor = Coord3df(1.0f, 1.0f, 1.0f);
+	m_lightPos = Vec3(0.0f, 0.0f, 1000.0f);
+	m_lightColor = Vec3(1.0f, 1.0f, 1.0f);
 
 	m_lightAmbient = 0.2f;
 	m_lightDiffuse = 0.95f;
@@ -87,12 +87,12 @@ GLWidget::GLWidget(QWidget *parent, QGLWidget *sharefrom)
 
 void GLWidget::doBindTexture(int index, QImage img)
 {
-	makeCurrent();
-	int id = bindTexture(img.copy(), GL_TEXTURE_2D); // QT bind, not gl
-	// copy is ugly patch due to QT image caching bug
-	while (index > m_textures.size())
-		m_textures.insert(index, -1);
-	m_textures.insert(index, id);
+// 	makeCurrent();
+// 	int id = bindTexture(img.copy(), GL_TEXTURE_2D); // QT bind, not gl
+// 	// copy is ugly patch due to QT image caching bug
+// 	while (index > m_textures.size())
+// 		m_textures.insert(index, -1);
+// 	m_textures.insert(index, id);
 
 }
 
@@ -100,23 +100,23 @@ void GLWidget::doBindTexture(int index, QImage img)
 
 void GLWidget::doUpdateTexture(int index, QImage img)
 {
-	makeCurrent();
-	QImage cimg = img;
-	int texId = m_textures[index];
-
-	if (!glIsTexture(texId))
-	{
-		qDebug("invalid texture id");
-		return; // ha?? shouldn't happen.
-	}
-
-	glBindTexture(GL_TEXTURE_2D, texId);
-	// this is going arount QT to interface directly with the textures, causing an inversion of the image
-	// there is currently no way to do this with QT
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, cimg.width(), cimg.height(), GL_BGRA, GL_UNSIGNED_BYTE, cimg.bits());
-
-
-	updateGL();
+// 	makeCurrent();
+// 	QImage cimg = img;
+// 	int texId = m_textures[index];
+// 
+// 	if (!glIsTexture(texId))
+// 	{
+// 		qDebug("invalid texture id");
+// 		return; // ha?? shouldn't happen.
+// 	}
+// 
+// 	glBindTexture(GL_TEXTURE_2D, texId);
+// 	// this is going arount QT to interface directly with the textures, causing an inversion of the image
+// 	// there is currently no way to do this with QT
+// 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, cimg.width(), cimg.height(), GL_BGRA, GL_UNSIGNED_BYTE, cimg.bits());
+// 
+// 
+// 	updateGL();
 }
 
 
@@ -146,6 +146,8 @@ void GLWidget::initializeGL()
 
 	DoReset();
 	checkErrors("init end");
+
+	initialized();
 }
 
 
@@ -244,7 +246,7 @@ void GLWidget::setUsingLight(bool use)
 	updateGL();
 }
 
-void GLWidget::setLightPos(const Coord3df &c)
+void GLWidget::setLightPos(const Vec3 &c)
 {
 	if (m_lightPos == c)
 		return;
@@ -257,7 +259,7 @@ void GLWidget::setLightPos(const Coord3df &c)
 	updateGL();
 }
 
-void GLWidget::setLightColor(const Coord3df& c)
+void GLWidget::setLightColor(const Vec3& c)
 {
 	if (m_lightColor == c)
 		return;
@@ -361,7 +363,7 @@ void GLWidget::DoReset()
 	emit callReset();
 } 
 
-void GLWidget::setNewMinMax(const Coord3df& min, const Coord3df& max, bool scale)
+void GLWidget::setNewMinMax(const Vec3& min, const Vec3& max, bool scale)
 {
 	aqmin = min; aqmax = max;
 	if (scale)
@@ -381,6 +383,7 @@ double zoomFactor(double perc)
 
 void GLWidget::paintGL()
 {
+	makeCurrent();
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	double zv = zoomFactor(m_zoomVal / 100.0);
@@ -417,19 +420,19 @@ void GLWidget::myPaintGL()
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glBegin(GL_QUADS);
-	glNormal3d(0, 0, -1);
-	glVertex3d(0, 0, 0);
-	glVertex3d(0, 1, 0);
-	glVertex3d(1, 1, 0);
-	glVertex3d(1, 0, 0);
-
-	glNormal3d(0, -1, 0);
-	glVertex3d(0, 0, 0);
-	glVertex3d(0, 0, 1);
-	glVertex3d(1, 0, 1);
-	glVertex3d(1, 0, 0);
-	glEnd();
+// 	glBegin(GL_QUADS);
+// 	glNormal3d(0, 0, -1);
+// 	glVertex3d(0, 0, 0);
+// 	glVertex3d(0, 1, 0);
+// 	glVertex3d(1, 1, 0);
+// 	glVertex3d(1, 0, 0);
+// 
+// 	glNormal3d(0, -1, 0);
+// 	glVertex3d(0, 0, 0);
+// 	glVertex3d(0, 0, 1);
+// 	glVertex3d(1, 0, 1);
+// 	glVertex3d(1, 0, 0);
+// 	glEnd();
 }
 
 void GLWidget::setCullFace(bool b) 
@@ -504,8 +507,6 @@ void GLWidget::zoom(int v)
 }  
 
 
-
-
 // MOUSE HANDLERS ///////////////////////////////////////////
 
 
@@ -516,15 +517,15 @@ int GLWidget::DoChoise(int chX, int chY)
 
 	// The Size Of The Viewport. [0] Is <x>, [1] Is <y>, [2] Is <length>, [3] Is <width>
 	GLint	viewport[4];
+	makeCurrent();
 
 	// This Sets The Array <viewport> To The Size And Location Of The Screen Relative To The Window
 	glGetIntegerv(GL_VIEWPORT, viewport);
-	glSelectBuffer(512, buffer);								
+	//glSelectBuffer(512, buffer);								
 
-	(void) glRenderMode(GL_SELECT);
-	
-	glInitNames();												
-	glPushName(0);												
+	//glRenderMode(GL_SELECT);
+	//glInitNames();												
+	//glPushName(0);												
 	
 	glMatrixMode(GL_PROJECTION);								
 	glPushMatrix();												
@@ -538,31 +539,45 @@ int GLWidget::DoChoise(int chX, int chY)
 	
 	glMatrixMode(GL_MODELVIEW);	
 	
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	callDrawTargets();
 		
 	glMatrixMode(GL_PROJECTION);								
 	glPopMatrix();	
 
-	glMatrixMode(GL_MODELVIEW);									
-	hits=glRenderMode(GL_RENDER);								
-		
-	int choose = -1;
-	if (hits > 0)												
-	{
-		choose = buffer[3];									
-		int depth = buffer[1];									
-	
-		for (int loop = 1; loop < hits; loop++)					
-		{
-			// If This Object Is Closer To Us Than The One We Have Selected
-			if (buffer[loop*4+1] < GLuint(depth))
-			{
-				choose = buffer[loop*4+3];						
-				depth = buffer[loop*4+1];						
-			}
-		}
-	}
+	glMatrixMode(GL_MODELVIEW);
+
+ 	int choose = -1;
+
+	uint buf[10] = {0};
+
+	//glReadPixels(viewport[2] / 2, viewport[3] / 2, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, buf);
+	glReadPixels(0, 0, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, buf);
+	choose = buf[0] & 0xffffff;
+	if (choose == 0)
+		return -1;
+
 	return choose;
+
+// 	hits=glRenderMode(GL_RENDER);								
+// 		
+// 	int choose = -1;
+// 	if (hits > 0)												
+// 	{
+// 		choose = buffer[3];									
+// 		int depth = buffer[1];									
+// 	
+// 		for (int loop = 1; loop < hits; loop++)					
+// 		{
+// 			// If This Object Is Closer To Us Than The One We Have Selected
+// 			if (buffer[loop*4+1] < GLuint(depth))
+// 			{
+// 				choose = buffer[loop*4+3];						
+// 				depth = buffer[loop*4+1];						
+// 			}
+// 		}
+// 	}
+
 }
 
 

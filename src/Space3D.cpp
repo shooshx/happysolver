@@ -55,7 +55,7 @@ int BoundedBlockSpace3D::FloodFill(int x, int y, int z)
 	return ret;
 }
 
-void BoundedBlockSpace3D::ErectWalls(int dim, Coord3d front, Coord3d back)
+void BoundedBlockSpace3D::ErectWalls(int dim, Vec3i front, Vec3i back)
 {
 	if ((front.x < 0) || (front.y < 0) || (front.z < 0) || (front.x >= szx) || (front.y >= szy) || (front.z >= szz) ||
 		(back.x < 0) || (back.y < 0) || (back.z < 0) || (back.x >= szx) || (back.y >= szy) || (back.z >= szz))

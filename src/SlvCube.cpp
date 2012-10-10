@@ -66,11 +66,11 @@ void SlvCube::genPainter()
 		//dt[f].rtindx = dt[f].rt; //pty->rtns[dt[f].rt].rtnindx;
 	}
 
-	painter.qmin = Coord3df(0.0, 0.0, 0.0);
+	painter.qmin = Vec3(0.0, 0.0, 0.0);
 	painter.qmax = painter.qmin;
 	for (int i = 0; i < shape->fcn; ++i)
 	{
-		painter.qmax.pmax(Coord3df(shape->faces[i].ex + shape->faces[i].size()));
+		painter.qmax.pmax(Vec3(shape->faces[i].ex + shape->faces[i].size()));
 	}
 
 	// lines

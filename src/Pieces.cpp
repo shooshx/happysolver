@@ -27,8 +27,8 @@
 #include "CubeDoc.h"
 #include "GLWidget.h"
 #include "MainWindow.h" ///< MainWindow::wasClosed() is being used.
-
-
+#include "PicsSet.h"
+#include "NoiseGenerator.h"
 
 #define TEX_X 64
 #define TEX_Y 64
@@ -381,9 +381,11 @@ const PicGroupDef* PicDef::mygrp() const {
 }
 
 
+
 bool PicBucket::loadXML(const QString& xmlname)
 {
-//	unsigned int xxx1 = GetTickCount();
+
+	//	unsigned int xxx1 = GetTickCount();
 	QDomDocument doc;
 	QFile file(xmlname);
 
@@ -514,6 +516,7 @@ bool PicBucket::loadXML(const QString& xmlname)
 			if (cgrp.drawtype == DRAW_TEXTURE_BLEND)
 			{
 				cgrp.tex = newTexture(cgrp.blendImage());
+
 			}
 
 			QDomNodeList xpics = cube.elementsByTagName("piece");
@@ -598,6 +601,7 @@ bool PicBucket::loadXML(const QString& xmlname)
 	// set the reset selection
 	setToFamResetSel();
 
+
 //	unsigned int xxx5 = GetTickCount();
 
 //	QMessageBox::information(NULL, "bla", QString("%1\n%2\n%3\n%4").arg(xxx2 - xxx1).arg(xxx3 - xxx2).arg(xxx4 - xxx3).arg(xxx5 - xxx4));
@@ -623,8 +627,31 @@ void PicBucket::setToFamResetSel()
 			}
 		}
 	}
+}
+
+
+void PicBucket::distinctMeshes()
+{
+	PicsSet ps;
+	for(int i = 0; i < pdefs.size(); ++i) {
+		ps.add(i);
+	}
+	printf("%d distinct meshes out of %d pieces\n", ps.comp.size(), pdefs.size());
+
+	for(int i = 0; i < ps.comp.size(); ++i) {
+		auto comp = ps.comp[i];
+		shared_ptr<PicDisp> pd(new PicDisp);
+		pd->m_arr = comp.rtns[0];
+		for(int j = 0; j < comp.addedInds.size(); ++j) {
+			auto added = comp.addedInds[j];
+			pdefs[added.addedInd].dispRot = added.defRot;
+			pdefs[added.addedInd].disp = pd;
+		}
+		meshes.push_back(pd);
+	}
 
 }
+
 
 /** PoolStats is the datum of the poolStats list which holds the optimal sizes of MyAllcator pools.
 	Sizes for the MyPoint, MyPolygon and HalfEdge pools, measured as a function of the number of
@@ -647,7 +674,10 @@ static PoolStats poolStats[] = {
 
 void PicBucket::buildMeshes(const DisplayConf& dpc, bool showStop, GLWidget *mainContext)
 {
-	QProgressDialog pdlg("Building the pieces. Please Wait...", "Stop", 0, pdefs.size(), g_main);
+	// fill meshes
+	distinctMeshes();
+
+	QProgressDialog pdlg("Building the pieces. Please Wait...", "Stop", 0, meshes.size(), g_main);
 	pdlg.setSizeGripEnabled(false);
 	pdlg.setWindowTitle("Happy Cube Solver");
 	pdlg.setMinimumDuration(1500);
@@ -656,23 +686,23 @@ void PicBucket::buildMeshes(const DisplayConf& dpc, bool showStop, GLWidget *mai
 
 	// grows if needed, never shrinks.
 	PoolStats& ps = poolStats[dpc.numberOfPasses];
-	PicPainter::getAllocator().init(ps.points, ps.poly, ps.he);
-	PicPainter::getAllocator().clearMaxAlloc();
+	PicDisp::getAllocator().init(ps.points, ps.poly, ps.he);
+	PicDisp::getAllocator().clearMaxAlloc();
 
 	int cnt = 0;
 	bool cancel = false;
 
-	for (int pi = 0; pi < pdefs.size() && !cancel; ++pi)
+	for (int pi = 0; pi < meshes.size() && !cancel; ++pi)
 	{
         pdlg.setValue(cnt++);
-		pdefs[pi].painter.init(dpc, mainContext);
+		meshes[pi]->init(dpc, mainContext);
 
         qApp->processEvents(); // must call
 		cancel = ((showStop && pdlg.wasCanceled()) || (((MainWindow*)g_main)->wasClosed()));
 	}
 
 	pdlg.setValue(cnt);
-	PicPainter::getAllocator().checkMaxAlloc();
+	PicDisp::getAllocator().checkMaxAlloc();
 }
 
 
@@ -686,3 +716,29 @@ int PicBucket::selectedCount() const
 	return count;
 }
 
+
+int rotationAdd(int base, int defRot) 
+{
+	if ((defRot < 4) == (base < 4))
+		return (base - defRot + 4) % 4;
+	else
+		return ((base + defRot) % 4) + 4;
+
+}
+
+int rotationSub(int x, int defRot)
+{
+	if (defRot < 4) {
+		if (x < 4)
+			return (x + defRot + 4) % 4;
+		else
+			return ((x - defRot) % 4) + 4;
+	}
+	else {
+		if (x < 4)
+			return ((x + defRot) % 4) + 4;
+		else
+			return (x - defRot + 4) % 4;
+	}
+
+}

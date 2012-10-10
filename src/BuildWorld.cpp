@@ -34,7 +34,7 @@ BuildDimension::BuildPage::BuildPage()
 
 void BuildWorld::initializeNew(bool boxed)
 {
-	size = Coord3d(BUILD_SIZE, BUILD_SIZE, BUILD_SIZE);
+	size = Vec3i(BUILD_SIZE, BUILD_SIZE, BUILD_SIZE);
 	fChangedFromGen = true;
 	fChangedFromSave = false;
 	m_bTested = false;
@@ -50,15 +50,10 @@ void BuildWorld::initializeNew(bool boxed)
 	}
 	else
 	{ // boxed mode
-		Coord3d startPoint(24, 24, 24);
-
 		m_space.clear(BoundedBlock(0));
-		m_space.axx(startPoint).fill = 1;
-		CoordBuild walls[6];
-		getBuildCoords(startPoint, walls);
-		set(walls[0], FACE_STRT);
-		for (int i = 1; i < 6; ++i)
-			set(walls[i], FACE_NORM);
+
+		setBox(Vec3i(24, 24, 24));
+		//setBox(Vec3i(24, 24, 25));
 
 		nFaces = 6;
 		fClosed = true;
@@ -67,8 +62,19 @@ void BuildWorld::initializeNew(bool boxed)
 
 }
 
+
+void BuildWorld::setBox(const Vec3i s) 
+{
+	m_space.axx(s).fill = 1;
+	CoordBuild walls[6];
+	getBuildCoords(s, walls);
+	set(walls[0], FACE_STRT);
+	for (int i = 1; i < 6; ++i)
+		set(walls[i], FACE_NORM);
+}
+
 // get the the coordinates of the two cubes adjucent to this face
-void BuildWorld::get3dCoords(CoordBuild s, Coord3d &g1, Coord3d &g2)
+void BuildWorld::get3dCoords(CoordBuild s, Vec3i &g1, Vec3i &g2)
 {
 	switch (s.dim)
 	{
@@ -79,7 +85,7 @@ void BuildWorld::get3dCoords(CoordBuild s, Coord3d &g1, Coord3d &g2)
 }
 
 // get the 6 faces around the cube
-void BuildWorld::getBuildCoords(Coord3d g, CoordBuild b[6])
+void BuildWorld::getBuildCoords(Vec3i g, CoordBuild b[6])
 {
 	b[0].dim = XY_PLANE; b[0].page = g.z;   b[0].x = g.x; b[0].y = g.y;
 	b[1].dim = XY_PLANE; b[1].page = g.z+1; b[1].x = g.x; b[1].y = g.y;
@@ -92,7 +98,7 @@ void BuildWorld::getBuildCoords(Coord3d g, CoordBuild b[6])
 // get the fc index of the face in the generated test shape
 int BuildWorld::getTestShapeFcInd(CoordBuild s) const
 {
-	Coord3d g1, gtmp;
+	Vec3i g1, gtmp;
 	get3dCoords(s, g1, gtmp);
 	g1.x = g1.x * 4- m_gen_bounds.minx; 
 	g1.y = g1.y * 4- m_gen_bounds.miny; 
@@ -492,7 +498,7 @@ void BuildWorld::bootstrapSpace()
 				{
 					if (GET_TYPE(get(dim, page, x, y)) == TYPE_REAL)
 					{
-						Coord3d g1, g2;
+						Vec3i g1, g2;
 						get3dCoords(CoordBuild(dim, page, x, y), g1, g2);
 						m_space.ErectWalls(dim, g1, g2);
 						// this somehow, automagically works.
@@ -612,7 +618,7 @@ void BuildWorld::unGenerate(const Shape *shp)
 	for(int i = 0; i < shp->fcn; ++i)
 	{
 		Shape::FaceDef &f = shp->faces[i];
-		Coord3d ex = f.ex;
+		Vec3i ex = f.ex;
 		ex.x = ex.x / 4 + offsetX; 
 		ex.y = ex.y / 4 + offsetY;
 		ex.z = ex.z / 4 + offsetZ;

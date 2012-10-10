@@ -22,6 +22,7 @@
 #include "Texture.h"
 #include "PicPainter.h"
 #include "PicArr.h"
+#include "OpenGL/GLTexture.h"
 
 /** \file
 	Declares all classes involved in piece decleration and storage.
@@ -65,7 +66,7 @@ class PicDef
 {
 public:
 	PicDef() : mygrpi(-1), indexInGroup(-1), pixmap(1, 1),
-		xOffs(-1), yOffs(-1), painter(this), tex(NULL), nUsed(0), lastnSelected(1), nSelected(0), pathlen(0)
+		xOffs(-1), yOffs(-1), painter(this), tex(NULL), nUsed(0), lastnSelected(1), nSelected(0), pathlen(0), dispRot(-1)
 	{} // + 1 for the outlined line
 
 	void makeBoundingPath();
@@ -87,6 +88,9 @@ public:
 
 	mutable int nUsed;
 	mutable int lastnSelected; // used for the repressing of the button. to return to the last value.
+
+	shared_ptr<PicDisp> disp;
+	int dispRot;
 
 private:
 	mutable int nSelected;
@@ -155,7 +159,7 @@ class PicGroupDef
 public:
 	PicGroupDef() 
 	: tex(NULL), baseTex(NULL), drawtype(DRAW_UKNOWN), r(1.0), g(1.0), b(1.0),   
-	  exR(0), exG(0), exB(0), sideTex(NULL), sideTexX(0), sideTexY(0), blackness(BLACK_NOT)
+	  exR(0), exG(0), exB(0), sideTex(NULL), sideTexX(0), sideTexY(0), blackness(BLACK_NOT), gtex(NULL)
 	{}
 
 	QImage blendImage(); // produce an image from the texture, and the colors in blend mode
@@ -166,6 +170,8 @@ public:
 	int numPics() const { return picsi.size(); }
 
 	QVector<int> picsi; // indices of this group pics in the bucket
+	GlTexture *gtex;
+
 	Texture *tex;  // the texture used
 	Texture *baseTex; // the basic texture, before modulation
 
@@ -211,6 +217,10 @@ struct PicFamily
 class DisplayConf;
 class GLWidget;
 
+
+int rotationAdd(int base, int defRot);
+int rotationSub(int x, int defRot);
+
 /**	PicBucket is the main repository where all the data about all the pieces resides.
 	PicBucket is a singleton object which is created at startup
 	according to the piece definition XML
@@ -248,14 +258,19 @@ public:
 
 	//int numDefs() const { return defs.size(); }
 	void setToFamResetSel(); ///< reset the selected count to the reset number from the config
+	void distinctMeshes();
 
+public:
 	int sumPics; ///< how many cubes, how many pics in total
 	QVector<PicGroupDef> grps; ///< (defs) group definitions, inside them the piece definitions
 	QVector<PicDef> pdefs;
 
 	QList<Texture*> texs;
+	vector<GlTexture*> gtexs;
 
 	QVector<PicFamily> families;
+
+	vector<shared_ptr<PicDisp>> meshes;
 
 public slots:
 	void updateTexture(int gind); // some parameter changed in this gind, recalc the texture, send updates

@@ -211,7 +211,7 @@ static Shape::SideFind normSide[3][4] =
 };
 
 
-int Shape::locateFace(EPlane ldr, Coord3d lex) const
+int Shape::locateFace(EPlane ldr, Vec3i lex) const
 {
 	if ((lex.x < 0) || (lex.y < 0) || (lex.z < 0) ||
 		(lex.x >= size.x) || (lex.y >= size.y) || (lex.z >= size.z)) return -1;
@@ -220,7 +220,7 @@ int Shape::locateFace(EPlane ldr, Coord3d lex) const
 }
 
 /// locate face when m_opt_facesLoc is invalidated (after generate completes) 
-int Shape::locateFaceHardWay(EPlane ldr, Coord3d lex) const
+int Shape::locateFaceHardWay(EPlane ldr, Vec3i lex) const
 {
 	for(int i=0; i<fcn; ++i)
 	{
@@ -240,7 +240,7 @@ int Shape::checkSide(EAxis ldr, int x, int y, int z, QLinkedList<SideDef> &slst,
 	for(i=0; i<4; ++i)
 	{
 		if ((fcl = locateFace(normSide[ldr-1][i].pln, 
-							  Coord3d(x + normSide[ldr-1][i].x, 
+							  Vec3i(x + normSide[ldr-1][i].x, 
 									  y + normSide[ldr-1][i].y, 
 									  z + normSide[ldr-1][i].z))) != -1) 
 			nei[nec++] = fcl;
@@ -248,12 +248,12 @@ int Shape::checkSide(EAxis ldr, int x, int y, int z, QLinkedList<SideDef> &slst,
 				
 	if (nec == 2)
 	{
-		slst.push_front(SideDef(ldr, Coord3d(x, y, z), nei));
+		slst.push_front(SideDef(ldr, Vec3i(x, y, z), nei));
 		++sdn;
 	}
 	else if (nec > 2) 
 	{
-		slstError.push_front(SideDef(ldr, Coord3d(x, y, z), nei));
+		slstError.push_front(SideDef(ldr, Vec3i(x, y, z), nei));
 		++sdnError;
 		return 0;	// found a side with more than 2 faces
 	}
@@ -264,22 +264,22 @@ int Shape::checkCorner(int x, int y, int z, QLinkedList<CornerDef> &clst)
 {
 	int nec = 0, i, fcl, nei[12] = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
 	EPlane lpln[12];
-	Coord3d lex[12];
+	Vec3i lex[12];
 
-	lpln[0] = XY_PLANE;	lex[0] = Coord3d(x, y, z);
-	lpln[1] = XY_PLANE;	lex[1] = Coord3d(x-4, y, z);
-	lpln[2] = XY_PLANE;	lex[2] = Coord3d(x, y-4, z);
-	lpln[3] = XY_PLANE; lex[3] = Coord3d(x-4, y-4, z);
+	lpln[0] = XY_PLANE;	lex[0] = Vec3i(x, y, z);
+	lpln[1] = XY_PLANE;	lex[1] = Vec3i(x-4, y, z);
+	lpln[2] = XY_PLANE;	lex[2] = Vec3i(x, y-4, z);
+	lpln[3] = XY_PLANE; lex[3] = Vec3i(x-4, y-4, z);
 	
-	lpln[4] = XZ_PLANE;	lex[4] = Coord3d(x, y, z);
-	lpln[5] = XZ_PLANE;	lex[5] = Coord3d(x, y, z-4);
-	lpln[6] = XZ_PLANE;	lex[6] = Coord3d(x-4, y, z);
-	lpln[7] = XZ_PLANE;	lex[7] = Coord3d(x-4, y, z-4);
+	lpln[4] = XZ_PLANE;	lex[4] = Vec3i(x, y, z);
+	lpln[5] = XZ_PLANE;	lex[5] = Vec3i(x, y, z-4);
+	lpln[6] = XZ_PLANE;	lex[6] = Vec3i(x-4, y, z);
+	lpln[7] = XZ_PLANE;	lex[7] = Vec3i(x-4, y, z-4);
 
-	lpln[8] = YZ_PLANE;	lex[8] = Coord3d(x, y, z);
-	lpln[9] = YZ_PLANE;	lex[9] = Coord3d(x, y, z-4);
-	lpln[10] = YZ_PLANE; lex[10] = Coord3d(x, y-4, z);
-	lpln[11] = YZ_PLANE; lex[11] = Coord3d(x, y-4, z-4);
+	lpln[8] = YZ_PLANE;	lex[8] = Vec3i(x, y, z);
+	lpln[9] = YZ_PLANE;	lex[9] = Vec3i(x, y, z-4);
+	lpln[10] = YZ_PLANE; lex[10] = Vec3i(x, y-4, z);
+	lpln[11] = YZ_PLANE; lex[11] = Vec3i(x, y-4, z-4);
 
 	for(i = 0; i < 12; ++i)
 	{
@@ -290,7 +290,7 @@ int Shape::checkCorner(int x, int y, int z, QLinkedList<CornerDef> &clst)
 	{
 		for(i=nec; i<12; ++i)
 			nei[i] = -1;
-		clst.push_front(CornerDef(Coord3d(x, y, z), nei));
+		clst.push_front(CornerDef(Vec3i(x, y, z), nei));
 
 		++cnn;
 	}
@@ -327,7 +327,7 @@ void Shape::readAxis(const BuildWorld *build, int iss, int jss, int pgss, EPlane
 					x *= 4; y *= 4; z *= 4;
 
 					if (GET_VAL(tmp) == FACE_STRT) *reqfirst = fcn;
-					flst.push_front(FaceDef(planedr, Coord3d(x, y, z)));
+					flst.push_front(FaceDef(planedr, Vec3i(x, y, z)));
 					fcn++;
 
 					bound.MaxMin(z, x, y); // page plays z;
@@ -423,7 +423,7 @@ EGenResult Shape::generate(const BuildWorld *build)
 	deallocate();
 //	t1 = GetTickCount();
 
-	Coord3d fcSize(build->size);
+	Vec3i fcSize(build->size);
 
 	rotfirst = false; // ####### change
 
@@ -454,7 +454,7 @@ EGenResult Shape::generate(const BuildWorld *build)
 	for(i = 0; i < fcn; ++i)
 	{	// convert the linked list to an array, NORMAIZE the coodrinates to the size of the array, and dispose of the list
 		faces[i].dr = faceit->dr;
-		faces[i].ex = Coord3d(faceit->ex.x - bounds.minx, faceit->ex.y - bounds.miny, faceit->ex.z - bounds.minpage);
+		faces[i].ex = Vec3i(faceit->ex.x - bounds.minx, faceit->ex.y - bounds.miny, faceit->ex.z - bounds.minpage);
 		m_opt_facesLoc[faces[i].dr].axx(faces[i].ex, 4) = i; // build face optimizing array
 
 		++faceit;
@@ -652,8 +652,8 @@ bool Shape::makeVolumeAndFacing()
 	{	// the coordinates of the two adjucent cubes (in single cube space)
 		x = faces[i].ex.x/4 + 1; y = faces[i].ex.y/4 + 1; z = faces[i].ex.z/4 + 1; d = faces[i].dr;
 		
-		Coord3d front(x, y, z);
-		Coord3d back((d == YZ_PLANE)?(x - 1):x, (d == XZ_PLANE)?(y - 1):y, (d == XY_PLANE)?(z - 1):z);
+		Vec3i front(x, y, z);
+		Vec3i back((d == YZ_PLANE)?(x - 1):x, (d == XZ_PLANE)?(y - 1):y, (d == XY_PLANE)?(z - 1):z);
 		space.ErectWalls(d, front, back);
 	}
 	
@@ -766,7 +766,7 @@ bool Shape::makeReverseNei()
 			int curcorn = cfc.corners[j];
 			if (curcorn == -1)
 				continue;
-			Coord3d &cex = corners[curcorn].ex;
+			Vec3i &cex = corners[curcorn].ex;
 			if (cex == cfc.ex) trans[0] = curcorn;
 			else if (cex == sides[cfc.sides[1]].ex) trans[1] = curcorn;
 			else if (cex == sides[cfc.sides[2]].ex) trans[3] = curcorn;
@@ -865,7 +865,7 @@ bool Shape::createTrasformTo(const Shape *news, TTransformVec& movedTo, bool* tr
 	// calc the offset of the two shapes from the first piece which must be in the same place in both models
 	if (faces[0].dr != news->faces[0].dr)
 		return false; // first face is not the same orientation
-	Coord3d offset(faces[0].ex - news->faces[0].ex); 
+	Vec3i offset(faces[0].ex - news->faces[0].ex); 
 
 	*trivialTransform = true;
 	movedTo.fill(-1, fcn);

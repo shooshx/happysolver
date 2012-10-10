@@ -72,7 +72,7 @@ private:
 	inline CubeCell &cell(int x, int y, int z) { return cub_[x + (xsz * y) + (xTysz * z)]; }
 	int uncub(int p, int x, int y);
 
-	void placeInto(int pntn, int f, Coord3df *shpp, Coord3df *pnti1, Coord3df *pnti2);
+	void placeInto(int pntn, int f, Vec3 *shpp, Vec3 *pnti1, Vec3 *pnti2);
 
 	float getLineColor(int p, int l);
 	void placeSidePolygon(int b, MyObject& obj, int f, int curf, bool is1, int x, int y, bool backface);
