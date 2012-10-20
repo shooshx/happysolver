@@ -85,10 +85,7 @@ void BuildGLWidget::myPaintGL()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	{
-		ProgramUser use(&m_prog);
-		drawTargets(false);
-	}
+	drawTargets(false);
 
 	QString str1("%1tiles: %2");
 	QString str2;
@@ -286,13 +283,91 @@ void BuildGLWidget::makeBuffers()
 			
 
 
+#define ERR_CYLINDER_RADIOUS 0.1
+
+void BuildGLWidget::drawErrorCyliders()
+{
+	GLUquadricObj* qobj = gluNewQuadric();
+	gluQuadricDrawStyle(qobj, GLU_FILL);
+	const Shape &tstshp = m_doc->getBuild().getTestShape();
+
+	for (int i = 0; i < tstshp.sdnError; ++i)
+	{
+		Shape::SideDef &sd = tstshp.errorSides[i];
+		float x = sd.ex.x / 4.0,y = sd.ex.y / 4.0, z = sd.ex.z / 4.0;
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		glPushMatrix();
+
+		switch (sd.dr)
+		{
+		case X_AXIS: glTranslatef(x - 0.1, y, z); glRotatef(90, 0, 1, 0);  break;
+		case Y_AXIS: glTranslatef(x, y + 1.1, z); glRotatef(90, 1, 0, 0);  break;
+		case Z_AXIS: glTranslatef(x, y, z - 0.1); break;
+		}
+
+		glColor4f(1.0, 0.0, 0.0, m_errCylindrAlpha);
+
+		gluCylinder(qobj, ERR_CYLINDER_RADIOUS, ERR_CYLINDER_RADIOUS, 1.2, 15, 2); // the cylinder
+		gluDisk(qobj, 0, ERR_CYLINDER_RADIOUS, 15, 1); // two disks to cap it
+		glTranslatef(0, 0, 1.2f); 
+		gluDisk(qobj, 0, ERR_CYLINDER_RADIOUS, 15, 1);
+
+		glPopMatrix();
+	}
+
+	gluDeleteQuadric(qobj);
+}
+
+
+void BuildGLWidget::drawTargets(bool inChoise)
+{
+	float m[16], p[16];
+	glGetFloatv(GL_MODELVIEW_MATRIX, m);
+	glGetFloatv(GL_PROJECTION_MATRIX, p);
+
+	auto tm = model.cur(), tp = proj.cur();
+	ProgramUser use(&m_prog);
+	m_prog.trans.set(transformMat());
+
+
+
+	glDisable(GL_TEXTURE_2D);
+
+	glEnable(GL_LINE_SMOOTH);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glEnable(GL_POLYGON_OFFSET_FILL);
+
+	glPolygonOffset(1.0, 1.0);
+	m_realTiles.paint(inChoise);
+
+	if (!inChoise) {
+		glPolygonOffset(0, 0);
+		m_realLines.paint();
+
+		glPolygonOffset(1.0, 1.0);
+		m_transTiles.paint();
+		glPolygonOffset(0, 0);
+		m_transLines.paint();
+
+	}
+}
+
+
+#if 0
+
+
+
 void BuildGLWidget::drawTargetsPart(bool fTrans, bool fLines)
 {
 	int dim,x, y, page, thisname;
 
 	const BuildWorld &build = m_doc->getBuild();
 	int upToStep = m_doc->getUpToStep(); // optimization
-	
+
 	for(dim = 0; dim < 3; ++dim)
 	{
 		const SqrLimits &lim = build.m_limits[dim];
@@ -305,7 +380,7 @@ void BuildGLWidget::drawTargetsPart(bool fTrans, bool fLines)
 					int theget = build.get(dim, page, x, y);
 					if ((GET_VAL(theget) != 0) && (GET_VAL(theget) != FACE_DONT_TRANS) && (GET_SHOW(theget) != SHOW_DONT) &&
 						((!fTrans && GET_TYPE(theget) != TYPE_VIR) || 
-						 (fTrans && GET_TYPE(theget) == TYPE_VIR)) )
+						(fTrans && GET_TYPE(theget) == TYPE_VIR)) )
 					{
 						int valshow = GET_VAL_SHOW(theget);
 
@@ -323,7 +398,7 @@ void BuildGLWidget::drawTargetsPart(bool fTrans, bool fLines)
 						if (!fLines)
 						{
 							float inten = GET_INTENSITY(theget)/8.0f;
-			
+
 							switch (valshow)
 							{
 							case FACE_STRT:	if (m_fSetStrtMode) { glColor3f(1.0f, 1.0f, 0.0f); break;}
@@ -374,7 +449,7 @@ void BuildGLWidget::drawTargetsPart(bool fTrans, bool fLines)
 							break;
 						}	
 						glEnd();
-						
+
 					}
 				}
 			}
@@ -382,71 +457,6 @@ void BuildGLWidget::drawTargetsPart(bool fTrans, bool fLines)
 	}
 }
 
-#define ERR_CYLINDER_RADIOUS 0.1
-
-void BuildGLWidget::drawErrorCyliders()
-{
-	GLUquadricObj* qobj = gluNewQuadric();
-	gluQuadricDrawStyle(qobj, GLU_FILL);
-	const Shape &tstshp = m_doc->getBuild().getTestShape();
-
-	for (int i = 0; i < tstshp.sdnError; ++i)
-	{
-		Shape::SideDef &sd = tstshp.errorSides[i];
-		float x = sd.ex.x / 4.0,y = sd.ex.y / 4.0, z = sd.ex.z / 4.0;
-
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-		glPushMatrix();
-
-		switch (sd.dr)
-		{
-		case X_AXIS: glTranslatef(x - 0.1, y, z); glRotatef(90, 0, 1, 0);  break;
-		case Y_AXIS: glTranslatef(x, y + 1.1, z); glRotatef(90, 1, 0, 0);  break;
-		case Z_AXIS: glTranslatef(x, y, z - 0.1); break;
-		}
-
-		glColor4f(1.0, 0.0, 0.0, m_errCylindrAlpha);
-
-		gluCylinder(qobj, ERR_CYLINDER_RADIOUS, ERR_CYLINDER_RADIOUS, 1.2, 15, 2); // the cylinder
-		gluDisk(qobj, 0, ERR_CYLINDER_RADIOUS, 15, 1); // two disks to cap it
-		glTranslatef(0, 0, 1.2f); 
-		gluDisk(qobj, 0, ERR_CYLINDER_RADIOUS, 15, 1);
-
-		glPopMatrix();
-	}
-
-	gluDeleteQuadric(qobj);
-}
-
-
-void BuildGLWidget::drawTargets(bool inChoise)
-{
-	glDisable(GL_TEXTURE_2D);
-
-	glEnable(GL_LINE_SMOOTH);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glEnable(GL_POLYGON_OFFSET_FILL);
-
-	glPolygonOffset(1.0, 1.0);
-	m_realTiles.paint(inChoise);
-
-	if (!inChoise) {
-		glPolygonOffset(0, 0);
-		m_realLines.paint();
-
-		glPolygonOffset(1.0, 1.0);
-		m_transTiles.paint();
-		glPolygonOffset(0, 0);
-		m_transLines.paint();
-
-	}
-}
-
-
-#if 0
 void BuildGLWidget::drawTargets(bool inChoise)
 {
 //	glEnable(GL_COLOR_MATERIAL);
@@ -633,7 +643,7 @@ bool BuildGLWidget::doMouseMove(QMouseEvent *event, bool remove)
 	int choise;
 	if (event != NULL) // support non-mouse updates
 	{
-		choise = DoChoise(event->x(), event->y());
+		choise = doChoise(event->x(), event->y());
 		//printf("%8X  dim=%d  page=%2d  x=%2d  y=%2d\n", choise, GET_DIM(choise), GET_PAGE(choise), GET_X(choise), GET_Y(choise));
 		if ((choise == m_lastChoise) && (remove == m_bLastBoxRemove))
 			return false; // check if remove state just changed so we need to redraw
@@ -718,7 +728,7 @@ void BuildGLWidget::mouseMoveEvent(QMouseEvent *event)
 
 void BuildGLWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {
-	int choise = DoChoise(event->x(), event->y());
+	int choise = doChoise(event->x(), event->y());
 
 	if ((m_bBoxedMode) && (!m_fSetStrtMode))
 		boxedDblClick(choise, event);

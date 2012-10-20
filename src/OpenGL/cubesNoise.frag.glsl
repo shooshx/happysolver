@@ -44,7 +44,7 @@ void main (void)
 		gl_FragColor = vec4(color, 1.0);
 		return;
 	}
-	if (drawtype == 2) { // blend blakc
+	if (drawtype == 2) { // blend black
 		vec3 p = MCposition.yzx * 0.2;
 
 		vec4 noisevec = flat_texture3D(p);
@@ -58,6 +58,10 @@ void main (void)
 		color       *= LightIntensity;
 
 		gl_FragColor = vec4(color, 1.0);
+		return;
+	}
+	if (drawtype == 0x100) { // flat
+		gl_FragColor = vec4(colorA, 1.0);
 	}
 
 }

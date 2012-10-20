@@ -316,12 +316,17 @@ void PicDisp::makeBuffers(const MyObject& obj, Mesh &mesh)
 
 /// do the actual painting of a single piece in the actual OpenGL view.
 /// call the display list of the piece.
-void PicPainter::paint(bool fTargets, GLWidget *context) const
+void PicPainter::paint(bool fTargets, const Vec3& name, GLWidget *context) const
 {
 	glPolygonOffset(1.0, 1.0); // go backward, draw polygons TBD- move to slvpainter
 
 	const PicGroupDef *def = m_pdef->mygrp();
 	bool hasTex = def->isTexExist();
+
+	BaseProgram* bprog = ShaderProgram::currentt<BaseProgram>();
+	bprog->trans.set(context->transformMat());
+
+	mglCheckErrorsC("x8");
 	if (!fTargets)
 	{
 		int texId = 0;
@@ -330,11 +335,11 @@ void PicPainter::paint(bool fTargets, GLWidget *context) const
 		//	texId = context->m_textures[m_pdef->tex->ind];
 		//else if ((def->tex != NULL) && (def->tex->ind < context->m_textures.size()) && (def->tex->ind != -1))
 		//	texId = context->m_textures[def->tex->ind];
-		mglCheckErrors("~x8");
+
 		NoiseSlvProgram* prog = ShaderProgram::currentt<NoiseSlvProgram>();
 		if (prog != NULL) {
 			prog->drawtype.set(def->drawtype);
-			prog->colorA.set(Vec3(def->r, def->g, def->b));
+			prog->colorAu.set(Vec3(def->r, def->g, def->b));
 			prog->colorB.set(Vec3(def->exR, def->exG, def->exB));
 
 			if (def->gtex != NULL) {
@@ -343,32 +348,21 @@ void PicPainter::paint(bool fTargets, GLWidget *context) const
 				glBindTexture(GL_TEXTURE_2D, def->gtex->handle());
 				prog->noisef.set(1);
 			}
-		}
-		mglCheckErrors("~x9");
 
-		switch (def->drawtype) 
-		{
-			case DRAW_COLOR:
-				//glDisable(GL_TEXTURE_2D);
-				//glColor3f(def->r, def->g, def->b);
-				//prog->colorA.set(Vec3(def->r, def->g, def->b));
-				break;
-			case DRAW_TEXTURE_BLEND:
-				//glColor3f(1.0f, 1.0f, 1.0f);
-
-				//glBindTexture(GL_TEXTURE_2D, texId);
-				break;
-			case DRAW_TEXTURE_INDIVIDUAL_HALF:
-			case DRAW_TEXTURE_INDIVIDUAL_WHOLE:
-				//glEnable(GL_TEXTURE_2D);
-				//glColor3f(1.0f, 1.0f, 1.0f);
-				//glBindTexture(GL_TEXTURE_2D, texId);
-				break; // handle for every polygon
+			prog->modelMat.set(context->model.cur());
+			prog->normalMat.set(context->model.cur().toNormalsTrans());
 		}
+		mglCheckErrorsC("x9a");
+	}
+	else {
+		bprog->colorAu.set(name);
+		mglCheckErrorsC("x9b");
 	}
 
+	
+
 	m_pdef->disp->m_mesh.paint();
-	mglCheckErrors("~x10");
+
 /*	Texture *lastTex = NULL; // start disabled
 	for(int pli = 0; pli < obj.nPolys; ++pli) //polygons
 	{
@@ -467,12 +461,6 @@ bool PicPainter::exportToObj(QTextStream& meshout, QTextStream& mtlout, uint& nu
 }
 
 
-// void transformVector(const float fMatrix[16], const Vec3 vec, Vec3& outVec)
-// {
-// 	outVec[0] = fMatrix[0] * vec[0] + fMatrix[4] * vec[1] + fMatrix[8 ] * vec[2] + fMatrix[12];
-// 	outVec[1] = fMatrix[1] * vec[0] + fMatrix[5] * vec[1] + fMatrix[9 ] * vec[2] + fMatrix[13];
-// 	outVec[2] = fMatrix[2] * vec[0] + fMatrix[6] * vec[1] + fMatrix[10] * vec[2] + fMatrix[14];
-// }
 
 float filterZero(float x) // don't allow numbers like 1.1e-16 to the output
 {

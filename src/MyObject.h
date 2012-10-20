@@ -61,7 +61,7 @@ public:
 	bool verterxNormals; // use normals for every vertex (belongs more in the ifs.. but object is the drawing unit)
 
 	void addPoly(Vec3 *inplst, TexAnchor *ancs = NULL, Texture *tex = NULL); //copy needed vertices, add poly
-	void addLine(Vec3 *inp1, Vec3 *inp2, double inR, double inG, double inB, MyLine::ELineType type);
+	void addLine(Vec3 *inp1, Vec3 *inp2, double inR, double inG, double inB, ELineType type);
 	void setNakedLineColor(float color) { nakedLinesColor = color; }
 	void vectorify();
 	void clacNormals(bool vtxNormals);
@@ -113,41 +113,6 @@ private:
 
 };
 
-/** LinesCollection draws the lines seperating the pieces in the 3D solution display.
-	The lines objects in this structure exist in parallel to the PicPainter
-	which draws the actual pieces. They are invoked seperatly.
-*/
-class LinesCollection
-{
-public:
-	LinesCollection() {}
-
-	MyObject& operator[](uint i) 
-	{ 
-		TObjectsMap::iterator it = m_objects.find(i);
-		if (it == m_objects.end())
-			it = m_objects.insert(i, MyObject()); // does the find again...  TBD-sort of redundant by now
-		return *it; 
-	}
-
-	const MyObject& operator[](uint i) const
-	{
-		return *m_objects.find(i);
-	}
-
-	void vectorify()
-	{
-		for (TObjectsMap::iterator it = m_objects.begin(); it != m_objects.end(); ++it) 
-		{
-			it->vectorify();
-		}
-	}
-
-
-	typedef QHash<uint, MyObject> TObjectsMap;
-	TObjectsMap m_objects;
-
-};
 
 
 #endif // __SHAPEIFS_H__INCLUDED__

@@ -20,9 +20,8 @@
 
 #include <QGLWidget>
 #include "general.h"
-#ifdef Q_WS_MAC
-#include <OpenGL/glu.h>
-#endif
+#include "Mat.h"
+#include "MatStack.h"
 
 /** \file
 	Declares the GLWidget class which serves as a parent class to all OpenGL widgets.
@@ -109,6 +108,8 @@ public slots:
 	void setLightColor(const Vec3& c);
 	void reLight() { makeCurrent(); reCalcLight(); updateGL(); }
 
+	Mat4 transformMat();
+
 signals:
 	void rotated(GLWidget::EAxis axis, int x, int y);
 	void callReset(); // means my reset was just called
@@ -116,7 +117,7 @@ signals:
 
 protected:
 	
-	/// this is a call back to whoever subclasses this widget and calls DoChoise
+	/// this is a call back to whoever subclasses this widget and calls doChoise
 	/// the default implementation does nothing.
 	/// \arg \c inChoise a helper argument for user specified functionality. 
 	///	GLWidget always calls this method with inChoise == true.
@@ -125,7 +126,7 @@ protected:
 	virtual void drawTargets(bool inChoise) { Q_UNUSED(inChoise) } 
 		
 	/// perform actual selection of target.
-	int DoChoise(int chX, int chY);
+	int doChoise(int chX, int chY);
 	void DoReset();
 	void setNewMinMax(const Vec3& min, const Vec3& max, bool scale); 
 
@@ -171,13 +172,11 @@ protected:
 public: 
 	// this needs to be public for the PicPainter to be able to access it.
 	QList<int> m_textures;
+	MatStack proj, model;
 
 private:
 	virtual void paintGL(); // (event) demote it to private from protected
 	void callDrawTargets(); 
-
-	bool SetupViewingFrustum(void);
-	bool SetupViewingOrthoConstAspect(void);
 
 	// continuos rotate - not really used.
 	int m_nXDelt, m_nYDelt; // used for continuous rotation, last mouse delta.
@@ -191,6 +190,8 @@ private:
 	double m_AspectRatio;		///< hold the fixed Aspect Ration
 	double scrScale, realScale;
 	double m_osf; // moving scale
+
+	
 	
 	void reCalcProj(bool fFromScratch = true);
 	void reCalcLight();

@@ -6,7 +6,12 @@
 #include <QVector>
 #include <QString>
 
+#include <vector>
+
+using namespace std;
+
 #include "GLTexture.h"
+#include "../Mat.h"
 
 enum EProgType
 {
@@ -26,6 +31,52 @@ public:
 	uint geomOutput;
 	uint geomVtxCount;
 };
+
+class ShaderProgram;
+
+class ShaderParam 
+{
+public:
+	ShaderParam(const QString& name, ShaderProgram* prog);
+	virtual void getLocation(uint progId) = 0;
+	QString& name() { return m_name; }
+	bool isValid() const {
+		return m_uid != -1; 
+	}
+	uint id() { return m_uid; }
+
+protected:
+	uint m_uid;
+	QString m_name;
+};
+
+
+class UniformParam : public ShaderParam
+{
+public:
+	UniformParam(const QString& name, ShaderProgram* prog) : ShaderParam(name, prog) {}
+	virtual void getLocation(uint progId);
+
+	template<typename T> 
+	void set(const T& v) const;
+};
+
+
+class AttribParam : public ShaderParam
+{
+public:
+	AttribParam(const QString& name, ShaderProgram* prog) : ShaderParam(name, prog) {}
+	virtual void getLocation(uint progId);
+
+	template<typename T>
+	void set(const T& v) const;
+
+	template<typename T> 
+	void setArr(const T* v) const;
+	void disableArr();
+	void enableArr();
+};
+
 
 void shadersInit();
 
@@ -57,18 +108,31 @@ public:
 		}
 		return c; 
 	};
+	template<typename T>
+	static T* currenttTry() { 
+		if (g_current == NULL)
+			return NULL;
+		T* c = dynamic_cast<T*>(g_current);
+		return c; 
+	};
 
 	bool init(const ProgCompileConf& conf = ProgCompileConf());
 	bool isOk() const { return m_isOk; }
 
 	uint progId() const { return m_progId; }
+	void addParam(ShaderParam* p) {
+		m_params.push_back(p);
+	}
 
 	typedef QList<QString> TCodesList;
 	
 	// populate m_vtxprog, m_geomprog, m_fragprog
 	virtual void getCodes() = 0;
 	// called after successfull linkage
-	virtual void successLink() = 0;
+	virtual void successLink() {
+		for (auto it = m_params.begin(); it != m_params.end(); ++it)
+			(*it)->getLocation(progId());
+	}
 
 protected: 
 	void use() const;
@@ -81,7 +145,8 @@ protected:
 	EProgType m_type;
 	TCodesList m_vtxprog, m_geomprog, m_fragprog;
 	bool m_isOk;
-	QList<uint> m_createdShaders; // for later deletion.
+	vector<uint> m_createdShaders; // for later deletion.
+	vector<ShaderParam*> m_params; // members params that were registerd
 
 	static int g_users; // global. can't use more than one program at a time
 	static ShaderProgram *g_current;
@@ -148,187 +213,51 @@ private:
 
 
 
-class ShaderParam 
-{
+class FloatAttrib : public AttribParam {
 public:
-	ShaderParam(const QString& name) :m_uid(-1), m_name(name)
-	{}
-	virtual void getLocation(uint progId) = 0;
-	QString& name() { return m_name; }
-
-protected:
-	uint m_uid;
-	QString m_name;
-};
-
-
-class UniformParam : public ShaderParam
-{
-public:
-	UniformParam(const QString& name) : ShaderParam(name) {}
-	virtual void getLocation(uint progId);
-
-	template<typename T>
-	void set(const T& v) const;
-};
-
-
-class AttribParam : public ShaderParam
-{
-public:
-	AttribParam(const QString& name) : ShaderParam(name) {}
-	virtual void getLocation(uint progId);
-
-	template<typename T>
-	void set(const T& v) const;
-};
-
-
-
-
-class FloatAttrib : public AttribParam
-{
-public:
-	FloatAttrib(const char* name) : AttribParam(name) {}
+	FloatAttrib(const char* name, ShaderProgram* prog) : AttribParam(name, prog) {}
 	void set(float v) const;
 };
-
-class Vec3Uniform : public UniformParam
-{
+class Vec3Attrib : public AttribParam {
 public:
-	Vec3Uniform(const char* name) : UniformParam(name) {}
+	Vec3Attrib(const char* name, ShaderProgram* prog) : AttribParam(name, prog) {}
+	void setArr(const Vec3* v) const;
+};
+
+class Vec3Uniform : public UniformParam {
+public:
+	Vec3Uniform(const char* name, ShaderProgram* prog) : UniformParam(name, prog) {}
 	void set(const Vec3& v) const;
 };
 
-class Vec2Uniform : public UniformParam
-{
+class Vec2Uniform : public UniformParam {
 public:
-	Vec2Uniform(const char* name) : UniformParam(name) {}
+	Vec2Uniform(const char* name, ShaderProgram* prog) : UniformParam(name, prog) {}
 	void set(const Vec2& v) const;
 };
 
-class IntUniform : public UniformParam
-{
+class IntUniform : public UniformParam {
 public:
-	IntUniform(const char* name) : UniformParam(name) {}
+	IntUniform(const char* name, ShaderProgram* prog) : UniformParam(name, prog) {}
 	void set(int v) const;
+};
+
+class Mat4Uniform : public UniformParam {
+public:
+	Mat4Uniform(const char* name, ShaderProgram* prog) : UniformParam(name, prog) {}
+	void set(const Mat4& v) const;
+};
+
+class Mat3Uniform : public UniformParam {
+public:
+	Mat3Uniform(const char* name, ShaderProgram* prog) : UniformParam(name, prog) {}
+	void set(const Mat3& v) const;
 };
 
 
 void mglActiveTexture(int i);
 
-#if 0
 
-class GenericShader : public ShaderProgram
-{
-public:
-	GenericShader() {}
-
-	TCodesList& vtxprogs() { return m_vtxprog; }
-	TCodesList& fragprogs() { return m_fragprog; }
-	TCodesList& geomprogs() { return m_geomprog; }
-
-	virtual void clear() 
-	{
-		ShaderProgram::clear();
-		foreach(ShaderParam* p, m_params)
-			delete p;
-		m_params.clear();
-	}
-
-	void addParam(ShaderParam* p, int index)
-	{
-		if (m_params.size() <= index)
-			m_params.resize(index + 1);
-		m_params[index] = p;
-	}
-
-	template<typename T>
-	bool setUniform(const T& val, int index)
-	{
-		if (!isOk())
-			return false;
-		if (index >= m_params.size())
-			return false;
-		UniformParam* p = dynamic_cast<UniformParam*>(m_params[index]);
-		if (p == NULL)
-		{
-			printf("Param %s is not a uniform\n", m_params[index]->name().toAscii().data());
-			return false;
-		}
-		p->set(val);
-		return true;
-	}
-
-	template<typename T>
-	bool setAttrib(const T& val, int index)
-	{
-		if (!isOk())
-			return false;
-		if (index >= m_params.size())
-			return false;
-		AttribParam* p = dynamic_cast<AttribParam*>(m_params[index]);
-		if (p == NULL)
-		{
-			printf("Param %s is not an attribute\n", m_params[index]->name().toAscii().data());
-			return false;
-		}
-		p->set(val);
-		return true;
-	}
-
-
-protected:
-	virtual void getCodes() {}
-	virtual void successLink() 
-	{
-		foreach(ShaderParam* p, m_params)
-			p->getLocation(m_progId);
-	}
-
-private: 
-	QVector<ShaderParam*> m_params; // memory leaks
-
-};
-
-
-
-class AllShader;
-typedef QVector<AllShader*> TShaderList;
-
-class ShadersManager
-{
-public:
-	ShadersManager();
-	~ShadersManager();
-	void init();
-
-	AllShader* operator[](int p)
-	{
-		if (p >= m_prog.size())
-			return NULL;
-		return m_prog[p];
-	}
-	void append(AllShader* s)
-	{
-		m_prog.append(s);
-	}
-
-	void bindTexture(int index, const float* data, int size);
-
-	void bindTexture(int index, const QVector<float>& dat)
-	{
-		bindTexture(index, dat.data(), dat.size());
-	}
-
-	TShaderList& lst() { return m_prog; }
-	const GlTexture* tex(int index) const { return m_texEng[index]; }
-
-private:
-	TShaderList m_prog;
-	QVector<GlTexture*> m_texEng; // map the index of the texture engine to the Texture bound.
-};
-#endif
 
 
 

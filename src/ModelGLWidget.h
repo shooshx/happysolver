@@ -61,7 +61,6 @@ private:
 	int m_nSingleChoise; // right click, show a single piece
 	int m_nHoverChoise, m_nLastHoveChs;
 
-	SlvProgram m_progLight;
 	NoiseSlvProgram m_progNoise;
 	FlatProgram m_progFlat; // for choice selection
 

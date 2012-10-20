@@ -42,6 +42,7 @@ enum EDrawType
 	DRAW_TEXTURE_BLEND = 2, ///< a texture blended with a background and foreground color (Marble Cube, Profi Cube)
 	DRAW_TEXTURE_INDIVIDUAL_HALF = 0x14, ///< half piece uniformly colored and half with an unblended texture (Little Genius)
 	DRAW_TEXTURE_INDIVIDUAL_WHOLE = 0x18,
+	DRAW_FLAT = 0x100
 };
 
 inline bool isIndividual(EDrawType dt) {
@@ -66,8 +67,11 @@ class PicDef
 {
 public:
 	PicDef() : mygrpi(-1), indexInGroup(-1), pixmap(1, 1),
-		xOffs(-1), yOffs(-1), painter(this), tex(NULL), nUsed(0), lastnSelected(1), nSelected(0), pathlen(0), dispRot(-1)
+		xOffs(-1), yOffs(-1), painter(NULL), tex(NULL), nUsed(0), lastnSelected(1), nSelected(0), pathlen(0), dispRot(-1)
 	{} // + 1 for the outlined line
+	void reset() {
+		painter = PicPainter(this);
+	}
 
 	void makeBoundingPath();
 
@@ -169,7 +173,7 @@ public:
 
 	int numPics() const { return picsi.size(); }
 
-	QVector<int> picsi; // indices of this group pics in the bucket
+	vector<int> picsi; // indices of this group pics in the bucket
 	GlTexture *gtex;
 
 	Texture *tex;  // the texture used
@@ -262,13 +266,13 @@ public:
 
 public:
 	int sumPics; ///< how many cubes, how many pics in total
-	QVector<PicGroupDef> grps; ///< (defs) group definitions, inside them the piece definitions
-	QVector<PicDef> pdefs;
+	vector<PicGroupDef> grps; ///< (defs) group definitions, inside them the piece definitions
+	vector<PicDef> pdefs;
 
 	QList<Texture*> texs;
 	vector<GlTexture*> gtexs;
 
-	QVector<PicFamily> families;
+	vector<PicFamily> families;
 
 	vector<shared_ptr<PicDisp>> meshes;
 

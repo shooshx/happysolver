@@ -51,6 +51,7 @@ public:
 	AddedPic(int _defInd = -1) : defInd(_defInd) {}
 
 	int defInd;
+	// possibly add the rtns of the added pic? good for lines.
 };
 
 class SlvCube;
@@ -85,6 +86,8 @@ public:
 						
 	int compSize() const { return comp.size(); }
 	int addedSize() const { return added.size(); }
+
+	const PicDef* getDef(int abs_sc) const;
 
 	/// create the rotated version of all pieces in the set
 	//void makereps();

@@ -19,6 +19,7 @@
 #include <QtOpenGL>
 
 #include "GLWidget.h"
+#include "sglu/project.h"
 
 QGLFormat g_format;
 
@@ -83,6 +84,12 @@ GLWidget::GLWidget(QWidget *parent, QGLWidget *sharefrom)
 	m_lightDiffuse = 0.95f;
 	m_lightSpecular = 0.0f;
 }
+
+Mat4 GLWidget::transformMat() {
+	return Mat4::multt(proj.cur(), model.cur());
+}
+
+
 
 
 void GLWidget::doBindTexture(int index, QImage img)
@@ -160,49 +167,9 @@ void GLWidget::resizeGL(int width, int height)
 }
 
 
-bool GLWidget::SetupViewingFrustum()
-{
-	// select a default perspective viewing volumn
-
-	gluPerspective(60.0, m_AspectRatio, 0.1, 100.0 );
-
-	glTranslated(0.0, 0.0, -4);
-
-	glScaled(scrScale, scrScale, scrScale);
-	return true;
-}
-
-
-// This viewing projection gives us a constant aspect ration. This is done by
-// increasing the corresponding size of the ortho cube.
-bool GLWidget::SetupViewingOrthoConstAspect()
-{
-	double windowSize = 4;	// the size of the window in GL coord system.
-
-	
-	if ( m_AspectRatio > 1 ) 
-	{	
-		glOrtho(-windowSize*m_AspectRatio/2.0, windowSize*m_AspectRatio/2.0,
-		        -windowSize/2.0, windowSize/2.0,
-		        -windowSize*m_AspectRatio/1.0, windowSize*m_AspectRatio/1.0);
-	} 
-	else 
-	{
-		glOrtho(-windowSize/2.0, windowSize/2.0, 
-		        -windowSize/m_AspectRatio/2.0, windowSize/m_AspectRatio/2.0,
-		        -windowSize/m_AspectRatio/1.0, windowSize/m_AspectRatio/1.0);
-	}
-
-  
-	glScaled(scrScale, scrScale, scrScale);
-	return true;
-}
-
 
 void GLWidget::reCalcProj(bool fFromScratch) // = true default
 {
-	
-
 	if (fFromScratch)
 	{
 		double figX = qMax(aqmax[0] - aqmin[0], (float)m_minScaleReset),
@@ -214,20 +181,30 @@ void GLWidget::reCalcProj(bool fFromScratch) // = true default
 
 		m_AspectRatio = (GLdouble)m_cxClient/(GLdouble)m_cyClient;
 
-		::glViewport(0, 0, m_cxClient, m_cyClient);
-		::glMatrixMode(GL_PROJECTION);
-		::glLoadIdentity();
+		glViewport(0, 0, m_cxClient, m_cyClient);
+		proj.cur().identity();
 	}
 
-	if (m_viewState == Perspective)
-	{
-		SetupViewingFrustum();
+	if (m_viewState == Perspective) {
+		Mat4 p;
+		sgluPerspective(60.0, m_AspectRatio, 0.1, 100.0, p.m );
+		proj.mult(p);
+		proj.translate(0.0f, 0.0f, -4.0f);
+		proj.scale(scrScale, scrScale, scrScale);
+
 	}
-	else
+	else 
 	{
-		SetupViewingOrthoConstAspect();
+		double windowSize = 4;	// the size of the window in GL coord system.
+		if ( m_AspectRatio > 1) {	
+		//	glOrtho(-windowSize*m_AspectRatio/2.0, windowSize*m_AspectRatio/2.0, -windowSize/2.0, windowSize/2.0, -windowSize*m_AspectRatio/1.0, windowSize*m_AspectRatio/1.0);
+		} 
+		else {
+		//	glOrtho(-windowSize/2.0, windowSize/2.0, -windowSize/m_AspectRatio/2.0, windowSize/m_AspectRatio/2.0, -windowSize/m_AspectRatio/1.0, windowSize/m_AspectRatio/1.0);
+		}
+
+		//glScaled(scrScale, scrScale, scrScale);
 	}
-	glMatrixMode(GL_MODELVIEW);
 
 }
 
@@ -289,8 +266,8 @@ void GLWidget::reCalcLight()
 		glDisable(GL_NORMALIZE);
 		glEnable(0x803A); // GL_RESCALE_NORMAL needed due to possible zoom
 
-		glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-		glEnable(GL_COLOR_MATERIAL);
+		//glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+		//glEnable(GL_COLOR_MATERIAL);
 
 		float no_ambient[] = {0.0f, 0.0f, 0.0f, 1.0f};
 
@@ -349,8 +326,7 @@ void GLWidget::DoReset()
 	// this is the mode we do most of our calculations in
 	// so we leave it as the default mode.
 
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();	
+	model.identity();
 
 	// this is controvercial.
 	if (m_bSkewReset)
@@ -384,34 +360,31 @@ double zoomFactor(double perc)
 void GLWidget::paintGL()
 {
 	makeCurrent();
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
+	model.push();
 	double zv = zoomFactor(m_zoomVal / 100.0);
 	//double zv = m_zoomVal / 100.0;
-	glScaled(zv, zv, zv);
+	model.scale(zv, zv, zv);
 
-	glTranslated(-(aqmax[0] + aqmin[0])/2, -(aqmax[1] + aqmin[1])/2, -(aqmax[2] + aqmin[2])/2);
+	model.translate(-(aqmax[0] + aqmin[0])/2, -(aqmax[1] + aqmin[1])/2, -(aqmax[2] + aqmin[2])/2);
 	// a change here needs also a change in callDrawTargets!!
-
+	checkErrors("x20");
 	myPaintGL();
-
-	glPopMatrix();
+	model.pop();
 	checkErrors("paint");
 }
 
 void GLWidget::callDrawTargets()
 {
-	glPushMatrix();
+	model.push();
 	double zv = zoomFactor(m_zoomVal / 100.0);
 	//double zv = 2.1, m_zoomVal / 100.0;
-	glScaled(zv, zv, zv);
+	model.scale(zv, zv, zv);
 
-	glTranslated(-(aqmax[0] + aqmin[0])/2, -(aqmax[1] + aqmin[1])/2, -(aqmax[2] + aqmin[2])/2);
+	model.translate(-(aqmax[0] + aqmin[0])/2, -(aqmax[1] + aqmin[1])/2, -(aqmax[2] + aqmin[2])/2);
 
 	drawTargets(true);	// the virtual function
 
-	glPopMatrix();
-
+	model.pop();
 }
 
 
@@ -509,11 +482,25 @@ void GLWidget::zoom(int v)
 
 // MOUSE HANDLERS ///////////////////////////////////////////
 
-
-int GLWidget::DoChoise(int chX, int chY)
+void sgluPickMatrix(double x, double y, double deltax, double deltay, int viewport[4], MatStack& mat)
 {
-	GLuint	buffer[512];										
-	GLint	hits;												
+	if (deltax <= 0 || deltay <= 0) { 
+		return;
+	}
+
+	/* Translate and scale the picked region to the entire window */
+	//glTranslatef((viewport[2] - 2 * (x - viewport[0])) / deltax, (viewport[3] - 2 * (y - viewport[1])) / deltay, 0);
+	//glScalef(viewport[2] / deltax, viewport[3] / deltay, 1.0);
+
+	mat.translate((viewport[2] - 2 * (x - viewport[0])) / deltax, (viewport[3] - 2 * (y - viewport[1])) / deltay, 0);
+	mat.scale(viewport[2] / deltax, viewport[3] / deltay, 1.0);
+}
+
+
+int GLWidget::doChoise(int chX, int chY)
+{
+	//GLuint	buffer[512];										
+	//GLint	hits;												
 
 	// The Size Of The Viewport. [0] Is <x>, [1] Is <y>, [2] Is <length>, [3] Is <width>
 	GLint	viewport[4];
@@ -521,31 +508,25 @@ int GLWidget::DoChoise(int chX, int chY)
 
 	// This Sets The Array <viewport> To The Size And Location Of The Screen Relative To The Window
 	glGetIntegerv(GL_VIEWPORT, viewport);
-	//glSelectBuffer(512, buffer);								
 
-	//glRenderMode(GL_SELECT);
-	//glInitNames();												
-	//glPushName(0);												
 	
-	glMatrixMode(GL_PROJECTION);								
-	glPushMatrix();												
+	proj.push();
 	glLoadIdentity();											
-
+	proj.identity();
 	
 	// This Creates A Matrix That Will Zoom Up To A Small Portion Of The Screen, Where The Mouse Is.
-	gluPickMatrix((GLdouble)chX, (GLdouble)(viewport[3]-chY), 1.0f, 1.0f, viewport);
+	//gluPickMatrix((GLdouble)chX, (GLdouble)(viewport[3]-chY), 1.0f, 1.0f, viewport);
+	sgluPickMatrix((double)chX, (double)(viewport[3]-chY), 1.0f, 1.0f, viewport, proj);
 	
 	reCalcProj(false);
 	
-	glMatrixMode(GL_MODELVIEW);	
-	
+
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	callDrawTargets();
 		
-	glMatrixMode(GL_PROJECTION);								
-	glPopMatrix();	
+	proj.pop();
 
-	glMatrixMode(GL_MODELVIEW);
 
  	int choose = -1;
 
@@ -653,7 +634,7 @@ void GLWidget::ActMouseMove(EMouseAction action, int dx, int dy)
 
 void GLWidget::rotate(EAxis axis, int x, int y) 
 {
-
+	Mat4 wmat;
 	double mat[16];
 	double fx = (double)x, fy = (double)y;
 
@@ -661,24 +642,38 @@ void GLWidget::rotate(EAxis axis, int x, int y)
 	{
 		glGetDoublev(GL_MODELVIEW_MATRIX, mat);
 		glLoadIdentity();
+		wmat = model.cur();
+		model.identity();
 	}
-	else // objectspace, translate it to 0,0,0
+	else {// objectspace, translate it to 0,0,0
 		glTranslated((aqmax[0] + aqmin[0])/2, (aqmax[1] + aqmin[1])/2, (aqmax[2] + aqmin[2])/2);
+		model.translate((aqmax[0] + aqmin[0])/2, (aqmax[1] + aqmin[1])/2, (aqmax[2] + aqmin[2])/2);
+	}
 
 	switch (axis)
 	{
-	case Xaxis:	glRotated(fx, 1, 0, 0);	break;
-	case Yaxis:	glRotated(fx, 0, 1, 0);	break;
-	case Zaxis:	glRotated(fx, 0, 0, 1);	break;
-	case XYaxis: glRotated(fx, 0, 1, 0); glRotated(fy, 1, 0, 0); break;
-	case XZaxis: glRotated(fx, 0, 0, 1); glRotated(fy, 1, 0, 0); break;
-	case YZaxis: glRotated(fx, 0, 1, 0); glRotated(fy, 0, 0, 1); break;
+	case Xaxis:	glRotated(fx, 1, 0, 0);	
+		        model.rotate(fx, 1, 0, 0); break;
+	case Yaxis:	glRotated(fx, 0, 1, 0);	
+		        model.rotate(fx, 0, 1, 0); break;
+	case Zaxis:	glRotated(fx, 0, 0, 1);	
+		        model.rotate(fx, 0, 0, 1); break;
+	case XYaxis: glRotated(fx, 0, 1, 0); glRotated(fy, 1, 0, 0); 
+		         model.rotate(fx, 0, 1, 0); model.rotate(fy, 1, 0, 0); break;
+	case XZaxis: glRotated(fx, 0, 0, 1); glRotated(fy, 1, 0, 0); 
+		         model.rotate(fx, 0, 0, 1); model.rotate(fy, 1, 0, 0); break;
+	case YZaxis: glRotated(fx, 0, 1, 0); glRotated(fy, 0, 0, 1);
+		         model.rotate(fx, 0, 1, 0); model.rotate(fy, 0, 0, 1); break;
 	}
 
-	if (m_transformType == WorldSpace)
+	if (m_transformType == WorldSpace) {
 		glMultMatrixd(mat);
-	else // translate it back
+		model.mult(wmat);
+	}
+	else { // translate it back
 		glTranslated(-(aqmax[0] + aqmin[0])/2, -(aqmax[1] + aqmin[1])/2, -(aqmax[2] + aqmin[2])/2);
+		model.translate(-(aqmax[0] + aqmin[0])/2, -(aqmax[1] + aqmin[1])/2, -(aqmax[2] + aqmin[2])/2);
+	}
 
 	emit rotated(axis, x, y);
 }
@@ -688,6 +683,7 @@ void GLWidget::translate(int xValue, int yValue)
 	double fx = ((double)xValue / realScale);
 	double fy = ((double)yValue / realScale);
 	double mat[16];
+	Mat4 wmat;
 
 	if (m_transformType == ObjectSpace) 
 	{
@@ -695,27 +691,31 @@ void GLWidget::translate(int xValue, int yValue)
 		fy /= m_osf;
 	}
 
-	glMatrixMode(GL_MODELVIEW);
-
 	if (m_transformType == WorldSpace)
 	{
-		glGetDoublev(GL_MODELVIEW_MATRIX, mat);
-		glLoadIdentity();
+		wmat = model.cur();
+		model.identity();
 	}
 
 	switch (m_axis)
 	{
-	case Xaxis: glTranslated(fx, 0, 0);	break;
-	case Yaxis: glTranslated(0, fx, 0);	break;
-	case Zaxis: glTranslated(0, 0, fx);	break;
-	case XYaxis: glTranslated(fx, 0, 0); glTranslated(0, -fy, 0); break;
-	case XZaxis: glTranslated(fx, 0, 0); glTranslated(0, 0, fy); break;
-	case YZaxis: glTranslated(0, 0, fx); glTranslated(0, -fy, 0); break;
+	case Xaxis: glTranslated(fx, 0, 0);
+		        model.translate(fx, 0, 0); break;
+	case Yaxis: glTranslated(0, fx, 0); 
+		        model.translate(0, fx, 0); break;
+	case Zaxis: glTranslated(0, 0, fx);
+		        model.translate(0, 0, fx); break;
+	case XYaxis: glTranslated(fx, 0, 0); glTranslated(0, -fy, 0);
+		         model.translate(fx, 0, 0); model.translate(0, -fy, 0); break;
+	case XZaxis: glTranslated(fx, 0, 0); glTranslated(0, 0, fy); 
+		         model.translate(fx, 0, 0); model.translate(0, 0, fy); break;
+	case YZaxis: glTranslated(0, 0, fx); glTranslated(0, -fy, 0);
+		         model.translate(0, 0, fx); model.translate(0, -fy, 0); break;
 	}
 
 	if (m_transformType == WorldSpace)
 	{
-		glMultMatrixd(mat);
+		model.mult(wmat);
 	}
 }
 
@@ -723,21 +723,21 @@ void GLWidget::scale(int xValue, int yValue)
 {
 	double f = 1 + (double)(xValue + yValue) / 150.0;	// object may flip if we do it too fast
 	double mat[16];
+	Mat4 wmat;
 	
-	glMatrixMode(GL_MODELVIEW);
 
 	if (m_transformType == WorldSpace)	// damn right it's needed
 	{
-		glGetDoublev(GL_MODELVIEW_MATRIX, mat);
-		glLoadIdentity();
+		wmat = model.cur();
+		model.identity();
 	}
 
-	glScaled(f, f, f);
+	model.scale(f, f, f);
 
 	m_osf = m_osf * f;
 	if (m_transformType == WorldSpace)
 	{
-		glMultMatrixd(mat);	
+		model.mult(wmat);
 	}
 }
 

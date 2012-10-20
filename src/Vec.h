@@ -1,6 +1,8 @@
 #pragma once
 #include <QtGlobal>
 
+#include <cmath>
+
 typedef unsigned char byte;
 
 struct Vec4b

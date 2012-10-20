@@ -466,8 +466,12 @@ bool PicBucket::loadXML(const QString& xmlname)
 		grpCount += cfam.numGroups;
 		xfam = xfam.nextSiblingElement(); // next family
 	}
-	//defs.resize(count);
-	pdefs = QVector<PicDef>(grpCount * 6); // assume ever group has 6 pieces
+
+	pdefs.resize(grpCount*6);
+	// the painter includes a pointer to the def so it needs to be initialized in the real vector
+	for(int i = 0; i < grpCount*6; ++i)
+		pdefs[i].reset();
+
 
 	sumPics = 0;
 	int grpi = 0; // (i) group number

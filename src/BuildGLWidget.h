@@ -130,7 +130,7 @@ private:
 
 	bool getChoiseTiles(int choise, bool remove, CoordBuild bb[6], Vec3i &g);
 
-	void drawTargetsPart(bool fTrans, bool fLines);
+	//void drawTargetsPart(bool fTrans, bool fLines);
 	void drawErrorCyliders();
 	void checkSides();
 

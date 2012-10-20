@@ -5,41 +5,47 @@
 #include "ShaderProgram.h"
 
 
-
-
-class SlvProgram : public ShaderProgram
-{
+class BaseProgram : public ShaderProgram {
 public:
-	virtual void getCodes();
-	virtual void successLink() {}
+	BaseProgram()
+		:trans("trans", this), colorAatt("colorA", this), colorAu("colorA", this), vtx("vtx", this)
+	{}
+
+	Mat4Uniform trans;
+	UniformParam colorAu;
+	AttribParam colorAatt;
+	Vec3Attrib vtx;
 };
 
 
-class BuildProgram : public ShaderProgram
-{
+
+
+class BuildProgram : public BaseProgram {
 public:
 	virtual void getCodes();
-	virtual void successLink() {}
 };
 
-class FlatProgram : public ShaderProgram
-{
+class FlatProgram : public BaseProgram {
 public:
 	virtual void getCodes();
-	virtual void successLink() {}
 };
 
-class NoiseSlvProgram : public ShaderProgram
-{
+class NoiseSlvProgram : public BaseProgram {
 public:
-	NoiseSlvProgram();
+	NoiseSlvProgram()
+		:noisef("noisef", this), colorB("colorB", this), drawtype("drawtype", this)
+		,modelMat("modelMat", this), normalMat("normalMat", this), normal("normal", this)
+	{}
 	virtual void getCodes();
-	virtual void successLink();
 
 	IntUniform noisef; 
-	Vec3Uniform colorA;
+
 	Vec3Uniform colorB;
 	IntUniform drawtype;
+
+	Mat4Uniform modelMat;
+	Mat3Uniform normalMat;
+	Vec3Attrib normal;
 };
 
 

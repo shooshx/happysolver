@@ -82,17 +82,17 @@ void ModelGLWidget::paint(GLWidget* that, CubeDoc *doc, SlvCube *scube, bool fTa
 	{ // only drawing targets, no need to bother with colors. maybe disable lighting as well?
 		//glDisable(GL_COLOR_MATERIAL);
 	}
-	mglCheckErrors("~x4");
+
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_POLYGON_OFFSET_FILL);
 	glEnable(GL_LINE_SMOOTH);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // just make sure
-	mglCheckErrors("~x3");
 
+	mglCheckErrorsC("x1");
 	// call the SlvPainter to do its job.
 	scube->painter.paint(that, fTargets, singleChoise, upToStep, doc->m_conf.disp.nLines); 
-	mglCheckErrors("~x5");
+	mglCheckErrorsC("x2");
 }
 
 
@@ -106,13 +106,16 @@ void ModelGLWidget::myPaintGL()
 	if (isUsingLight())
 		glDisable(GL_LIGHTING);
 
+	mglCheckErrorsC("x21");
 	GL_BEGIN_TEXT();
 	
 	glColor3f(0.3f, 0.3f, 1.0f);
 	glRasterPos2f(-0.95f, -0.92f);
+	mglCheckErrorsC("x22");
 
 	mglPrint(QString("%1/%2").arg(m_doc->getCurrentSolveIndex() + 1).arg(m_doc->getSolvesNumber()));
 
+	mglCheckErrorsC("x23");
 	GL_END_TEXT();
 
 	// re-enable lighting 
@@ -179,8 +182,8 @@ void ModelGLWidget::drawTargets(bool inChoise)
 		slv->genPainter();
 	}
 
-	if (forceChoice)
-		inChoise = true;
+	//if (forceChoice)
+	//	inChoise = true;
 	
 	ShaderProgram* sel = NULL;
 	if (inChoise) {
@@ -193,9 +196,9 @@ void ModelGLWidget::drawTargets(bool inChoise)
 	}
 
 	ProgramUser u(sel);
-	mglCheckErrors("~x2");
+
 	paint(this, m_doc, slv, inChoise, m_nSingleChoise, m_doc->getUpToStep());
-	mglCheckErrors("~x1");
+
 }
 
 void ModelGLWidget::keyPressEvent( QKeyEvent *k ) {
@@ -207,7 +210,7 @@ void ModelGLWidget::mousePressEvent(QMouseEvent *event)
 {
 	if (event->button() == Qt::RightButton)
 	{
-		m_nSingleChoise = DoChoise(event->x(), event->y());
+		m_nSingleChoise = doChoise(event->x(), event->y()) - 1;
 		if (m_nSingleChoise != -1)
 			emit chosenSinglePiece(m_nSingleChoise);
 	}
@@ -235,8 +238,8 @@ void ModelGLWidget::mouseMoveEvent(QMouseEvent *event)
 	if (m_doc->solvesExist())
 	{
 		m_nLastHoveChs = m_nHoverChoise;
-		m_nHoverChoise = DoChoise(event->x(), event->y());
-		printf("%8X\n", m_nHoverChoise);
+		m_nHoverChoise = doChoise(event->x(), event->y()) - 1;
+		//printf("%8X\n", m_nHoverChoise);
 		if (m_nHoverChoise != m_nLastHoveChs)
 			emit changedHoverPiece(m_nHoverChoise);
 	}

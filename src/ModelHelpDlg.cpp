@@ -49,7 +49,7 @@ void PieceGLWidget::setSelectedPiece(int p)
 
 	if (m_bHasPushedMatrix)
 	{
-		glPopMatrix();
+		//glPopMatrix();
 		m_bHasPushedMatrix = false;
 	}
 
@@ -103,7 +103,7 @@ void PieceGLWidget::mouseMoveEvent(QMouseEvent *event)
 	makeCurrent();
 	if (!m_bHasPushedMatrix)
 	{
-		glPushMatrix();
+		//glPushMatrix();
 		m_bHasPushedMatrix = true;
 	}
 	GLWidget::mouseMoveEvent(event);
@@ -115,7 +115,7 @@ void PieceGLWidget::externRotate(GLWidget::EAxis axis, int x, int y)
 	makeCurrent();
 	if (m_bHasPushedMatrix)
 	{
-		glPopMatrix();
+		//glPopMatrix();
 		m_bHasPushedMatrix = false;
 	}
 	rotate(axis, x, y);
@@ -127,7 +127,7 @@ void PieceGLWidget::clear()
 {
 	if (m_bHasPushedMatrix)
 	{
-		glPopMatrix();
+		//glPopMatrix();
 		m_bHasPushedMatrix = false;
 	}
 	m_bSelectAll = false;

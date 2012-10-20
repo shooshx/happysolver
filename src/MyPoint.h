@@ -100,6 +100,14 @@ inline MyPoint operator*(float s, const MyPoint& a) { MyPoint r(a); r *= s; retu
 inline MyPoint operator*(const MyPoint& a, float s) { MyPoint r(a); r *= s; return r; }
 inline bool operator==(const MyPoint &p1, const MyPoint &p2) { return (p1.p == p2.p); }
 
+
+enum ELineType
+{
+	LINE_ALWAYS, // line which is always shown
+	LINE_ONLY_WHOLE, // line which appears only when the whole thing is shown (unconnected edges?)
+	LINE_ONLY_LONE // line which appears only when the lone piece is shown
+};
+
 /** MyLine is a single line drawned using a specific color between two MyPoint instance.
 	lines are used in the 3D solution display engine to mark the edges of pieces in 
 	a clear manner. MyLine objects are not part of MyObject instances. they are drawn
@@ -112,12 +120,7 @@ public:
 	Vec3 color;
 	MyPoint *p1, *p2; 
 
-	enum ELineType
-	{
-		LINE_ALWAYS, // line which is always shown
-		LINE_ONLY_WHOLE, // line which appears only when the whole thing is shown
-		LINE_ONLY_LONE // line which appears only when the lone piece is shown
-	} type;
+	ELineType type;
 
 	MyLine(MyPoint *_p1, MyPoint *_p2, float clR, float clG, float clB, ELineType _type)
 	: color(clR, clG, clB), p1(_p1), p2(_p2), type(_type)	{}

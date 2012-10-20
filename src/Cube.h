@@ -74,14 +74,14 @@ private:
 
 	void placeInto(int pntn, int f, Vec3 *shpp, Vec3 *pnti1, Vec3 *pnti2);
 
-	float getLineColor(int p, int l);
+	bool isLineBlack(int p, int l);
 	void placeSidePolygon(int b, MyObject& obj, int f, int curf, bool is1, int x, int y, bool backface);
 
 	void symetricGetNextRtn(int sc, int fc, int &nextrt);
 	void clear(int cl = 0);
 
 	inline void putPic(const int n, const int r, const int p);	// put piece n in place p
-	inline void putorig(const int n, const int r, const int p); 
+	inline void putorig(int sc, int rt, int p, int abs_sc, int abs_rt); 
 	void rmvPic(const int p);
 
 	bool superCheck(const int fc);

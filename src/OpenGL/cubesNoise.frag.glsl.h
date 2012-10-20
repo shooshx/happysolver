@@ -47,7 +47,7 @@ const char *code_cubesNoise_frag_glsl = " \
   		gl_FragColor = vec4(color, 1.0); \n\
   		return; \n\
   	} \n\
-  	if (drawtype == 2) { // blend blakc \n\
+  	if (drawtype == 2) { // blend black \n\
   		vec3 p = MCposition.yzx * 0.2; \n\
    \n\
   		vec4 noisevec = flat_texture3D(p); \n\
@@ -61,6 +61,10 @@ const char *code_cubesNoise_frag_glsl = " \
   		color       *= LightIntensity; \n\
    \n\
   		gl_FragColor = vec4(color, 1.0); \n\
+  		return; \n\
+  	} \n\
+  	if (drawtype == 0x100) { // flat \n\
+  		gl_FragColor = vec4(colorA, 1.0); \n\
   	} \n\
    \n\
   } \n\

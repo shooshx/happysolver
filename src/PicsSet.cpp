@@ -136,6 +136,10 @@ PicsSet::PicsSet(bool bSym)
 
 }
 
+const PicDef* PicsSet::getDef(int abs_sc) const {
+	return &PicBucket::instance().pdefs[added[abs_sc].defInd];
+}
+
 
 #if 0
 ///	Construct the repetitions of pieces.

@@ -12,6 +12,10 @@ int ShaderProgram::g_users = 0;
 ShaderProgram *ShaderProgram::g_current = NULL;
 
 
+ShaderParam::ShaderParam(const QString& name, ShaderProgram* prog) :m_uid(-1), m_name(name) {
+	prog->addParam(this);
+}
+
 void shadersInit() {
 	static bool did = false;
 	if (did) {
@@ -131,7 +135,7 @@ bool ShaderProgram::init(const ProgCompileConf& conf)
 		glShaderSource(vso, 2, srcs, NULL);
 		glCompileShader(vso);
 		glAttachShader(m_progId, vso);
-		m_createdShaders.append(vso);
+		m_createdShaders.push_back(vso);
 	}
 	mglCheckErrorsC(QString("vtx %1").arg(name));
 
@@ -144,7 +148,7 @@ bool ShaderProgram::init(const ProgCompileConf& conf)
 		glShaderSource(gso, 2, srcs, NULL);
 		glCompileShader(gso);
 		glAttachShader(m_progId, gso);
-		m_createdShaders.append(gso);
+		m_createdShaders.push_back(gso);
 	}
 	mglCheckErrorsC(QString("geom %1").arg(name));
 
@@ -157,7 +161,7 @@ bool ShaderProgram::init(const ProgCompileConf& conf)
 		glShaderSource(fso, 2, srcs, NULL);
 		glCompileShader(fso);
 		glAttachShader(m_progId, fso);
-		m_createdShaders.append(fso);
+		m_createdShaders.push_back(fso);
 	}
 	mglCheckErrorsC(QString("frag %1").arg(name));
 
@@ -183,95 +187,132 @@ bool ShaderProgram::init(const ProgCompileConf& conf)
 
 }
 
+void AttribParam::disableArr() {
+	if (m_uid != -1) {
+		glDisableVertexAttribArray(m_uid);
+		glVertexAttribPointer(m_uid, 1, GL_UNSIGNED_BYTE, GL_FALSE, 0, NULL);
+	}
+}
+void AttribParam::enableArr() {
+	if (m_uid != -1) {
+		glEnableVertexAttribArray(m_uid);
+		glVertexAttribPointer(m_uid, 1, GL_UNSIGNED_BYTE, GL_FALSE, 0, NULL);
+	}
+}
+
+template<typename T>
+uint glType();
+template<> uint glType<Vec3b>() { return GL_UNSIGNED_BYTE; }
+template<> uint glType<Vec4>() { return GL_FLOAT; }
+template<> uint glType<Vec3>() { return GL_FLOAT; }
+
+template<typename T>
+uint getElemCount();
+template<> uint getElemCount<Vec3b>() { return 3; }
+template<> uint getElemCount<Vec4>() { return 4; }
+template<> uint getElemCount<Vec3>() { return 3; }
+
+template<typename T>
+uint shouldNorm();
+template<> uint shouldNorm<Vec3b>() { return GL_TRUE; }
+template<> uint shouldNorm<Vec4>() { return GL_FALSE; }
+template<> uint shouldNorm<Vec3>() { return GL_FALSE; }
+
+
+template<typename T> 
+void AttribParam::setArr(const T* v) const {
+	if (m_uid != -1) {
+		glEnableVertexAttribArray(m_uid);
+		glVertexAttribPointer(m_uid, getElemCount<T>(), glType<T>(), shouldNorm<T>(), 0, v);
+	}
+}
+
+template void AttribParam::setArr(const Vec4* v) const;
+template void AttribParam::setArr(const Vec3b* v) const;
 
 
 template<> 
-void UniformParam::set(const float& v) const
-{
+void UniformParam::set(const float& v) const {
 	// when calling this, a program should be in use
 	if (m_uid != -1)
 		glUniform1f(m_uid, v);
 }
 
 template<> 
-void UniformParam::set(const Vec3& v) const
-{
-	// when calling this, a program should be in use
+void UniformParam::set(const Vec3& v) const {
 	if (m_uid != -1)
 		glUniform3fv(m_uid, 1, v.v);
 }
 
 template<> 
-void UniformParam::set(const Vec2& v) const
-{
-	// when calling this, a program should be in use
+void UniformParam::set(const Vec2& v) const {
 	if (m_uid != -1)
 		glUniform2fv(m_uid, 1, v.v);
 }
 
 template<> 
-void UniformParam::set(const Vec4& v) const
-{
-	// when calling this, a program should be in use
+void UniformParam::set(const Vec4& v) const {
 	if (m_uid != -1)
 		glUniform4fv(m_uid, 1, v.v);
 }
 
 template<> 
-void UniformParam::set(const int& v) const
-{
-	// when calling this, a program should be in use
+void UniformParam::set(const int& v) const {
 	if (m_uid != -1)
 		glUniform1i(m_uid, v);
 }
 
+template<>
+void UniformParam::set(const Mat4& v) const {
+	if (m_uid != -1)
+		glUniformMatrix4fv(m_uid, 1, false, v.m);
+}
 
-
+template<>
+void UniformParam::set(const Mat3& v) const {
+	if (m_uid != -1)
+		glUniformMatrix3fv(m_uid, 1, false, v.m);
+}
 
 
 template<> 
-void AttribParam::set(const float& v) const
-{
-	// when calling this, a program should be in use
+void AttribParam::set(const float& v) const {
 	if (m_uid != -1)
 		glVertexAttrib1f(m_uid, v);
 }
 
 template<> 
-void AttribParam::set(const Vec3& v) const
-{
-	// when calling this, a program should be in use
+void AttribParam::set(const Vec3& v) const {
 	if (m_uid != -1)
 		glVertexAttrib3fv(m_uid, v.v);
 }
 
 template<> 
-void AttribParam::set(const Vec2& v) const
-{
-	// when calling this, a program should be in use
+void AttribParam::set(const Vec2& v) const {
 	if (m_uid != -1)
 		glVertexAttrib2fv(m_uid, v.v);
 }
 
 template<> 
-void AttribParam::set(const Vec4& v) const
-{
-	// when calling this, a program should be in use
+void AttribParam::set(const Vec4& v) const {
 	if (m_uid != -1)
 		glVertexAttrib4fv(m_uid, v.v);
 }
 
 template<> 
-void AttribParam::set(const int& v) const
-{
-	// when calling this, a program should be in use
+void AttribParam::set(const int& v) const {
 	if (m_uid != -1)
 		glVertexAttrib1s(m_uid, v); // EH?
 }
 
+
 void FloatAttrib::set(float v) const {
 	AttribParam::set(v);
 }
+void Vec3Attrib::setArr(const Vec3* v) const {
+	AttribParam::setArr(v);
+}
+
 void Vec3Uniform::set(const Vec3& v) const {
 	UniformParam::set(v);
 }
@@ -281,7 +322,12 @@ void Vec2Uniform::set(const Vec2& v) const {
 void IntUniform::set(int v) const {
 	UniformParam::set(v);
 }
-
+void Mat4Uniform::set(const Mat4& v) const {
+	UniformParam::set(v);
+}
+void Mat3Uniform::set(const Mat3& v) const {
+	UniformParam::set(v);
+}
 
 
 

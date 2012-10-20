@@ -1,4 +1,6 @@
 #include "Mesh.h"
+#include "OpenGL/Shaders.h"
+#include "OpenGL/glGlob.h"
 
 #include <QGLWidget>
 
@@ -8,43 +10,49 @@ void Mesh::paint(bool names) const
 	if (m_vtx.size() == 0)
 		return;
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(3, GL_FLOAT, 0, &m_vtx[0]);
+	BaseProgram* bprog = ShaderProgram::currentt<BaseProgram>();
+	NoiseSlvProgram* nprog = ShaderProgram::currenttTry<NoiseSlvProgram>();
 
-	if (m_hasNormals) {
-		glEnableClientState(GL_NORMAL_ARRAY);
-		glNormalPointer(GL_FLOAT, 0, &m_normals[0]);
-	}
-	else {
-		glDisableClientState(GL_NORMAL_ARRAY);
+	bprog->vtx.setArr(&m_vtx[0]);
+
+	if (nprog != NULL) {
+		if (m_hasNormals) {
+			nprog->normal.setArr(&m_normals[0]);
+		}
+		else {
+			nprog->normal.disableArr();
+		}
 	}
 
-	if (m_hasTexCoord) {
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		glTexCoordPointer(2, GL_FLOAT, 0, &m_texCoord[0]);
-	}
-	else {
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	}
+// 	if (m_hasTexCoord) {
+// 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+// 		glTexCoordPointer(2, GL_FLOAT, 0, &m_texCoord[0]);
+// 	}
+// 	else {
+// 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+// 	}
 
 	if (names) {
 		if (m_hasNames) {
-			glEnableClientState(GL_COLOR_ARRAY);
-			glColorPointer(3, GL_UNSIGNED_BYTE, 0, &m_name[0]);
+			bprog->colorAatt.setArr(&m_name[0]);
 		}
 	}
 	else {
 		if (m_hasColors) {
-			glEnableClientState(GL_COLOR_ARRAY);
-			glColorPointer(4, GL_FLOAT, 0, &m_color4[0]);
+			bprog->colorAatt.setArr(&m_color4[0]);
 		}
 		else {
-			glDisableClientState(GL_COLOR_ARRAY);
+			bprog->colorAatt.disableArr();
 			if (m_uniformColor) {
-				glColor4fv(m_uColor.v);	
+				if (bprog->colorAu.isValid()) 
+					bprog->colorAu.set(m_uColor);
+				else 
+					bprog->colorAatt.set(m_uColor);
 			}
 		}
 	}
+
+	mglCheckErrors("bufs");
 
 	if (m_hasIdx) {
 		glDrawElements(m_type, m_idx.size(), GL_UNSIGNED_INT, &m_idx[0]);
@@ -53,4 +61,9 @@ void Mesh::paint(bool names) const
 		glDrawArrays(m_type, 0, m_vtx.size());
 	}
 
+	mglCheckErrors("draw");
+
 }
+
+
+

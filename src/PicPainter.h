@@ -98,7 +98,7 @@ public:
 	
 	/// do the actual painting
 	/// \arg \c bTargets draw for targets, no colors.
-	void paint(bool bTargets, GLWidget *context) const; 
+	void paint(bool bTargets, const Vec3& name, GLWidget *context) const; 
 
 	bool exportToObj(QTextStream& meshFile, QTextStream& materialsFiles, uint& numVerts,
 		uint &numTexVerts, uint &numNormals, uint &numObjs,

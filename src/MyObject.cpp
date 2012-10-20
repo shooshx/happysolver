@@ -42,7 +42,7 @@ MyPoint* MyObject::CopyCheckPoint(Vec3 *c)
 	return realpntw.ptr;
 }
 
-void MyObject::addLine(Vec3 *inp1, Vec3 *inp2, double inR, double inG, double inB, MyLine::ELineType type)
+void MyObject::addLine(Vec3 *inp1, Vec3 *inp2, double inR, double inG, double inB, ELineType type)
 {	
 	MyLine pln(NULL, NULL, inR, inG, inB, type);
 

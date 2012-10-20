@@ -4,6 +4,7 @@
 #include "Shape.h"
 #include "SlvCube.h"
 #include "OpenGL/glGlob.h"
+#include "OpenGL/Shaders.h"
 
 
 void SlvPainter::paintPiece(int f, GLWidget* context, bool fTargets) const
@@ -15,54 +16,71 @@ void SlvPainter::paintPiece(int f, GLWidget* context, bool fTargets) const
 	//rtnindx += pdef->dispRot;
 	int rtnindx = rotationSub(scube->dt[f].abs_rt, pdef->dispRot);
 
-	glPushMatrix();
+	MatStack& model = context->model;
 
-	glTranslated(face->ex.x, face->ex.y, face->ex.z);
+	model.push();
+	model.translate(face->ex.x, face->ex.y, face->ex.z);
 
 	switch (face->dr)
 	{
 	case XY_PLANE: 
-		glTranslated(0, 0, 1);
-		glRotated(90, 0, 1, 0); 
+		model.translate(0, 0, 1);
+		model.rotate(90, 0, 1, 0); 
 		break;
 	case XZ_PLANE: 
-		glRotated(90, 0, 1, 0);
-		glRotated(90, 0, 0, 1); 
+		model.rotate(90, 0, 1, 0);
+		model.rotate(90, 0, 0, 1); 
 		break;
 	case YZ_PLANE: 
 		break;
 	}
 
-	glTranslatef(0.5, 2.5, 2.5);
-	glRotated(rtnindx * -90, 1, 0, 0);
+	model.translate(0.5, 2.5, 2.5);
+	model.rotate(rtnindx * -90, 1, 0, 0);
 
 	if (rtnindx >= 4)
 	{
-		glRotated(180, 0, 0, 1);
-		glRotated(90, 1, 0, 0);
+		model.rotate(180, 0, 0, 1);
+		model.rotate(90, 1, 0, 0);
 	}
 
-	glTranslatef(-0.5, -2.5, -2.5);
+	model.translate(-0.5, -2.5, -2.5);
 
 	//glLoadName(f);
-	Vec3b name = Vec3b::fromName(f);
+	Vec3b nameb = Vec3b::fromName(f + 1);
+	Vec3 name = Vec3(nameb.x/255.0, nameb.y/255.0, nameb.z/255.0);
 	//printf("%d %d %d\n", name.x, name.y, name.z);
 	//glColor3bv((GLbyte*)name.v);
-	glColor3f(name.x/255.0, name.y/255.0, name.z/255.0);
-	mglCheckErrors("~x6");
-	pdef->painter.paint(fTargets, context);
-	mglCheckErrors("~x7");
-	glPopMatrix();
+
+	//glColor3f(name.x/255.0, name.y/255.0, name.z/255.0);
+
+	mglCheckErrorsC("x6");
+	pdef->painter.paint(fTargets, name, context);
+	mglCheckErrorsC("x7");
+
+	model.pop();
 }
 
-void SlvPainter::paintLines(const MyObject &obj, bool singleChoise, GLWidget *context, ELinesDraw cfgLines) const
+
+
+void SlvPainter::paintLines(int f, bool singleChoise, GLWidget *context, ELinesDraw cfgLines) const
 {
 	if (context->isUsingLight())
 		glDisable(GL_LIGHTING);
 
+
+	NoiseSlvProgram* prog = ShaderProgram::currentt<NoiseSlvProgram>();
+	prog->trans.set(context->transformMat());
+	prog->drawtype.set(DRAW_FLAT);
+	prog->colorAu.set(Vec3(0.8f, 0.8f, 0.8f));
+
+	//ProgramUser u(0);
+
 	glPolygonOffset(0.0, 0.0); // go forward, draw the lines
 
-	glBegin(GL_LINES);
+	m_linesIFS[f].paint();
+
+/*	glBegin(GL_LINES);
 
 	for (int lni = 0; lni < obj.nLines; ++lni)
 	{
@@ -87,7 +105,7 @@ void SlvPainter::paintLines(const MyObject &obj, bool singleChoise, GLWidget *co
 	} // for lni
 
 	glEnd();
-
+*/
 
 	if (context->isUsingLight())
 		glEnable(GL_LIGHTING);
@@ -102,8 +120,9 @@ void SlvPainter::paint(GLWidget* context, bool fTargets, int singleChoise, int u
 		{
 			if ((upToStep >= 0) && (f >= upToStep)) // step by step support
 				break;
-
+			mglCheckErrorsC("x3");
 			paintPiece(f, context, fTargets);
+			mglCheckErrorsC("x4");
 
 			if ((!fTargets) && (cfgLines != LINES_NONE))
 			{
@@ -116,7 +135,8 @@ void SlvPainter::paint(GLWidget* context, bool fTargets, int singleChoise, int u
 					linesSingle = (knei[0] > upToStep) || (knei[1] > upToStep) || (knei[2] > upToStep) || (knei[3] > upToStep);
 				}
 
-				paintLines(m_linesIFS[f], linesSingle, context, cfgLines);
+				paintLines(f, linesSingle, context, cfgLines);
+				mglCheckErrorsC("x5");
 			}
 		}
 	}
@@ -124,7 +144,7 @@ void SlvPainter::paint(GLWidget* context, bool fTargets, int singleChoise, int u
 	{
 		paintPiece(singleChoise, context, fTargets);
 		if ((!fTargets) && (cfgLines == LINES_ALL)) // in single choise, do lines only if ALL (and not if BLACK)
-			paintLines(m_linesIFS[singleChoise], true, context, cfgLines);
+			paintLines(singleChoise, true, context, cfgLines);
 	}
 }
 

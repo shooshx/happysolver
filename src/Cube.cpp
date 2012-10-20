@@ -477,6 +477,8 @@ SlvCube* Cube::generateConcreteSlv()
 		const PicType::AddedRef& added = pt.addedInds[counts[ti]];
 		counts[ti]++;
 		abs_plc[i].sc = added.addedInd;
+		// the order they were added to the solution is the same order as they are selected from the set.
+
 
 //		int dr = rotationAdd(pt.rtns[plc[i].rt].rtnindx, added.defRot);
 
@@ -498,15 +500,15 @@ SlvCube* Cube::generateConcreteSlv()
 
 
 
-void Cube::putorig(const int n, const int r, const int p)
+void Cube::putorig(int sc, int rt, int p, int abs_sc, int abs_rt)
 {
-	plc[p].sc = n;
-	plc[p].rt = r;
+	plc[p].sc = abs_sc;
+	plc[p].rt = abs_rt;
 	
 	const int cdr = shape->faces[p].dr; //, csc = plc[p].sc; //, crt = plc[p].rt;
 	const int cx = shape->faces[p].ex.x, cy = shape->faces[p].ex.y, cz = shape->faces[p].ex.z;
 	int j, k, b;	
-	const PicArr &pmat = pics->comp[plc[p].sc].rtns[plc[p].rt];
+	const PicArr &pmat = pics->comp[sc].rtns[rt];
 	
 	for (b = 0; b < 16; ++b)
 	{
@@ -558,12 +560,37 @@ void Cube::placeInto(int pntn, int f, Vec3 *shpp, Vec3 *pnti1, Vec3 *pnti2)
 }
 
 
+class MeshLinesAdder 
+{
+public:
+	MeshLinesAdder(Mesh* m) : m_mesh(m), m_rep(&m->m_vtx) {
+		m_mesh->m_type = GL_LINES;
+		m_mesh->m_hasIdx = true;
+	}
 
-float Cube::getLineColor(int p, int l)
+	void addLine(const Vec3& a, const Vec3& b, bool isBlack, ELineType type) 
+	{
+		if (!isBlack || (type != LINE_ALWAYS && type != LINE_ONLY_WHOLE))
+			return;
+
+		int ia = 0, ib = 0;
+		m_rep.add(a, &ia);
+		m_rep.add(b, &ib);
+		m_mesh->m_idx.push_back(ia);
+		m_mesh->m_idx.push_back(ib);
+	}
+
+private:
+	Mesh *m_mesh;
+	VecRep m_rep;
+};
+
+
+bool Cube::isLineBlack(int p, int l)
 {
 	bool isBlack = false;
-/*	EBlackness pb = (p == -1)?BLACK_NOT:(pics->pics[p].thegrp()->blackness);
-	EBlackness lb = (l == -1)?BLACK_NOT:(pics->pics[l].thegrp()->blackness);
+	EBlackness pb = (p == -1)?BLACK_NOT:(pics->getDef(p)->mygrp()->blackness);
+	EBlackness lb = (l == -1)?BLACK_NOT:(pics->getDef(l)->mygrp()->blackness);
 
 	if ((p != -1) && (l != -1))
 		isBlack = (pb > BLACK_NOT) && (lb > BLACK_NOT);
@@ -571,10 +598,8 @@ float Cube::getLineColor(int p, int l)
 		isBlack = (pb > BLACK_BOTH); 
 	else if (l != -1)
 		isBlack = (lb > BLACK_BOTH);
-*/ // TBD
-	if (isBlack)
-		return 0.8f;
-	return 0.0f;
+
+	return isBlack;
 }
 
 
@@ -591,15 +616,19 @@ void Cube::genLinesIFS(SlvCube *slvc, LinesCollection &ifs)
 	clear(-1);
 	for (f = 0; f < shape->fcn; ++f) 
 	{
-		putorig(slvc->dt[f].sc, slvc->dt[f].rt, f);
+		auto df = slvc->dt[f];
+		putorig(df.sc, df.rt, f, df.abs_sc, df.abs_rt); // rt is not used
 	}
 	
+	ifs.resize(shape->fcn);
+
 	for (f = 0; f < shape->fcn; ++f)
 	{
 		curf = plc[f].sc; // curf - the pic that is placed in this side
 
-		MyObject &obj = ifs[f];
-		obj.setNakedLineColor(getLineColor(curf, -1));
+		MeshLinesAdder obj(&ifs[f]);
+		//MyObject &obj = ifs[f];
+		//obj.setNakedLineColor(getLineColor(curf, -1));
 
 		p = uncub(f, PicDisp::build[15].pnt.x, PicDisp::build[15].pnt.y);
 		curp = (p != -1)?plc[p].sc:-1; // restart the lcurp
@@ -614,40 +643,40 @@ void Cube::genLinesIFS(SlvCube *slvc, LinesCollection &ifs)
 
 			if (lcurp != curp)
 			{ // seperation lines - prependiculars
-				float linecol = getLineColor(curp, lcurp);
+				bool linecol = isLineBlack(curp, lcurp);
 
 				shpp[0][0] = PicDisp::build[b].ln[0].x; shpp[0][1] = PicDisp::build[b].ln[0].y; shpp[0][2] = 0.0;
 				shpp[1][0] = PicDisp::build[b].ln[1].x; shpp[1][1] = PicDisp::build[b].ln[1].y; shpp[1][2] = 0.0;
 
 				placeInto(2, f, shpp, pnti1, pnti2);
 
-				MyLine::ELineType t = ((curp == curf) || (lcurp == curf))?(MyLine::LINE_ALWAYS):(MyLine::LINE_ONLY_WHOLE);
-				obj.addLine(&pnti1[0], &pnti1[1], linecol, linecol, linecol, t);
-				obj.addLine(&pnti2[0], &pnti2[1], linecol, linecol, linecol, t);
+				ELineType t = ((curp == curf) || (lcurp == curf))?(LINE_ALWAYS):(LINE_ONLY_WHOLE);
+				obj.addLine(pnti1[0], pnti1[1], linecol, t);
+				obj.addLine(pnti2[0], pnti2[1], linecol, t);
 				
-				if (t != MyLine::LINE_ONLY_WHOLE) // don't do it if the pair is not real (it will be in the air...)
+				if (t != LINE_ONLY_WHOLE) // don't do it if the pair is not real (it will be in the air...)
 				{
-					MyLine::ELineType v = ((curp != -1) && (lcurp != -1))?(MyLine::LINE_ONLY_LONE):(MyLine::LINE_ALWAYS);
-					obj.addLine(&pnti1[0], &pnti2[1], linecol, linecol, linecol, v);
+					ELineType v = ((curp != -1) && (lcurp != -1))?(LINE_ONLY_LONE):(LINE_ALWAYS);
+					obj.addLine(pnti1[0], pnti2[1], linecol, v);
 				}
 			}
 			if ((curp != curf) && (PicDisp::build[b].bot[0].x != -1)) // bottom seperating lines
 			{                     // ^^ basically that its not a corner
-				float linecol = getLineColor(curp, curf);
+				bool linecol = isLineBlack(curp, curf);
 
 				shpp[0][0] = PicDisp::build[b].bot[0].x; shpp[0][1] = PicDisp::build[b].bot[0].y; shpp[0][2] = 0.0;
 				shpp[1][0] = PicDisp::build[b].bot[1].x; shpp[1][1] = PicDisp::build[b].bot[1].y; shpp[1][2] = 0.0;
 
 				placeInto(2, f, shpp, pnti1, pnti2);
-				obj.addLine(&pnti1[0], &pnti1[1], linecol, linecol, linecol, MyLine::LINE_ALWAYS);
-				obj.addLine(&pnti2[0], &pnti2[1], linecol, linecol, linecol, MyLine::LINE_ALWAYS);
+				obj.addLine(pnti1[0], pnti1[1], linecol, LINE_ALWAYS);
+				obj.addLine(pnti2[0], pnti2[1], linecol, LINE_ALWAYS);
 			}
 
 		}
 
 	}
 
-	ifs.vectorify();
+	//ifs.vectorify();
 
 
 }

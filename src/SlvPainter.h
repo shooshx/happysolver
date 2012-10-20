@@ -3,11 +3,41 @@
 #include "Configuration.h"
 #include "general.h"
 #include "MyObject.h"
+#include "Mesh.h"
 
 #include <QTextStream>
 
 class SlvCube;
 class GLWidget;
+
+
+/** LinesCollection draws the lines seperating the pieces in the 3D solution display.
+	The lines objects in this structure exist in parallel to the PicPainter
+	which draws the actual pieces. They are invoked seperatly.
+*/
+class LinesCollection
+{
+public:
+	LinesCollection() {}
+	void resize(int sz) {
+		m_bufs.resize(sz);
+	}
+
+	Mesh& operator[](uint i) 
+	{ 
+		Q_ASSERT(i < m_bufs.size());
+		return m_bufs[i];
+	}
+
+	const Mesh& operator[](uint i) const
+	{
+		Q_ASSERT(i < m_bufs.size());
+		return m_bufs[i];
+	}
+
+	vector<Mesh> m_bufs;
+};
+
 
 /** SlvPainter paints an entire solution scene on the given GLWidget.
 	It is responsible for arranging the various pieces objects in their
@@ -31,16 +61,19 @@ public:
 	bool isNull() const { return scube == NULL; }
 	void setSlvCube(const SlvCube *sc) { scube = sc; }
 
+
 	Vec3 qmin, qmax; // 2 opposites for bounding box
 
 	LinesCollection m_linesIFS;
+
 private:
 	void paintPiece(int f, GLWidget* context, bool fTargets) const;
-	void paintLines(const MyObject& obj, bool singleChoise, GLWidget *context, ELinesDraw cfgLines) const;
+	void paintLines(int f, bool singleChoise, GLWidget *context, ELinesDraw cfgLines) const;
 
 	bool exportPieceToObj(QTextStream& meshFile, QTextStream& materialsFiles, int i, uint& numVerts,
 						  uint &numTexVerts, uint &numNormals, uint &numObjs) const;
 
 	const SlvCube* scube;
+
 };
 
