@@ -5,6 +5,18 @@
 #include <QGLWidget>
 
 
+static uint glType(Mesh::Type t) {
+	switch (t){
+	case Mesh::LINES: return GL_LINES;
+	case Mesh::TRIANGLES: return GL_TRIANGLES;
+	case Mesh::QUADS: return GL_QUADS;
+	case Mesh::TRI_STRIP: return GL_TRIANGLE_STRIP;
+	case Mesh::TRI_FAN: return GL_TRIANGLE_FAN;
+	default: throw exception("bad mesh type");
+	}
+}
+
+
 void Mesh::paint(bool names) const
 {
 	if (m_vtx.size() == 0)
@@ -54,11 +66,19 @@ void Mesh::paint(bool names) const
 
 	mglCheckErrors("bufs");
 
+	uint gltype = glType(m_type);
 	if (m_hasIdx) {
-		glDrawElements(m_type, m_idx.size(), GL_UNSIGNED_INT, &m_idx[0]);
+		glDrawElements(gltype, m_idx.size(), GL_UNSIGNED_INT, &m_idx[0]);
 	}
 	else {
-		glDrawArrays(m_type, 0, m_vtx.size());
+		glDrawArrays(gltype, 0, m_vtx.size());
+	}
+
+	for(int i = 0; i < m_addIdx.size(); ++i) {
+		const IdxBuf& idx = m_addIdx[i];
+		if (!idx.m_enabled)
+			continue;
+		glDrawElements(glType(idx.m_type), idx.m_idx.size(), GL_UNSIGNED_INT, &idx.m_idx[0]);
 	}
 
 	mglCheckErrors("draw");
@@ -66,4 +86,17 @@ void Mesh::paint(bool names) const
 }
 
 
-
+int Mesh::elemSize() {
+	switch (m_type){
+	case LINES: return 2; break;
+	case TRIANGLES: return 3; break;
+	case QUADS: return 4; break;
+	default: throw exception("bad mesh type");
+	}
+}
+int Mesh::numElem() {
+	int es = elemSize();
+	if ((m_idx.size() % es) != 0)
+		throw exception("bad idx size");
+	return m_idx.size() / es;
+}

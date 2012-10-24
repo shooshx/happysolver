@@ -150,8 +150,7 @@ void SlvPainter::paint(GLWidget* context, bool fTargets, int singleChoise, int u
 
 
 
-bool SlvPainter::exportPieceToObj(QTextStream& meshFile, QTextStream& materialsFiles, int i, unsigned int& numVerts,
-								  unsigned int &numTexVerts, unsigned int &numNormals, unsigned int &numObjs) const
+bool SlvPainter::exportPieceToObj(ObjExport& oe, int i) const
 {
 	const PicDef *pdef = scube->dt[i].sdef;
 	Shape::FaceDef *face = &scube->shape->faces[i];
@@ -184,17 +183,15 @@ bool SlvPainter::exportPieceToObj(QTextStream& meshFile, QTextStream& materialsF
 	}
 
 	curMatrix.translate(-0.5, -2.5, -2.5);
-	return pdef->painter.exportToObj(meshFile, materialsFiles, numVerts, numTexVerts, numNormals, numObjs, curMatrix);
+	return pdef->painter.exportToObj(oe, curMatrix);
 
 }
 
 
-bool SlvPainter::exportToObj(QTextStream& meshFile, QTextStream& materialsFiles) const
+bool SlvPainter::exportToObj(ObjExport& oe) const
 {
-	unsigned int numVerts = 1, numTexVerts = 1, numNormals = 0, numObjs = 0;
-	for (int f = 0; f < scube->dt.size(); ++f)
-	{
-		exportPieceToObj(meshFile, materialsFiles, f, numVerts, numTexVerts, numNormals, numObjs);
+	for (int f = 0; f < scube->dt.size(); ++f) {
+		exportPieceToObj(oe, f);
 	}
 	return true;
 }

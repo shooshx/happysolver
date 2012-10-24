@@ -406,9 +406,11 @@ bool BuildWorld::loadFrom(MyFile *rdfl)
 
 	clean(CLEAN_CLEAR); // clean it with the old limits.
 
-	if (!rdfl->seekHeader(HEADER_GEN)) return false;
+	if (!rdfl->seekHeader(HEADER_GEN)) 
+		return false;
 
-	if (!rdfl->seekValue(VAL_GEN_SIZE))	return false;
+	if (!rdfl->seekValue(VAL_GEN_SIZE))	
+		return false;
 	rdfl->readNums(3, &size.x, &size.y, &size.z);
 
 	Q_ASSERT((size.x == size.y) && (size.y == size.z));
@@ -511,7 +513,6 @@ void BuildWorld::bootstrapSpace()
 	// you really need the following line for this gig to work. don't remove it.
 	int volume = (m_space.szx * m_space.szy * m_space.szz) - m_space.FloodFill(0, 0, 0);
 
-//	QMessageBox::information(NULL, APP_NAME, QString("crazy: %1").arg(volume), QMessageBox::Ok);
 
 }
 

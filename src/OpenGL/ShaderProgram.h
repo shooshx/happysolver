@@ -2,9 +2,6 @@
 #ifndef SHADERPROGRAM_H_INCLUDED
 #define SHADERPROGRAM_H_INCLUDED
 
-#include <qtglobal>
-#include <QVector>
-#include <QString>
 
 #include <vector>
 

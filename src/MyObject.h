@@ -20,6 +20,7 @@
 
 #include "MyPolygon.h"
 #include "MemoryMgmt.h"
+#include <QSet>
 
 /** \file
 	Declares the MyObject and LinesCollection classes.
@@ -27,6 +28,7 @@
 
 class PicGroupDef;
 struct MyAllocator;
+class Mesh;
 
 /** MyObject is a mesh of polygons which make out a single piece in the 3D solution engine.
 	The polygons and points are actually saved in an Indexed Face Set data structure.
@@ -70,14 +72,16 @@ public:
 	/// that has 4 times as many polygons.
 	/// \arg smooth should the subdivision be averaged or flat (no averaging)
 	void subdivide(bool smooth);
+
+	void toMesh(Mesh& mesh);
 	
 private:
 	///////////////////// structures for startup
 	MyPoint* CopyCheckPoint(Vec3 *p);
 
-	typedef QList<MyPolygon*> TPolyList;
-	typedef QLinkedList<MyLine> TLineList;
-	typedef QList<MyPoint*> TPointsList;
+	typedef list<MyPolygon*> TPolyList;
+	typedef list<MyLine> TLineList;
+	typedef list<MyPoint*> TPointsList;
 	TPolyList plylst; 
 	TLineList lnlst;
 	TPointsList pntlst; // points can come either from the list or the map.
@@ -108,7 +112,7 @@ private:
 	// add a polygon made of points in the repository, without duplicacy checks.
 	inline void basicAddPoly(MyPoint *inparr[], TexAnchor *ancs = NULL, Texture *tex = NULL);
 
-	typedef QVector<HalfEdge*> THalfEdgeList;
+	typedef vector<HalfEdge*> THalfEdgeList;
 	bool buildHalfEdges(THalfEdgeList& lst);
 
 };

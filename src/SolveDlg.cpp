@@ -68,7 +68,7 @@ void SolveDlg::stop()
 
 void SolveDlg::displayTimeout()
 {
-	qint64 tms = m_doc->getRunningStats()->tms; // sample it once
+	mint64 tms = m_doc->getRunningStats()->tms; // sample it once
 
 	m_speed[m_speedind++] = tms - m_last_tms;
 	if (m_speedind == SPEED_AVG_SIZE) m_speedind = 0;
@@ -86,7 +86,7 @@ void SolveDlg::updateSol(int n)
 		n = m_doc->getSolvesNumber();
 	}
 
-	ui.solutions->setText(humanCount(n));
+	ui.solutions->setText(humanCount(n).c_str());
 }
 
 
@@ -96,12 +96,12 @@ void SolveDlg::updatePart(int argn)
 	auto* state = m_doc->getRunningStats();
 	volatile bool lucky = state->lucky;
 	// dear compiler, don't optimize me out...
-	volatile qint64 tms = state->tms;
+	volatile mint64 tms = state->tms;
 	volatile int n = argn;
-	volatile qint64 show = (n != -1)?n:tms;
+	volatile mint64 show = (n != -1)?n:tms;
 	volatile int maxp = state->maxp;
 
-	ui.changes->setText(humanCount(show));
+	ui.changes->setText(humanCount(show).c_str());
 	
 	float avg = 0;
 	int howmany = 0;
@@ -112,7 +112,7 @@ void SolveDlg::updatePart(int argn)
 		}
 	if (howmany != 0) 
 		avg /= (float)howmany;
-	QString spd = humanCount(avg, 1) + "  ch/s";
+	QString spd = QString(humanCount(avg, 1).c_str()) + "  ch/s";
 	if (lucky) 
 		spd = "<font color=\"#CF1111\">" + spd; // luck parameter changes color of speed to red
 

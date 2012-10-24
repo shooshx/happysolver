@@ -16,6 +16,8 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "MyObject.h"
+#include "Mesh.h"
+
 
 int MyPoint::g_ctorCount = 0, MyPoint::g_dtorCount = 0;
 int MyPolygon::g_ctorCount = 0, MyPolygon::g_dtorCount = 0;
@@ -94,18 +96,18 @@ void MyObject::vectorify()
 {
 	int insPoly = 0, insLines = 0, insPoint = 0;
 	// points
-	nPoints = m_tmppoints.count() + pntlst.count();
+	nPoints = m_tmppoints.count() + pntlst.size();
 	
 	if (points != NULL)
 		delete[] points; //don't delete the points themselves.
 	points = new MyPoint*[nPoints];
 
-	for (TPointsSet::const_iterator pit = m_tmppoints.begin(); pit != m_tmppoints.end(); ++pit)
+	for (auto pit = m_tmppoints.begin(); pit != m_tmppoints.end(); ++pit)
 	{
 		points[insPoint++] = const_cast<MyPoint*>(pit->ptr); // const_iterator is too restrictive
 	}
 	m_tmppoints.clear();
-	for (TPointsList::const_iterator plit = pntlst.constBegin(); plit != pntlst.constEnd(); ++plit)
+	for (auto plit = pntlst.cbegin(); plit != pntlst.cend(); ++plit)
 	{
 		points[insPoint++] = *plit;
 	}
@@ -113,7 +115,7 @@ void MyObject::vectorify()
 
 	if (poly != NULL)
 		delete[] poly;
-	nPolys = plylst.count();
+	nPolys = plylst.size();
 	poly = new MyPolygon*[nPolys];
 
 	// add the polygons sorted according to their texture, NULL first
@@ -121,7 +123,7 @@ void MyObject::vectorify()
 	int availTexAdd = 1, availTexGet = 0;
 	while (insPoly < nPolys) // until we got all the polygons in
 	{
-		Q_ASSERT(availTexGet < availTexAdd);
+		M_ASSERT(availTexGet < availTexAdd);
 		for (TPolyList::iterator lit = plylst.begin(); lit != plylst.end() ; ++lit)
 		{
 			if ((*lit)->tex == availTexs[availTexGet])
@@ -135,9 +137,9 @@ void MyObject::vectorify()
 
 	if (lines != NULL)
 		delete[] lines;
-	nLines = lnlst.count();
+	nLines = lnlst.size();
 	lines = new MyLine[nLines];
-	for (TLineList::iterator nit = lnlst.begin(); nit != lnlst.end(); ++nit)
+	for (auto nit = lnlst.begin(); nit != lnlst.end(); ++nit)
 	{
 		lines[insLines++] = *nit;
 	}
@@ -239,7 +241,7 @@ bool MyObject::buildHalfEdges(THalfEdgeList& lst)
 			else
 			{
 				HalfEdge *she = *it;
-				Q_ASSERT((she->next->point == he->point) && (he->next->point == she->point));
+				M_ASSERT((she->next->point == he->point) && (he->next->point == she->point));
 				he->pair = she;
 				she->pair = he;
 				m_pntmap.erase(it); // no longer needed in the map
@@ -249,7 +251,7 @@ bool MyObject::buildHalfEdges(THalfEdgeList& lst)
 		// maximum size of m_pntmap is 134
 	}
 
-	Q_ASSERT(m_pntmap.empty());
+	M_ASSERT(m_pntmap.empty());
 
 	return true;
 }
@@ -398,3 +400,32 @@ void MyObject::subdivide(bool smooth)
 	vectorify();
 }
 
+
+
+void MyObject::toMesh(Mesh& mesh) 
+{
+	mesh.clear();
+	VecRep vtxrep(&mesh.m_vtx);
+
+	for(int pli = 0; pli < nPolys; ++pli) //polygons
+	{
+		MyPolygon &curpl = *poly[pli];
+		for(int pni = 0; pni < 4; ++pni) //points
+		{
+			MyPoint *curpn = curpl.vtx[pni];
+			int index = 0;
+			if (vtxrep.add(curpn->p, &index)) {
+				mesh.m_normals.push_back(curpn->n);
+				mesh.m_texCoord.push_back(Vec2(curpl.texAncs[pni].x, curpl.texAncs[pni].y));
+			}
+			mesh.m_idx.push_back(index);
+		}
+
+	}
+
+	mesh.m_type = Mesh::QUADS;
+	mesh.m_hasNormals = true;
+	mesh.m_hasTexCoord = true;
+	mesh.m_hasIdx = true;
+
+}

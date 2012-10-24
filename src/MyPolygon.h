@@ -20,7 +20,9 @@
 
 #include "MyPoint.h"
 #include "general.h"
-#include "Texture.h"
+//#include "Texture.h"
+
+class Texture;
 
 /** \file
 	Declares the MyPolygon class and the TexAnchor which relate to it.

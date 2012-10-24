@@ -1,11 +1,11 @@
 #include "GLTexture.h"
 
-#include <QGLContext>
+
 
 #include "glGlob.h"
 
 
-void GlTexture::init(GLenum target, const QSize& size, int depth, GLenum internal_format, 
+void GlTexture::init(GLenum target, const Vec2i& size, int depth, GLenum internal_format, 
 				   GLenum format, GLenum type, const void* ptr, GLenum minFilter, GLenum magFilter, GLenum wrap)
 {
 	if (m_obj != -1)
@@ -18,12 +18,12 @@ void GlTexture::init(GLenum target, const QSize& size, int depth, GLenum interna
 	mglCheckErrorsC("bind");
 	if (target == GL_TEXTURE_1D)
 	{
-		glTexImage1D(target, 0, internal_format, size.width(), 0, format, type, ptr);
+		glTexImage1D(target, 0, internal_format, size.width, 0, format, type, ptr);
 		mglCheckErrorsC("tex1d");
 	}
 	else if (target == GL_TEXTURE_2D)
 	{
-		glTexImage2D(target, 0, internal_format, size.width(), size.height(), 0, format, type, ptr);
+		glTexImage2D(target, 0, internal_format, size.width, size.height, 0, format, type, ptr);
 		mglCheckErrorsC("tex2d");
 	}
 	/*else if ((target == GL_TEXTURE_3D) || (target == GL_TEXTURE_2D_ARRAY_EXT))
@@ -44,18 +44,18 @@ void GlTexture::init(GLenum target, const QSize& size, int depth, GLenum interna
 	glTexParameteri(target, GL_TEXTURE_WRAP_T, wrap);
 	//glTexParameteri(target, GL_TEXTURE_WRAP_R, wrap);
 
-	m_size = Vec3(size.width(), size.height(), depth);
+	m_size = Vec3i(size.width, size.height, depth);
 	mglCheckErrorsC("texture");
 }
 
 
-GlTexture::GlTexture(const QGLContext* context, const QImage* img, uint target)
-{
-	m_fromContext = const_cast<QGLContext*>(context);
-	m_obj = m_fromContext->bindTexture(*img, target);
-	m_target = target;
-	m_size = Vec3(img->width(), img->height(), 1.0);
-}
+// GlTexture::GlTexture(const QGLContext* context, const QImage* img, uint target)
+// {
+// 	m_fromContext = const_cast<QGLContext*>(context);
+// 	m_obj = m_fromContext->bindTexture(*img, target);
+// 	m_target = target;
+// 	m_size = Vec3i(img->width(), img->height(), 1.0);
+// }
 
 GlTexture::~GlTexture()
 {
@@ -65,9 +65,9 @@ GlTexture::~GlTexture()
 
 void GlTexture::destroy()
 {
-	if (m_fromContext != NULL)
-		m_fromContext->deleteTexture(m_obj);
-	else if (m_obj != -1)
+	//if (m_fromContext != NULL)
+//		m_fromContext->deleteTexture(m_obj);
+	if (m_obj != -1)
 		glDeleteTextures(1, &m_obj);
 	m_obj = -1;
 	m_size.clear();
@@ -91,15 +91,15 @@ void GlTexture::unbind() const
 
 /////////////////////////
 /*
-void RenderBuffer::init(const QSize& size, uint internal_format, int numSamp)
+void RenderBuffer::init(const Vec2i& size, uint internal_format, int numSamp)
 {
 	if (m_obj != -1)
 		destroy();
 
 	glGenRenderbuffersEXT(1, &m_obj);
-	Q_ASSERT(!glIsRenderbufferEXT(m_obj));
+	M_ASSERT(!glIsRenderbufferEXT(m_obj));
 	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, m_obj);
-	Q_ASSERT(glIsRenderbufferEXT(m_obj));
+	M_ASSERT(glIsRenderbufferEXT(m_obj));
 	
 	glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, numSamp, internal_format, size.width(), size.height());
 	mglCheckErrors("renderBuf");

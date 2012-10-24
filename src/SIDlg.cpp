@@ -423,7 +423,7 @@ void GameWidget::endGame()
 	QString msg("<font face=\"Courier\"><b style=\"font-size:72pt\">Game Over!</b><br><b style=\"font-size:24pt\">");
 	for (TScoreList::const_iterator it = m_scores.constBegin(); it != m_scores.constEnd(); ++it)
 	{
-		msg += QString("%1.......%2<br>").arg(it->name, -22, '.').arg(humanCount(it->score), 13, QChar('.'));
+		msg += QString("%1.......%2<br>").arg(it->name, -22, '.').arg(humanCount(it->score).c_str(), 13, QChar('.'));
 	}
 	msg += "</font>";
 

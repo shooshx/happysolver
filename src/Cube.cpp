@@ -365,7 +365,7 @@ void Cube::puttgr(Solutions *slvs, SolveThread *thread)
 	int goSlvNum = 0; // go is the super session, is the entire thread
 	int luckOffset = qRound((lconf.nLuck * shape->fcn) / 100.0);
 	// make sure its larger the 1 (if its there, we want it to be effective) and smaller the the maximum (just to be safe)
-	luckOffset = qMin(shape->fcn, luckOffset);
+	luckOffset = mMin(shape->fcn, luckOffset);
 	if (lconf.nLuck > 0)
 		luckOffset = qMax(1, luckOffset);
 	cout << "luck offset=" << luckOffset << endl;
@@ -564,7 +564,7 @@ class MeshLinesAdder
 {
 public:
 	MeshLinesAdder(Mesh* m) : m_mesh(m), m_rep(&m->m_vtx) {
-		m_mesh->m_type = GL_LINES;
+		m_mesh->m_type = Mesh::LINES;
 		m_mesh->m_hasIdx = true;
 	}
 

@@ -135,8 +135,9 @@ struct MyAllocator
 	{
 		if ((m_pointsPool.getMaxAlloc() > m_pointsPool.size()) ||
 			(m_polyPool.getMaxAlloc() > m_polyPool.size()) ||
-			(m_hePool.getMaxAlloc() > m_hePool.size()))
-			qDebug("warning! memory pools not optimal. max:%d, %d, %d", m_pointsPool.getMaxAlloc(),  m_polyPool.getMaxAlloc(),  m_hePool.getMaxAlloc());
+			(m_hePool.getMaxAlloc() > m_hePool.size())) {
+			printf("warning! memory pools not optimal. max:%d, %d, %d", m_pointsPool.getMaxAlloc(),  m_polyPool.getMaxAlloc(),  m_hePool.getMaxAlloc());
+		}
 	}
 
 	Pool<MyPoint> m_pointsPool; //(671100); //168100);

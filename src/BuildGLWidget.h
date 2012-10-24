@@ -180,6 +180,8 @@ private:
 	Mesh m_realLines;
 	Mesh m_transLines;
 
+	Mesh m_cylinder;
+
 	BuildProgram m_prog;
 };
 

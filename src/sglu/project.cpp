@@ -1,4 +1,4 @@
-#include "project.h"
+#include "sglu.h"
 #include <cmath>
 // copied from mesa glu libutil/project.c
 

@@ -1,9 +1,15 @@
 #pragma once
-#include <QtGlobal>
 
+#include "general.h"
 #include <cmath>
 
 typedef unsigned char byte;
+typedef unsigned int uint;
+
+#define PI (3.141592653589793)
+#define TWOPI (2.0 * PI)
+#define HALFPI (0.5 * PI)
+#define SQRT_2 (1.414213562373)
 
 struct Vec4b
 {
@@ -47,7 +53,15 @@ struct Vec2i
 {
 	Vec2i() :x(0), y(0) {}
 	Vec2i(int dx, int dy) :x(dx), y(dy) {}
-	int x, y;
+
+	union {
+		struct {
+			int x, y;
+		};
+		struct {
+			int width, height;
+		};
+	};
 };
 
 
@@ -61,6 +75,9 @@ public:
 	Vec3i() :x(0), y(0), z(0) {}
 	Vec3i(int dx, int dy, int dz) :x(dx), y(dy), z(dz) {}
 	Vec3i(const Vec3i& src) :x(src.x), y(src.y), z(src.z) {};
+	void clear() {
+		x = 0; y = 0; z = 0;
+	}
 
 	int x, y, z;
 
@@ -124,8 +141,8 @@ struct Vec3
 		return *this;
 	}
 
-	float &operator[](int row) { Q_ASSERT(row < 3); return v[row]; }
-	const float &operator[](int row) const { Q_ASSERT(row < 3); return v[row]; }
+	float &operator[](int row) { M_ASSERT(row < 3); return v[row]; }
+	const float &operator[](int row) const { M_ASSERT(row < 3); return v[row]; }
 	float const* ptr() const { return &v[0]; }
 
 	friend Vec3 operator+(const Vec3 &a, const Vec3 &b);
@@ -136,21 +153,21 @@ struct Vec3
 
 	void pmin(const Vec3 &a)
 	{
-		v[0] = qMin(v[0], a[0]);
-		v[1] = qMin(v[1], a[1]);
-		v[2] = qMin(v[2], a[2]);
+		v[0] = mMin(v[0], a[0]);
+		v[1] = mMin(v[1], a[1]);
+		v[2] = mMin(v[2], a[2]);
 	}
 
 	void pmax(const Vec3 &a)
 	{
-		v[0] = qMax(v[0], a[0]);
-		v[1] = qMax(v[1], a[1]);
-		v[2] = qMax(v[2], a[2]);
+		v[0] = mMax(v[0], a[0]);
+		v[1] = mMax(v[1], a[1]);
+		v[2] = mMax(v[2], a[2]);
 	}
 	void unitize()
 	{
 		double len = sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
-		Q_ASSERT(len != 0.0);
+		M_ASSERT(len != 0.0);
 		v[0] /= len; v[1] /= len; v[2] /= len;
 	}
 

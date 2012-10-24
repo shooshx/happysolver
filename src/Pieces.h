@@ -179,7 +179,7 @@ public:
 	Texture *tex;  // the texture used
 	Texture *baseTex; // the basic texture, before modulation
 
-	QString name;
+	string name;
 	EDrawType drawtype; // could be that according to the type there is a texture but tex is NULL
 
 	float r,g,b;
@@ -208,11 +208,11 @@ struct PicFamily
 {
 	PicFamily() :startIndex(-1), numGroups(-1), onResetSetCount(0), nSetsSelected(0), nSelected(0) {}
 
-	QString name;
+	string name;
 	int startIndex; // index of the first cube (picgroup) in the family in the groups array
 	int numGroups; // number of groups in this family;
 	int onResetSetCount; // number of instances of this family upon reset
-	QString iconFilename;
+	string iconFilename;
 
 	mutable int nSetsSelected; // number of selected sets of this family. updated for gui
 	mutable int nSelected; // number of pieces selected. updated for gui.
@@ -238,7 +238,7 @@ class PicBucket : public QObject
 public:
 	/// load the main configuration xml. this is one of the first things that
 	/// ever happen in the application
-	bool loadXML(const QString& xmlname);
+	bool loadXML(const string& xmlname);
 	Texture* newTexture(QImage img, bool emitb = true);
 
 	static void createSingleton();

@@ -25,14 +25,15 @@
 
 #include "BuildWorld.h"
 #include "CubeDoc.h"
-
-
+#include "Vec.h"
 
 #define MAKE_NAME(dim, page, x, y)  (((dim) & 0x3) | (((x) & 0x7F)<<2) | (((y) & 0x7F)<<9) | (((page) & 0xFF)<<16))
 #define GET_DIM(name) ((name) & 0x3)
 #define GET_X(name) (((name) >> 2) & 0x7F)
 #define GET_Y(name) (((name) >> 9) & 0x7F)
 #define GET_PAGE(name) (((name) >> 16) & 0xFF)
+
+void makeCylinder(Mesh& mesh, int slices, float radius, float length);
 
 
 BuildGLWidget::BuildGLWidget(QWidget *parent, CubeDoc *document)
@@ -66,6 +67,7 @@ BuildGLWidget::BuildGLWidget(QWidget *parent, CubeDoc *document)
 	checkSides(); // build the initial test shape.
 
 	makeBuffers();
+	makeCylinder(m_cylinder, 20, 0.1f, 1.2f);
 }
 
 void BuildGLWidget::initialized()
@@ -78,6 +80,45 @@ void BuildGLWidget::showAllBlue()
 { 
 	m_doc->getBuild().search(SHOW_DONT, SHOW_DO, true, false);
 	updateGL();
+}
+
+
+
+void makeCylinder(Mesh& mesh, int slices, float radius, float length) 
+{
+	float coss[250] = {0};
+	float sins[250] = {0};
+	for(int i = 0; i < slices; ++i) {
+		float angle = 2 * PI * i / slices;
+		coss[i] = cos(angle) * radius;
+		sins[i] = sin(angle) * radius;
+	}
+
+	mesh.m_type = Mesh::TRI_STRIP;
+	mesh.m_hasIdx = true;
+	mesh.addIdx(Mesh::TRI_FAN);
+	mesh.addIdx(Mesh::TRI_FAN);
+	Mesh::IdxBuf &d0 = mesh.m_addIdx[0];
+	Mesh::IdxBuf &d1 = mesh.m_addIdx[1];
+	mesh.m_vtx.push_back(Vec3(0.0f, 0.0f, 0.0f));
+	mesh.m_vtx.push_back(Vec3(0.0f, 0.0f, length));
+	d0.m_idx.push_back(0);
+	d1.m_idx.push_back(1);
+
+	for(int i = 0; i < slices; ++i) {
+		mesh.m_vtx.push_back(Vec3(sins[i], coss[i], 0.0f));
+		mesh.m_vtx.push_back(Vec3(sins[i], coss[i], length));
+		int ia = i*2 + 2;
+		mesh.m_idx.push_back(ia);
+		mesh.m_idx.push_back(ia + 1);
+		d0.m_idx.push_back(ia);
+		d1.m_idx.push_back(ia+1);
+	}
+	mesh.m_idx.push_back(2);
+	mesh.m_idx.push_back(3);
+	d0.m_idx.push_back(2);
+	d1.m_idx.push_back(3);
+
 }
 
 
@@ -136,7 +177,7 @@ class QuadAdder
 {
 public:
 	QuadAdder(Mesh& mesh) : m_mesh(mesh) {
-		m_mesh.m_type = GL_QUADS;
+		m_mesh.m_type = Mesh::QUADS;
 		m_mesh.m_hasColors = true;
 		m_mesh.m_hasNames = true;
 		m_mesh.m_hasIdx = false;
@@ -160,7 +201,7 @@ class LineAdder
 {
 public:
 	LineAdder(Mesh& mesh) : m_mesh(mesh), m_rep(&mesh.m_vtx) {
-		m_mesh.m_type = GL_LINES;
+		m_mesh.m_type = Mesh::LINES;
 		m_mesh.m_hasColors = false;
 		m_mesh.m_hasNames = true;
 		m_mesh.m_hasIdx = true;
@@ -194,14 +235,8 @@ public:
 	void add(const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d, const Vec4& color)
 	{
 		int ia, ib, ic, id;
-		m_rep.add(a, &ia);
-		m_rep.add(b, &ib);
-		m_rep.add(c, &ic);
-		m_rep.add(d, &id);
-		addPair(ia, ib);
-		addPair(ib, ic);
-		addPair(ic, id);
-		addPair(id, ia);
+		m_rep.add(a, &ia); m_rep.add(b, &ib); m_rep.add(c, &ic); m_rep.add(d, &id);
+		addPair(ia, ib);   addPair(ib, ic);   addPair(ic, id);   addPair(id, ia);
 		m_mesh.m_uColor = color;
 	}
 
@@ -283,12 +318,10 @@ void BuildGLWidget::makeBuffers()
 			
 
 
-#define ERR_CYLINDER_RADIOUS 0.1
+
 
 void BuildGLWidget::drawErrorCyliders()
 {
-	GLUquadricObj* qobj = gluNewQuadric();
-	gluQuadricDrawStyle(qobj, GLU_FILL);
 	const Shape &tstshp = m_doc->getBuild().getTestShape();
 
 	for (int i = 0; i < tstshp.sdnError; ++i)
@@ -296,41 +329,36 @@ void BuildGLWidget::drawErrorCyliders()
 		Shape::SideDef &sd = tstshp.errorSides[i];
 		float x = sd.ex.x / 4.0,y = sd.ex.y / 4.0, z = sd.ex.z / 4.0;
 
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-		glPushMatrix();
+		model.push();
 
 		switch (sd.dr)
 		{
-		case X_AXIS: glTranslatef(x - 0.1, y, z); glRotatef(90, 0, 1, 0);  break;
-		case Y_AXIS: glTranslatef(x, y + 1.1, z); glRotatef(90, 1, 0, 0);  break;
-		case Z_AXIS: glTranslatef(x, y, z - 0.1); break;
+		case X_AXIS: model.translate(x - 0.1, y, z); model.rotate(90, 0, 1, 0);  break;
+		case Y_AXIS: model.translate(x, y + 1.1, z); model.rotate(90, 1, 0, 0);  break;
+		case Z_AXIS: model.translate(x, y, z - 0.1); break;
 		}
 
-		glColor4f(1.0, 0.0, 0.0, m_errCylindrAlpha);
+		//glColor4f(1.0, 0.0, 0.0, m_errCylindrAlpha);
+		m_prog.colorAatt.set(Vec4(1.0, 0.0, 0.0, m_errCylindrAlpha));
+		m_prog.trans.set(transformMat());
 
-		gluCylinder(qobj, ERR_CYLINDER_RADIOUS, ERR_CYLINDER_RADIOUS, 1.2, 15, 2); // the cylinder
-		gluDisk(qobj, 0, ERR_CYLINDER_RADIOUS, 15, 1); // two disks to cap it
-		glTranslatef(0, 0, 1.2f); 
-		gluDisk(qobj, 0, ERR_CYLINDER_RADIOUS, 15, 1);
+		m_cylinder.paint();
 
-		glPopMatrix();
+// 		gluCylinder(qobj, ERR_CYLINDER_RADIOUS, ERR_CYLINDER_RADIOUS, 1.2, 15, 2); // the cylinder
+// 		gluDisk(qobj, 0, ERR_CYLINDER_RADIOUS, 15, 1); // two disks to cap it
+// 		glTranslatef(0, 0, 1.2f); 
+// 		gluDisk(qobj, 0, ERR_CYLINDER_RADIOUS, 15, 1);
+		model.pop();
+		m_prog.trans.set(transformMat());
 	}
-
-	gluDeleteQuadric(qobj);
 }
 
 
 void BuildGLWidget::drawTargets(bool inChoise)
 {
-	float m[16], p[16];
-	glGetFloatv(GL_MODELVIEW_MATRIX, m);
-	glGetFloatv(GL_PROJECTION_MATRIX, p);
-
 	auto tm = model.cur(), tp = proj.cur();
 	ProgramUser use(&m_prog);
 	m_prog.trans.set(transformMat());
-
 
 
 	glDisable(GL_TEXTURE_2D);
@@ -345,6 +373,15 @@ void BuildGLWidget::drawTargets(bool inChoise)
 	m_realTiles.paint(inChoise);
 
 	if (!inChoise) {
+
+// 		model.push();
+// 		model.translate(25,25,25);
+// 		m_prog.trans.set(transformMat());
+// 		m_cylinder.paint();
+// 		model.pop();
+// 		m_prog.trans.set(transformMat());
+		drawErrorCyliders();
+
 		glPolygonOffset(0, 0);
 		m_realLines.paint();
 
@@ -356,148 +393,6 @@ void BuildGLWidget::drawTargets(bool inChoise)
 	}
 }
 
-
-#if 0
-
-
-
-void BuildGLWidget::drawTargetsPart(bool fTrans, bool fLines)
-{
-	int dim,x, y, page, thisname;
-
-	const BuildWorld &build = m_doc->getBuild();
-	int upToStep = m_doc->getUpToStep(); // optimization
-
-	for(dim = 0; dim < 3; ++dim)
-	{
-		const SqrLimits &lim = build.m_limits[dim];
-		for(page = lim.minpage; page < lim.maxpage; ++page)
-		{
-			for(x = lim.minx; x < lim.maxx ; ++x)
-			{
-				for(y = lim.miny; y < lim.maxy; ++y)
-				{
-					int theget = build.get(dim, page, x, y);
-					if ((GET_VAL(theget) != 0) && (GET_VAL(theget) != FACE_DONT_TRANS) && (GET_SHOW(theget) != SHOW_DONT) &&
-						((!fTrans && GET_TYPE(theget) != TYPE_VIR) || 
-						(fTrans && GET_TYPE(theget) == TYPE_VIR)) )
-					{
-						int valshow = GET_VAL_SHOW(theget);
-
-						// should we even check for up-to-step?
-						if ((upToStep >= 0) && ((valshow == FACE_NORM) || (valshow == FACE_STRT)))
-						{ // TBD: this is rather inefficient! fix it.
-							int curind = build.getTestShapeFcInd(CoordBuild(dim, page, x, y));
-							if ((curind == -1) || (curind >= upToStep))
-								continue;
-						}
-
-						thisname = MAKE_NAME(dim, page, x, y);
-						glLoadName(thisname);
-						glBegin(GL_QUADS);
-						if (!fLines)
-						{
-							float inten = GET_INTENSITY(theget)/8.0f;
-
-							switch (valshow)
-							{
-							case FACE_STRT:	if (m_fSetStrtMode) { glColor3f(1.0f, 1.0f, 0.0f); break;}
-							case FACE_NORM:	glColor3f(1.0f, 1.0f, 1.0f); break;
-							case FACE_STRT_SELR: if (m_fSetStrtMode) { glColor3f(1.0f, 1.0f - 0.3f*inten, 0.0f + 0.3f*inten); break; }
-							case FACE_NORM_SELR: glColor3f(1.0f, 1.0f - 0.25f*inten, 1.0f - 0.25f*inten); break;
-							case FACE_TRANS_SEL: glColor4f(0.0f, 0.0f, 0.8f, inten*0.5f); break;
-							case FACE_TRANS: glColor4f(0.0f, 0.0f, 0.8f, 0.5f); break;
-							case FACE_DONT_TRANS: glColor4f(0.0f, 0.8f, 0.0f, 0.5f); break; // green, error
-							default: glColor3f(0.5f, 0.5f, 0.5f);
-							}
-						}
-						else
-						{
-							switch (valshow)
-							{
-							case FACE_NORM:
-							case FACE_STRT:	glColor3f(0.2f, 0.2f, 0.2f); break;
-							case FACE_STRT_SELR:
-							case FACE_NORM_SELR: glColor3f(0.5f, 0.0f, 0.0f); break;
-							case FACE_TRANS_SEL:
-							case FACE_TRANS: glColor4f(0.2f, 0.2f, 1.0f, 0.5f);	break;
-							case FACE_DONT_TRANS: glColor4f(0.2f, 1.0f, 0.2f, 0.5f); break; // green, error
-							default: glColor3f(0.5f, 0.5f, 0.5f);
-							}
-						}
-
-
-						switch (dim)
-						{
-						case YZ_PLANE:
-							glVertex3i(page, x, y);
-							glVertex3i(page, x + 1, y);
-							glVertex3i(page, x + 1, y + 1);
-							glVertex3i(page, x, y + 1);
-							break;
-						case XZ_PLANE:
-							glVertex3i(x, page, y);
-							glVertex3i(x + 1, page, y );
-							glVertex3i(x + 1, page, y + 1);
-							glVertex3i(x, page, y + 1);
-							break;
-						case XY_PLANE:
-							glVertex3i(x, y, page);
-							glVertex3i(x + 1, y, page);
-							glVertex3i(x + 1, y + 1, page);
-							glVertex3i(x, y + 1, page);
-							break;
-						}	
-						glEnd();
-
-					}
-				}
-			}
-		}
-	}
-}
-
-void BuildGLWidget::drawTargets(bool inChoise)
-{
-//	glEnable(GL_COLOR_MATERIAL);
-	glDisable(GL_TEXTURE_2D);
-
-	glEnable(GL_LINE_SMOOTH);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glEnable(GL_POLYGON_OFFSET_FILL);
-
-
-	glPolygonOffset(1.0, 1.0);
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	drawTargetsPart(false, false);
-	glPolygonOffset(0,0);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	drawTargetsPart(false, true);
-
-	// draw the error cylinders before the blue tiles.
-	if ((!inChoise) && (m_doc->getBuild().getTestResult() == GEN_RESULT_ILLEGAL_SIDE))
-	{
-		drawErrorCyliders();
-	}
-
-	// if in boxed mode, real transparent ones are not real targets.
-	// if in tiled mode, they are.
-	// => don't show the blue ones if we're in choise and in boxed mode
-	if ((!inChoise) || (!m_bBoxedMode)) 
-	{
-		// transperats
-		glPolygonOffset(1.0, 1.0);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		drawTargetsPart(true, false);
-		glPolygonOffset(0,0);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		drawTargetsPart(true, true);
-	}
-}
-#endif
 
 void BuildGLWidget::checkSides()
 {
@@ -898,3 +793,147 @@ void BuildGLWidget::slvProgStatsUpdate(int hint, int data)
 	}
 }
  
+
+
+
+#if 0
+
+
+
+void BuildGLWidget::drawTargetsPart(bool fTrans, bool fLines)
+{
+	int dim,x, y, page, thisname;
+
+	const BuildWorld &build = m_doc->getBuild();
+	int upToStep = m_doc->getUpToStep(); // optimization
+
+	for(dim = 0; dim < 3; ++dim)
+	{
+		const SqrLimits &lim = build.m_limits[dim];
+		for(page = lim.minpage; page < lim.maxpage; ++page)
+		{
+			for(x = lim.minx; x < lim.maxx ; ++x)
+			{
+				for(y = lim.miny; y < lim.maxy; ++y)
+				{
+					int theget = build.get(dim, page, x, y);
+					if ((GET_VAL(theget) != 0) && (GET_VAL(theget) != FACE_DONT_TRANS) && (GET_SHOW(theget) != SHOW_DONT) &&
+						((!fTrans && GET_TYPE(theget) != TYPE_VIR) || 
+						(fTrans && GET_TYPE(theget) == TYPE_VIR)) )
+					{
+						int valshow = GET_VAL_SHOW(theget);
+
+						// should we even check for up-to-step?
+						if ((upToStep >= 0) && ((valshow == FACE_NORM) || (valshow == FACE_STRT)))
+						{ // TBD: this is rather inefficient! fix it.
+							int curind = build.getTestShapeFcInd(CoordBuild(dim, page, x, y));
+							if ((curind == -1) || (curind >= upToStep))
+								continue;
+						}
+
+						thisname = MAKE_NAME(dim, page, x, y);
+						glLoadName(thisname);
+						glBegin(GL_QUADS);
+						if (!fLines)
+						{
+							float inten = GET_INTENSITY(theget)/8.0f;
+
+							switch (valshow)
+							{
+							case FACE_STRT:	if (m_fSetStrtMode) { glColor3f(1.0f, 1.0f, 0.0f); break;}
+							case FACE_NORM:	glColor3f(1.0f, 1.0f, 1.0f); break;
+							case FACE_STRT_SELR: if (m_fSetStrtMode) { glColor3f(1.0f, 1.0f - 0.3f*inten, 0.0f + 0.3f*inten); break; }
+							case FACE_NORM_SELR: glColor3f(1.0f, 1.0f - 0.25f*inten, 1.0f - 0.25f*inten); break;
+							case FACE_TRANS_SEL: glColor4f(0.0f, 0.0f, 0.8f, inten*0.5f); break;
+							case FACE_TRANS: glColor4f(0.0f, 0.0f, 0.8f, 0.5f); break;
+							case FACE_DONT_TRANS: glColor4f(0.0f, 0.8f, 0.0f, 0.5f); break; // green, error
+							default: glColor3f(0.5f, 0.5f, 0.5f);
+							}
+						}
+						else
+						{
+							switch (valshow)
+							{
+							case FACE_NORM:
+							case FACE_STRT:	glColor3f(0.2f, 0.2f, 0.2f); break;
+							case FACE_STRT_SELR:
+							case FACE_NORM_SELR: glColor3f(0.5f, 0.0f, 0.0f); break;
+							case FACE_TRANS_SEL:
+							case FACE_TRANS: glColor4f(0.2f, 0.2f, 1.0f, 0.5f);	break;
+							case FACE_DONT_TRANS: glColor4f(0.2f, 1.0f, 0.2f, 0.5f); break; // green, error
+							default: glColor3f(0.5f, 0.5f, 0.5f);
+							}
+						}
+
+
+						switch (dim)
+						{
+						case YZ_PLANE:
+							glVertex3i(page, x, y);
+							glVertex3i(page, x + 1, y);
+							glVertex3i(page, x + 1, y + 1);
+							glVertex3i(page, x, y + 1);
+							break;
+						case XZ_PLANE:
+							glVertex3i(x, page, y);
+							glVertex3i(x + 1, page, y );
+							glVertex3i(x + 1, page, y + 1);
+							glVertex3i(x, page, y + 1);
+							break;
+						case XY_PLANE:
+							glVertex3i(x, y, page);
+							glVertex3i(x + 1, y, page);
+							glVertex3i(x + 1, y + 1, page);
+							glVertex3i(x, y + 1, page);
+							break;
+						}	
+						glEnd();
+
+					}
+				}
+			}
+		}
+	}
+}
+
+void BuildGLWidget::drawTargets(bool inChoise)
+{
+	//	glEnable(GL_COLOR_MATERIAL);
+	glDisable(GL_TEXTURE_2D);
+
+	glEnable(GL_LINE_SMOOTH);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glEnable(GL_POLYGON_OFFSET_FILL);
+
+
+	glPolygonOffset(1.0, 1.0);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	drawTargetsPart(false, false);
+	glPolygonOffset(0,0);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	drawTargetsPart(false, true);
+
+	// draw the error cylinders before the blue tiles.
+	if ((!inChoise) && (m_doc->getBuild().getTestResult() == GEN_RESULT_ILLEGAL_SIDE))
+	{
+		drawErrorCyliders();
+	}
+
+	// if in boxed mode, real transparent ones are not real targets.
+	// if in tiled mode, they are.
+	// => don't show the blue ones if we're in choise and in boxed mode
+	if ((!inChoise) || (!m_bBoxedMode)) 
+	{
+		// transperats
+		glPolygonOffset(1.0, 1.0);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		drawTargetsPart(true, false);
+		glPolygonOffset(0,0);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		drawTargetsPart(true, true);
+	}
+}
+#endif

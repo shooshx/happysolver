@@ -1,4 +1,4 @@
-#include <QByteArray>
+
 #include <stdio.h>
 #define  GLEW_STATIC
 #include <gl/glew.h>
@@ -33,7 +33,7 @@ void shadersInit() {
 bool ShaderProgram::printShaderInfoLog(uint obj)
 {
 	int infologLength = 0, charsWritten  = 0;
-	QByteArray infoLog;
+	vector<char> infoLog;
 
 	glGetShaderiv(obj, GL_INFO_LOG_LENGTH, &infologLength);
 	if (infologLength > 1)
@@ -94,9 +94,8 @@ void ShaderProgram::clear()
 	m_geomprog.clear();
 
 	glDeleteProgram(m_progId);
-	foreach(uint so, m_createdShaders)
-	{
-		glDeleteShader(so);
+	for(auto it = m_createdShaders.begin(); it != m_createdShaders.end(); ++it) {
+		glDeleteShader(*it);
 	}
 	m_createdShaders.clear();
 	m_isOk = false; 
@@ -124,7 +123,7 @@ bool ShaderProgram::init(const ProgCompileConf& conf)
 		glProgramParameteriEXT(m_progId, GL_GEOMETRY_VERTICES_OUT_EXT, conf.geomVtxCount);	
 	}
 
-	mglCheckErrorsC(QString("codes %1").arg(name));
+	mglCheckErrorsC(string("codes ") + name);
 
 
 	for (int i = 0; i < m_vtxprog.size(); ++i)
@@ -137,7 +136,7 @@ bool ShaderProgram::init(const ProgCompileConf& conf)
 		glAttachShader(m_progId, vso);
 		m_createdShaders.push_back(vso);
 	}
-	mglCheckErrorsC(QString("vtx %1").arg(name));
+	mglCheckErrorsC(string("vtx ") + name);
 
 
 	for (int i = 0; i < m_geomprog.size(); ++i)
@@ -150,7 +149,7 @@ bool ShaderProgram::init(const ProgCompileConf& conf)
 		glAttachShader(m_progId, gso);
 		m_createdShaders.push_back(gso);
 	}
-	mglCheckErrorsC(QString("geom %1").arg(name));
+	mglCheckErrorsC(string("geom ") + name);
 
 
 	for (int i = 0; i < m_fragprog.size(); ++i)
@@ -163,26 +162,26 @@ bool ShaderProgram::init(const ProgCompileConf& conf)
 		glAttachShader(m_progId, fso);
 		m_createdShaders.push_back(fso);
 	}
-	mglCheckErrorsC(QString("frag %1").arg(name));
+	mglCheckErrorsC(string("frag ") + name);
 
 
 	if (m_createdShaders.size() == 0)
 		return m_isOk;
 
 	glLinkProgram(m_progId);
-	mglCheckErrorsC(QString("link %1").arg(name));
+	mglCheckErrorsC(string("link ") + name);
 
 	m_isOk = printProgramInfoLog(m_progId);
 	if (m_isOk)
 	{
 		printf("Compiled OK %d\n", m_progId);
 	}
-	mglCheckErrorsC(QString("proginfo %1").arg(name));
+	mglCheckErrorsC(string("proginfo ") + name);
 
 
 	successLink();
 
-	mglCheckErrorsC(QString("vars %1").arg(name));
+	mglCheckErrorsC(string("vars ") + name);
 	return m_isOk;
 
 }
@@ -356,41 +355,3 @@ void mglActiveTexture(int i) {
 	glActiveTexture(GL_TEXTURE0 + i);
 }
 
-#if 0
-ShadersManager::ShadersManager()
-{
-	m_texEng.resize(1 + 2); // 0 slot is unoccupied.
-	m_texEng.fill(NULL);
-}
-
-void ShadersManager::init()
-{
-	//	AllShader::instantiate(this);
-}
-
-ShadersManager::~ShadersManager()
-{
-	foreach(GlTexture* tex, m_texEng)
-	{
-		delete tex;
-	}
-}
-
-void ShadersManager::bindTexture(int index, const float* data, int size)
-{
-	if ((index <= 0) || (index > m_texEng.size()))
-	{
-		printf("ERROR! can't bind to 0\n");
-		return;
-	}
-	glActiveTexture(GL_TEXTURE0 + index);
-	delete m_texEng[index];
-
-	int ds = size / 3;
-	GlTexture *tex = new GlTexture;
-	tex->init(GL_TEXTURE_1D, QSize(ds, 1), 1, GL_RGB32F_ARB, GL_RGB, GL_FLOAT, data);
-	m_texEng[index] = tex;
-
-	glActiveTexture(GL_TEXTURE0);
-}
-#endif

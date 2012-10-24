@@ -19,7 +19,7 @@
 #include <QtOpenGL>
 
 #include "GLWidget.h"
-#include "sglu/project.h"
+#include "sglu/sglu.h"
 
 QGLFormat g_format;
 
@@ -810,9 +810,9 @@ void mglCheckErrors(const char* place = NULL)
 #endif
 	}
 }
-void mglCheckErrors(const QString& s)
+void mglCheckErrors(const string& s)
 {
-	mglCheckErrors(s.toAscii().data());
+	mglCheckErrors(s.c_str());
 }
 
 
@@ -830,9 +830,9 @@ void mglCheckErrorsC(const char* place = NULL)
 		printf("GLError: %s%s", ps.toAscii().data(), s.toAscii().data());
 	}
 }
-void mglCheckErrorsC(const QString& s)
+void mglCheckErrorsC(const string& s)
 {
-	mglCheckErrorsC(s.toAscii().data());
+	mglCheckErrorsC(s.c_str());
 }
 
 void GLWidget::checkErrors(const char* place)

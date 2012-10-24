@@ -22,7 +22,8 @@
 
 void Solutions::clear(int solveSize)
 {
-	qDeleteAll(sv);
+	for(auto it = sv.begin(); it != sv.end(); ++it)
+		delete *it;
 	sv.clear();
 	slvsz = solveSize;
 	resetChangedFromSave();
@@ -32,7 +33,7 @@ void Solutions::clear(int solveSize)
 
 void Solutions::addBackCommon(SlvCube *tmp)
 {
-//	Q_ASSERT(tmp->slvsz == slvsz); // sanity check
+//	M_ASSERT(tmp->slvsz == slvsz); // sanity check
 	sv.push_back(tmp);
 	setChangedFromSave();
 }
@@ -118,21 +119,22 @@ void Solutions::setChangedFromSave()
 	if (m_bChangedFromSave)
 		return;
 	m_bChangedFromSave = true; 
-	emit changedFromSave(true);
+	if (changedFromSave)
+		changedFromSave->notify(true);
 }
 void Solutions::resetChangedFromSave() 
 {		
 	if (!m_bChangedFromSave)
 		return;
 	m_bChangedFromSave = false; 
-	emit changedFromSave(false);
+	if (changedFromSave)
+		changedFromSave->notify(false);
 }
 
 
 void Solutions::transform(const TTransformVec &moveTo)
 {
-	for(TSlvList::iterator it = sv.begin(); it != sv.end(); ++it)
-	{
+	for(auto it = sv.begin(); it != sv.end(); ++it) {
 		(*it)->transform(moveTo);
 	}
 }

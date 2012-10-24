@@ -18,7 +18,8 @@
 #ifndef __MYFILE_H__INCLUDED__
 #define __MYFILE_H__INCLUDED__
 
-#include <QString>
+#include <string>
+using namespace std;
 
 #define STATE_CLOSED 0
 #define STATE_OPEN_READ 1
@@ -53,23 +54,23 @@ public:
 
 	// header and value strings should not contain ":" or "<" or ">"!
 	int seekString(const char *str, const char *stopat);
-	int seekHeader(const char *hName); // through the entire file
-	int seekValue(const char *vName, int level = 0, bool bFromStart = false);  // from current header to next header
+	bool seekHeader(const char *hName); // through the entire file
+	bool seekValue(const char *vName, int level = 0, bool bFromStart = false);  // from current header to next header
 	int readNumsBuf(int cnt, int *buffer);
 	int readNums(int cnt, ...);
 
-	int writeHeader(const char* hName);
-	int writeValue(const char *vName, bool endCRLF, int level = 0); // sequential!!!
-	int writeNumsBuf(int cnt, int *buffer, bool endCRLF = true); // cnt == 0: only CRLF
-	int writeNums(int cnt, bool endCRLF, ...); 
+	bool writeHeader(const char* hName);
+	bool writeValue(const char *vName, bool endCRLF, int level = 0); // sequential!!!
+	bool writeNumsBuf(int cnt, int *buffer, bool endCRLF = true); // cnt == 0: only CRLF
+	bool writeNums(int cnt, bool endCRLF, ...); 
 
-	int writeStr(const char* st); // this is used only for debug purposes.
+	bool writeStr(const char* st); // this is used only for debug purposes.
 
 	int getState() { return state; }
 	
 private:
 
-	QString name;
+	string name;
 	int state;
 	int curHeader;
 

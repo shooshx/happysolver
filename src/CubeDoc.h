@@ -140,6 +140,10 @@ public:
 	EWarnMsg getWarning() const { return m_curWarning; }
 	EWarnMsg getPicsWarning() const { return m_curPicsWarning; }
 
+	void emitChangedFromSave(bool b) {
+		emit changedFromSave(b);
+	}
+
 private:
 	void OnNewDocument();
 
@@ -199,6 +203,15 @@ public:
 	Configuration m_conf;
 
 private:
+
+	class SlvDoneNotify : public IChangeNotify {
+	public:
+		SlvDoneNotify(CubeDoc *that) : m_that(that) {}
+		void notify(bool b) {
+			m_that->emitChangedFromSave(b);
+		}
+		CubeDoc *m_that;
+	} m_slvDone;
 
 	Shape *m_shp;
 	Solutions *m_slvs;

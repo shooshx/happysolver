@@ -15,20 +15,29 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+#define __msxml_h__
+#define __urlmon_h__
+#define _OBJBASE_H_
+#define __oaidl_h__
+#define _OLEAUTO_H_
+#define __objidl_h__
+#define __oleidl_h__
+#define _OLE2_H_
+
 #include "GlobDefs.h"
-#include <QtGui>
-#include <QMessageBox>
-#include <QDomDocument>
-#include <QFile>
+
 
 #include "general.h"
 #include "Pieces.h"
 #include "Texture.h"
 #include "CubeDoc.h"
-#include "GLWidget.h"
+//#include "GLWidget.h"
 #include "MainWindow.h" ///< MainWindow::wasClosed() is being used.
 #include "PicsSet.h"
 #include "NoiseGenerator.h"
+#include "tinyxml/tinyxml2.h"
+
+using namespace tinyxml2;
 
 #define TEX_X 64
 #define TEX_Y 64
@@ -41,8 +50,6 @@ void PicBucket::createSingleton()
 	if (g_instance == NULL) // never gets erased...
 		g_instance = new PicBucket; 
 }
-
-
 
 
 static PicDef::PathPoint pathway[17] = {
@@ -106,7 +113,7 @@ void PicDef::makeBoundingPath()
 
 void PicBucket::makeBitmapList()
 {	
-	Q_ASSERT(grps.size() > 0);
+	M_ASSERT(grps.size() > 0);
 
 	int gind, pind, i, x, y, tmp;
 
@@ -358,13 +365,14 @@ QImage PicGroupDef::blendImage()
 }
 
 
-static EDrawType getDrawType(const QString& s) {
+static EDrawType getDrawType(const string& s) 
+{
 	if (s == "COLOR") return DRAW_COLOR;
 	if (s == "TEXTURE_NORM") return DRAW_TEXTURE_NORM;
 	if (s == "TEXTURE_BLEND") return DRAW_TEXTURE_BLEND;
 	if (s == "TEXTURE_INDIVIDUAL_HALF") return DRAW_TEXTURE_INDIVIDUAL_HALF;
 	if (s == "TEXTURE_INDIVIDUAL_WHOLE") return DRAW_TEXTURE_INDIVIDUAL_WHOLE;
-	Q_ASSERT(false);
+	M_ASSERT(false);
 	return (EDrawType)0;
 }
 
@@ -382,49 +390,39 @@ const PicGroupDef* PicDef::mygrp() const {
 
 
 
-bool PicBucket::loadXML(const QString& xmlname)
+bool PicBucket::loadXML(const string& data)
 {
+	//QDomDocument doc;
+	XMLDocument doc;
 
-	//	unsigned int xxx1 = GetTickCount();
-	QDomDocument doc;
-	QFile file(xmlname);
-
-	if (!file.open(QIODevice::ReadOnly))
-	{// try again in the executable path
-		file.setFileName(QCoreApplication::applicationDirPath() + "/" + xmlname); 
-		if (!file.open(QIODevice::ReadOnly))
-		{
-			QMessageBox::critical(g_main, APP_NAME, "error opening file:\n" + xmlname, QMessageBox::Ok, 0);
-			return false;
-		}
-	}
-	if (!doc.setContent(&file)) 
-	{
-		QMessageBox::critical(g_main, APP_NAME, "error parsing XML file:\n" + xmlname, QMessageBox::Ok, 0);
-		file.close();
+	if (doc.Parse(data.c_str()) != XML_NO_ERROR) {
+		printf("error parsing XML file:\n");
+		//QMessageBox::critical(g_main, APP_NAME,  + xmlname, QMessageBox::Ok, 0);
 		return false;
 	}
-	file.close();
-//	unsigned int xxx2 = GetTickCount();
 
-	QMap<QString, int> grpnames; // maps the name of a group to its index. used for copying pieces
-	QDomElement docElem = doc.documentElement();
-	QDomElement texe = docElem.firstChildElement("textures");
+	XMLElement* main = doc.FirstChildElement();
+
+	map<string, int> grpnames; // maps the name of a group to its index. used for copying pieces
+	//QDomElement docElem = doc.documentElement();
+	XMLElement* texe = main->FirstChildElement("textures");
 
 	////////////// texture files ////////////////////////
-	QDomElement t = texe.firstChildElement("texture");
-	while (!t.isNull())
+	XMLElement* t = texe->FirstChildElement("texture");
+	while (t != NULL)
 	{
-		QString txname = t.attribute("filename");
-		if (!txname.isEmpty())
+		const char *txnamep = t->Attribute("filename");
+		if (txnamep != NULL)
 		{
-			QImage img(txname, "PNG");
+			string txname(txnamep);
+			QImage img(txname.c_str(), "PNG");
 			if (img.isNull())
 			{
-				img.load(QCoreApplication::applicationDirPath() + "/" + txname, "PNG");
+				img.load(QCoreApplication::applicationDirPath() + "/" + QString(txname.c_str()), "PNG");
 				if (img.isNull())
 				{
-					QMessageBox::critical(g_main, APP_NAME, "Failed to load texture file: " + txname, QMessageBox::Ok, 0);
+					printf("Failed to load texture file: ");
+					//QMessageBox::critical(g_main, APP_NAME,  + QString(txname.c_str()), QMessageBox::Ok, 0);
 					return false;
 				}
 			}
@@ -434,37 +432,42 @@ bool PicBucket::loadXML(const QString& xmlname)
 		}
 		else
 		{
-			int copyind = t.attribute("copy").toInt();
-			int cX = t.attribute("x1").toInt();
-			int cY = t.attribute("y1").toInt();
+			int copyind = t->IntAttribute("copy");
+			int cX = t->IntAttribute("x1");
+			int cY = t->IntAttribute("y1");
 			newTexture(texs[copyind]->img.copy(cX, cY, 128, 128), true);
 		}
 		
-		t = t.nextSiblingElement();
+		t = t->NextSiblingElement();
 	}
 
 //	unsigned int xxx3 = GetTickCount();
 
 	////////////////////// pics ////////////////////////////////
-	QDomElement xfams = docElem.firstChildElement("outlines");
+	XMLElement* xfams = main->FirstChildElement("outlines");
 
 	int grpCount = 0;
 	// count the number of cubes (groups) we have
-	QDomElement xfam = xfams.firstChildElement("family");
-	while (!xfam.isNull())
+	XMLElement* xfam = xfams->FirstChildElement("family");
+	while (xfam != NULL)
 	{
-		int ind = xfam.attribute("index").toInt(); // the index it should show at the main build helper menu
+		int ind = xfam->IntAttribute("index"); // the index it should show at the main build helper menu
 		if (ind >= families.size())
 			families.resize(ind + 1);
 		PicFamily &cfam = families[ind];
 		cfam.startIndex = grpCount;
-		cfam.numGroups = xfam.elementsByTagName("group").size();
-		cfam.name = xfam.attribute("name");
-		cfam.onResetSetCount = xfam.attribute("onResetSetCount").toInt();
-		cfam.iconFilename = xfam.attribute("icon");
+		cfam.name = xfam->Attribute("name");
+		cfam.onResetSetCount = xfam->IntAttribute("onResetSetCount");
+		cfam.iconFilename = xfam->Attribute("icon");
 
+		cfam.numGroups = 0; // xfam->ElementsByTagName("group").size();
+		XMLElement* xgrps = xfam->FirstChildElement("group");
+		while (xgrps != NULL) {
+			++cfam.numGroups;
+			xgrps = xgrps->NextSiblingElement("group");
+		}
 		grpCount += cfam.numGroups;
-		xfam = xfam.nextSiblingElement(); // next family
+		xfam = xfam->NextSiblingElement(); // next family
 	}
 
 	pdefs.resize(grpCount*6);
@@ -477,44 +480,44 @@ bool PicBucket::loadXML(const QString& xmlname)
 	int grpi = 0; // (i) group number
 	int pdefi = 0;
 
-	xfam = xfams.firstChildElement("family");
-	while (!xfam.isNull())
+	xfam = xfams->FirstChildElement("family");
+	while (xfam != NULL)
 	{
-		QDomElement cube = xfam.firstChildElement("group"); // a group of pieces is a cube
-		while (!cube.isNull())
+		XMLElement* cube = xfam->FirstChildElement("group"); // a group of pieces is a cube
+		while (cube != NULL)
 		{
 			PicGroupDef cgrp;
-			cgrp.name = cube.attribute("name");
+			cgrp.name = cube->Attribute("name");
 			grpnames[cgrp.name] = grpi;
 	
-			QDomElement fill = cube.firstChildElement("fill");
+			XMLElement* fill = cube->FirstChildElement("fill");
 
-			cgrp.drawtype = getDrawType(fill.attribute("type"));
+			cgrp.drawtype = getDrawType(fill->Attribute("type"));
 
-			if (fill.hasAttribute("texind"))
+			if (fill->Attribute("texind") != NULL)
 			{
-				int txind = fill.attribute("texind").toInt();
-				Q_ASSERT((txind >= 0) && (txind <= texs.size()));
+				int txind = fill->IntAttribute("texind");
+				M_ASSERT((txind >= 0) && (txind <= texs.size()));
 				cgrp.baseTex = texs[txind];
 			}
 			else
 				cgrp.baseTex = NULL;
 			cgrp.tex = cgrp.baseTex;
 
-			cgrp.r = float(fill.attribute("r").toInt()) / 255.0f; 
-			cgrp.g = float(fill.attribute("g").toInt()) / 255.0f; 
-			cgrp.b = float(fill.attribute("b").toInt()) / 255.0f;
-			cgrp.exR = float(fill.attribute("exR").toInt()) / 255.0f; 
-			cgrp.exG = float(fill.attribute("exG").toInt()) / 255.0f; 
-			cgrp.exB = float(fill.attribute("exB").toInt()) / 255.0f;
-			cgrp.blackness = (EBlackness)fill.attribute("k").toInt();
+			cgrp.r = float(fill->IntAttribute("r")) / 255.0f; 
+			cgrp.g = float(fill->IntAttribute("g")) / 255.0f; 
+			cgrp.b = float(fill->IntAttribute("b")) / 255.0f;
+			cgrp.exR = float(fill->IntAttribute("exR")) / 255.0f; 
+			cgrp.exG = float(fill->IntAttribute("exG")) / 255.0f; 
+			cgrp.exB = float(fill->IntAttribute("exB")) / 255.0f;
+			cgrp.blackness = (EBlackness)fill->IntAttribute("k");
 	
 			if (cgrp.drawtype == DRAW_TEXTURE_INDIVIDUAL_HALF)
 			{
-				cgrp.sideTexX = fill.attribute("sideX").toInt();
-				cgrp.sideTexY = fill.attribute("sideY").toInt();
-				int stxind = fill.attribute("sideTexInd").toInt();
-				Q_ASSERT((stxind >= 0) && (stxind <= texs.size()));
+				cgrp.sideTexX = fill->IntAttribute("sideX");
+				cgrp.sideTexY = fill->IntAttribute("sideY");
+				int stxind = fill->IntAttribute("sideTexInd");
+				M_ASSERT((stxind >= 0) && (stxind <= texs.size()));
 				cgrp.sideTex = texs[stxind];
 			}
 			if (cgrp.drawtype == DRAW_TEXTURE_BLEND)
@@ -523,19 +526,20 @@ bool PicBucket::loadXML(const QString& xmlname)
 
 			}
 
-			QDomNodeList xpics = cube.elementsByTagName("piece");
-			if (xpics.size() > 0)
+			//QDomNodeList xpics = cube->ElementsByTagName("piece");
+			XMLElement* xpic = cube->FirstChildElement("piece");
+			if (xpic != NULL)
 			{
 				//cgrp.pics.resize();
-
-				for (int pici = 0; pici < xpics.size(); ++pici)
+				int pici = 0;
+				while (xpic != NULL)
 				{
 					PicDef& curdef = pdefs[pdefi];
 					curdef.mygrpi = grpi;
 					curdef.indexInGroup = pici;
 
-					QDomElement ep = xpics.at(pici).toElement();
-					QString text = ep.text();
+					//QDomElement ep = xpics.at(pici).toElement();
+					QString text = xpic->GetText();
 					text.remove(' ');
 					for (int y = 0; y < 5; ++y)
 					{
@@ -550,21 +554,23 @@ bool PicBucket::loadXML(const QString& xmlname)
 					}
 					if (isIndividual(cgrp.drawtype))
 					{
-						curdef.xOffs = ep.attribute("x1").toInt();
-						curdef.yOffs = ep.attribute("y1").toInt();
+						curdef.xOffs = xpic->IntAttribute("x1");
+						curdef.yOffs = xpic->IntAttribute("y1");
 						curdef.tex = newTexture(cgrp.tex->img.copy(curdef.xOffs, curdef.yOffs, 128, 128).mirrored(false, true));
 					}
 					cgrp.picsi.push_back(pdefi); // the index in the bucket
 					++pdefi;
+					++pici;
+					xpic = xpic->NextSiblingElement("piece");
 				}
 			}
 			else // no "piece" elements
 			{
-				QDomElement pics = cube.firstChildElement("pieces");
-				QString copyfrom = pics.attribute("copy");
+				XMLElement* xpics = cube->FirstChildElement("pieces");
+				string copyfrom = xpics->Attribute("copy");
 				if (grpnames.find(copyfrom) == grpnames.end())
 				{
-					QMessageBox::critical(g_main, APP_NAME, "can't copy piece from: " + copyfrom, QMessageBox::Ok, 0);
+					printf("can't copy piece from: %s\n", copyfrom.c_str());
 					return false;
 				}
 				
@@ -597,19 +603,15 @@ bool PicBucket::loadXML(const QString& xmlname)
 			grps.push_back(cgrp);
 			sumPics += cgrp.numPics();
 			++grpi;
-			cube = cube.nextSiblingElement();
+			cube = cube->NextSiblingElement();
 		} // cubes
-		xfam = xfam.nextSiblingElement(); // next family
+		xfam = xfam->NextSiblingElement(); // next family
 	} // families
 
 	// set the reset selection
 	setToFamResetSel();
 
 
-//	unsigned int xxx5 = GetTickCount();
-
-//	QMessageBox::information(NULL, "bla", QString("%1\n%2\n%3\n%4").arg(xxx2 - xxx1).arg(xxx3 - xxx2).arg(xxx4 - xxx3).arg(xxx5 - xxx4));
-//		.arg(MyPoint::g_ctorCount).arg(MyPoint::g_dtorCount).arg(MyPolygon::g_ctorCount).arg(MyPolygon::g_dtorCount));
 
 	return true;
 
@@ -642,6 +644,7 @@ void PicBucket::distinctMeshes()
 	}
 	printf("%d distinct meshes out of %d pieces\n", ps.comp.size(), pdefs.size());
 
+	meshes.clear();
 	for(int i = 0; i < ps.comp.size(); ++i) {
 		auto comp = ps.comp[i];
 		shared_ptr<PicDisp> pd(new PicDisp);

@@ -147,6 +147,24 @@ protected:
 };
 
 
+string readFile(const QString filename) {
+	QFile file(filename);
+	if (!file.open(QIODevice::ReadOnly))
+	{// try again in the executable path
+		file.setFileName(QCoreApplication::applicationDirPath() + "/" + filename); 
+		if (!file.open(QIODevice::ReadOnly))
+		{
+			QMessageBox::critical(g_main, APP_NAME, "error opening file:\n" + filename, QMessageBox::Ok, 0);
+			return false;
+		}
+	}
+
+	QTextStream in(&file);
+	QString data = in.readAll();
+	return string(data.toAscii().data());
+}
+
+
 // TBD possibly move to PicBucket
 bool MainWindow::initialize()
 {
@@ -154,7 +172,7 @@ bool MainWindow::initialize()
 
 	m_modelGlWidget->initTex();
 	// needs to be here because only here we have the glwidget
-	if (!PicBucket::mutableInstance().loadXML(":/stdpcs.xml"))
+	if (!PicBucket::mutableInstance().loadXML(readFile(":/stdpcs.xml")))
 		return false;
 
 	m_picsInitThread = new PicInitThread();

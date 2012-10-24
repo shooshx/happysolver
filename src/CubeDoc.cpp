@@ -31,7 +31,9 @@
 #include "SIDlg.h"
 #include "PicsSet.h"
 #include "SlvCube.h"
+#include "ObjExport.h"
 
+#include <fstream>
 
 QString extractExtension(QString &path)
 {
@@ -43,14 +45,17 @@ QString extractExtension(QString &path)
 
 }
 
+
+
+
 CubeDoc::CubeDoc(QWidget *parent)
-  :QObject(parent), 
-   m_shp(NULL), m_slvs(NULL),
-   m_curWarning(WARN_NONE), m_curPicsWarning(WARN_NONE)
+  :QObject(parent), m_shp(NULL), m_slvs(NULL), m_curWarning(WARN_NONE), m_curPicsWarning(WARN_NONE), m_slvDone(this)
 {
 	m_build = new BuildWorld;
 	m_slvs = new Solutions;
-	connect(m_slvs, SIGNAL(changedFromSave(bool)), this, SIGNAL(changedFromSave(bool)));
+	m_slvs->changedFromSave = &m_slvDone;
+
+	//connect(m_slvs, SIGNAL(changedFromSave(bool)), this, SIGNAL(changedFromSave(bool)));
 
 	m_sthread = NULL;
 
@@ -331,15 +336,15 @@ void CubeDoc::OnFileExport()
 	QFileInfo fi(retname);
 	QString matFileName = fi.path() + "/" + fi.baseName() + ".mtl";
 
-	QFile wrfl(retname), matFile(matFileName);
+	ofstream wrfl(retname.toAscii().data()), matFile(matFileName.toAscii().data());
 
-	if (!wrfl.open(QIODevice::WriteOnly | QIODevice::Text))
+	if (!wrfl.good())
 	{
 		QMessageBox::critical(g_main, APP_NAME, tr("Error opening file for writing\nCheck that the file isn't locked by another program and try again"), QMessageBox::Ok, 0);
 		return;
 	}
 		
-	if (!matFile.open(QIODevice::WriteOnly | QIODevice::Text))
+	if (!matFile.good())
 	{
 		QMessageBox::critical(g_main, APP_NAME, tr("Error opening file for writing\nCheck that the file isn't locked by another program and try again"), QMessageBox::Ok, 0);
 		return;
@@ -348,11 +353,6 @@ void CubeDoc::OnFileExport()
 	QFileInfo mfi(matFileName);
 	matFileName = mfi.fileName();
 
-	QTextStream wrout(&wrfl);
-	QTextStream matout(&matFile);
-
-	wrout << "mtllib " << matFileName << "\n";
-
 	const SlvCube* pSolution = getCurrentSolve();
 	if (pSolution == NULL)
 	{
@@ -360,7 +360,10 @@ void CubeDoc::OnFileExport()
 		return;
 	}
 
-	if (!pSolution->painter.exportToObj(wrout, matout))
+	wrfl << "mtllib " << matFileName.toAscii().data() << "\n";
+	ObjExport oe(wrfl, &matFile);
+
+	if (!pSolution->painter.exportToObj(oe))
 	{
 		QMessageBox::critical(g_main, APP_NAME, tr("Error while exporting current solution"), QMessageBox::Ok, 0);
 		return;
@@ -593,7 +596,8 @@ void CubeDoc::realOpen(QString name)
 		delete m_slvs;
 
 		m_slvs = newslvs;
-		connect(m_slvs, SIGNAL(changedFromSave(bool)), this, SIGNAL(changedFromSave(bool))); // reconnect
+		m_slvs->changedFromSave = &m_slvDone;
+		//connect(m_slvs, SIGNAL(changedFromSave(bool)), this, SIGNAL(changedFromSave(bool))); // reconnect
  
 		// announce there is a new solution(s)
 		// tell the main frame to switch to the model view... (this will happen becuase there were no solutions before)

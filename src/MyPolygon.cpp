@@ -19,6 +19,7 @@
 #include "MyPolygon.h"
 #include "Pieces.h"
 
+#include "Texture.h"
 
 
 

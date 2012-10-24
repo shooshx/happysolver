@@ -18,11 +18,11 @@
 #ifndef __GENERAL_H__INCLUDED__
 #define __GENERAL_H__INCLUDED__
 
-#include <QtGlobal>
-#include <QVector>
+//#include <QtGlobal>
+//#include <QVector>
 #include <cmath>
 #include <vector>
-#include "Vec.h"
+#include <exception>
 
 using namespace std;
 
@@ -47,14 +47,21 @@ enum EAxis
 };
 
 
+typedef unsigned int uint;
 
+#ifdef WIN32
+	typedef __int64 mint64;
+#else
+	#include <inttypes.h>
+	typedef int64_t mint64;
+#endif
 
 /// takes a number and transforms it to a quoted string such as 1,234,567.09.
 /// which is much more readable for humans.
-QString humanCount(qint64 n);
+string humanCount(mint64 n);
 /// \overload
 /// takes a float number.
-QString humanCount(double n, int pers);
+string humanCount(double n, int pers);
 
 /// flush and burn all qt events.
 /// use this when visuals need to update in mid-function before moving on.
@@ -72,14 +79,30 @@ inline uint bXor(uint a, uint b)
 }
 
 /// used by several different files which don't include each other. no better place to declare this.
-typedef QVector<int> TTransformVec;
+typedef vector<int> TTransformVec;
 
 #define DISALLOW_COPY(className) \
 	 className(const className &); \
      className &operator=(const className &)
 
 
+#ifdef _DEBUG
+	#define M_ASSERT(cond) do { if (!(cond)) throw std::exception(#cond); } while(0)
+#else
+	#define M_ASSERT(cond)
+#endif
+
+
+template <typename T>
+inline const T &mMin(const T &a, const T &b) { if (a < b) return a; return b; }
+template <typename T>
+inline const T &mMax(const T &a, const T &b) { if (a < b) return b; return a; }
+
+
+
 // profile command line VC6
 // /SF ?CubeEngineProc@@YAIPAX@Z
+
+#include "Vec.h"
 
 #endif // __GENERAL_H__INCLUDED__

@@ -20,11 +20,12 @@
 #include <QString>
 #include <QCoreApplication>
 
-QString humanCount(qint64 n)
+string humanCount(mint64 n)
 {
 	QString init = QString("%1").arg(n);
 	
-	if (init.length() < 4) return init;
+	if (init.length() < 4) 
+		return init.toAscii().data();
 
 	QByteArray buf = init.toAscii();
 	int len = buf.count();
@@ -41,16 +42,16 @@ QString humanCount(qint64 n)
 }
 
 
-qint64 powOf10[] = { 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, Q_INT64_C(1000000000), Q_INT64_C(10000000000), Q_INT64_C(100000000000) };
+mint64 powOf10[] = { 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, Q_INT64_C(1000000000), Q_INT64_C(10000000000), Q_INT64_C(100000000000) };
 
-QString humanCount(double n, int pers)
+string humanCount(double n, int pers)
 {
-	qint64 dn = (qint64)n;
-	qint64 pwr = powOf10[qMin(pers, 11)];
-	qint64 fl = (qint64)((n - dn) * pwr);
+	mint64 dn = (qint64)n;
+	mint64 pwr = powOf10[mMin(pers, 11)];
+	mint64 fl = (qint64)((n - dn) * pwr);
 	QString sfl = QString("%1").arg(fl).toAscii();
 
-	return humanCount(dn) + "." + sfl;
+	return humanCount(dn) + "." + sfl.toAscii().data();
 
 }
 

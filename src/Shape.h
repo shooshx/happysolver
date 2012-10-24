@@ -23,7 +23,7 @@
 #include "Space3D.h"
 #include "PicArr.h"
 
-#include <QLinkedList>
+#include <list>
 
 class BuildWorld;
 struct SqrLimits;
@@ -172,9 +172,9 @@ private:
 		int to,who;	// to where did it go, who came here
 	};
 
-	void readAxis(const BuildWorld *build, int iss, int jss, int pgss, EPlane planedr, QLinkedList<FaceDef> &flst, int *reqfirst, SqrLimits &bound);
-	int checkSide(EAxis ldr, int x, int y, int z, QLinkedList<SideDef> &slst, QLinkedList<SideDef> &slstError);
-	int checkCorner(int x, int y, int z, QLinkedList<CornerDef> &clst);
+	void readAxis(const BuildWorld *build, int iss, int jss, int pgss, EPlane planedr, list<FaceDef> &flst, int *reqfirst, SqrLimits &bound);
+	int checkSide(EAxis ldr, int x, int y, int z, list<SideDef> &slst, list<SideDef> &slstError);
+	int checkCorner(int x, int y, int z, list<CornerDef> &clst);
 
 	void copyFace(Shape::FaceDef src, Shape::FaceDef *dest); 
 

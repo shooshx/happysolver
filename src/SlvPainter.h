@@ -5,10 +5,9 @@
 #include "MyObject.h"
 #include "Mesh.h"
 
-#include <QTextStream>
-
 class SlvCube;
 class GLWidget;
+class ObjExport;
 
 
 /** LinesCollection draws the lines seperating the pieces in the 3D solution display.
@@ -25,13 +24,13 @@ public:
 
 	Mesh& operator[](uint i) 
 	{ 
-		Q_ASSERT(i < m_bufs.size());
+		M_ASSERT(i < m_bufs.size());
 		return m_bufs[i];
 	}
 
 	const Mesh& operator[](uint i) const
 	{
-		Q_ASSERT(i < m_bufs.size());
+		M_ASSERT(i < m_bufs.size());
 		return m_bufs[i];
 	}
 
@@ -56,7 +55,7 @@ public:
 	SlvPainter(const SlvCube* _scube) :scube(_scube) {}
 	void paint(GLWidget* context, bool fTargets, int singleChoise, int upToStep, ELinesDraw cfgLines) const;
 
-	bool exportToObj(QTextStream& meshFile, QTextStream& materialsFiles) const;
+	bool exportToObj(ObjExport& oe) const;
 
 	bool isNull() const { return scube == NULL; }
 	void setSlvCube(const SlvCube *sc) { scube = sc; }
@@ -70,8 +69,7 @@ private:
 	void paintPiece(int f, GLWidget* context, bool fTargets) const;
 	void paintLines(int f, bool singleChoise, GLWidget *context, ELinesDraw cfgLines) const;
 
-	bool exportPieceToObj(QTextStream& meshFile, QTextStream& materialsFiles, int i, uint& numVerts,
-						  uint &numTexVerts, uint &numNormals, uint &numObjs) const;
+	bool exportPieceToObj(ObjExport& oe, int i) const;
 
 	const SlvCube* scube;
 

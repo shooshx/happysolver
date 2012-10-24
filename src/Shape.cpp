@@ -21,8 +21,6 @@
 #include "Space3D.h"
 #include "BuildWorld.h"
 
-#include <QMessageBox>
-#include <QLinkedList>
 #include <stdio.h>
 
 
@@ -233,7 +231,7 @@ int Shape::locateFaceHardWay(EPlane ldr, Vec3i lex) const
 }
 
 
-int Shape::checkSide(EAxis ldr, int x, int y, int z, QLinkedList<SideDef> &slst, QLinkedList<SideDef> &slstError)
+int Shape::checkSide(EAxis ldr, int x, int y, int z, list<SideDef> &slst, list<SideDef> &slstError)
 {	// fails, return 0, if there are more than 2 faces to a side
 	int nec = 0, nei[4] ,i, fcl;			
 	
@@ -260,7 +258,7 @@ int Shape::checkSide(EAxis ldr, int x, int y, int z, QLinkedList<SideDef> &slst,
 	return 1;
 }
 
-int Shape::checkCorner(int x, int y, int z, QLinkedList<CornerDef> &clst)
+int Shape::checkCorner(int x, int y, int z, list<CornerDef> &clst)
 {
 	int nec = 0, i, fcl, nei[12] = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
 	EPlane lpln[12];
@@ -306,7 +304,7 @@ int Shape::checkCorner(int x, int y, int z, QLinkedList<CornerDef> &clst)
 /////////////////////////////// GENERATOR /////////////////////////////////////
 
 
-void Shape::readAxis(const BuildWorld *build, int iss, int jss, int pgss, EPlane planedr, QLinkedList<FaceDef> &flst, int *reqfirst, SqrLimits &bound)
+void Shape::readAxis(const BuildWorld *build, int iss, int jss, int pgss, EPlane planedr, list<FaceDef> &flst, int *reqfirst, SqrLimits &bound)
 { 
 	int i, j, page, x = -1 , y = -1, z = -1, tmp;
 	for(page = 0; page < pgss; ++page)
@@ -436,7 +434,7 @@ EGenResult Shape::generate(const BuildWorld *build)
 	bounds.Inverse(BUILD_SIZE * 4);
 		
 	///////// BUILD FACES ///
-	QLinkedList<FaceDef> flst;
+	list<FaceDef> flst;
 
 	readAxis(build, fcSize.y, fcSize.z, fcSize.x, YZ_PLANE, flst, &reqf, bounds);
 	readAxis(build, fcSize.x, fcSize.z, fcSize.y, XZ_PLANE, flst, &reqf, bounds);
@@ -450,7 +448,7 @@ EGenResult Shape::generate(const BuildWorld *build)
 	size.z = bounds.maxpage - bounds.minpage + 4 + 1; // page plays z
 
 	faces = new FaceDef[fcn];
-	QLinkedList<FaceDef>::const_iterator faceit = flst.constBegin(); 
+	list<FaceDef>::const_iterator faceit = flst.cbegin(); 
 	for(i = 0; i < fcn; ++i)
 	{	// convert the linked list to an array, NORMAIZE the coodrinates to the size of the array, and dispose of the list
 		faces[i].dr = faceit->dr;
@@ -463,8 +461,8 @@ EGenResult Shape::generate(const BuildWorld *build)
 
 //	t25 = GetTickCount();
 	///////////// BUILD SIDES AND CORNERS ///////////////
-	QLinkedList<SideDef> slst, slstError;
-	QLinkedList<CornerDef> clst;
+	list<SideDef> slst, slstError;
+	list<CornerDef> clst;
 
 	bool illegalCorners = false; // sanity check for corners
 	bool illegalSides = false;
@@ -503,7 +501,7 @@ EGenResult Shape::generate(const BuildWorld *build)
 	{
 		errorSides = new SideDef[sdnError];
 		// convert the linked list to an array, and dispose of the list
-		QLinkedList<SideDef>::const_iterator sideIt = slstError.constBegin();
+		list<SideDef>::const_iterator sideIt = slstError.cbegin();
 		for(i = 0; i < sdnError; ++i) 
 		{	
 			errorSides[i] = *sideIt;
@@ -518,7 +516,7 @@ EGenResult Shape::generate(const BuildWorld *build)
 
 	sides = new SideDef[sdn];
 	// convert the linked list to an array, and dispose of the list
-	QLinkedList<SideDef>::const_iterator sideIt = slst.constBegin();
+	list<SideDef>::const_iterator sideIt = slst.cbegin();
 	for(i = 0; i < sdn; ++i)
 	{	
 		sides[i] = *sideIt;
@@ -526,7 +524,7 @@ EGenResult Shape::generate(const BuildWorld *build)
 	}
 
 	corners = new CornerDef[cnn];
-	QLinkedList<CornerDef>::const_iterator cornerIt = clst.constBegin();
+	list<CornerDef>::const_iterator cornerIt = clst.cbegin();
 	for(i = 0; i < cnn; ++i)
 	{	// convert the linked list to an array, and dispose of the list
 		corners[i] = *cornerIt;
@@ -592,8 +590,6 @@ EGenResult Shape::generate(const BuildWorld *build)
 	makeVolumeAndFacing();
 	makePieceCheckBits();
 
-//	t6 = GetTickCount();
-//	QMessageBox::information(g_main, APP_NAME, QString("1=%1\n2=%2\n25=%3\n3=%4\n4=%5\n5=%6").arg(t1-s).arg(t2-t1).arg(t25-t2).arg(t3-t25).arg(t4-t3).arg(t5-t4).arg(t6-t5), QMessageBox::Ok);
 
 	return GEN_RESULT_OK;
 }
@@ -659,8 +655,7 @@ bool Shape::makeVolumeAndFacing()
 	
 	volume = (space.szx * space.szy * space.szz) - space.FloodFill(0, 0, 0);
 
-//	QMessageBox::information(NULL, APP_NAME, QString("old: %1").arg(volume), QMessageBox::Ok);
-	
+
 	for (i = 0; i < fcn; ++i)
 	{
 		faces[i].facing = (space.axx(faces[i].ex.x/4 + 1, faces[i].ex.y/4 + 1, faces[i].ex.z/4 + 1).fill)?FACING_IN:FACING_OUT;
@@ -868,7 +863,7 @@ bool Shape::createTrasformTo(const Shape *news, TTransformVec& movedTo, bool* tr
 	Vec3i offset(faces[0].ex - news->faces[0].ex); 
 
 	*trivialTransform = true;
-	movedTo.fill(-1, fcn);
+	std::fill(movedTo.begin(), movedTo.end(), -1);
 	for (int i = 0; i < fcn; ++i)
 	{ // go over my faces
 		for(int j = 0; j < fcn; ++j)

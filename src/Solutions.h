@@ -23,8 +23,7 @@
 #include "MyFile.h"
 #include "Pieces.h"
 #include "Configuration.h"
-#include <QList>
-#include <QObject>
+
 
 /** \file
 	Declares all classes involved with solution storage and display.
@@ -42,7 +41,10 @@ class GLWidget;
 class SlvCube;
 
 
-
+class IChangeNotify {
+public:
+	virtual void notify(bool b) = 0;
+};
 
 
 class CubeDoc;
@@ -56,11 +58,11 @@ class CubeDoc;
 	contained in CubeDoc.
 	\see CubeDoc SlvCube
 */
-class Solutions : public QObject
+class Solutions 
 {
-	Q_OBJECT
+
 public:
-	Solutions(int solveSize = -1) :slvsz(solveSize), m_bChangedFromSave(false) {}
+	Solutions(int solveSize = -1) :slvsz(solveSize), m_bChangedFromSave(false), changedFromSave(NULL) {}
 	~Solutions() {	clear(); }
 	void clear(int solveSize = -1);
 
@@ -80,16 +82,13 @@ public:
 	
 	void addBackCommon(SlvCube *tmp);
 
+
 	int slvsz; // size of a solution
-
-	typedef QList<SlvCube*> TSlvList;
-
-signals:
-	void changedFromSave(bool state);
+	IChangeNotify *changedFromSave;
 
 private:
 
-	TSlvList sv;
+	vector<SlvCube*> sv;
 	bool m_bChangedFromSave;
 
 };

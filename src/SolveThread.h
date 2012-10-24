@@ -18,6 +18,7 @@
 #ifndef __SOLVETHREAD_H__INCLUDED__
 #define __SOLVETHREAD_H__INCLUDED__
 
+#include "general.h"
 #include <QThread>
 
 /** \file
@@ -44,7 +45,7 @@ public:
 		maxp = 0;
 	}
 
-	volatile qint64 tms; ///< number of piece changes
+	volatile mint64 tms; ///< number of piece changes
 	volatile bool lucky; ///< luck state of the engine.
 	volatile int maxp;  ///< the maximal place reached on the shape
 };

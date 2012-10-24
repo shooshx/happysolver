@@ -12,7 +12,7 @@ typedef unsigned int uint;
 class Mesh
 {
 public:
-	Mesh() : m_type(0), m_hasNormals(false), m_hasTexCoord(false), m_hasColors(false), m_hasNames(false), m_hasIdx(false), m_uniformColor(false) {}
+	Mesh() : m_type(NONE), m_hasNormals(false), m_hasTexCoord(false), m_hasColors(false), m_hasNames(false), m_hasIdx(false), m_uniformColor(false) {}
 	void clear() {
 		m_vtx.clear();
 		m_normals.clear();
@@ -23,6 +23,23 @@ public:
 	}
 
 	void paint(bool names = false) const;
+
+	int elemSize();
+	int numElem();
+
+	enum Type { NONE, LINES, TRIANGLES, QUADS, TRI_STRIP, TRI_FAN };
+	struct IdxBuf {
+		IdxBuf(Type t) :m_type(t), m_enabled(true) {}
+		vector<uint> m_idx;
+		Type m_type;
+		bool m_enabled;
+	};
+
+	IdxBuf& addIdx(Type t) {
+		m_addIdx.push_back(IdxBuf(t));
+		return m_addIdx.back();
+	}
+
 
 public:
 	vector<Vec3> m_vtx;
@@ -40,7 +57,10 @@ public:
 	bool m_hasIdx; // drawElements or drawArrays
 	bool m_uniformColor;
 
-	uint m_type;
+	Type m_type;
+
+
+	vector<IdxBuf> m_addIdx;
 };
 
 

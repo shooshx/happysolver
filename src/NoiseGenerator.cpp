@@ -345,8 +345,6 @@ GlTexture* NoiseGenerator::make3Dnoise(int size, float ampStart, float ampDiv, i
 		return NULL;
 	}
 
-	//QProgressDialog pdlg(QString("Generating noise size=%1").arg(size), "Stop", 0, numOctaves * noise3DTexSize, m_inWidget);
-	//pdlg.setMinimumDuration(500);
 
 	for (f = 0, inc = 0; f < numOctaves; ++f, frequency *= 2, ++inc, amp *= ampDiv)
 	{
@@ -357,12 +355,6 @@ GlTexture* NoiseGenerator::make3Dnoise(int size, float ampStart, float ampDiv, i
 		inci = 1.0 / (noise3DTexSize / frequency);
 		for (i = 0; i < noise3DTexSize; ++i, ni[0] += inci)
 		{
-
-			//pdlg.setValue(noise3DTexSize * f + i);
-			//QApplication::processEvents();
-			//if (pdlg.wasCanceled())
-			//	return NULL;
-
 
 			incj = 1.0 / (noise3DTexSize / frequency);
 			for (j = 0; j < noise3DTexSize; ++j, ni[1] += incj)
@@ -392,7 +384,7 @@ GlTexture* NoiseGenerator::make3Dnoise(int size, float ampStart, float ampDiv, i
 
 
 	GlTexture *tex = new GlTexture();
-	tex->init(GL_TEXTURE_2D, QSize(sz2d.x, sz2d.y), 1, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, 
+	tex->init(GL_TEXTURE_2D, Vec2i(sz2d.x, sz2d.y), 1, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, 
 			  buf2d, GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE); 
 	
 	//QImage img(buf2d, sz2d.x, sz2d.y, QImage::Format_ARGB32);

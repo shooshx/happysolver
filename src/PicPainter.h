@@ -33,7 +33,7 @@ class MyObject;
 class PicDef;
 class GLWidget;
 class DisplayConf;
-
+class ObjExport;
 
 
 // represents a piece shape which may be in multiple piece definitions
@@ -52,8 +52,6 @@ public:
 
 	enum EPlaceType { PLACE_NORM, PLACE_X, PLACE_Y };
 	void PlaceInto(int pntn, Vec3 *shpp, Vec3 *pnti1, Vec3 *pnti2, EPlaceType type) const;
-
-	void makeBuffers(const MyObject& obj, Mesh& mesh);
 
 
 	/// BuildFrame is the datum of the internal lookup table used while creating
@@ -100,25 +98,16 @@ public:
 	/// \arg \c bTargets draw for targets, no colors.
 	void paint(bool bTargets, const Vec3& name, GLWidget *context) const; 
 
-	bool exportToObj(QTextStream& meshFile, QTextStream& materialsFiles, uint& numVerts,
-		uint &numTexVerts, uint &numNormals, uint &numObjs,
-		const Mat4& fMatrix) const;
+	bool exportToObj(ObjExport& oe, const Mat4& fMatrix) const;
 
 private:
-
-
 	void realPaint(MyObject& obj, bool fTargets, GLWidget *context);
 
-	bool realExportToObj(QTextStream& meshFile, MyObject& obj, uint& numVerts,
-						 uint &numTexVerts, uint &numNormals,
-						 const Mat4& fMatrix) const;
+	bool realExportToObj(ObjExport& oe, const Mat4& fMatrix) const;
 
+private:
 	PicDef *m_pdef;
-
-
-
 	DisplayConf m_displayConf;
-
 
 };
 

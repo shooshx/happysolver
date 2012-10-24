@@ -18,6 +18,7 @@
 #ifndef __SOLVEDLG_H__INCLUDED__
 #define __SOLVEDLG_H__INCLUDED__
 
+#include "general.h"
 #include <QDialog>
 #include "ui_SolveDlg.h"
 
@@ -72,7 +73,7 @@ private:
 	time_t m_starttime, m_elapsedtime;
 
 	// speed calculation
-	qint64 m_last_tms;
+	mint64 m_last_tms;
 	int m_speed[SPEED_AVG_SIZE]; // tms/sec
 	int m_speedind;
 

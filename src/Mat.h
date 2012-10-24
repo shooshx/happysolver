@@ -98,7 +98,11 @@ public:
 		}
 		return m;
 	}
-
+	static Mat4 ident() {
+		Mat4 m;
+		m.identity();
+		return m;
+	}
 
 	Vec3 transformVec(const Vec3& vec) const
 	{ // bug - ignoring w.

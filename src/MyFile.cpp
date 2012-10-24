@@ -18,6 +18,7 @@
 #include "MyFile.h"
 
 #include <stdio.h>
+#include <stdarg.h>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -59,7 +60,8 @@ void MyFile::close()
 
 int MyFile::seekString(const char *str, const char *stopat)
 {
-	if (strlen(str) == 0) return FALSE;
+	if (strlen(str) == 0) 
+		return 0;
 
 	unsigned int mi = 0;
 	int offs = -1;
@@ -93,47 +95,51 @@ int MyFile::seekString(const char *str, const char *stopat)
 }
 
 
-int MyFile::seekHeader(const char *hName) // through the entire file
+bool MyFile::seekHeader(const char *hName) // through the entire file
 {
 	if (state != STATE_OPEN_READ) 
-		return FALSE;
+		return false;
 	fseek(fl, 0, SEEK_SET);
 
-	QString sstr = QString("<") + hName + ">";
-	int ret = seekString(sstr.toAscii(), NULL);
+	string sstr = string("<") + hName + ">";
+	int ret = seekString(sstr.c_str(), NULL);
 
-	if (ret != -1) curHeader = ftell(fl); // plus the '>'
-	else return FALSE;
+	if (ret != -1) 
+		curHeader = ftell(fl); // plus the '>'
+	else 
+		return false;
 
-	return TRUE;
+	return true;
 }
 
-int MyFile::seekValue(const char *vName, int level, bool bFromStart)  // from current header to the next header
+bool MyFile::seekValue(const char *vName, int level, bool bFromStart)  // from current header to the next header
 {
 	if (state != STATE_OPEN_READ) 
-		return FALSE;
+		return false;
 	
 	if (bFromStart)
 		fseek(fl, curHeader, SEEK_SET);
 
-	if (strlen(vName) > 255) return FALSE;
+	if (strlen(vName) > 255) 
+		return false;
 	char sstr[260];
 	sprintf(sstr, "%c%s", ':'+level, vName);
 
 	int ret = seekString(sstr, "<");
-	if (ret == -1) return FALSE;
+	if (ret == -1) 
+		return false;
 
 
 	if (seekString("=", "<:") == -1)
-		return FALSE;
+		return false;
 
-	return TRUE;
+	return true;
 }
 
 int MyFile::readNumsBuf(int cnt, int *buffer) // returns the number of numbers read
 {
 	if (state != STATE_OPEN_READ) 
-		return FALSE;
+		return 0;
 
 	int i;
 	for(i = 0; i < cnt; ++i)
@@ -149,7 +155,7 @@ int MyFile::readNumsBuf(int cnt, int *buffer) // returns the number of numbers r
 int MyFile::readNums(int cnt, ...)
 {
 	if (state != STATE_OPEN_READ) 
-		return FALSE;
+		return 0;
 
 	va_list marker;
 	int *tmp;
@@ -170,32 +176,34 @@ int MyFile::readNums(int cnt, ...)
 
 
 
-int MyFile::writeHeader(const char* hName)
+bool MyFile::writeHeader(const char* hName)
 {
 	if (state != STATE_OPEN_WRITE) 
-		return FALSE;
+		return false;
 
 	fprintf(fl, "<%s>\n", hName);
-	return TRUE;
+	return true;
 }
 
-int MyFile::writeValue(const char *vName, bool endCRLF, int level)
+bool MyFile::writeValue(const char *vName, bool endCRLF, int level)
 {
 	if (state != STATE_OPEN_WRITE) 
-		return FALSE;
+		return false;
 
-	if (strlen(vName) > 255) return FALSE;
+	if (strlen(vName) > 255) 
+		return false;
 
 	fprintf(fl, "%c%s = ", ':'+level, vName);
-	if (endCRLF) fprintf(fl, "\n");
+	if (endCRLF) 
+		fprintf(fl, "\n");
 
-	return TRUE;
+	return true;
 }
 
-int MyFile::writeNumsBuf(int cnt, int *buffer, bool endCRLF) // cnt == 0: only CRLF
+bool MyFile::writeNumsBuf(int cnt, int *buffer, bool endCRLF) // cnt == 0: only CRLF
 {
 	if (state != STATE_OPEN_WRITE) 
-		return FALSE;
+		return false;
 
 	for(int i = 0; i < cnt; ++i)
 	{
@@ -205,14 +213,14 @@ int MyFile::writeNumsBuf(int cnt, int *buffer, bool endCRLF) // cnt == 0: only C
 	{
 		fprintf(fl, "\n");
 	}
-	return TRUE;
+	return true;
 
 }
 
-int MyFile::writeNums(int cnt, bool endCRLF, ...)
+bool MyFile::writeNums(int cnt, bool endCRLF, ...)
 {
 	if (state != STATE_OPEN_WRITE) 
-		return FALSE;
+		return false;
 
 	va_list marker;
 	int tmp;
@@ -231,15 +239,15 @@ int MyFile::writeNums(int cnt, bool endCRLF, ...)
 		fprintf(fl, "\n");
 	}
 
-	return TRUE;
+	return true;
 }
 
 
-int MyFile::writeStr(const char* st)
+bool MyFile::writeStr(const char* st)
 {
 	if (state != STATE_OPEN_WRITE) 
-		return FALSE;
+		return false;
 
 	fprintf(fl, "%s", st);
-	return TRUE;
+	return true;
 }

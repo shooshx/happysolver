@@ -163,7 +163,7 @@ void PicsSelectWidget::continueCreate()
 		// scroll area has a frame by default. get rid of it.
 		scroll->setFrameShape(QFrame::NoFrame);
 
-		m_tabs->addTab(scroll, fam.name);
+		m_tabs->addTab(scroll, fam.name.c_str());
 
 
 		for (int g = fam.startIndex; g < fam.startIndex + fam.numGroups; ++g)
@@ -172,7 +172,7 @@ void PicsSelectWidget::continueCreate()
 			GroupCtrl &grpctrl = m_groups[g];
 			int normg = (g - fam.startIndex); // normalized g with start of family
 
-			QGroupBox *groupbox = new QGroupBox(grp->name, tab);
+			QGroupBox *groupbox = new QGroupBox(grp->name.c_str(), tab);
 			groupbox->move(BOT_OFFS_X-FRAME_OFFS_SPACE_LEFT, FRAME_OFFS_Y + normg*BOT_TOTAL_Y - 30);
 			groupbox->resize(FRAME_OFFS_SPACE_RIGHT + grp->numPics() * BOT_TOTAL_X, BOT_Y + 55);
 

@@ -22,8 +22,11 @@
 #include "Configuration.h" // DisplayConf
 #include "OpenGL/Shaders.h"
 #include "OpenGL/glGlob.h"
+#include "ObjExport.h"
 
 #include <vector>
+#include <sstream>
+#include <fstream>
 using namespace std;
  
 MyAllocator PicDisp::g_smoothAllocator;
@@ -275,41 +278,18 @@ void PicDisp::init(const DisplayConf& dpc, GLWidget *mainContext)
 
 	//realPaint(obj, false, mainContext);
 
-	makeBuffers(obj, m_mesh);
+	obj.toMesh(m_mesh);
+
+/*	{
+		stringstream ss;
+		ss << "c:/temp/piece_" << m_arr.getBits() << "_" << rand() << ".obj";
+		ofstream f(ss.str().c_str());
+		ObjExport oe(f, NULL);
+		oe.asTriangles = true;
+		oe.addMesh(NULL, m_mesh, Mat4::ident());
+	}*/
 
 	g_smoothAllocator.clear();
-}
-
-
-
-
-
-void PicDisp::makeBuffers(const MyObject& obj, Mesh &mesh) 
-{
-	mesh.clear();
-	VecRep vtxrep(&m_mesh.m_vtx);
-
-	for(int pli = 0; pli < obj.nPolys; ++pli) //polygons
-	{
-		MyPolygon &curpl = *obj.poly[pli];
-		for(int pni = 0; pni < 4; ++pni) //points
-		{
-			MyPoint *curpn = curpl.vtx[pni];
-			int index = 0;
-			if (vtxrep.add(curpn->p, &index)) {
-				mesh.m_normals.push_back(curpn->n);
-				mesh.m_texCoord.push_back(Vec2(curpl.texAncs[pni].x, curpl.texAncs[pni].y));
-			}
-			mesh.m_idx.push_back(index);
-		}
-		
-	}
-
-	mesh.m_type = GL_QUADS;
-	mesh.m_hasNormals = true;
-	mesh.m_hasTexCoord = true;
-	mesh.m_hasIdx = true;
-
 }
 
 
@@ -428,200 +408,20 @@ void PicPainter::paint(bool fTargets, const Vec3& name, GLWidget *context) const
 
 }
 
-bool PicPainter::exportToObj(QTextStream& meshout, QTextStream& mtlout, uint& numVerts,
-							 uint &numTexVerts, uint &numNormals, uint &numObjs,
-							 const Mat4& fMatrix) const
+bool PicPainter::exportToObj(ObjExport& oe, const Mat4& fMatrix) const
 {
-	// 1. Generate Mesh
 	MyObject obj(&PicDisp::getAllocator());
 	m_pdef->disp->generateStraightShape(m_displayConf, obj);
 	PicDisp::getAllocator().clear();
 
-	const PicGroupDef *def = m_pdef->mygrp();
-
-	// not very efficient...
-	if (def->drawtype == DRAW_COLOR)
-	{
-		mtlout << "newmtl material" << ++numObjs << "\n";
-		mtlout << "  Ns 32\n  d 1\n  Tr 1\n  Tf 1 1 1\n  illum 2\n  Ka 0.0000 0.0000 0.0000\n  Ks 0.3500 0.3500 0.3500\n";
-		mtlout << "  Kd " << def->r << " " << def->g << " " <<  def->b << "\n";
-	}
-
-	meshout << "g Object" << numObjs << "\n";
-
-	if (def->drawtype == DRAW_COLOR)
-	{
-		meshout << "usemtl material" << numObjs << "\n";
-	} 
-	// others not supported...
-
-	// Now we've got mesh
-	// 2. Generate Mesh
-	return realExportToObj(meshout, obj, numVerts, numTexVerts, numNormals, fMatrix);
-}
-
-
-
-float filterZero(float x) // don't allow numbers like 1.1e-16 to the output
-{
-	if (abs(x) < EPSILON)
-		return 0.0f;
-	return x;
-}
-
-bool PicPainter::realExportToObj(QTextStream& meshout, MyObject& obj, uint& numVerts,
-								 uint &numTexVerts, uint &numNormals,
-								 const Mat4& fMatrix) const
-{
-	// TODO:
-	const PicGroupDef *def = m_pdef->mygrp();
-	bool hasTex = def->isTexExist();
-
-	//switch (m_pdef->mygrp->drawtype) 
-	//{
-	//case DRAW_COLOR:
-	//	glDisable(GL_TEXTURE_2D);
-	//	glColor3f(def->r, def->g, def->b);
-	//	break;
-	//case DRAW_TEXTURE_BLEND:
-	//	glColor3f(1.0f, 1.0f, 1.0f);
-	//case DRAW_TEXTURE_NORM:
-	//	glEnable(GL_TEXTURE_2D);
-	//	//	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); is default
-	//	glBindTexture(GL_TEXTURE_2D, texId);
-	//	break;
-	//case DRAW_TEXTURE_INDIVIDUAL_HALF:
-	//	// the enable texture comes later
-	//	glDisable(GL_TEXTURE_2D);
-	//	//	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); is default
-	//	//glBindTexture(GL_TEXTURE_2D, texId); sides have a different texture.
-	//	break; // handle for every polygon
-	//}
-
-
-	//int ch = 0;
-//	Texture *lastTex = NULL; // start disabled
-
-	vector<Vec3> vertices(obj.nPolys * 4);
-	int realNumVers = 0;
-
-	vector<Vec2> texVertices(obj.nPolys * 4);
-	int realNumTexVers = 0;
-
-	vector<int> triangles(obj.nPolys * 8);
-	int triCounter = 0;
-
-	for(int pli = 0; pli < obj.nPolys; ++pli) //polygons
-	{
-		MyPolygon &curpl = *obj.poly[pli];
-
-		for(int pni = 0; pni < 4; ++pni) //points
-		{
-			MyPoint *curpn = curpl.vtx[pni];
-
-			Vec3 vert = fMatrix.transformVec(curpn->p);
-
-			int j = 0;
-			for (j = 0; j < realNumVers; ++j)
-			{
-				if (vertices[j].isNear(vert))
-					break;
-			}
-			if (j >= realNumVers)
-			{
-				vertices[realNumVers++] = vert;
-			}
-			triangles[triCounter++] = j;
-
-			if (hasTex)
-			{
-				Vec2 texVert(curpl.texAncs[pni].x, curpl.texAncs[pni].y);
-				int j = 0;
-				for (j = 0; j < realNumTexVers; ++j)
-				{
-					if (texVertices[j].isNear(texVert))
-					{
-						break;
-					}
-				}
-				if (j >= realNumTexVers)
-				{
-					texVertices[realNumTexVers++] = texVert;
-				}
-
-				triangles[triCounter++] = j;
-			}
-			else
-			{
-
-				triangles[triCounter++] = 0;
-			}
-		}
-	}
-
-	// We found unique vertices. Now let's put them to file
-	for (int i = 0; i < realNumVers; ++i)
-	{
-		meshout << "v " << filterZero(vertices[i].x) << " " << filterZero(vertices[i].y) << " " << filterZero(vertices[i].z) << "\n";
-	}
-
-	if (hasTex)
-	{
-		for (int i = 0; i < realNumTexVers; ++i)
-		{
-			meshout << "vt " << texVertices[i].x << " " << texVertices[i].y << "\n";
-		}
-	}
-
-	triCounter = 0;
-
-	for(int pli = 0; pli < obj.nPolys; ++pli) //polygons
-	{
-		// Now add 2 triangles
-		if (hasTex)
-		{
-			meshout << "f " << triangles[triCounter + 0] + numVerts << "/" <<
-			 				triangles[triCounter + 1] + numTexVerts << " " <<
-							triangles[triCounter + 2] + numVerts << "/" <<
-							triangles[triCounter + 3] + numTexVerts << " " <<
-							triangles[triCounter + 4] + numVerts << "/" <<
-							triangles[triCounter + 5] + numTexVerts << " " <<
-							triangles[triCounter + 6] + numVerts << "/" <<
-							triangles[triCounter + 7] + numTexVerts << "\n";
-		}
-		else
-		{
-			meshout << "f " << triangles[triCounter + 0] + numVerts << " " <<
-				  			 triangles[triCounter + 2] + numVerts << " " <<
-							 triangles[triCounter + 4] + numVerts << " " <<
-							 triangles[triCounter + 6] + numVerts << "\n";
-		}
-
-
-		/*if (hasTex)
-		{
-			sprintf(buf, "f %d/%d %d/%d %d/%d\n", triangles[triCounter + 0] + numVerts,
-												  triangles[triCounter + 1] + numTexVerts,
-												  triangles[triCounter + 4] + numVerts,
-												  triangles[triCounter + 5] + numTexVerts,
-												  triangles[triCounter + 6] + numVerts,
-												  triangles[triCounter + 7] + numTexVerts);
-		}
-		else
-		{
-			sprintf(buf, "f %d %d %d\n", triangles[triCounter + 0] + numVerts,
-										 triangles[triCounter + 4] + numVerts,
-										 triangles[triCounter + 6] + numVerts);
-		}
-		meshFile.writeStr(buf);*/
-
-		triCounter += 8;
-	}
-	numVerts += realNumVers;
-	numTexVerts += realNumTexVers;
-
+	Mesh mesh;
+	obj.toMesh(mesh);
+	oe.addMesh(m_pdef->mygrp(), mesh, fMatrix);
 	return true;
 }
+
+
+
 
 
 

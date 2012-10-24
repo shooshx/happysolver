@@ -207,11 +207,11 @@ void BuildHelpDlg::completePicsWidgets() // SLOT
 		FamCtrl ctrl;
 
 		ctrl.icon = new QLabel();
-		ctrl.icon->setPixmap(QPixmap(QString(":/%1").arg(fam.iconFilename)));
+		ctrl.icon->setPixmap(QPixmap(QString(":/%1").arg(fam.iconFilename.c_str())));
 		ctrl.icon->setMinimumSize(21, 21);
 		glayout->addWidget(ctrl.icon, f + 1, 1);
 
-		ctrl.name = new QLabel(fam.name);
+		ctrl.name = new QLabel(fam.name.c_str());
 		//ctrl.name->setMinimumSize(100, 22);
 		glayout->addWidget(ctrl.name, f + 1, 2);
 		
@@ -220,7 +220,7 @@ void BuildHelpDlg::completePicsWidgets() // SLOT
 		ctrl.num->setButtonSymbols(QAbstractSpinBox::PlusMinus);
 		ctrl.num->setRange(-1, MAX_IDENTICAL_PIECES); 
 		ctrl.num->setSpecialValueText("X");
-		ctrl.num->setToolTip(QString("Number of %1 sets").arg(fam.name));
+		ctrl.num->setToolTip(QString("Number of %1 sets").arg(fam.name.c_str()));
 		glayout->addWidget(ctrl.num, f + 1, 3);
 		connect(ctrl.num, SIGNAL(dvalueChanged(int, int)), this, SIGNAL(changedFamBox(int, int)));
 
