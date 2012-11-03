@@ -46,7 +46,9 @@ BuildGLWidget::BuildGLWidget(QWidget *parent, CubeDoc *document)
 	 m_lastChoise(-1), 
 	 m_nMarkedTiles(0), m_fadeTimer(NULL), 
 	 m_errCylindrAlpha(0.0), m_errCylindrAlphaDt(0.0),
-	 m_bDoneUpdate(false) 
+	 m_bDoneUpdate(false),
+	 m_inFade(false),
+	 m_fadeFactor(0.0)
 {
 	m_bBackFaceCulling = false; 
 
@@ -181,14 +183,17 @@ public:
 		m_mesh.m_hasColors = true;
 		m_mesh.m_hasNames = true;
 		m_mesh.m_hasIdx = false;
+		m_mesh.m_hasTag = true;
 		m_mesh.clear();
 	}
 
-	void add(const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d, const Vec4& color, uint name)
+	void add(const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d, const Vec4& color, uint name, uint tag)
 	{
 		m_mesh.m_vtx.push_back(a);   m_mesh.m_vtx.push_back(b);   m_mesh.m_vtx.push_back(c);   m_mesh.m_vtx.push_back(d);
-		Vec3b nv = Vec3b::fromName(name);
+		Vec4b nv = Vec4b::fromName(name);
 		m_mesh.m_name.push_back(nv); m_mesh.m_name.push_back(nv); m_mesh.m_name.push_back(nv); m_mesh.m_name.push_back(nv);
+		float ftag = (float)tag;
+		m_mesh.m_tag.push_back(ftag); m_mesh.m_tag.push_back(ftag); m_mesh.m_tag.push_back(ftag); m_mesh.m_tag.push_back(ftag);
 		m_mesh.m_color4.push_back(color); m_mesh.m_color4.push_back(color);  m_mesh.m_color4.push_back(color); m_mesh.m_color4.push_back(color);
 	}
 
@@ -295,19 +300,22 @@ void BuildGLWidget::makeBuffers()
 					int valshow = GET_VAL_SHOW(theget);
 					Vec4 color;
 
-					if (GET_TYPE(theget) == TYPE_VIR)
+					if (GET_TYPE(theget) == TYPE_VIR) // blue
 					{
 						color = Vec4(0.0f, 0.0f, 0.8f, 0.5f);
-						transTiles.add(a, b, c, d, color, name);
+						transTiles.add(a, b, c, d, color, name, 1);
 						transLines.add(a, b, c, d, Vec4(0.2f, 0.2f, 1.0f, 0.5f));
 					}
 					else
 					{
-						if (valshow == FACE_NORM_SELR)
-							color = Vec4(1.0f, 1.0f - 0.25f*1.0f, 1.0f - 0.25f*1.0f, 1.0f);
-						else
-							color = Vec4(1.0f, 1.0f, 1.0f, 1.0f);
-						realTiles.add(a, b, c, d, color, name);
+						uint tag = 0;
+						if (valshow == FACE_NORM_SELR) {
+							color = Vec4(0.0f, 0.25f, 0.25f, 0.0f); // red (real color is 1-this, in shader
+							tag = 2;
+						}
+						else 
+							color = Vec4(1.0f, 1.0f, 1.0f, 1.0f); // normal white 
+						realTiles.add(a, b, c, d, color, name, tag);
 						realLines.add(a, b, c, d, Vec4(0.2f, 0.2f, 0.2f, 1.0f));
 					}
 				}
@@ -316,8 +324,6 @@ void BuildGLWidget::makeBuffers()
 	}
 }
 			
-
-
 
 
 void BuildGLWidget::drawErrorCyliders()
@@ -344,10 +350,6 @@ void BuildGLWidget::drawErrorCyliders()
 
 		m_cylinder.paint();
 
-// 		gluCylinder(qobj, ERR_CYLINDER_RADIOUS, ERR_CYLINDER_RADIOUS, 1.2, 15, 2); // the cylinder
-// 		gluDisk(qobj, 0, ERR_CYLINDER_RADIOUS, 15, 1); // two disks to cap it
-// 		glTranslatef(0, 0, 1.2f); 
-// 		gluDisk(qobj, 0, ERR_CYLINDER_RADIOUS, 15, 1);
 		model.pop();
 		m_prog.trans.set(transformMat());
 	}
@@ -356,14 +358,14 @@ void BuildGLWidget::drawErrorCyliders()
 
 void BuildGLWidget::drawTargets(bool inChoise)
 {
+	//printf("draw %d\n", inChoise);
 	auto tm = model.cur(), tp = proj.cur();
 	ProgramUser use(&m_prog);
 	m_prog.trans.set(transformMat());
 
+	m_prog.fadeFactor.set(m_fadeFactor);
 
-	glDisable(GL_TEXTURE_2D);
-
-	glEnable(GL_LINE_SMOOTH);
+	//glEnable(GL_LINE_SMOOTH);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -373,13 +375,6 @@ void BuildGLWidget::drawTargets(bool inChoise)
 	m_realTiles.paint(inChoise);
 
 	if (!inChoise) {
-
-// 		model.push();
-// 		model.translate(25,25,25);
-// 		m_prog.trans.set(transformMat());
-// 		m_cylinder.paint();
-// 		model.pop();
-// 		m_prog.trans.set(transformMat());
 		drawErrorCyliders();
 
 		glPolygonOffset(0, 0);
@@ -470,8 +465,8 @@ void BuildGLWidget::boxedDblClick(int choise, QMouseEvent *event)
 	
 	updateGL();
 
-	mouseMoveEvent(event); // simulate a move event to show the SELECT 
 	makeBuffers();
+	mouseMoveEvent(event); // simulate a move event to show the SELECT 
 }
 
 
@@ -493,7 +488,7 @@ bool BuildGLWidget::getChoiseTiles(int choise, bool remove, CoordBuild bb[6], Ve
 		(g.z < 1) || (g.z >= build.m_space.szz - 2))
 		return false;
 
-	int xxx = build.m_space.axx(g).fill;
+	//int xxx = build.m_space.axx(g).fill;
 	Q_ASSERT(build.m_space.axx(g).fill == (remove?1:0)); // XXXa really nasty bug.
 
 	BuildWorld::getBuildCoords(g, bb);
@@ -503,18 +498,14 @@ bool BuildGLWidget::getChoiseTiles(int choise, bool remove, CoordBuild bb[6], Ve
 void BuildGLWidget::fadeTimeout()
 {
 	BuildWorld& build = m_doc->getBuild();
-	if ((m_nMarkedTiles == 0) && (build.getTestResult() != GEN_RESULT_ILLEGAL_SIDE))
+	if ((!m_inFade) && (build.getTestResult() != GEN_RESULT_ILLEGAL_SIDE))
 		return;
 
-	for(int i = 0; i < m_nMarkedTiles; ++i)
-	{
-		int theget = build.get(m_curMarkedTiles[i]);
-		int getin = GET_INTENSITY(theget);
-		//int bla = SET_INTENSITY(theget, getin+1);
-		if (getin < 8)
-			build.set(m_curMarkedTiles[i], SET_INTENSITY(theget, getin+2));
-		else
-			m_nMarkedTiles = 0; // if one reached it, they all did.
+
+	if (m_inFade) {
+		m_fadeFactor += 0.2;
+		if (m_fadeFactor >= 1.0)
+			m_inFade = false;
 	}
 
 	if (build.getTestResult() == GEN_RESULT_ILLEGAL_SIDE)
@@ -523,6 +514,7 @@ void BuildGLWidget::fadeTimeout()
 		if ((m_errCylindrAlpha >= 1.0) || (m_errCylindrAlpha <= 0.1))
 			m_errCylindrAlphaDt = -m_errCylindrAlphaDt;
 	}
+	//printf("fade update\n");
 	updateGL();
 
 }
@@ -534,6 +526,7 @@ bool BuildGLWidget::doMouseMove(QMouseEvent *event, bool remove)
 		return false;
 
 	BuildWorld& build = m_doc->getBuild();
+	//printf("start move\n");
 	
 	int choise;
 	if (event != NULL) // support non-mouse updates
@@ -550,7 +543,7 @@ bool BuildGLWidget::doMouseMove(QMouseEvent *event, bool remove)
 	m_bLastBoxRemove = remove;
 
 	EActStatus act = remove?REMOVE:ADD;
-
+	
 	if (choise != -1)
 	{ // something chosen
 		int theget;
@@ -558,10 +551,14 @@ bool BuildGLWidget::doMouseMove(QMouseEvent *event, bool remove)
 		Vec3i g;
 		if ((getChoiseTiles(choise, remove, bb, g) && (g != m_lastCubeChoise)))
 		{ // selection was changed
+			//printf("%8X (%d,%d,%d) != (%d,%d,%d)\n", choise, g.x, g.y, g.z, m_lastCubeChoise.x, m_lastCubeChoise.y, m_lastCubeChoise.z);
+			if (choise < 0x10000)
+				DebugBreak();
+
 			if (m_bEditEnabled)
 			{
 				build.clean(BuildWorld::CLEAN_TRANS_SHOW);
-				m_nMarkedTiles = 0;
+				//m_nMarkedTiles = 0;
 
 				if (!remove)
 				{
@@ -570,9 +567,10 @@ bool BuildGLWidget::doMouseMove(QMouseEvent *event, bool remove)
 						if (GET_TYPE(build.get(bb[j])) != TYPE_REAL)  //do the removes
 						{
 							build.set(bb[j], FACE_TRANS_SEL);
-							m_curMarkedTiles[m_nMarkedTiles++] = bb[j];
 						}
 					}
+					m_fadeFactor = 0.0f;
+					m_inFade = true;
 				}
 				else if (build.nFaces > 6) // if its the last one, don't show the red
 				{
@@ -582,12 +580,14 @@ bool BuildGLWidget::doMouseMove(QMouseEvent *event, bool remove)
 						if (GET_TYPE(theget) == TYPE_REAL)  //do the removes
 						{
 							build.set(bb[j], theget | SHOW_REOMOVE);
-							m_curMarkedTiles[m_nMarkedTiles++] = bb[j];
 						}
 					}
+					m_fadeFactor = 0.0f;
+					m_inFade = true;
 				}
 				else
 					act = CANT_REMOVE;
+
 
 				makeBuffers();
 			}
@@ -601,12 +601,14 @@ bool BuildGLWidget::doMouseMove(QMouseEvent *event, bool remove)
 	}
 	else
 	{
+		//printf("  -1 cleared\n");
 		// clean the trans place or remove from the last time
 		build.clean(BuildWorld::CLEAN_TRANS_SHOW);
 		m_lastCubeChoise = Vec3i(-1,-1,-1);
+		makeBuffers();
 		emit changedTileHover(choise, act);
 	}
-
+	//printf("end move\n");
 	return true;
 }
 
@@ -901,7 +903,7 @@ void BuildGLWidget::drawTargets(bool inChoise)
 	//	glEnable(GL_COLOR_MATERIAL);
 	glDisable(GL_TEXTURE_2D);
 
-	glEnable(GL_LINE_SMOOTH);
+	//glEnable(GL_LINE_SMOOTH);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 

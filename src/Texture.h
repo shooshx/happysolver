@@ -31,16 +31,16 @@
 class Texture									
 {
 public:
-	Texture() :ind(-1) {}
-	Texture(int _ind, const QImage& _img, bool _bound) :img(_img), ind(_ind), bound(_bound) {}
+	Texture()  {}
+	Texture(const QImage& _img) :img(_img) {}
 
 	QImage img;
-	int ind;	///< index of for the textures table in the GLWidget where we should find the proper id.
+	//int ind;	///< index of for the textures table in the GLWidget where we should find the proper id.
 
 	/// is this a real texture that is bound in the GL context or not?
 	/// for instance, the big Little Genius texture is not bound to a GL context.
 	/// only small subsets of it are.
-	bool bound; 
+	//bool bound; 
 };	
 
 

@@ -6,13 +6,14 @@ uniform mat4 modelMat;
 uniform mat3 normalMat;
 attribute vec3 vtx;
 attribute vec3 normal;
+uniform vec3 lightPos;
 
 void main()
 {
 	vec3 ECposition = vec3(modelMat * vec4(vtx, 1.0));
 	MCposition      = vtx;
-	vec3 tnorm      = normalize(normalMat * normal); // gl_NormalMatrix
-	LightIntensity  = dot(normalize(gl_LightSource[0].position.xyz - ECposition), tnorm);
-	LightIntensity *= 1.5;
+	vec3 tnorm      = normalize(normalMat * normal); 
+	LightIntensity  = dot(normalize(lightPos - ECposition), tnorm); // gl_LightSource[0].position.xyz
+	LightIntensity *= 1.2;
 	gl_Position     = trans * vec4(vtx, 1.0);
 }

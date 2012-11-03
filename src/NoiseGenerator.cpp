@@ -1,6 +1,7 @@
 #include "NoiseGenerator.h"
 #include "OpenGL/GlTexture.h"
 #include "Vec.h"
+#include "Space3D.h"
 
 #include <cmath>
 
@@ -272,14 +273,15 @@ double PerlinNoise3D(double x, double y, double z, double alpha, double beta, in
 	return(sum);
 }
 
-#include <QProgressDialog>
-#include <QApplication>
+
 
 int ceilDiv(int x, int y) {
 	return (x + y - 1)/y;
 }
 
-uchar* saveto2D(uchar *data, int n, int depth, int inArow, Vec2i* sz2d)
+
+
+uchar* saveto2D(const Space3D<Vec4b>& data, int n, int depth, int inArow, Vec2i* sz2d)
 {
 	int dmin = 260, dmax = -1;
 
@@ -291,11 +293,13 @@ uchar* saveto2D(uchar *data, int n, int depth, int inArow, Vec2i* sz2d)
 	for(int z = 0; z < depth; ++z) {
 		for(int y = 0; y < n; ++y) {
 			for(int x = 0; x < n; ++x) {
-				uchar d = data[(x + y*n + z*nn) * 4]; // take just the first
 				int di = (x + rowX + (y + rowY)*iwidth)*4;
+				uchar d = data.axx(x, y, z).v[0]; //[(x + y*n + z*nn) * 4]; // take just the first
+				uchar d2 = data.axxRepeat(z+12, y+12, x+12).v[0];
+
 				ni[di] = d;
-				ni[di+1] = d;
-				ni[di+2] = d;
+				ni[di+1] = d2;
+				ni[di+2] = 0xff;
 				ni[di+3] = 0xff;
 
 				if (d < dmin)
@@ -324,8 +328,6 @@ uchar* saveto2D(uchar *data, int n, int depth, int inArow, Vec2i* sz2d)
 // copied from the orange book
 GlTexture* NoiseGenerator::make3Dnoise(int size, float ampStart, float ampDiv, int startFrequency)
 {
-	int noise3DTexSize = size;
-	GLubyte *noise3DTexPtr;
 
 	int f, i, j, k, inc;
 	//int startFrequency = 4;
@@ -333,34 +335,33 @@ GlTexture* NoiseGenerator::make3Dnoise(int size, float ampStart, float ampDiv, i
 	double ni[3];
 	double inci, incj, inck;
 	int frequency = startFrequency;
-	GLubyte *ptr;
 	double amp = ampStart;
 
 	double minn = 100.0, maxn = -100.0;
 
-	uint bufsize = noise3DTexSize * noise3DTexSize * noise3DTexSize * 4;
-	if ((noise3DTexPtr = (GLubyte *) malloc(bufsize)) == NULL)
-	{
-		printf("ERROR: Could not allocate 3D noise texture - %d bytes\n", bufsize);
-		return NULL;
-	}
+// 	uint bufsize = noise3DTexSize * noise3DTexSize * noise3DTexSize * 4;
+// 	if ((noise3DTexPtr = (GLubyte *) malloc(bufsize)) == NULL)
+// 	{
+// 		printf("ERROR: Could not allocate 3D noise texture - %d bytes\n", bufsize);
+// 		return NULL;
+// 	}
+	Space3D<Vec4b> noise3DTexPtr(size, size, size);
 
+	byte *ptr = noise3DTexPtr.ptr()->v;
 
 	for (f = 0, inc = 0; f < numOctaves; ++f, frequency *= 2, ++inc, amp *= ampDiv)
 	{
 		setNoiseFrequency(frequency);
-		ptr = noise3DTexPtr;
 		ni[0] = ni[1] = ni[2] = 0;
 
-		inci = 1.0 / (noise3DTexSize / frequency);
-		for (i = 0; i < noise3DTexSize; ++i, ni[0] += inci)
+		inci = 1.0 / (size / frequency);
+		for (i = 0; i < size; ++i, ni[0] += inci)
 		{
-
-			incj = 1.0 / (noise3DTexSize / frequency);
-			for (j = 0; j < noise3DTexSize; ++j, ni[1] += incj)
+			incj = 1.0 / (size / frequency);
+			for (j = 0; j < size; ++j, ni[1] += incj)
 			{
-				inck = 1.0 / (noise3DTexSize / frequency);
-				for (k = 0; k < noise3DTexSize; ++k, ni[2] += inck, ptr+= 4)
+				inck = 1.0 / (size / frequency);
+				for (k = 0; k < size; ++k, ni[2] += inck, ptr+= 4)
 				{
 					double ns = noise3(ni) * N_FACT;
 					*(ptr+inc) = (GLubyte)(((ns+1.0) * amp)*255.0);
@@ -380,15 +381,13 @@ GlTexture* NoiseGenerator::make3Dnoise(int size, float ampStart, float ampDiv, i
 	printf("%lf - %lf = %lf\n", maxn, minn, maxn - minn);
 	Vec2i sz2d;
 	uchar* buf2d = saveto2D(noise3DTexPtr, size, size/4, 8, &sz2d);
-	free(noise3DTexPtr);
-
 
 	GlTexture *tex = new GlTexture();
 	tex->init(GL_TEXTURE_2D, Vec2i(sz2d.x, sz2d.y), 1, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, 
 			  buf2d, GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE); 
 	
-	//QImage img(buf2d, sz2d.x, sz2d.y, QImage::Format_ARGB32);
-	//img.save("c:\\temp\\cubeTex.jpg");
+	QImage img(buf2d, sz2d.x, sz2d.y, QImage::Format_ARGB32);
+	img.save("c:\\temp\\cubeTex.jpg");
 	delete[] buf2d;
 
 	return tex;

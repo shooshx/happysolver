@@ -3,9 +3,8 @@
 	<textures>
 		<texture filename=":/black64.png"/>
 		<texture filename=":/marbleg2_2.png"/>
-		<texture filename=":/littlegenious128_2.png"/>
-		<texture copy="2" x1="850" y1="20"/>
-		<texture filename=":/new_genious128.png"/>
+		<texture filename=":/littlegenious128_2.png" in3d="true"/>
+		<texture filename=":/new_genious128.png" in3d="true"/>
 	</textures>
 	<outlines>
 		<family name="Happy Cube" index="2" onResetSetCount="0" size="8mm" icon="images/sampleHappyCube.png">
@@ -122,7 +121,7 @@
 		</family>
 		<family name="Marble Cube" index="5" onResetSetCount="0" size="8mm" icon="images/sampleMarble.png">
 			<group name="MC-Martin L. King">
-				<fill type="TEXTURE_BLEND" texind="1" k="0" r="55" g="120" b="255" exR="139" exG="217" exB="255"/>
+				<fill type="TEXTURE_MARBLE" texind="1" k="0" r="55" g="120" b="255" exR="139" exG="217" exB="255"/>
 				<piece>0 0 1 0 1  0 1 1 1 1  0 1 1 1 0  1 1 1 1 0  1 1 0 1 1</piece>
 				<piece>0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  1 1 1 1 0  0 0 0 1 0</piece>
 				<piece>0 1 0 1 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 1  0 0 1 0 0</piece>
@@ -131,7 +130,7 @@
 				<piece>1 1 0 1 1  1 1 1 1 0  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
 			</group>
 			<group name="MC-Omar Khayyam">
-				<fill type="TEXTURE_BLEND" texind="1" k="0" r="68" g="209" b="21" exR="167" exG="255" exB="136"/>
+				<fill type="TEXTURE_MARBLE" texind="1" k="0" r="68" g="209" b="21" exR="167" exG="255" exB="136"/>
 				<piece>1 1 0 1 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  0 1 0 1 0</piece>
 				<piece>0 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 1</piece>
 				<piece>0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 1 0 1 1</piece>
@@ -140,7 +139,7 @@
 				<piece>0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 0 1 0 0</piece>
 			</group>
 			<group name="MC-Marie Curie">
-				<fill type="TEXTURE_BLEND" texind="1" k="0" r="255" g="244" b="153" exR="255" exG="231" exB="8"/>
+				<fill type="TEXTURE_MARBLE" texind="1" k="0" r="255" g="244" b="153" exR="255" exG="231" exB="8"/>
 				<piece>1 1 0 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 1 0 1 1</piece>
 				<piece>1 1 0 0 0  1 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>
 				<piece>0 1 1 0 0  0 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 1 0 1 0</piece>
@@ -149,7 +148,7 @@
 				<piece>0 0 1 0 0  1 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 1 0 0</piece>
 			</group>
 			<group name="MC-Buckminster Fuller">
-				<fill type="TEXTURE_BLEND" texind="1" k="0" r="244" g="38" b="116" exR="252" exG="179" exB="198"/>
+				<fill type="TEXTURE_MARBLE" texind="1" k="0" r="244" g="38" b="116" exR="252" exG="179" exB="198"/>
 				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 1 0 1 0</piece>
 				<piece>0 0 0 1 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
 				<piece>0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  1 1 1 1 0  1 0 1 0 0</piece>
@@ -158,7 +157,7 @@
 				<piece>0 0 1 0 0  0 1 1 1 1  1 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>
 			</group>
 			<group name="MC-Mahatma Gandhi">
-				<fill type="TEXTURE_BLEND" texind="1" k="0" r="255" g="144" b="122" exR="255" exG="12" exB="0"/>
+				<fill type="TEXTURE_MARBLE" texind="1" k="0" r="255" g="144" b="122" exR="255" exG="12" exB="0"/>
 				<piece>0 1 0 1 1  0 1 1 1 1  1 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
 				<piece>0 1 0 1 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 0  0 0 1 1 0</piece>
 				<piece>0 0 1 0 0  0 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 0 1 1 1</piece>
@@ -167,7 +166,7 @@
 				<piece>1 1 0 1 0  1 1 1 1 0  0 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>
 			</group>
 			<group name="MC-Albert Einstein">
-				<fill type="TEXTURE_BLEND" texind="1" k="0" r="142" g="10" b="217" exR="222" exG="157" exB="255"/>
+				<fill type="TEXTURE_MARBLE" texind="1" k="0" r="142" g="10" b="217" exR="222" exG="157" exB="255"/>
 				<piece>0 0 0 1 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 0  0 1 0 1 0</piece>
 				<piece>0 1 1 0 0  0 1 1 1 0  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
 				<piece>0 1 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 0 1 1 1</piece>
@@ -178,7 +177,7 @@
 		</family>
 		<family name="Little Genius" index="0" onResetSetCount="0" size="8mm" icon="images/sampleLittleGenius.png">
 			<group name="LG-Nature">
-				<fill type="TEXTURE_INDIVIDUAL_HALF" texind="2" k="0" r="43" g="221" b="56" sideTexInd="3" sideX="11" sideY="12"/>
+				<fill type="TEXTURE_INDIVIDUAL_HALF" texind="2" k="0" r="43" g="221" b="56" />
 				<piece x1="32"  y1="32">0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 0 1</piece>
 				<piece x1="160" y1="32">0 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 1</piece>
 				<piece x1="288" y1="32">0 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 0</piece>
@@ -187,7 +186,7 @@
 				<piece x1="672" y1="32">0 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 1</piece>
 			</group>
 			<group name="LG-Fruits">
-				<fill type="TEXTURE_INDIVIDUAL_HALF" texind="2" k="0" r="65" g="154" b="232" sideTexInd="3" sideX="52" sideY="12"/>
+				<fill type="TEXTURE_INDIVIDUAL_HALF" texind="2" k="0" r="65" g="154" b="232" />
 				<piece x1="32"  y1="192">0 0 1 0 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  1 1 0 1 0</piece>
 				<piece x1="160" y1="192">1 1 0 1 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  0 0 1 0 0</piece>
 				<piece x1="288" y1="192">0 0 1 0 1  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  0 1 0 1 0</piece>
@@ -196,7 +195,7 @@
 				<piece x1="672" y1="192">1 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 0</piece>
 			</group>
 			<group name="LG-Animals">
-				<fill type="TEXTURE_INDIVIDUAL_HALF" texind="2" k="0" r="248" g="166" b="50" sideTexInd="3" sideX="92" sideY="12"/>
+				<fill type="TEXTURE_INDIVIDUAL_HALF" texind="2" k="0" r="248" g="166" b="50" />
 				<piece x1="32"  y1="352">1 1 0 1 1  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  0 0 1 0 0</piece>
 				<piece x1="160" y1="352">0 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>
 				<piece x1="288" y1="352">1 1 0 1 1  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 0 1 0 0</piece>
@@ -205,7 +204,7 @@
 				<piece x1="672" y1="352">1 1 0 1 1  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 0 1 0 0</piece>
 			</group>
 			<group name="LG-Emotions">
-				<fill type="TEXTURE_INDIVIDUAL_HALF" texind="2" k="0" r="255" g="255" b="0" sideTexInd="3" sideX="11" sideY="56"/>
+				<fill type="TEXTURE_INDIVIDUAL_HALF" texind="2" k="0" r="255" g="255" b="0" />
 				<piece x1="32"  y1="512">0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 0 1 0 0</piece>
 				<piece x1="160" y1="512">0 1 0 1 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 1 0 1 1</piece>
 				<piece x1="288" y1="512">0 0 1 0 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  0 0 1 0 1</piece>
@@ -214,7 +213,7 @@
 				<piece x1="672" y1="512">1 1 0 1 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 1 0 1 0</piece>
 			</group>
 			<group name="LG-Transport">
-				<fill type="TEXTURE_INDIVIDUAL_HALF" texind="2" k="0" r="188" g="0" b="177" sideTexInd="3" sideX="52" sideY="56"/>
+				<fill type="TEXTURE_INDIVIDUAL_HALF" texind="2" k="0" r="188" g="0" b="177" />
 				<piece x1="32"  y1="672">1 0 1 0 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 1 0 1 1</piece>
 				<piece x1="160" y1="672">0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 0</piece>
 				<piece x1="288" y1="672">0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 0 1 0 0</piece>
@@ -223,7 +222,7 @@
 				<piece x1="672" y1="672">0 0 1 0 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  0 1 0 1 0</piece>
 			</group>
 			<group name="LG-Symbols">
-				<fill type="TEXTURE_INDIVIDUAL_HALF" texind="2" k="0" r="255" g="61" b="61" sideTexInd="3" sideX="92" sideY="56"/>
+				<fill type="TEXTURE_INDIVIDUAL_HALF" texind="2" k="0" r="255" g="61" b="61" />
 				<piece x1="32"  y1="832">0 1 0 1 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 0 0</piece>
 				<piece x1="160" y1="832">1 1 0 1 1  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 0 1 0 0</piece>
 				<piece x1="288" y1="832">1 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 1 0 1 0</piece>

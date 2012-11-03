@@ -20,7 +20,7 @@ void ObjExport::addMesh(const PicGroupDef *def, Mesh& mesh, const Mat4& fMatrix)
 		{
 			(*mtl) << "newmtl material" << ++numObjs << "\n";
 			(*mtl) << "  Ns 32\n  d 1\n  Tr 1\n  Tf 1 1 1\n  illum 2\n  Ka 0.0000 0.0000 0.0000\n  Ks 0.3500 0.3500 0.3500\n";
-			(*mtl) << "  Kd " << def->r << " " << def->g << " " <<  def->b << "\n";
+			(*mtl) << "  Kd " << def->color.r << " " << def->color.g << " " << def->color.b << "\n";
 			didMtl = true;
 		}
 	}

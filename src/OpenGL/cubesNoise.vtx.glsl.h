@@ -9,14 +9,15 @@ const char *code_cubesNoise_vtx_glsl = " \
   uniform mat3 normalMat; \n\
   attribute vec3 vtx; \n\
   attribute vec3 normal; \n\
+  uniform vec3 lightPos; \n\
    \n\
   void main() \n\
   { \n\
   	vec3 ECposition = vec3(modelMat * vec4(vtx, 1.0)); \n\
   	MCposition      = vtx; \n\
-  	vec3 tnorm      = normalize(normalMat * normal); // gl_NormalMatrix \n\
-  	LightIntensity  = dot(normalize(gl_LightSource[0].position.xyz - ECposition), tnorm); \n\
-  	LightIntensity *= 1.5; \n\
+  	vec3 tnorm      = normalize(normalMat * normal);  \n\
+  	LightIntensity  = dot(normalize(lightPos - ECposition), tnorm); // gl_LightSource[0].position.xyz \n\
+  	LightIntensity *= 1.2; \n\
   	gl_Position     = trans * vec4(vtx, 1.0); \n\
   } \n\
   ";

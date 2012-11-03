@@ -70,6 +70,12 @@ public:
 	const T& axx(Vec3i c) const { return data[c.x + (szx * c.y) + (szxTy * c.z)]; }
 	const T& axx(Vec3i c, int factor) const { return data[(c.x/factor) + (szx * (c.y/factor)) + (szxTy * (c.z/factor))]; }
 
+	const T& axxRepeat(int x, int y, int z) const {
+		return axx(x % szx, y % szy, z % szz);
+	}
+
+	T* ptr() { return data; }
+
 	const int szx, szy, szz;
 
 private:

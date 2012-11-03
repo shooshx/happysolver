@@ -121,7 +121,7 @@ public:
 		m_params.push_back(p);
 	}
 
-	typedef QList<QString> TCodesList;
+	typedef vector<QString> TCodesList;
 	
 	// populate m_vtxprog, m_geomprog, m_fragprog
 	virtual void getCodes() = 0;
@@ -214,11 +214,17 @@ class FloatAttrib : public AttribParam {
 public:
 	FloatAttrib(const char* name, ShaderProgram* prog) : AttribParam(name, prog) {}
 	void set(float v) const;
+	void setArr(const float* v) const;
 };
 class Vec3Attrib : public AttribParam {
 public:
 	Vec3Attrib(const char* name, ShaderProgram* prog) : AttribParam(name, prog) {}
 	void setArr(const Vec3* v) const;
+};
+class IntAttrib : public AttribParam {
+public:
+	IntAttrib(const char* name, ShaderProgram* prog) : AttribParam(name, prog) {}
+	void setArr(const int* v) const;
 };
 
 class Vec3Uniform : public UniformParam {
@@ -237,6 +243,11 @@ class IntUniform : public UniformParam {
 public:
 	IntUniform(const char* name, ShaderProgram* prog) : UniformParam(name, prog) {}
 	void set(int v) const;
+};
+class FloatUniform : public UniformParam {
+public:
+	FloatUniform(const char* name, ShaderProgram* prog) : UniformParam(name, prog) {}
+	void set(float v) const;
 };
 
 class Mat4Uniform : public UniformParam {

@@ -629,9 +629,9 @@ void Shape::makePieceCheckBits()
 
 		f.fmask = fmask;
 
-		printf("%3d  mask=%04x\n", i, fmask);
+		//printf("%3d  mask=%04x\n", i, fmask);
 	}
-	printf("\n");
+	//printf("\n");
 }
 
 

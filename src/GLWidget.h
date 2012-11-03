@@ -90,9 +90,7 @@ public slots:
 	void setContinuous(bool val);
 	void setViewFrustrum(QAction *act);
 	void setViewFrustrum(GLWidget::EViewState newState);
-	void setAction(QAction *act);
-	void setAxis(QAction *act);
-	void setSpace(QAction *act);
+
 	void setCullFace(bool b);
 
 	virtual void updateView(int hint) { Q_UNUSED(hint) }; // updates the opengl view according to the hints

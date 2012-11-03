@@ -51,7 +51,7 @@ void ModelGLWidget::initialized()
 {
 	m_progFlat.init();
 	m_progNoise.init();
-
+	mglCheckErrorsC("progs");
 }
 
 void ModelGLWidget::initTex()
@@ -86,7 +86,7 @@ void ModelGLWidget::paint(GLWidget* that, CubeDoc *doc, SlvCube *scube, bool fTa
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_POLYGON_OFFSET_FILL);
-	glEnable(GL_LINE_SMOOTH);
+	//glEnable(GL_LINE_SMOOTH);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // just make sure
 
 	mglCheckErrorsC("x1");
@@ -196,6 +196,10 @@ void ModelGLWidget::drawTargets(bool inChoise)
 	}
 
 	ProgramUser u(sel);
+
+	if (!inChoise)
+		m_progNoise.lightPos.set(Vec3(0.0f, 0.0f, 1000.0f));
+
 
 	paint(this, m_doc, slv, inChoise, m_nSingleChoise, m_doc->getUpToStep());
 

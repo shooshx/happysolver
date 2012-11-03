@@ -1,3 +1,24 @@
+NEW DEAL - things that don't work
+-------------
+
+save file
+load old files
+side panel in solution view
+symmetry
+Always selecting the same (first) parts in a solution. not randomized enough
+   select a random piece of a set
+
+build view - start tile
+  not yellow
+  white when cube is to be removed
+obj export is probably broken
+
+
+
+
+------------------------------------------------------------------------------------------
+
+
 BUGS:
 ------
 Vista start menu short cut doesn't work
@@ -7,7 +28,6 @@ Vista start menu short cut doesn't work
 
 ---- Environment ---------------
 - double click a file to open in the same window
-- priority of process
 - registering file icons with OS??? different for slv.
    - on MAC
 - application Icon on finder - OSX - better resolution

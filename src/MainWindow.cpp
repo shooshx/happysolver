@@ -164,6 +164,29 @@ string readFile(const QString filename) {
 	return string(data.toAscii().data());
 }
 
+class DlgProg : public ProgressCallback {
+public:
+	DlgProg(bool showStop) 
+		: m_showStop(showStop), m_dlg("Building the pieces. Please Wait...", "Stop", 0, 100, g_main) {}
+
+	virtual void init(int maxv) {
+		m_dlg.setRange(0, maxv);
+		m_dlg.setSizeGripEnabled(false);
+		m_dlg.setWindowTitle("Happy Cube Solver");
+		m_dlg.setMinimumDuration(1500);
+		if (!m_showStop)
+			m_dlg.setCancelButton(NULL);
+	}
+	virtual bool setValue(int v) {
+		m_dlg.setValue(v);
+        qApp->processEvents(); // must call
+		return !((m_showStop && m_dlg.wasCanceled()) || (((MainWindow*)g_main)->wasClosed()));
+	}
+
+private:
+	bool m_showStop;
+	QProgressDialog m_dlg;
+};
 
 // TBD possibly move to PicBucket
 bool MainWindow::initialize()
@@ -179,7 +202,8 @@ bool MainWindow::initialize()
 	connect(m_picsInitThread, SIGNAL(finished()), this, SIGNAL(picsLoadComplete()));
 	m_picsInitThread->start(); 
 
-	PicBucket::mutableInstance().buildMeshes(m_doc->m_conf.disp, false, m_modelGlWidget);
+	DlgProg dlgprog(false);
+	PicBucket::mutableInstance().buildMeshes(m_doc->m_conf.disp, &dlgprog);
 
 	return true;
 }
@@ -515,26 +539,26 @@ void MainWindow::createStatusBar()
 /// active view.
 void MainWindow::reConnect3DActions(GLWidget *target)
 {
-	m_viewFrustrumActs->disconnect(SIGNAL(triggered(QAction*)));
-	selectGroupAct(m_viewFrustrumActs, target->currentViewState())->trigger();
-	connect(m_viewFrustrumActs, SIGNAL(triggered(QAction*)), target, SLOT(setViewFrustrum(QAction*)));
+	//m_viewFrustrumActs->disconnect(SIGNAL(triggered(QAction*)));
+	//selectGroupAct(m_viewFrustrumActs, target->currentViewState())->trigger();
+	//connect(m_viewFrustrumActs, SIGNAL(triggered(QAction*)), target, SLOT(setViewFrustrum(QAction*)));
 
-	m_actionsActs->disconnect(SIGNAL(triggered(QAction*)));
-	QAction *actact = selectGroupAct(m_actionsActs, target->currentMouseAction());
-	actact->trigger();
-	changedActionsAct(actact); 	// enable/disable axis actions
-	connect(m_actionsActs, SIGNAL(triggered(QAction*)), target, SLOT(setAction(QAction*)));
+	//m_actionsActs->disconnect(SIGNAL(triggered(QAction*)));
+	//QAction *actact = selectGroupAct(m_actionsActs, target->currentMouseAction());
+	//actact->trigger();
+	//changedActionsAct(actact); 	// enable/disable axis actions
+	//connect(m_actionsActs, SIGNAL(triggered(QAction*)), target, SLOT(setAction(QAction*)));
 	// there is a need to reconnect it everytime since it gets disconnected
 	// a specific disconnect is too much trouble.
-	connect(m_actionsActs, SIGNAL(triggered(QAction*)), this, SLOT(changedActionsAct(QAction*)));
+	//connect(m_actionsActs, SIGNAL(triggered(QAction*)), this, SLOT(changedActionsAct(QAction*)));
 
-	m_axisActs->disconnect(SIGNAL(triggered(QAction*)));
-	selectGroupAct(m_axisActs, target->currentAxis())->trigger();
-	connect(m_axisActs, SIGNAL(triggered(QAction*)), target, SLOT(setAxis(QAction*)));
+	//m_axisActs->disconnect(SIGNAL(triggered(QAction*)));
+	//selectGroupAct(m_axisActs, target->currentAxis())->trigger();
+	//connect(m_axisActs, SIGNAL(triggered(QAction*)), target, SLOT(setAxis(QAction*)));
 
-	m_spaceActs->disconnect(SIGNAL(triggered(QAction*)));
-	selectGroupAct(m_spaceActs, target->currentTransformType())->trigger();
-	connect(m_spaceActs, SIGNAL(triggered(QAction*)), target, SLOT(setSpace(QAction*)));
+	//m_spaceActs->disconnect(SIGNAL(triggered(QAction*)));
+	//selectGroupAct(m_spaceActs, target->currentTransformType())->trigger();
+	//connect(m_spaceActs, SIGNAL(triggered(QAction*)), target, SLOT(setSpace(QAction*)));
 
 	m_resetViewAct->disconnect(SIGNAL(triggered(bool)));
 	connect(m_resetViewAct, SIGNAL(triggered(bool)), target, SLOT(resetState()));
@@ -578,8 +602,8 @@ void MainWindow::connectActions()
 	connect(m_doc, SIGNAL(updateViews(int)), m_buildGlWidget, SLOT(updateView(int)));
 	connect(m_doc, SIGNAL(updateViews(int)), m_picsWidget, SLOT(updateView(int)));
 	connect(m_doc, SIGNAL(updateViews(int)), m_modelDlg, SLOT(updateView(int)));
-	connect(&PicBucket::instance(), SIGNAL(boundTexture(int, QImage)), m_modelGlWidget, SLOT(doBindTexture(int, QImage)));
-	connect(&PicBucket::instance(), SIGNAL(updateTexture(int, QImage)), m_modelGlWidget, SLOT(doUpdateTexture(int, QImage)));
+	//connect(&PicBucket::instance(), SIGNAL(boundTexture(int, QImage)), m_modelGlWidget, SLOT(doBindTexture(int, QImage)));
+	//connect(&PicBucket::instance(), SIGNAL(updateTexture(int, QImage)), m_modelGlWidget, SLOT(doUpdateTexture(int, QImage)));
 
 	connect(m_doc, SIGNAL(newSolutionsLoaded(QString)), this, SLOT(setCurrentFile(QString)));
 	connect(m_doc, SIGNAL(newShapeLoaded(QString)), this, SLOT(setCurrentFile(QString)));
@@ -656,7 +680,7 @@ void MainWindow::connectActions()
 	connect(m_showGrpColorAct, SIGNAL(triggered(bool)), m_grpColDlg, SLOT(setVisible(bool)));
 	connect(m_grpColDlg, SIGNAL(visibilityChanged(bool)), m_showGrpColorAct, SLOT(setChecked(bool)));
 
-	connect(m_grpColDlg, SIGNAL(changed(int)), &PicBucket::instance(), SLOT(updateTexture(int)));
+	//connect(m_grpColDlg, SIGNAL(changed(int)), &PicBucket::instance(), SLOT(updateTexture(int)));
 	connect(m_asmStepDlg, SIGNAL(stepChanged(int)), m_doc, SLOT(setShowUpToStep(int)));
 	connect(m_showAsmDlgAct, SIGNAL(triggered(bool)), m_asmStepDlg, SLOT(setVisible(bool)));
 	connect(m_asmStepDlg, SIGNAL(visibilityChanged(bool)), m_showAsmDlgAct, SLOT(setChecked(bool)));
@@ -706,7 +730,8 @@ void MainWindow::doModalOptionsDlg()
 		bool rend = lastdc.diffRender(m_doc->m_conf.disp);
 		if (rend) // is a new render needed?
 		{
-			PicBucket::mutableInstance().buildMeshes(m_doc->m_conf.disp, true, m_modelGlWidget);
+			DlgProg dlgprog(true);
+			PicBucket::mutableInstance().buildMeshes(m_doc->m_conf.disp, &dlgprog);
 		}
 		if (rend || lastdc.diffOnlyPaint(m_doc->m_conf.disp))
 		{

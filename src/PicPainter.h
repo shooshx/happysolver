@@ -41,7 +41,7 @@ class PicDisp
 {
 public:
 	/// create the polygon mesh and the display list.
-	void init(const DisplayConf &dpc, GLWidget *mainContext);
+	void init(const DisplayConf &dpc);
 
 	static MyAllocator& getAllocator() { return g_smoothAllocator; }
 

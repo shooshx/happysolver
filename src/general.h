@@ -48,6 +48,7 @@ enum EAxis
 
 
 typedef unsigned int uint;
+typedef unsigned char byte;
 
 #ifdef WIN32
 	typedef __int64 mint64;

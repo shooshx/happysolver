@@ -82,28 +82,28 @@ void GrpColorDlg::update()
 	SlvCube *slv = m_doc->getCurrentSolve();
 	m_gind = slv->picdt[0].gind;
 	m_grp = &PicBucket::mutableInstance().grps[m_gind];
-	ui.ForeRedSlide->setValue((int)(m_grp->r * 255.0));
-	s = QString("%1").arg(m_grp->r * 255.0);
+	ui.ForeRedSlide->setValue((int)(m_grp->color.r * 255.0));
+	s = QString("%1").arg(m_grp->color.r * 255.0);
 	ui.ForeRedL->setText(s);
 	ui.ForeRedEdit->setText(s);
-	ui.ForeGreenSlide->setValue((int)(m_grp->g * 255.0));
-	s = QString("%1").arg(m_grp->g * 255.0);
+	ui.ForeGreenSlide->setValue((int)(m_grp->color.g * 255.0));
+	s = QString("%1").arg(m_grp->color.g * 255.0);
 	ui.ForeGreenL->setText(s);
 	ui.ForeGreenEdit->setText(s);
-	ui.ForeBlueSlide->setValue((int)(m_grp->b * 255.0));
-	s = QString("%1").arg(m_grp->b * 255.0);
+	ui.ForeBlueSlide->setValue((int)(m_grp->color.b * 255.0));
+	s = QString("%1").arg(m_grp->color.b * 255.0);
 	ui.ForeBlueL->setText(s);
 	ui.ForeBlueEdit->setText(s);
-	ui.BackRedSlide->setValue((int)(m_grp->exR * 255.0));
-	s = QString("%1").arg(m_grp->exR * 255.0);
+	ui.BackRedSlide->setValue((int)(m_grp->exColor.r * 255.0));
+	s = QString("%1").arg(m_grp->exColor.r * 255.0);
 	ui.BackRedL->setText(s);
 	ui.BackRedEdit->setText(s);
-	ui.BackGreenSlide->setValue((int)(m_grp->exG * 255.0));
-	s = QString("%1").arg(m_grp->exG * 255.0);
+	ui.BackGreenSlide->setValue((int)(m_grp->exColor.g * 255.0));
+	s = QString("%1").arg(m_grp->exColor.g * 255.0);
 	ui.BackGreenL->setText(s);
 	ui.BackGreenEdit->setText(s);
-	ui.BackBlueSlide->setValue((int)(m_grp->exB * 255.0));
-	s = QString("%1").arg(m_grp->exB * 255.0);
+	ui.BackBlueSlide->setValue((int)(m_grp->exColor.b * 255.0));
+	s = QString("%1").arg(m_grp->exColor.b * 255.0);
 	ui.BackBlueL->setText(s);
 	ui.BackBlueEdit->setText(s);
 	blockSignals(false);
@@ -146,7 +146,7 @@ void GrpColorDlg::foreRChanged(int v)
 	ui.ForeRedEdit->setText(QString("%1").arg(v)); 
 	if (m_grp != NULL)
 	{
-		m_grp->r = v/255.0;
+		m_grp->color.r = v/255.0;
 		emit changed(m_gind);
 	}
 }
@@ -155,7 +155,7 @@ void GrpColorDlg::foreGChanged(int v)
 	ui.ForeGreenEdit->setText(QString("%1").arg(v)); 
 	if (m_grp != NULL)
 	{
-		m_grp->g = v/255.0;
+		m_grp->color.g = v/255.0;
 		emit changed(m_gind);
 	}
 }
@@ -164,7 +164,7 @@ void GrpColorDlg::foreBChanged(int v)
 	ui.ForeBlueEdit->setText(QString("%1").arg(v)); 
 	if (m_grp != NULL)
 	{
-		m_grp->b = v/255.0;
+		m_grp->color.b = v/255.0;
 		emit changed(m_gind);
 	}
 }
@@ -173,7 +173,7 @@ void GrpColorDlg::backRChanged(int v)
 	ui.BackRedEdit->setText(QString("%1").arg(v)); 
 	if (m_grp != NULL)
 	{
-		m_grp->exR = v/255.0;
+		m_grp->exColor.r = v/255.0;
 		emit changed(m_gind);
 	}
 }
@@ -182,7 +182,7 @@ void GrpColorDlg::backGChanged(int v)
 	ui.BackGreenEdit->setText(QString("%1").arg(v)); 
 	if (m_grp != NULL)
 	{
-		m_grp->exG = v/255.0;
+		m_grp->exColor.g = v/255.0;
 		emit changed(m_gind);
 	}
 }
@@ -191,7 +191,7 @@ void GrpColorDlg::backBChanged(int v)
 	ui.BackBlueEdit->setText(QString("%1").arg(v)); 
 	if (m_grp != NULL)
 	{
-		m_grp->exB = v/255.0;
+		m_grp->exColor.b = v/255.0;
 		emit changed(m_gind);
 	}
 }

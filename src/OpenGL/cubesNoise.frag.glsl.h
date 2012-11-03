@@ -11,7 +11,7 @@ const char *code_cubesNoise_frag_glsl = " \
    \n\
   const float offset= 4.72; \n\
   const float offset2 = 0.5; \n\
-   \n\
+  uniform vec2 texOffset; \n\
    \n\
   vec4 flat_texture3D(vec3 p) \n\
   { \n\
@@ -55,6 +55,54 @@ const char *code_cubesNoise_frag_glsl = " \
   		float intensity = (noisevec[0] - offset2); \n\
    \n\
   		float sineval = sin(intensity * offset) * 2.0; \n\
+  		sineval = clamp(sineval, 0.0, 1.0); \n\
+   \n\
+  		vec3 color   = mix(colorA, colorB, sineval); \n\
+  		color       *= LightIntensity; \n\
+   \n\
+  		gl_FragColor = vec4(color, 1.0); \n\
+  		return; \n\
+  	} \n\
+  	if (drawtype == 0x14) {  // DRAW_TEXTURE_INDIVIDUAL_HALF  \n\
+  		const float T_HIGH = 0.525; \n\
+  		const float T_LOW = 0.475; \n\
+   \n\
+  		if (MCposition.x > T_HIGH) { \n\
+  			gl_FragColor = vec4(colorA * LightIntensity, 1.0); \n\
+  			return; \n\
+  		} \n\
+   \n\
+  		vec2 t = texOffset + MCposition.yz / (8.0*5.0); \n\
+  		vec3 color = texture2D(noisef, t).rgb; \n\
+  		if (MCposition.x > T_LOW && MCposition.x <= T_HIGH) { \n\
+  			color = mix(color, colorA, smoothstep(T_LOW, T_HIGH, MCposition.x)); \n\
+  		} \n\
+   \n\
+  		color *= LightIntensity; \n\
+  		gl_FragColor = vec4(color, 1.0); \n\
+  		return; \n\
+  	} \n\
+  	if (drawtype == 0x18) { //  DRAW_TEXTURE_INDIVIDUAL_WHOLE, no need for smoothstep since its the same color \n\
+  		if (MCposition.x > 0.2) { \n\
+  			gl_FragColor = vec4(colorA * LightIntensity, 1.0); \n\
+  			return; \n\
+  		} \n\
+  		vec2 t = texOffset + MCposition.yz / (8.0*5.0); \n\
+  		vec3 color = texture2D(noisef, t).rgb * LightIntensity; \n\
+  		gl_FragColor = vec4(color, 1.0); \n\
+  		return; \n\
+  	} \n\
+  	if (drawtype == 4) { // DRAW_TEXTURE_MARBLE \n\
+  		vec3 p = MCposition.yzx * 0.2; \n\
+   \n\
+  		vec4 noisevec = flat_texture3D(p); \n\
+       \n\
+  		float x = noisevec[0] - 0.54;  \n\
+  		float y = noisevec[1] - 0.54; \n\
+   \n\
+  		float intensity = abs(x)*0.5 + abs(y)*0.5; \n\
+   \n\
+  		float sineval = sin(intensity) * 2.98; \n\
   		sineval = clamp(sineval, 0.0, 1.0); \n\
    \n\
   		vec3 color   = mix(colorA, colorB, sineval); \n\

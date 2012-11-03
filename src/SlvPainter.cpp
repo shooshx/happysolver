@@ -46,13 +46,10 @@ void SlvPainter::paintPiece(int f, GLWidget* context, bool fTargets) const
 
 	model.translate(-0.5, -2.5, -2.5);
 
-	//glLoadName(f);
+
 	Vec3b nameb = Vec3b::fromName(f + 1);
 	Vec3 name = Vec3(nameb.x/255.0, nameb.y/255.0, nameb.z/255.0);
 	//printf("%d %d %d\n", name.x, name.y, name.z);
-	//glColor3bv((GLbyte*)name.v);
-
-	//glColor3f(name.x/255.0, name.y/255.0, name.z/255.0);
 
 	mglCheckErrorsC("x6");
 	pdef->painter.paint(fTargets, name, context);
@@ -65,50 +62,15 @@ void SlvPainter::paintPiece(int f, GLWidget* context, bool fTargets) const
 
 void SlvPainter::paintLines(int f, bool singleChoise, GLWidget *context, ELinesDraw cfgLines) const
 {
-	if (context->isUsingLight())
-		glDisable(GL_LIGHTING);
-
-
 	NoiseSlvProgram* prog = ShaderProgram::currentt<NoiseSlvProgram>();
 	prog->trans.set(context->transformMat());
 	prog->drawtype.set(DRAW_FLAT);
 	prog->colorAu.set(Vec3(0.8f, 0.8f, 0.8f));
 
-	//ProgramUser u(0);
 
 	glPolygonOffset(0.0, 0.0); // go forward, draw the lines
 
 	m_linesIFS[f].paint();
-
-/*	glBegin(GL_LINES);
-
-	for (int lni = 0; lni < obj.nLines; ++lni)
-	{
-		MyLine &curln = obj.lines[lni];
-
-		if ( ((curln.type == MyLine::LINE_ONLY_LONE) && (!singleChoise)) || 
-			 ((curln.type == MyLine::LINE_ONLY_WHOLE) && (singleChoise)) )
-			continue;
-
-		if ((cfgLines == LINES_WHITE) && (curln.color[0] < 0.1))
-			continue;
-
-
-		if (singleChoise) // means we're alone now
-			glColor3f(obj.nakedLinesColor, obj.nakedLinesColor, obj.nakedLinesColor);
-		else
-			glColor3fv(curln.color.ptr());
-
-		glVertex3fv(curln.p1->p.ptr());
-		glVertex3fv(curln.p2->p.ptr());
-
-	} // for lni
-
-	glEnd();
-*/
-
-	if (context->isUsingLight())
-		glEnable(GL_LIGHTING);
 
 }
 

@@ -36,6 +36,21 @@
     <Filter Include="Engine\solutions">
       <UniqueIdentifier>{0511c7e6-2782-41e2-88f5-a160d2668ed3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="OpenGL">
+      <UniqueIdentifier>{a3968379-e423-43f5-a08e-71a14408ae92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenGL\glsl">
+      <UniqueIdentifier>{a8a0e41a-b924-47bf-835c-0e934dde6213}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenGL\generated">
+      <UniqueIdentifier>{2ab15829-32ff-4d99-8644-30a79ea63b6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenGL\glu">
+      <UniqueIdentifier>{effc638a-ddf2-4397-92c4-68377c415abb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Misc\tinuxml">
+      <UniqueIdentifier>{66607df8-8bc4-4eb4-b538-d7836e54b3c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GeneratedFiles\Debug\moc_ActFocusComboBox.cpp">
@@ -116,22 +131,10 @@
     <ClCompile Include="GeneratedFiles\Debug\moc_PicsSelectWidget.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_Pieces.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_Pieces.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_SIDlg.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_SIDlg.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_Solutions.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_Solutions.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_SolveDlg.cpp">
@@ -197,14 +200,8 @@
     <ClCompile Include="src\MainWindow.cpp">
       <Filter>DocView</Filter>
     </ClCompile>
-    <ClCompile Include="src\ModelGLWidget.cpp">
-      <Filter>DocView</Filter>
-    </ClCompile>
     <ClCompile Include="src\PicsSelectWidget.cpp">
       <Filter>DocView</Filter>
-    </ClCompile>
-    <ClCompile Include="src\GLWidget.cpp">
-      <Filter>3D</Filter>
     </ClCompile>
     <ClCompile Include="src\MyObject.cpp">
       <Filter>3D</Filter>
@@ -247,6 +244,39 @@
     </ClCompile>
     <ClCompile Include="src\PicArr.cpp">
       <Filter>Engine\pieces</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenGL\ShaderProgram.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenGL\Shaders.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ModelGLWidget.cpp">
+      <Filter>DocView</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GLWidget.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mesh.cpp">
+      <Filter>3D</Filter>
+    </ClCompile>
+    <ClCompile Include="src\NoiseGenerator.cpp">
+      <Filter>3D</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenGL\GLTexture.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sglu\project.cpp">
+      <Filter>OpenGL\glu</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mat.cpp">
+      <Filter>3D</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tinyxml\tinyxml2.cpp">
+      <Filter>Misc\tinuxml</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ObjExport.cpp">
+      <Filter>Misc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -324,6 +354,60 @@
     </ClInclude>
     <ClInclude Include="src\PicsSet.h">
       <Filter>Engine\pieces</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenGL\ShaderProgram.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenGL\Shaders.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenGL\GLTexture.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenGL\glGlob.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Vec.h">
+      <Filter>3D</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Mat.h">
+      <Filter>3D</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Mesh.h">
+      <Filter>3D</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenGL\build.vtx.glsl.h">
+      <Filter>OpenGL\generated</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenGL\build.frag.glsl.h">
+      <Filter>OpenGL\generated</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NoiseGenerator.h">
+      <Filter>3D</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenGL\flat.frag.glsl.h">
+      <Filter>OpenGL\generated</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenGL\flat.vtx.glsl.h">
+      <Filter>OpenGL\generated</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenGL\cubesNoise.frag.glsl.h">
+      <Filter>OpenGL\generated</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenGL\cubesNoise.vtx.glsl.h">
+      <Filter>OpenGL\generated</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MatStack.h">
+      <Filter>3D</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tinyxml\tinyxml2.h">
+      <Filter>Misc\tinuxml</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ObjExport.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sglu\sglu.h">
+      <Filter>OpenGL\glu</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -533,18 +617,42 @@
     <CustomBuild Include="src\PicsSelectWidget.h">
       <Filter>DocView</Filter>
     </CustomBuild>
-    <CustomBuild Include="src\GLWidget.h">
-      <Filter>3D</Filter>
-    </CustomBuild>
     <CustomBuild Include="src\Pieces.h">
       <Filter>Engine\pieces</Filter>
     </CustomBuild>
     <CustomBuild Include="src\Solutions.h">
       <Filter>Engine\solutions</Filter>
     </CustomBuild>
+    <CustomBuild Include="src\GLWidget.h">
+      <Filter>OpenGL</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\OpenGL\build.frag.glsl">
+      <Filter>OpenGL\glsl</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\OpenGL\build.vtx.glsl">
+      <Filter>OpenGL\glsl</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\OpenGL\flat.vtx.glsl">
+      <Filter>OpenGL\glsl</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\OpenGL\flat.frag.glsl">
+      <Filter>OpenGL\glsl</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\OpenGL\cubesNoise.frag.glsl">
+      <Filter>OpenGL\glsl</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\OpenGL\cubesNoise.vtx.glsl">
+      <Filter>OpenGL\glsl</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <None Include="images\HappySolver.ico" />
+    <None Include="src\OpenGL\makeString.py">
+      <Filter>OpenGL</Filter>
+    </None>
+    <None Include="stdpcs.xml">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="happysolver.rc" />

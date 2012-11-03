@@ -8,7 +8,7 @@ uniform int drawtype;
 
 const float offset= 4.72;
 const float offset2 = 0.5;
-
+uniform vec2 texOffset;
 
 vec4 flat_texture3D(vec3 p)
 {
@@ -52,6 +52,54 @@ void main (void)
 		float intensity = (noisevec[0] - offset2);
 
 		float sineval = sin(intensity * offset) * 2.0;
+		sineval = clamp(sineval, 0.0, 1.0);
+
+		vec3 color   = mix(colorA, colorB, sineval);
+		color       *= LightIntensity;
+
+		gl_FragColor = vec4(color, 1.0);
+		return;
+	}
+	if (drawtype == 0x14) {  // DRAW_TEXTURE_INDIVIDUAL_HALF 
+		const float T_HIGH = 0.525;
+		const float T_LOW = 0.475;
+
+		if (MCposition.x > T_HIGH) {
+			gl_FragColor = vec4(colorA * LightIntensity, 1.0);
+			return;
+		}
+
+		vec2 t = texOffset + MCposition.yz / (8.0*5.0);
+		vec3 color = texture2D(noisef, t).rgb;
+		if (MCposition.x > T_LOW && MCposition.x <= T_HIGH) {
+			color = mix(color, colorA, smoothstep(T_LOW, T_HIGH, MCposition.x));
+		}
+
+		color *= LightIntensity;
+		gl_FragColor = vec4(color, 1.0);
+		return;
+	}
+	if (drawtype == 0x18) { //  DRAW_TEXTURE_INDIVIDUAL_WHOLE, no need for smoothstep since its the same color
+		if (MCposition.x > 0.2) {
+			gl_FragColor = vec4(colorA * LightIntensity, 1.0);
+			return;
+		}
+		vec2 t = texOffset + MCposition.yz / (8.0*5.0);
+		vec3 color = texture2D(noisef, t).rgb * LightIntensity;
+		gl_FragColor = vec4(color, 1.0);
+		return;
+	}
+	if (drawtype == 4) { // DRAW_TEXTURE_MARBLE
+		vec3 p = MCposition.yzx * 0.2;
+
+		vec4 noisevec = flat_texture3D(p);
+    
+		float x = noisevec[0] - 0.54; 
+		float y = noisevec[1] - 0.54;
+
+		float intensity = abs(x)*0.5 + abs(y)*0.5;
+
+		float sineval = sin(intensity) * 2.98;
 		sineval = clamp(sineval, 0.0, 1.0);
 
 		vec3 color   = mix(colorA, colorB, sineval);

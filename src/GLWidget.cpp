@@ -103,7 +103,7 @@ void GLWidget::doBindTexture(int index, QImage img)
 
 }
 
-#define GL_BGRA 0x80E1
+//#define GL_BGRA 0x80E1
 
 void GLWidget::doUpdateTexture(int index, QImage img)
 {
@@ -137,17 +137,14 @@ void GLWidget::initializeGL()
 	glClearDepth( 1.0f );
 	// enable depth testing (Enable zbuffer - hidden surface removal)
 	glEnable(GL_DEPTH_TEST);
-	if (m_bBackFaceCulling) 
-	{
+	if (m_bBackFaceCulling) {
 		glEnable(GL_CULL_FACE);
 	}
 
 	glDepthFunc(GL_LEQUAL);
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+	//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
-	glEnable(0x809D);  //GL_MULTISAMPLE
-//	glEnable(0x809F);  //GL_SAMPLE_ALPHA_TO_ONE
-//	glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST); has no effect
+	glEnable(0x809D);  //GL_MULTISAMPLE (not ES!)
 
 	BuildFont();
 
@@ -191,7 +188,6 @@ void GLWidget::reCalcProj(bool fFromScratch) // = true default
 		proj.mult(p);
 		proj.translate(0.0f, 0.0f, -4.0f);
 		proj.scale(scrScale, scrScale, scrScale);
-
 	}
 	else 
 	{
@@ -254,64 +250,6 @@ void GLWidget::setLightColor(const Vec3& c)
 
 void GLWidget::reCalcLight()
 {
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-	if (m_fUseLight)
-	{
-		glEnable(GL_LIGHTING);
-		glShadeModel(GL_SMOOTH);
-		glEnable(GL_LIGHT0);
-	//	glEnable(GL_LIGHT1);
-		//glEnable(GL_NORMALIZE);
-		glDisable(GL_NORMALIZE);
-		glEnable(0x803A); // GL_RESCALE_NORMAL needed due to possible zoom
-
-		//glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-		//glEnable(GL_COLOR_MATERIAL);
-
-		float no_ambient[] = {0.0f, 0.0f, 0.0f, 1.0f};
-
-		float ly_ambient[] = {m_lightAmbient, m_lightAmbient, m_lightAmbient, 1.0f};
-		float ly_diffuse[] = {m_lightColor[0] * m_lightDiffuse, m_lightColor[1] * m_lightDiffuse, m_lightColor[2] * m_lightDiffuse, 1.0f};
-		float ly_specular[] = {m_lightSpecular, m_lightSpecular, m_lightSpecular, 1.0f};
-		float ly_shininess[] = {50.0f};
-
-		glLightModelfv(GL_LIGHT_MODEL_AMBIENT, no_ambient);
-
-		glLightfv(GL_LIGHT0, GL_AMBIENT, ly_ambient);
-		glLightfv(GL_LIGHT0, GL_DIFFUSE, ly_diffuse);
-		glLightfv(GL_LIGHT0, GL_SPECULAR, ly_specular);
-
-		glLightfv(GL_LIGHT1, GL_AMBIENT, ly_ambient);
-		glLightfv(GL_LIGHT1, GL_DIFFUSE, ly_diffuse);
-		glLightfv(GL_LIGHT1, GL_SPECULAR, ly_specular);
-
-		float mat_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f }; // no specular.
-		float mat_shininess[] = { 128.0f };
-		
-		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mat_shininess);
-
-
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
-
-		glLoadIdentity();
-
-		float position[] = {m_lightPos[0], m_lightPos[1], m_lightPos[2], 1.0f};
-		glLightfv(GL_LIGHT0, GL_POSITION, position);
-
-		float position2[] = {-m_lightPos[0], -m_lightPos[1], -m_lightPos[2], 1.0f};
-		glLightfv(GL_LIGHT1, GL_POSITION, position2);
-
-		glPopMatrix();
-
-	}
-	else
-	{
-		glDisable(GL_LIGHTING);
-	}
-
 }
 
 void GLWidget::DoReset()
@@ -342,8 +280,7 @@ void GLWidget::DoReset()
 void GLWidget::setNewMinMax(const Vec3& min, const Vec3& max, bool scale)
 {
 	aqmin = min; aqmax = max;
-	if (scale)
-	{
+	if (scale) {
 		reCalcProj();
 	}
 
@@ -360,6 +297,7 @@ double zoomFactor(double perc)
 void GLWidget::paintGL()
 {
 	makeCurrent();
+	checkErrors("cur");
 	model.push();
 	double zv = zoomFactor(m_zoomVal / 100.0);
 	//double zv = m_zoomVal / 100.0;
@@ -434,18 +372,6 @@ void GLWidget::setViewFrustrum(GLWidget::EViewState newState)
 }
 
 
-void GLWidget::setAxis(QAction *act) 
-{ 
-	m_axis = (EAxis)act->data().toInt(); 
-}
-void GLWidget::setSpace(QAction *act) 
-{ 
-	m_transformType = (ETransformType)act->data().toInt();
-}
-void GLWidget::setAction(QAction *act)
-{
-	m_mouseAct = (EMouseAction)act->data().toInt();
-}
 
 void GLWidget::rotateTimeout()
 {
@@ -488,10 +414,6 @@ void sgluPickMatrix(double x, double y, double deltax, double deltay, int viewpo
 		return;
 	}
 
-	/* Translate and scale the picked region to the entire window */
-	//glTranslatef((viewport[2] - 2 * (x - viewport[0])) / deltax, (viewport[3] - 2 * (y - viewport[1])) / deltay, 0);
-	//glScalef(viewport[2] / deltax, viewport[3] / deltay, 1.0);
-
 	mat.translate((viewport[2] - 2 * (x - viewport[0])) / deltax, (viewport[3] - 2 * (y - viewport[1])) / deltay, 0);
 	mat.scale(viewport[2] / deltax, viewport[3] / deltay, 1.0);
 }
@@ -499,19 +421,10 @@ void sgluPickMatrix(double x, double y, double deltax, double deltay, int viewpo
 
 int GLWidget::doChoise(int chX, int chY)
 {
-	//GLuint	buffer[512];										
-	//GLint	hits;												
-
-	// The Size Of The Viewport. [0] Is <x>, [1] Is <y>, [2] Is <length>, [3] Is <width>
-	GLint	viewport[4];
+	int	viewport[4] = {0, 0, m_cxClient, m_cyClient};
 	makeCurrent();
 
-	// This Sets The Array <viewport> To The Size And Location Of The Screen Relative To The Window
-	glGetIntegerv(GL_VIEWPORT, viewport);
-
-	
 	proj.push();
-	glLoadIdentity();											
 	proj.identity();
 	
 	// This Creates A Matrix That Will Zoom Up To A Small Portion Of The Screen, Where The Mouse Is.
@@ -519,7 +432,6 @@ int GLWidget::doChoise(int chX, int chY)
 	sgluPickMatrix((double)chX, (double)(viewport[3]-chY), 1.0f, 1.0f, viewport, proj);
 	
 	reCalcProj(false);
-	
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -527,37 +439,17 @@ int GLWidget::doChoise(int chX, int chY)
 		
 	proj.pop();
 
-
  	int choose = -1;
-
 	uint buf[10] = {0};
 
 	//glReadPixels(viewport[2] / 2, viewport[3] / 2, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, buf);
 	glReadPixels(0, 0, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, buf);
+	//printf("%X\n", buf[0]);
 	choose = buf[0] & 0xffffff;
 	if (choose == 0)
 		return -1;
 
 	return choose;
-
-// 	hits=glRenderMode(GL_RENDER);								
-// 		
-// 	int choose = -1;
-// 	if (hits > 0)												
-// 	{
-// 		choose = buffer[3];									
-// 		int depth = buffer[1];									
-// 	
-// 		for (int loop = 1; loop < hits; loop++)					
-// 		{
-// 			// If This Object Is Closer To Us Than The One We Have Selected
-// 			if (buffer[loop*4+1] < GLuint(depth))
-// 			{
-// 				choose = buffer[loop*4+3];						
-// 				depth = buffer[loop*4+1];						
-// 			}
-// 		}
-// 	}
 
 }
 
@@ -635,43 +527,30 @@ void GLWidget::ActMouseMove(EMouseAction action, int dx, int dy)
 void GLWidget::rotate(EAxis axis, int x, int y) 
 {
 	Mat4 wmat;
-	double mat[16];
 	double fx = (double)x, fy = (double)y;
 
-	if (m_transformType == WorldSpace)
-	{
-		glGetDoublev(GL_MODELVIEW_MATRIX, mat);
-		glLoadIdentity();
+	if (m_transformType == WorldSpace) {
 		wmat = model.cur();
 		model.identity();
 	}
 	else {// objectspace, translate it to 0,0,0
-		glTranslated((aqmax[0] + aqmin[0])/2, (aqmax[1] + aqmin[1])/2, (aqmax[2] + aqmin[2])/2);
 		model.translate((aqmax[0] + aqmin[0])/2, (aqmax[1] + aqmin[1])/2, (aqmax[2] + aqmin[2])/2);
 	}
 
 	switch (axis)
 	{
-	case Xaxis:	glRotated(fx, 1, 0, 0);	
-		        model.rotate(fx, 1, 0, 0); break;
-	case Yaxis:	glRotated(fx, 0, 1, 0);	
-		        model.rotate(fx, 0, 1, 0); break;
-	case Zaxis:	glRotated(fx, 0, 0, 1);	
-		        model.rotate(fx, 0, 0, 1); break;
-	case XYaxis: glRotated(fx, 0, 1, 0); glRotated(fy, 1, 0, 0); 
-		         model.rotate(fx, 0, 1, 0); model.rotate(fy, 1, 0, 0); break;
-	case XZaxis: glRotated(fx, 0, 0, 1); glRotated(fy, 1, 0, 0); 
-		         model.rotate(fx, 0, 0, 1); model.rotate(fy, 1, 0, 0); break;
-	case YZaxis: glRotated(fx, 0, 1, 0); glRotated(fy, 0, 0, 1);
-		         model.rotate(fx, 0, 1, 0); model.rotate(fy, 0, 0, 1); break;
+	case Xaxis:	model.rotate(fx, 1, 0, 0); break;
+	case Yaxis:	model.rotate(fx, 0, 1, 0); break;
+	case Zaxis:	model.rotate(fx, 0, 0, 1); break;
+	case XYaxis: model.rotate(fx, 0, 1, 0); model.rotate(fy, 1, 0, 0); break;
+	case XZaxis: model.rotate(fx, 0, 0, 1); model.rotate(fy, 1, 0, 0); break;
+	case YZaxis: model.rotate(fx, 0, 1, 0); model.rotate(fy, 0, 0, 1); break;
 	}
 
 	if (m_transformType == WorldSpace) {
-		glMultMatrixd(mat);
 		model.mult(wmat);
 	}
 	else { // translate it back
-		glTranslated(-(aqmax[0] + aqmin[0])/2, -(aqmax[1] + aqmin[1])/2, -(aqmax[2] + aqmin[2])/2);
 		model.translate(-(aqmax[0] + aqmin[0])/2, -(aqmax[1] + aqmin[1])/2, -(aqmax[2] + aqmin[2])/2);
 	}
 
@@ -682,7 +561,6 @@ void GLWidget::translate(int xValue, int yValue)
 {
 	double fx = ((double)xValue / realScale);
 	double fy = ((double)yValue / realScale);
-	double mat[16];
 	Mat4 wmat;
 
 	if (m_transformType == ObjectSpace) 
@@ -699,22 +577,15 @@ void GLWidget::translate(int xValue, int yValue)
 
 	switch (m_axis)
 	{
-	case Xaxis: glTranslated(fx, 0, 0);
-		        model.translate(fx, 0, 0); break;
-	case Yaxis: glTranslated(0, fx, 0); 
-		        model.translate(0, fx, 0); break;
-	case Zaxis: glTranslated(0, 0, fx);
-		        model.translate(0, 0, fx); break;
-	case XYaxis: glTranslated(fx, 0, 0); glTranslated(0, -fy, 0);
-		         model.translate(fx, 0, 0); model.translate(0, -fy, 0); break;
-	case XZaxis: glTranslated(fx, 0, 0); glTranslated(0, 0, fy); 
-		         model.translate(fx, 0, 0); model.translate(0, 0, fy); break;
-	case YZaxis: glTranslated(0, 0, fx); glTranslated(0, -fy, 0);
-		         model.translate(0, 0, fx); model.translate(0, -fy, 0); break;
+	case Xaxis: model.translate(fx, 0, 0); break;
+	case Yaxis: model.translate(0, fx, 0); break;
+	case Zaxis: model.translate(0, 0, fx); break;
+	case XYaxis: model.translate(fx, 0, 0); model.translate(0, -fy, 0); break;
+	case XZaxis: model.translate(fx, 0, 0); model.translate(0, 0, fy); break;
+	case YZaxis: model.translate(0, 0, fx); model.translate(0, -fy, 0); break;
 	}
 
-	if (m_transformType == WorldSpace)
-	{
+	if (m_transformType == WorldSpace) {
 		model.mult(wmat);
 	}
 }
@@ -722,9 +593,7 @@ void GLWidget::translate(int xValue, int yValue)
 void GLWidget::scale(int xValue, int yValue) 
 {
 	double f = 1 + (double)(xValue + yValue) / 150.0;	// object may flip if we do it too fast
-	double mat[16];
 	Mat4 wmat;
-	
 
 	if (m_transformType == WorldSpace)	// damn right it's needed
 	{
@@ -735,8 +604,7 @@ void GLWidget::scale(int xValue, int yValue)
 	model.scale(f, f, f);
 
 	m_osf = m_osf * f;
-	if (m_transformType == WorldSpace)
-	{
+	if (m_transformType == WorldSpace) {
 		model.mult(wmat);
 	}
 }

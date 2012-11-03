@@ -260,24 +260,16 @@ void PicDisp::generateStraightShape(const DisplayConf& dpc, MyObject& obj) const
 }
 
 
-void PicDisp::init(const DisplayConf& dpc, GLWidget *mainContext)
+void PicDisp::init(const DisplayConf& dpc)
 {
-	//m_displayConf = dpc;
-
 	MyObject obj(&g_smoothAllocator);
 	
 	generateStraightShape(dpc, obj);
 
-	for(int i = 0; i < dpc.numberOfPasses; ++i)
-	{
+	for(int i = 0; i < dpc.numberOfPasses; ++i)	{
 		obj.subdivide(dpc.passRound[i]);
 	}
 	obj.clacNormals(dpc.bVtxNormals);
-
-	mainContext->makeCurrent();
-
-	//realPaint(obj, false, mainContext);
-
 	obj.toMesh(m_mesh);
 
 /*	{
@@ -301,36 +293,35 @@ void PicPainter::paint(bool fTargets, const Vec3& name, GLWidget *context) const
 	glPolygonOffset(1.0, 1.0); // go backward, draw polygons TBD- move to slvpainter
 
 	const PicGroupDef *def = m_pdef->mygrp();
-	bool hasTex = def->isTexExist();
+	//bool hasTex = def->isTexExist();
 
 	BaseProgram* bprog = ShaderProgram::currentt<BaseProgram>();
+	M_ASSERT(bprog != NULL);
+
 	bprog->trans.set(context->transformMat());
 
 	mglCheckErrorsC("x8");
 	if (!fTargets)
 	{
-		int texId = 0;
-
-		//if ((m_pdef->tex != NULL) && (m_pdef->tex->ind < context->m_textures.size()) && (m_pdef->tex->ind != -1))
-		//	texId = context->m_textures[m_pdef->tex->ind];
-		//else if ((def->tex != NULL) && (def->tex->ind < context->m_textures.size()) && (def->tex->ind != -1))
-		//	texId = context->m_textures[def->tex->ind];
 
 		NoiseSlvProgram* prog = ShaderProgram::currentt<NoiseSlvProgram>();
 		if (prog != NULL) {
 			prog->drawtype.set(def->drawtype);
-			prog->colorAu.set(Vec3(def->r, def->g, def->b));
-			prog->colorB.set(Vec3(def->exR, def->exG, def->exB));
+			prog->colorAu.set(def->color);
+			prog->colorB.set(def->exColor);
 
 			if (def->gtex != NULL) {
-				glEnable(GL_TEXTURE_2D);
-				mglActiveTexture(1);
+				mglActiveTexture(0);
 				glBindTexture(GL_TEXTURE_2D, def->gtex->handle());
-				prog->noisef.set(1);
+				prog->noisef.set(0);
 			}
 
 			prog->modelMat.set(context->model.cur());
 			prog->normalMat.set(context->model.cur().toNormalsTrans());
+
+			if (isIndividual(def->drawtype)) {
+				prog->texOffset.set(Vec2(m_pdef->xOffs/1024.0, m_pdef->yOffs/1024.0));
+			}
 		}
 		mglCheckErrorsC("x9a");
 	}
@@ -339,73 +330,7 @@ void PicPainter::paint(bool fTargets, const Vec3& name, GLWidget *context) const
 		mglCheckErrorsC("x9b");
 	}
 
-	
-
 	m_pdef->disp->m_mesh.paint();
-
-/*	Texture *lastTex = NULL; // start disabled
-	for(int pli = 0; pli < obj.nPolys; ++pli) //polygons
-	{
-		MyPolygon &curpl = *obj.poly[pli];
-
-		if ((!fTargets) && (isIndividual(def->drawtype)) && (curpl.tex != lastTex))
-		{
-			if (curpl.tex == NULL)
-			{
-				glDisable(GL_TEXTURE_2D);
-			}
-			else
-			{
-				glEnable(GL_TEXTURE_2D); // sides have a different texture
-				if ((curpl.tex->ind < context->m_textures.size()) && (curpl.tex->ind != -1))
-					glBindTexture(GL_TEXTURE_2D, context->m_textures[curpl.tex->ind]);
-			}
-			lastTex = curpl.tex;
-
-		}
-
-
-		glBegin(GL_QUADS);
-		for(int pni = 0; pni < 4; ++pni) //points
-		{
-			MyPoint *curpn = curpl.vtx[pni];
-			
-			if (obj.verterxNormals)
-				glNormal3fv(curpn->n.ptr());
-			else
-				glNormal3fv(curpl.center.ptr());
-
-			if (!fTargets)
-			{
-				// in blend and color, stay with the same color all the way.
-				if ((def->drawtype != DRAW_TEXTURE_BLEND) && (def->drawtype != DRAW_COLOR)) 
-				{
-					if (isIndividual(def->drawtype) && (curpl.tex != NULL))
-					{
-						glColor3f(1.0f, 1.0f, 1.0f); // background for whole textures needs to be white
-					}
-					else
-						glColor3f(def->r, def->g, def->b);
-				}
-
-				if (hasTex)
-				{
-					glTexCoord2f(curpl.texAncs[pni].x, curpl.texAncs[pni].y);
-				}
-			}
-			else
-				glColor3f(1.0f, 1.0f, 1.0f);
-		
-	
-			glVertex3fv(curpn->p.ptr());
-			
-		}
-		glEnd();
-	} // for pli
-*/
-
-	glDisable(GL_TEXTURE_2D);
-
 }
 
 bool PicPainter::exportToObj(ObjExport& oe, const Mat4& fMatrix) const

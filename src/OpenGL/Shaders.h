@@ -18,11 +18,15 @@ public:
 };
 
 
-
-
 class BuildProgram : public BaseProgram {
 public:
+	BuildProgram()
+		:tag("tag", this), fadeFactor("fadeFactor", this)
+	{}
 	virtual void getCodes();
+
+	FloatAttrib tag;
+	FloatUniform fadeFactor;
 };
 
 class FlatProgram : public BaseProgram {
@@ -35,6 +39,7 @@ public:
 	NoiseSlvProgram()
 		:noisef("noisef", this), colorB("colorB", this), drawtype("drawtype", this)
 		,modelMat("modelMat", this), normalMat("normalMat", this), normal("normal", this)
+		,texOffset("texOffset", this), lightPos("lightPos", this)
 	{}
 	virtual void getCodes();
 
@@ -46,6 +51,8 @@ public:
 	Mat4Uniform modelMat;
 	Mat3Uniform normalMat;
 	Vec3Attrib normal;
+	Vec2Uniform texOffset;
+	Vec3Uniform lightPos;
 };
 
 

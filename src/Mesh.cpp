@@ -24,29 +24,27 @@ void Mesh::paint(bool names) const
 
 	BaseProgram* bprog = ShaderProgram::currentt<BaseProgram>();
 	NoiseSlvProgram* nprog = ShaderProgram::currenttTry<NoiseSlvProgram>();
+	BuildProgram* lprog = ShaderProgram::currenttTry<BuildProgram>(); 
 
 	bprog->vtx.setArr(&m_vtx[0]);
 
 	if (nprog != NULL) {
-		if (m_hasNormals) {
+		if (m_hasNormals) 
 			nprog->normal.setArr(&m_normals[0]);
-		}
-		else {
+		else 
 			nprog->normal.disableArr();
-		}
 	}
-
-// 	if (m_hasTexCoord) {
-// 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-// 		glTexCoordPointer(2, GL_FLOAT, 0, &m_texCoord[0]);
-// 	}
-// 	else {
-// 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-// 	}
-
 	if (names) {
 		if (m_hasNames) {
+			//printf(" names %d\n", m_name.size());
 			bprog->colorAatt.setArr(&m_name[0]);
+		}
+		else {
+			bprog->colorAatt.disableArr();
+		}
+		if (lprog != NULL) {
+			lprog->tag.set(0);
+			lprog->tag.disableArr();
 		}
 	}
 	else {
@@ -60,6 +58,14 @@ void Mesh::paint(bool names) const
 					bprog->colorAu.set(m_uColor);
 				else 
 					bprog->colorAatt.set(m_uColor);
+			}
+		}
+		if (lprog != NULL) {
+			if (m_hasTag) 
+				lprog->tag.setArr(&m_tag[0]);
+			else {
+				lprog->tag.set(0);
+				lprog->tag.disableArr();
 			}
 		}
 	}

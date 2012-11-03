@@ -22,7 +22,6 @@
 #include "Texture.h"
 #include "PicPainter.h"
 #include "PicArr.h"
-#include "OpenGL/GLTexture.h"
 
 /** \file
 	Declares all classes involved in piece decleration and storage.
@@ -42,6 +41,7 @@ enum EDrawType
 	DRAW_TEXTURE_BLEND = 2, ///< a texture blended with a background and foreground color (Marble Cube, Profi Cube)
 	DRAW_TEXTURE_INDIVIDUAL_HALF = 0x14, ///< half piece uniformly colored and half with an unblended texture (Little Genius)
 	DRAW_TEXTURE_INDIVIDUAL_WHOLE = 0x18,
+	DRAW_TEXTURE_MARBLE = 4,
 	DRAW_FLAT = 0x100
 };
 
@@ -52,7 +52,7 @@ inline bool isIndividual(EDrawType dt) {
 
 
 class PicGroupDef;
-
+class GlTexture;
  
 ///	A path is the outline of a piece.
 ///	maximum theoretical number of path sections is 36 + 1 for last connecting to the first
@@ -162,11 +162,11 @@ class PicGroupDef
 {
 public:
 	PicGroupDef() 
-	: tex(NULL), baseTex(NULL), drawtype(DRAW_UKNOWN), r(1.0), g(1.0), b(1.0),   
-	  exR(0), exG(0), exB(0), sideTex(NULL), sideTexX(0), sideTexY(0), blackness(BLACK_NOT), gtex(NULL)
+	: tex(NULL), drawtype(DRAW_UKNOWN), color(1.0f, 1.0f, 1.0f),   
+	  exColor(0.0f, 0.0f, 0.0f), blackness(BLACK_NOT), gtex(NULL)
 	{}
 
-	QImage blendImage(); // produce an image from the texture, and the colors in blend mode
+	QImage blendImage(Texture* baseTex); // produce an image from the texture, and the colors in blend mode
 
 	PicDef& getPic(int myi);
 	const PicDef& getPic(int myi) const;
@@ -177,19 +177,19 @@ public:
 	GlTexture *gtex;
 
 	Texture *tex;  // the texture used
-	Texture *baseTex; // the basic texture, before modulation
 
 	string name;
 	EDrawType drawtype; // could be that according to the type there is a texture but tex is NULL
 
-	float r,g,b;
-	float exR, exG, exB;
-	Texture *sideTex;
-	int sideTexX, sideTexY;
+	Vec3 color;
+	Vec3 exColor;
+
 
 	EBlackness blackness; // means that the color is a dark one. use white lines with this group
 
-	bool isTexExist() const { return ((drawtype == DRAW_TEXTURE_NORM) || (drawtype == DRAW_TEXTURE_BLEND) || isIndividual(drawtype)); }
+// 	bool isTexExist() const { 
+// 		return ((drawtype == DRAW_TEXTURE_NORM) || (drawtype == DRAW_TEXTURE_BLEND) || (drawtype == DRAW_TEXTURE_MARBLE) || isIndividual(drawtype)); 
+// 	}
 	
 };
 
@@ -219,11 +219,18 @@ struct PicFamily
 };
 
 class DisplayConf;
-class GLWidget;
+
 
 
 int rotationAdd(int base, int defRot);
 int rotationSub(int x, int defRot);
+
+class ProgressCallback {
+public:
+	virtual void init(int maxv) = 0;
+	// return false if need to cancel
+	virtual bool setValue(int v) = 0;
+};
 
 /**	PicBucket is the main repository where all the data about all the pieces resides.
 	PicBucket is a singleton object which is created at startup
@@ -232,21 +239,20 @@ int rotationSub(int x, int defRot);
 	of, even if some of these pieces are not currently being used.
 	\see PicGroupDef PicDef
 */
-class PicBucket : public QObject
+class PicBucket 
 {
-	Q_OBJECT
 public:
 	/// load the main configuration xml. this is one of the first things that
 	/// ever happen in the application
 	bool loadXML(const string& xmlname);
-	Texture* newTexture(QImage img, bool emitb = true);
+	Texture* newTexture(QImage& img, bool in3d);
 
 	static void createSingleton();
 	static const PicBucket& instance() { return *g_instance; }
 	static PicBucket& mutableInstance() { return *g_instance; }
 
 	void makeBitmapList(); 
-	void buildMeshes(const DisplayConf& dpc, bool showStop, GLWidget* listContext);
+	void buildMeshes(const DisplayConf& dpc, ProgressCallback* prog);
 
 	int selectedCount() const;
 
@@ -269,26 +275,19 @@ public:
 	vector<PicGroupDef> grps; ///< (defs) group definitions, inside them the piece definitions
 	vector<PicDef> pdefs;
 
-	QList<Texture*> texs;
+	vector<Texture*> texs;
 	vector<GlTexture*> gtexs;
 
 	vector<PicFamily> families;
 
 	vector<shared_ptr<PicDisp>> meshes;
 
-public slots:
-	void updateTexture(int gind); // some parameter changed in this gind, recalc the texture, send updates
-
-signals:
-	void boundTexture(int index, QImage img); // all interested glwidgets should bind this texture to this index.
-	void updateTexture(int index, QImage img);
-
 private:
 	/// private ctor, this is a singleton
 	PicBucket() : sumPics(-1), nSwapEndians(1234) 
 	{ }
 	/// private unimplemented copy semantics
-	Q_DISABLE_COPY(PicBucket);
+	DISALLOW_COPY(PicBucket);
 
 	static PicBucket *g_instance; // can't be a real instance because it needs to be created after the QApplication
 	int nSwapEndians; // the numerical representation of the octet order normal is 1234

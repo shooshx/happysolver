@@ -24,7 +24,7 @@
 #define __oleidl_h__
 #define _OLE2_H_
 
-#include "GlobDefs.h"
+//#include "GlobDefs.h"
 
 
 #include "general.h"
@@ -36,6 +36,8 @@
 #include "PicsSet.h"
 #include "NoiseGenerator.h"
 #include "tinyxml/tinyxml2.h"
+#include "OpenGL/GLTexture.h"
+
 
 using namespace tinyxml2;
 
@@ -135,9 +137,9 @@ void PicBucket::makeBitmapList()
 			tmp = origsize.width() * origsize.height() * 4;
 			for (i = 0; i < tmp; i += 4)
 			{// little endian images
-				origcbuf[i + 0] = int(cgrp.b * 255.0); 
-				origcbuf[i + 1] = int(cgrp.g * 255.0);
-				origcbuf[i + 2] = int(cgrp.r * 255.0);
+				origcbuf[i + 0] = int(cgrp.color.b * 255.0); 
+				origcbuf[i + 1] = int(cgrp.color.g * 255.0);
+				origcbuf[i + 2] = int(cgrp.color.r * 255.0);
 				origcbuf[i + 3] = 255; //alpha
 			}
 			break;
@@ -148,13 +150,14 @@ void PicBucket::makeBitmapList()
 			tmp = origsize.width() * origsize.height() * 4;
 			for (i = 0;  i < tmp; i += 4)
 			{
-				origcbuf[i + 0] = int( float(gimg.bits()[i]) * cgrp.b);
-				origcbuf[i + 1] = int( float(gimg.bits()[i + 1]) * cgrp.g);
-				origcbuf[i + 2] = int( float(gimg.bits()[i + 2]) * cgrp.r);
+				origcbuf[i + 0] = int( float(gimg.bits()[i]) * cgrp.color.b);
+				origcbuf[i + 1] = int( float(gimg.bits()[i + 1]) * cgrp.color.g);
+				origcbuf[i + 2] = int( float(gimg.bits()[i + 2]) * cgrp.color.r);
 				origcbuf[i + 3] = 255;
 			}
 			break;
 		case DRAW_TEXTURE_BLEND:
+		case DRAW_TEXTURE_MARBLE:
 			origcbuf = (unsigned char*)gimg.bits(); // move to unsigned, rid of const.
 			origsize = gimg.size();
 			origfactor = (gimg.width() == 64)?1:2; // otherwise its 128.
@@ -236,115 +239,29 @@ void PicBucket::makeBitmapList()
 	}
 }
 
-QImage endianSwapped(const QImage& src, int n)
+
+
+Texture* PicBucket::newTexture(QImage& im, bool in3d) 
 {
-	int oto[4] = { n / 1000, (n / 100) % 10, (n / 10) % 10, n % 10 };
-	int o[4];
+	Texture *t = new Texture(im);
+	texs.push_back(t);
 
-	int h = src.height(), w = src.width();
-	QImage res(w, h, QImage::Format_ARGB32);
-	for (int i = 0; i < h; ++i) 
-	{
-		uint *q = (uint*)res.scanLine(i);
-		uint *p = (uint*)src.scanLine(i);
-		uint *end = p + w;
-		while (p < end) 
-		{
-			o[0] = (*p >> 24);
-			o[1] = (*p >> 16) & 0xFF;
-			o[2] = (*p >> 8) & 0xFF;
-			o[3] = (*p) & 0xFF;
-
-			uint res = 0;
-			for (int j = 0; j < 4; ++j)
-			{
-				switch (oto[j])
-				{
-				case 1: res |= o[j] << 24; break;
-				case 2: res |= o[j] << 16; break;
-				case 3: res |= o[j] << 8; break;
-				case 4: res |= o[j]; break;
-				}
-			}
-			*q = res; //(*p >> 8) | (*p << 24);
-
-			p++;
-			q++;
-		}
+	if (in3d) {
+		QImage b = im.rgbSwapped();
+		GlTexture *gt = new GlTexture();
+		gt->init(GL_TEXTURE_2D, Vec2i(b.width(), b.width()), 1, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, b.bits(), GL_LINEAR, GL_LINEAR);
+		texs.push_back(NULL);
+		gtexs.push_back(gt);
 	}
-	return res;
-}
-
-void PicBucket::updateTexture(int gind)
-{
-	if (grps[gind].tex != NULL)
-	{
-		QImage img = grps[gind].blendImage();
-		int texind = grps[gind].tex->ind;
-		texs[texind]->img = img;
-		
-		QImage b;
-		//if (nSwapEndians != 1234)
-		b = endianSwapped(img, nSwapEndians);
-		//else
-		//	b = img;
-		emit updateTexture(texind, b);
-	}
-}
-
-// causes an access violation on QContext destruction
-void PicBucket::updateSwapEndian(int newen)
-{
-	if (newen == nSwapEndians)
-		return;
-	nSwapEndians = newen;
-
-	QProgressDialog pdlg("Updating...", "", 0, grps.size(), g_main);
-	pdlg.setWindowTitle("Happy Cube Solver");
-	pdlg.setMinimumDuration(0);
-	pdlg.setCancelButton(NULL);
-
-	for (int g = 0; g < grps.size(); ++g)
-	{
-		pdlg.setValue(g);
-		if ((grps[g].tex == NULL) || (!grps[g].tex->bound))
-			continue;
-		int texind = grps[g].tex->ind;
-
-		QImage img = texs[texind]->img;
-		QImage b;
-		//if (nSwapEndians != 1234)
-		b = endianSwapped(img, nSwapEndians);
-		//else
-		//	b = img;
-
-		emit updateTexture(texind, b);
-		
-	}
-}
-
-
-Texture* PicBucket::newTexture(QImage im, bool emitb)
-{
-	int texind = texs.count();
-	Texture *t = new Texture(texind, im, emitb);
-	texs.append(t);
-	if (emitb)
-	{
-		QImage b;
-		//if (nSwapEndians != 1234)
-		b = endianSwapped(t->img, nSwapEndians);
-		//else
-		//	b = t->img;
-		emit boundTexture(texind, b);
+	else {
+		gtexs.push_back(NULL);
 	}
 	return t;
+
 }
 
-QImage PicGroupDef::blendImage()
+QImage PicGroupDef::blendImage(Texture* baseTex)
 {
-	//QImage img(TEX_X, TEX_Y, QImage::Format_ARGB32);
-	//int size = TEX_X * TEX_Y * 4;
 	QImage img(baseTex->img.width(), baseTex->img.height(), QImage::Format_ARGB32);
 	int size = baseTex->img.width() * baseTex->img.height() * 4;
 	unsigned char *cbuf = img.bits();
@@ -356,9 +273,9 @@ QImage PicGroupDef::blendImage()
 		float fg = float(baseTexImg.bits()[c + 1]);
 		float fr = float(baseTexImg.bits()[c + 2]);	
 
-		cbuf[c + 0] = int( (255.0-fb) * b + fb * exB);
-		cbuf[c + 1] = int( (255.0-fg) * g + fg * exG);
-		cbuf[c + 2] = int( (255.0-fr) * r + fr * exR);
+		cbuf[c + 0] = int( (255.0-fb) * color.b + fb * exColor.b);
+		cbuf[c + 1] = int( (255.0-fg) * color.g + fg * exColor.g);
+		cbuf[c + 2] = int( (255.0-fr) * color.r + fr * exColor.r);
 		cbuf[c + 3] = 255;
 	}
 	return img;	
@@ -370,6 +287,7 @@ static EDrawType getDrawType(const string& s)
 	if (s == "COLOR") return DRAW_COLOR;
 	if (s == "TEXTURE_NORM") return DRAW_TEXTURE_NORM;
 	if (s == "TEXTURE_BLEND") return DRAW_TEXTURE_BLEND;
+	if (s == "TEXTURE_MARBLE") return DRAW_TEXTURE_MARBLE;
 	if (s == "TEXTURE_INDIVIDUAL_HALF") return DRAW_TEXTURE_INDIVIDUAL_HALF;
 	if (s == "TEXTURE_INDIVIDUAL_WHOLE") return DRAW_TEXTURE_INDIVIDUAL_WHOLE;
 	M_ASSERT(false);
@@ -411,33 +329,23 @@ bool PicBucket::loadXML(const string& data)
 	XMLElement* t = texe->FirstChildElement("texture");
 	while (t != NULL)
 	{
+		bool in3d = t->Attribute("in3d", "true") != NULL;
 		const char *txnamep = t->Attribute("filename");
 		if (txnamep != NULL)
 		{
 			string txname(txnamep);
 			QImage img(txname.c_str(), "PNG");
+			
 			if (img.isNull())
 			{
-				img.load(QCoreApplication::applicationDirPath() + "/" + QString(txname.c_str()), "PNG");
-				if (img.isNull())
-				{
-					printf("Failed to load texture file: ");
-					//QMessageBox::critical(g_main, APP_NAME,  + QString(txname.c_str()), QMessageBox::Ok, 0);
-					return false;
-				}
+				printf("Failed to load texture file: ");
+				return false;
 			}
 		    
-			// don't bind this texture yet, it will be bound later when in is modified specifically
-			newTexture(img, img.height() <= 128);
+			newTexture(img, in3d);
 		}
-		else
-		{
-			int copyind = t->IntAttribute("copy");
-			int cX = t->IntAttribute("x1");
-			int cY = t->IntAttribute("y1");
-			newTexture(texs[copyind]->img.copy(cX, cY, 128, 128), true);
-		}
-		
+
+
 		t = t->NextSiblingElement();
 	}
 
@@ -494,36 +402,34 @@ bool PicBucket::loadXML(const string& data)
 
 			cgrp.drawtype = getDrawType(fill->Attribute("type"));
 
+			Texture* baseTex = NULL;
+			GlTexture* baseGTex = NULL;
 			if (fill->Attribute("texind") != NULL)
 			{
 				int txind = fill->IntAttribute("texind");
 				M_ASSERT((txind >= 0) && (txind <= texs.size()));
-				cgrp.baseTex = texs[txind];
+				baseTex = texs[txind];
+				baseGTex = gtexs[txind+1]; // gtex starts with the noise tex at 0
 			}
-			else
-				cgrp.baseTex = NULL;
-			cgrp.tex = cgrp.baseTex;
 
-			cgrp.r = float(fill->IntAttribute("r")) / 255.0f; 
-			cgrp.g = float(fill->IntAttribute("g")) / 255.0f; 
-			cgrp.b = float(fill->IntAttribute("b")) / 255.0f;
-			cgrp.exR = float(fill->IntAttribute("exR")) / 255.0f; 
-			cgrp.exG = float(fill->IntAttribute("exG")) / 255.0f; 
-			cgrp.exB = float(fill->IntAttribute("exB")) / 255.0f;
+			cgrp.tex = baseTex;
+
+			cgrp.color = Vec3( float(fill->IntAttribute("r")) / 255.0f, 
+				               float(fill->IntAttribute("g")) / 255.0f, 
+							   float(fill->IntAttribute("b")) / 255.0f);
+			cgrp.exColor = Vec3( float(fill->IntAttribute("exR")) / 255.0f, 
+								 float(fill->IntAttribute("exG")) / 255.0f,
+							     float(fill->IntAttribute("exB")) / 255.0f);
 			cgrp.blackness = (EBlackness)fill->IntAttribute("k");
 	
-			if (cgrp.drawtype == DRAW_TEXTURE_INDIVIDUAL_HALF)
-			{
-				cgrp.sideTexX = fill->IntAttribute("sideX");
-				cgrp.sideTexY = fill->IntAttribute("sideY");
-				int stxind = fill->IntAttribute("sideTexInd");
-				M_ASSERT((stxind >= 0) && (stxind <= texs.size()));
-				cgrp.sideTex = texs[stxind];
-			}
-			if (cgrp.drawtype == DRAW_TEXTURE_BLEND)
-			{
-				cgrp.tex = newTexture(cgrp.blendImage());
 
+			if (cgrp.drawtype == DRAW_TEXTURE_BLEND || cgrp.drawtype == DRAW_TEXTURE_MARBLE)
+			{
+				cgrp.tex = newTexture(cgrp.blendImage(baseTex), false);
+				cgrp.gtex = gtexs[0]; //the noise tex
+			}
+			else if (isIndividual(cgrp.drawtype)) {
+				cgrp.gtex = baseGTex;
 			}
 
 			//QDomNodeList xpics = cube->ElementsByTagName("piece");
@@ -556,7 +462,7 @@ bool PicBucket::loadXML(const string& data)
 					{
 						curdef.xOffs = xpic->IntAttribute("x1");
 						curdef.yOffs = xpic->IntAttribute("y1");
-						curdef.tex = newTexture(cgrp.tex->img.copy(curdef.xOffs, curdef.yOffs, 128, 128).mirrored(false, true));
+						curdef.tex = newTexture(cgrp.tex->img.copy(curdef.xOffs, curdef.yOffs, 128, 128).mirrored(false, true), false);
 					}
 					cgrp.picsi.push_back(pdefi); // the index in the bucket
 					++pdefi;
@@ -591,7 +497,7 @@ bool PicBucket::loadXML(const string& data)
 					{
 						curdef.xOffs = fromDef.xOffs;
 						curdef.yOffs = fromDef.yOffs;
-						curdef.tex = newTexture(cgrp.tex->img.copy(curdef.xOffs, curdef.yOffs, 128, 128).mirrored(false, true));
+						curdef.tex = newTexture(cgrp.tex->img.copy(curdef.xOffs, curdef.yOffs, 128, 128).mirrored(false, true), false);
 					}
 
 					cgrp.picsi.push_back(pdefi);
@@ -679,17 +585,13 @@ static PoolStats poolStats[] = {
 
 
 
-void PicBucket::buildMeshes(const DisplayConf& dpc, bool showStop, GLWidget *mainContext)
+void PicBucket::buildMeshes(const DisplayConf& dpc, ProgressCallback* prog)
 {
 	// fill meshes
 	distinctMeshes();
 
-	QProgressDialog pdlg("Building the pieces. Please Wait...", "Stop", 0, meshes.size(), g_main);
-	pdlg.setSizeGripEnabled(false);
-	pdlg.setWindowTitle("Happy Cube Solver");
-	pdlg.setMinimumDuration(1500);
-	if (!showStop)
-		pdlg.setCancelButton(NULL);
+	if (prog)
+		prog->init(meshes.size());
 
 	// grows if needed, never shrinks.
 	PoolStats& ps = poolStats[dpc.numberOfPasses];
@@ -699,16 +601,15 @@ void PicBucket::buildMeshes(const DisplayConf& dpc, bool showStop, GLWidget *mai
 	int cnt = 0;
 	bool cancel = false;
 
-	for (int pi = 0; pi < meshes.size() && !cancel; ++pi)
+	for (int pi = 0; pi < meshes.size(); ++pi)
 	{
-        pdlg.setValue(cnt++);
-		meshes[pi]->init(dpc, mainContext);
-
-        qApp->processEvents(); // must call
-		cancel = ((showStop && pdlg.wasCanceled()) || (((MainWindow*)g_main)->wasClosed()));
+		if (prog && !prog->setValue(pi))
+			break;
+		meshes[pi]->init(dpc);
 	}
 
-	pdlg.setValue(cnt);
+	if (prog)
+		prog->setValue(meshes.size());
 	PicDisp::getAllocator().checkMaxAlloc();
 }
 

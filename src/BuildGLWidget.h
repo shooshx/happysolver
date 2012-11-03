@@ -159,6 +159,8 @@ private:
 
 	/// number of valid tiles in m_curMarkedTiles
 	int m_nMarkedTiles;
+	bool m_inFade;
+	float m_fadeFactor;
 	/// the tiles marked with blue or red under the mouse pointer
 	CoordBuild m_curMarkedTiles[6];
 

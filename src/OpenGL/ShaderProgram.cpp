@@ -116,7 +116,7 @@ bool ShaderProgram::init(const ProgCompileConf& conf)
 	m_isOk = false;
 
 
-	if (!m_geomprog.isEmpty())
+	if (!m_geomprog.empty())
 	{ // has geometry shaders
 		glProgramParameteriEXT(m_progId, GL_GEOMETRY_INPUT_TYPE_EXT, conf.geomInput);
 		glProgramParameteriEXT(m_progId, GL_GEOMETRY_OUTPUT_TYPE_EXT, conf.geomOutput);
@@ -202,20 +202,29 @@ void AttribParam::enableArr() {
 template<typename T>
 uint glType();
 template<> uint glType<Vec3b>() { return GL_UNSIGNED_BYTE; }
+template<> uint glType<Vec4b>() { return GL_UNSIGNED_BYTE; }
 template<> uint glType<Vec4>() { return GL_FLOAT; }
 template<> uint glType<Vec3>() { return GL_FLOAT; }
+template<> uint glType<int>() { return GL_UNSIGNED_INT; }
+template<> uint glType<float>() { return GL_FLOAT; }
 
 template<typename T>
 uint getElemCount();
 template<> uint getElemCount<Vec3b>() { return 3; }
+template<> uint getElemCount<Vec4b>() { return 4; }
 template<> uint getElemCount<Vec4>() { return 4; }
 template<> uint getElemCount<Vec3>() { return 3; }
+template<> uint getElemCount<int>() { return 1; }
+template<> uint getElemCount<float>() { return 1; }
 
 template<typename T>
-uint shouldNorm();
-template<> uint shouldNorm<Vec3b>() { return GL_TRUE; }
+uint shouldNorm(); 
+template<> uint shouldNorm<Vec3b>() { return GL_TRUE; } // normalize to [0-1] since we give values at [0-255]
+template<> uint shouldNorm<Vec4b>() { return GL_TRUE; }
 template<> uint shouldNorm<Vec4>() { return GL_FALSE; }
 template<> uint shouldNorm<Vec3>() { return GL_FALSE; }
+template<> uint shouldNorm<int>() { return GL_FALSE; }
+template<> uint shouldNorm<float>() { return GL_FALSE; }
 
 
 template<typename T> 
@@ -228,7 +237,8 @@ void AttribParam::setArr(const T* v) const {
 
 template void AttribParam::setArr(const Vec4* v) const;
 template void AttribParam::setArr(const Vec3b* v) const;
-
+template void AttribParam::setArr(const Vec4b* v) const;
+template void AttribParam::setArr(const float* v) const;
 
 template<> 
 void UniformParam::set(const float& v) const {
@@ -308,7 +318,13 @@ void AttribParam::set(const int& v) const {
 void FloatAttrib::set(float v) const {
 	AttribParam::set(v);
 }
+void FloatAttrib::setArr(const float* v) const {
+	AttribParam::setArr(v);
+}
 void Vec3Attrib::setArr(const Vec3* v) const {
+	AttribParam::setArr(v);
+}
+void IntAttrib::setArr(const int* v) const {
 	AttribParam::setArr(v);
 }
 
@@ -319,6 +335,9 @@ void Vec2Uniform::set(const Vec2& v) const {
 	UniformParam::set(v);
 }
 void IntUniform::set(int v) const {
+	UniformParam::set(v);
+}
+void FloatUniform::set(float v) const {
 	UniformParam::set(v);
 }
 void Mat4Uniform::set(const Mat4& v) const {

@@ -3,23 +3,33 @@
 #include <vector>
 #include <map>
 #include "Vec.h"
+#include "OpenGL/ShaderProgram.h"
 
 using namespace std;
 
 typedef unsigned short ushort;
 typedef unsigned int uint;
 
+class AttribParam;
+
+
+
 class Mesh
 {
 public:
-	Mesh() : m_type(NONE), m_hasNormals(false), m_hasTexCoord(false), m_hasColors(false), m_hasNames(false), m_hasIdx(false), m_uniformColor(false) {}
+	Mesh() 
+		: m_type(NONE), m_hasNormals(false), m_hasTexCoord(false), m_hasColors(false)
+		, m_hasNames(false), m_hasIdx(false), m_uniformColor(false), m_hasTag(false) {}
 	void clear() {
 		m_vtx.clear();
 		m_normals.clear();
 		m_texCoord.clear();
 		m_color4.clear();
 		m_name.clear();
+		m_tag.clear();
 		m_idx.clear();
+		m_uColor = Vec4();
+		m_addIdx.clear();
 	}
 
 	void paint(bool names = false) const;
@@ -40,13 +50,13 @@ public:
 		return m_addIdx.back();
 	}
 
-
 public:
 	vector<Vec3> m_vtx;
 	vector<Vec3> m_normals;
 	vector<Vec2> m_texCoord;
 	vector<Vec4> m_color4;
-	vector<Vec3b> m_name;
+	vector<Vec4b> m_name;
+	vector<float> m_tag; // general purpose data used by the shaders
 	vector<uint> m_idx;
 	Vec4 m_uColor;
 
@@ -56,9 +66,9 @@ public:
 	bool m_hasNames;
 	bool m_hasIdx; // drawElements or drawArrays
 	bool m_uniformColor;
+	bool m_hasTag;
 
 	Type m_type;
-
 
 	vector<IdxBuf> m_addIdx;
 };

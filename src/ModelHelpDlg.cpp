@@ -47,9 +47,7 @@ void PieceGLWidget::setSelectedPiece(int p)
 	if (m_bSelectAll)
 		return;
 
-	if (m_bHasPushedMatrix)
-	{
-		//glPopMatrix();
+	if (m_bHasPushedMatrix)	{
 		m_bHasPushedMatrix = false;
 	}
 
