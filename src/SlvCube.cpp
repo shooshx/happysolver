@@ -6,16 +6,16 @@
 
 
 SlvCube::SlvCube(const vector<ShapePlace>& plc, const vector<ShapePlace>& abs_plc, const PicsSet *picset, const Shape *_shape) 
-	: bConsidersSym(picset->bConsiderSymetric), painter(NULL), shape(_shape)
+	: painter(NULL), shape(_shape)
 {
 	for(int j = 0; j < plc.size(); ++j)
 	{
 		// sc is the index in the added array of the set
 		// rt is the absolute [0,7] rotation index
-		dt.push_back(SlvPiece(plc[j].sc, plc[j].rt, abs_plc[j].sc, abs_plc[j].rt));
+		dt.push_back(SlvPiece(abs_plc[j].sc, abs_plc[j].rt));
 	}
 	
-	for(int j = 0; j < picset->addedSize(); ++j)
+	for(int j = 0; j < picset->added.size(); ++j)
 	{
 		int gind = -1, pind = -1;
 		PicBucket::instance().getGP(picset->added[j].defInd, &gind, &pind);
@@ -25,7 +25,7 @@ SlvCube::SlvCube(const vector<ShapePlace>& plc, const vector<ShapePlace>& abs_pl
 }
 
 SlvCube::SlvCube(const Shape* _shape) 
-: bConsidersSym(false), painter(NULL), shape(_shape)
+	: painter(NULL), shape(_shape)
 {
 }
 
@@ -58,6 +58,8 @@ void SlvCube::genPainter()
 
 	painter.setSlvCube(this); // make it not null only now.
 	PicsSet pics(this);  // this ctor takes from the bucket only the data, not the selection
+	// no need to consider symmetry, even if it was considered when this solution was built since we only take things
+	// from added, which is not affected by symmetry
 
 	for (int f = 0; f < dt.size(); ++f)
 	{
@@ -102,17 +104,17 @@ bool SlvCube::saveTo(MyFile *wrfl, int index)
 	wrfl->writeValue(VAL1_SLV_SC, false, 1);
 	for(i = 0; i < dt.size(); ++i)
 	{
-		wrfl->writeNums(1, false, dt[i].sc);
+		wrfl->writeNums(1, false, dt[i].abs_sc);
 	}
 	wrfl->writeNums(0, true);
 	wrfl->writeValue(VAL1_SLV_RT, false, 1);
 	for(i = 0; i < dt.size(); ++i)
 	{
-		wrfl->writeNums(1, false, dt[i].rt);
+		wrfl->writeNums(1, false, dt[i].abs_rt);
 	}
 	wrfl->writeNums(0, true);
 	wrfl->writeValue(VAL1_SLV_SYM, false, 1);
-	wrfl->writeNums(1, true, (int)bConsidersSym);
+	wrfl->writeNums(1, true, (int)false);
 	wrfl->writeValue(VAL1_SLV_NPIC, false, 1);
 	wrfl->writeNums(1, true, picdt.size());
 	
@@ -141,12 +143,12 @@ bool SlvCube::readFrom(MyFile *rdfl, int slvsz)
 	if (!rdfl->seekValue(VAL1_SLV_SC, 1)) return false;
 	for(i = 0; i < slvsz; ++i)
 	{
-		if (rdfl->readNums(1, &dt[i].sc) < 1) return false;
+		if (rdfl->readNums(1, &dt[i].abs_sc) < 1) return false;
 	}
 	if (!rdfl->seekValue(VAL1_SLV_RT, 1)) return false;
 	for(i = 0; i < slvsz; ++i)
 	{
-		if (rdfl->readNums(1, &dt[i].rt) < 1) return false;
+		if (rdfl->readNums(1, &dt[i].abs_rt) < 1) return false;
 	}
 	
 	int nSym = 0; // default = 0
@@ -154,7 +156,7 @@ bool SlvCube::readFrom(MyFile *rdfl, int slvsz)
 	{
 		if (rdfl->readNums(1, &nSym) < 1) return false;
 	}
-	bConsidersSym = (nSym != 0);
+	//bConsidersSym = (nSym != 0);
 
 	if (!rdfl->seekValue(VAL1_SLV_NPIC, 1)) return false;
 	int picssz = -1;

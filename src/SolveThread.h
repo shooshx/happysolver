@@ -61,7 +61,7 @@ class SolveThread :public QThread
 	Q_OBJECT
 public:
 	SolveThread() :m_pics(NULL), m_slvs(NULL), m_shp(NULL), m_conf(NULL)
-		,fExitnow(FALSE), fRunning(false)
+		,fExitnow(0), fRunning(false)
 	{}
 
 	void setRuntime(Solutions *slvs, Shape *shp, PicsSet *pics, EngineConf* conf) 
@@ -81,7 +81,7 @@ private:
 	EngineConf *m_conf; // pointer to the m_conf in the document. copied on run()
 
 public:
-	volatile int fExitnow; // should be TRUE or FALSE
+	volatile int fExitnow; // should be 1 or 0
 	volatile bool fRunning;
 	RunStats m_stats;
 

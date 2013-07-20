@@ -17,7 +17,7 @@ class PicDef;
 class PicType
 {	
 public:
-	PicType() : rtnnum(0), count(0){
+	PicType() : rtnnum(0), isSym(false) {
 		for(int i = 0; i < 8; ++i)
 			bits[i] = 0;
 	}
@@ -26,18 +26,23 @@ public:
 	/// \arg bCsym the what-to-do-with-Asymmetric-pieces option
 	void load(const PicDef& thedef, bool bCsym);
 	
-	int rtnnum;
+	int rtnnum; // how many rtns we actually have
 	PicArr rtns[8];
 	TPicBits bits[8];
+	// does this type represent a non symmetric piece.
+	// normal pieces and non-symmetric pieces are represented by different types even though with the same shape
+	bool isSym; 
 
-	int count; // how many instances of this pieces exist
+	int count() const { // how many instances of this pieces exist
+		return addedInds.size();
+	}
 
 	// a reference for the defs this type represents
 	class AddedRef {
 	public:
 		AddedRef(int _addedInd = -1, int _defRot = -1) : addedInd(_addedInd), defRot(_defRot) {}
 		int addedInd; // index to the added list
-		int defRot; // our rtn which is the base shape in the def refers to. [0,7]
+		int defRot; // our rtn which is the base shape refers to this rtn in the def. [0,7]
 	};
 
 	vector<AddedRef> addedInds; ///< the index of the PicDef in the bucket
@@ -78,34 +83,20 @@ public:
 	///	this ctor takes the selection from the bucket
 	///	with bSym == true, there are more rtns for every pic.
 	/// \see CubeDoc::solveGo()
-	PicsSet(bool bSym);
+	PicsSet(bool cSym);
 
 	/// used in the initialization of PicBucket
-	PicsSet() : bConsiderSymetric(false), totalRtnCount(0)
+	PicsSet() : totalRtnCount(0), considerSymetric(false)
 	{}
 						
-	int compSize() const { return comp.size(); }
-	int addedSize() const { return added.size(); }
-
 	const PicDef* getDef(int abs_sc) const;
 
-	/// create the rotated version of all pieces in the set
-	//void makereps();
-
-	bool bConsiderSymetric;
 	vector<PicType> comp;   // compressed list of distinct pieces, with references to the added list
 	vector<AddedPic> added; // all pieces added, by the order they were added
 
-	int totalRtnCount;
-
-// 	struct RtnInfo {
-// 		TPicBits bits;
-// 		TypeRef ref;
-// 		ushort nrtns;
-// 	};
-// 	// all rtns of all types in one vector
-// 	vector<RtnInfo> allRtn;
+	int totalRtnCount; // needed as the maximum size of tryd array
+	bool considerSymetric;
 
 public:
-	void add(int defInd);
+	void add(int defInd, bool considerSym);
 };

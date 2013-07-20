@@ -126,6 +126,7 @@ void PicBucket::makeBitmapList()
 
 	for(gind = 0; gind < grps.size(); ++gind)
 	{
+		//printf("bitmaps %d\n", gind);
 		PicGroupDef &cgrp = grps[gind];
 		const QImage &gimg = cgrp.tex->img;
 		switch (cgrp.drawtype)
@@ -168,7 +169,7 @@ void PicBucket::makeBitmapList()
 			PicDef &cpic = cgrp.getPic(pind); //'p'
 
 			QImage pimg; // needs to be in this scope so it won't get destroyed
-			if (isIndividual(cgrp.drawtype))
+			if (cgrp.isIndividual())
 			{
 				pimg = cpic.tex->img.mirrored(false, true); // transform it back 
 				origcbuf = (unsigned char*)pimg.bits(); // move to unsigned, rid of const.
@@ -237,6 +238,7 @@ void PicBucket::makeBitmapList()
 
 		}
 	}
+
 }
 
 
@@ -250,7 +252,6 @@ Texture* PicBucket::newTexture(QImage& im, bool in3d)
 		QImage b = im.rgbSwapped();
 		GlTexture *gt = new GlTexture();
 		gt->init(GL_TEXTURE_2D, Vec2i(b.width(), b.width()), 1, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, b.bits(), GL_LINEAR, GL_LINEAR);
-		texs.push_back(NULL);
 		gtexs.push_back(gt);
 	}
 	else {
@@ -428,7 +429,7 @@ bool PicBucket::loadXML(const string& data)
 				cgrp.tex = newTexture(cgrp.blendImage(baseTex), false);
 				cgrp.gtex = gtexs[0]; //the noise tex
 			}
-			else if (isIndividual(cgrp.drawtype)) {
+			else if (cgrp.isIndividual()) {
 				cgrp.gtex = baseGTex;
 			}
 
@@ -452,18 +453,21 @@ bool PicBucket::loadXML(const string& data)
 						for (int x = 0; x < 5; ++x)
 						{
 							// get the first number;
-							if (text.at(0) == '0') curdef.v.set(x, y) = 0;
-							else curdef.v.set(x,y) = 1;
+							if (text.at(0) == '0') 
+								curdef.v.set(x, y) = 0;
+							else 
+								curdef.v.set(x,y) = 1;
 							text.remove(0, 1);
 
 						}
 					}
-					if (isIndividual(cgrp.drawtype))
+					if (cgrp.isIndividual())
 					{
 						curdef.xOffs = xpic->IntAttribute("x1");
 						curdef.yOffs = xpic->IntAttribute("y1");
 						curdef.tex = newTexture(cgrp.tex->img.copy(curdef.xOffs, curdef.yOffs, 128, 128).mirrored(false, true), false);
 					}
+					curdef.v.makeRtns(curdef.defRtns);
 					cgrp.picsi.push_back(pdefi); // the index in the bucket
 					++pdefi;
 					++pici;
@@ -493,7 +497,7 @@ bool PicBucket::loadXML(const string& data)
 					curdef.v = fromDef.v; // copy only the data of the piece
 
 
-					if (isIndividual(cgrp.drawtype))
+					if (cgrp.isIndividual())
 					{
 						curdef.xOffs = fromDef.xOffs;
 						curdef.yOffs = fromDef.yOffs;
@@ -546,7 +550,7 @@ void PicBucket::distinctMeshes()
 {
 	PicsSet ps;
 	for(int i = 0; i < pdefs.size(); ++i) {
-		ps.add(i);
+		ps.add(i, false);
 	}
 	printf("%d distinct meshes out of %d pieces\n", ps.comp.size(), pdefs.size());
 

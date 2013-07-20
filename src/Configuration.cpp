@@ -16,6 +16,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Configuration.h"
+#include "colorFuncs.h"
 
 #include <QSettings>
 
@@ -178,6 +179,7 @@ void DisplayConf::toRegistry(QSettings &reg)
 	reg.setValue("nLines", (int)nLines);
 
 	reg.setValue("nSwapTexEndians", int(nSwapTexEndians));
+	reg.setValue("slvBkColor", vec3ToText(slvBkColor));
 	reg.endGroup();
 }
 
@@ -199,6 +201,8 @@ void DisplayConf::fromRegistry(QSettings &reg)
 	bVtxNormals = (bool)reg.value("bVtxNormals", 0).toInt();
 	bLight = (bool)reg.value("bLight", 0).toInt();
 	nLines = (ELinesDraw)reg.value("nLines", LINES_WHITE).toInt(); // might not exist, LINES_BLACK is default
+
+	slvBkColor = vec3FromText(reg.value("slvBkColor", "").toString());
 
 	int swapRes = reg.value("nSwapTexEndians", -1).toInt();
 	if (swapRes == -1)

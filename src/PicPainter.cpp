@@ -288,7 +288,7 @@ void PicDisp::init(const DisplayConf& dpc)
 
 /// do the actual painting of a single piece in the actual OpenGL view.
 /// call the display list of the piece.
-void PicPainter::paint(bool fTargets, const Vec3& name, GLWidget *context) const
+void PicPainter::paint(bool fTargets, const Vec3& name, GLWidget *context, bool invertTex) const
 {
 	glPolygonOffset(1.0, 1.0); // go backward, draw polygons TBD- move to slvpainter
 
@@ -319,8 +319,8 @@ void PicPainter::paint(bool fTargets, const Vec3& name, GLWidget *context) const
 			prog->modelMat.set(context->model.cur());
 			prog->normalMat.set(context->model.cur().toNormalsTrans());
 
-			if (isIndividual(def->drawtype)) {
-				prog->texOffset.set(Vec2(m_pdef->xOffs/1024.0, m_pdef->yOffs/1024.0));
+			if (def->isIndividual()) {
+				prog->texOffset.set(Vec3(m_pdef->xOffs/1024.0, m_pdef->yOffs/1024.0, invertTex?1.0f:0.0f));
 			}
 		}
 		mglCheckErrorsC("x9a");

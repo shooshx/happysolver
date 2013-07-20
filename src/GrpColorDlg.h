@@ -20,6 +20,7 @@
 
 #include <QDialog>
 #include "ui_GrpColor.h"
+#include "MyLib/ParamBase.h"
 
 class CubeDoc;
 class PicGroupDef;
@@ -47,6 +48,10 @@ private:
 	PicGroupDef *m_grp;
 	int m_gind;
 
+	TypeProp<QColor> m_colA;
+	TypeProp<QColor> m_colB;
+	QColor m_prevA, m_prevB;
+
 signals:
 	void changed(int gind);
 	void visibilityChanged(bool showen);
@@ -55,23 +60,13 @@ public slots:
 	void update();
 
 private slots:
-	void foreRChanged(int v);
-	void foreGChanged(int v);
-	void foreBChanged(int v);
-	void backRChanged(int v);
-	void backGChanged(int v);
-	void backBChanged(int v);
 
-	void foreRTChanged(const QString &t) { ui.ForeRedSlide->setValue(t.toInt()); }
-	void foreGTChanged(const QString &t) { ui.ForeGreenSlide->setValue(t.toInt()); }
-	void foreBTChanged(const QString &t) { ui.ForeBlueSlide->setValue(t.toInt()); }
-	void backRTChanged(const QString &t) { ui.BackRedSlide->setValue(t.toInt()); }
-	void backGTChanged(const QString &t) { ui.BackGreenSlide->setValue(t.toInt()); }
-	void backBTChanged(const QString &t) { ui.BackBlueSlide->setValue(t.toInt()); }
-
-	void reset();
-	void switchC();
+	void on_botReset_clicked();
+	void on_botSwap_clicked();
 	void copy();
+
+	void colA_changed();
+	void colB_changed();
 
 protected:
 	virtual void hideEvent(QHideEvent* event) { emit visibilityChanged(false); QDialog::hideEvent(event); }

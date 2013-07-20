@@ -19,179 +19,80 @@
 #include "CubeDoc.h"
 #include "Pieces.h"
 #include "SlvCube.h"
+#include "MyLib/MyInputDlg.h"
+#include "colorFuncs.h"
 
-#include <QIntValidator>
 
-GrpColorDlg::GrpColorDlg(QWidget *parent, CubeDoc *doc) :QDialog(parent), m_doc(doc)
+GrpColorDlg::GrpColorDlg(QWidget *parent, CubeDoc *doc) 
+	:QDialog(parent), m_doc(doc)
+	, m_colA(NULL, "colA", "colA", QColor())
+	, m_colB(NULL, "colB", "colB", QColor())
 {
 	ui.setupUi(this);
 
-	QIntValidator *inv = new QIntValidator(0, 255, this);
-	ui.ForeRedEdit->setValidator(inv);
-	ui.ForeGreenEdit->setValidator(inv);
-	ui.ForeBlueEdit->setValidator(inv);
-	ui.BackRedEdit->setValidator(inv);
-	ui.BackGreenEdit->setValidator(inv);
-	ui.BackBlueEdit->setValidator(inv);
+	(new ColorSelIn(&m_colA, ui.botA, false, WidgetIn::DoModal))->reload();
+	(new ColorSelIn(&m_colB, ui.botB, false, WidgetIn::DoModal))->reload();
+	connect(&m_colA, SIGNAL(changed()), this, SLOT(colA_changed()));
+	connect(&m_colB, SIGNAL(changed()), this, SLOT(colB_changed()));
 
-	connect(ui.ForeRedSlide, SIGNAL(valueChanged(int)), this, SLOT(foreRChanged(int)));
-	connect(ui.ForeGreenSlide, SIGNAL(valueChanged(int)), this, SLOT(foreGChanged(int)));
-	connect(ui.ForeBlueSlide, SIGNAL(valueChanged(int)), this, SLOT(foreBChanged(int)));
-	connect(ui.BackRedSlide, SIGNAL(valueChanged(int)), this, SLOT(backRChanged(int)));
-	connect(ui.BackGreenSlide, SIGNAL(valueChanged(int)), this, SLOT(backGChanged(int)));
-	connect(ui.BackBlueSlide, SIGNAL(valueChanged(int)), this, SLOT(backBChanged(int)));
-
-	connect(ui.ForeRedEdit, SIGNAL(textChanged(const QString&)), this, SLOT(foreRTChanged(const QString&)));
-	connect(ui.ForeGreenEdit, SIGNAL(textChanged(const QString&)), this, SLOT(foreGTChanged(const QString&)));
-	connect(ui.ForeBlueEdit, SIGNAL(textChanged(const QString&)), this, SLOT(foreBTChanged(const QString&)));
-	connect(ui.BackRedEdit, SIGNAL(textChanged(const QString&)), this, SLOT(backRTChanged(const QString&)));
-	connect(ui.BackGreenEdit, SIGNAL(textChanged(const QString&)), this, SLOT(backGTChanged(const QString&)));
-	connect(ui.BackBlueEdit, SIGNAL(textChanged(const QString&)), this, SLOT(backBTChanged(const QString&)));
-
-	connect(ui.resetButton, SIGNAL(clicked(bool)), this, SLOT(reset()));
-	connect(ui.switchButton, SIGNAL(clicked(bool)), this, SLOT(switchC()));
-	connect(ui.copyButton, SIGNAL(clicked(bool)), this, SLOT(copy()));
+	update();
 }
 
-void GrpColorDlg::blockSignals(bool block)
-{
-	ui.ForeRedSlide->blockSignals(block);
-	ui.ForeGreenSlide->blockSignals(block);
-	ui.ForeBlueSlide->blockSignals(block);
-	ui.BackRedSlide->blockSignals(block);
-	ui.BackGreenSlide->blockSignals(block);
-	ui.BackBlueSlide->blockSignals(block);
-	ui.ForeRedEdit->blockSignals(block);
-	ui.ForeGreenEdit->blockSignals(block);
-	ui.ForeBlueEdit->blockSignals(block);
-	ui.BackRedEdit->blockSignals(block);
-	ui.BackGreenEdit->blockSignals(block);
-	ui.BackBlueEdit->blockSignals(block);
-}
+
 
 void GrpColorDlg::update()
 {
-	if (!m_doc->solvesExist())
-	{
+	if (!m_doc->solvesExist()) {
 		m_grp = NULL;
 		return;
 	}
-	QString s;
 
-	blockSignals(true); // avoid update to cycle back to the view
 	SlvCube *slv = m_doc->getCurrentSolve();
 	m_gind = slv->picdt[0].gind;
 	m_grp = &PicBucket::mutableInstance().grps[m_gind];
-	ui.ForeRedSlide->setValue((int)(m_grp->color.r * 255.0));
-	s = QString("%1").arg(m_grp->color.r * 255.0);
-	ui.ForeRedL->setText(s);
-	ui.ForeRedEdit->setText(s);
-	ui.ForeGreenSlide->setValue((int)(m_grp->color.g * 255.0));
-	s = QString("%1").arg(m_grp->color.g * 255.0);
-	ui.ForeGreenL->setText(s);
-	ui.ForeGreenEdit->setText(s);
-	ui.ForeBlueSlide->setValue((int)(m_grp->color.b * 255.0));
-	s = QString("%1").arg(m_grp->color.b * 255.0);
-	ui.ForeBlueL->setText(s);
-	ui.ForeBlueEdit->setText(s);
-	ui.BackRedSlide->setValue((int)(m_grp->exColor.r * 255.0));
-	s = QString("%1").arg(m_grp->exColor.r * 255.0);
-	ui.BackRedL->setText(s);
-	ui.BackRedEdit->setText(s);
-	ui.BackGreenSlide->setValue((int)(m_grp->exColor.g * 255.0));
-	s = QString("%1").arg(m_grp->exColor.g * 255.0);
-	ui.BackGreenL->setText(s);
-	ui.BackGreenEdit->setText(s);
-	ui.BackBlueSlide->setValue((int)(m_grp->exColor.b * 255.0));
-	s = QString("%1").arg(m_grp->exColor.b * 255.0);
-	ui.BackBlueL->setText(s);
-	ui.BackBlueEdit->setText(s);
-	blockSignals(false);
+
+	m_prevA = toCol(m_grp->color);
+	m_prevB = toCol(m_grp->exColor);
+	m_colA = m_prevA;
+	m_colB = m_prevB;
+
+	ui.prevA->setText(colToText(m_prevA));
+	ui.prevB->setText(colToText(m_prevB));
+	ui.newA->setText(colToText(m_prevA));
+	ui.newB->setText(colToText(m_prevB));
+
 }
 
-void GrpColorDlg::reset()
-{
-	ui.ForeRedSlide->setValue(ui.ForeRedL->text().toInt());
-	ui.ForeGreenSlide->setValue(ui.ForeGreenL->text().toInt());
-	ui.ForeBlueSlide->setValue(ui.ForeBlueL->text().toInt());
-	ui.BackRedSlide->setValue(ui.BackRedL->text().toInt());
-	ui.BackGreenSlide->setValue(ui.BackGreenL->text().toInt());
-	ui.BackBlueSlide->setValue(ui.BackBlueL->text().toInt());
+void GrpColorDlg::colA_changed() {
+	if (m_grp == NULL)
+		return;
+	m_grp->color = toVec(m_colA);
+	ui.newA->setText(colToText(m_colA));
+	emit changed(HINT_SLV_PAINT);
+}
+void GrpColorDlg::colB_changed() {
+	if (m_grp == NULL)
+		return;
+	m_grp->exColor = toVec(m_colB);
+	ui.newB->setText(colToText(m_colB));
+	emit changed(HINT_SLV_PAINT);
 }
 
-void GrpColorDlg::switchC()
+void GrpColorDlg::on_botReset_clicked()
 {
-	setUpdatesEnabled(false);
-	int br = ui.ForeRedSlide->value();
-	int bg = ui.ForeGreenSlide->value();
-	int bb = ui.ForeBlueSlide->value();
-	ui.ForeRedSlide->setValue(ui.BackRedSlide->value());
-	ui.ForeGreenSlide->setValue(ui.BackGreenSlide->value());
-	ui.ForeBlueSlide->setValue(ui.BackBlueSlide->value());
-	ui.BackRedSlide->setValue(br);
-	ui.BackGreenSlide->setValue(bg);
-	ui.BackBlueSlide->setValue(bb);
-	setUpdatesEnabled(true);
+	m_colA = m_prevA;
+	m_colB = m_prevB;
+}
+
+void GrpColorDlg::on_botSwap_clicked()
+{
+	QColor tmp = m_colA;
+	m_colA = m_colB.val();
+	m_colB = tmp;
 }
 
 void GrpColorDlg::copy()
 {
-	QApplication::clipboard()->setText(QString("(%1, %2, %3), (%4, %5, %6)").arg(ui.ForeRedSlide->value()).arg( 
-		ui.ForeGreenSlide->value()).arg(ui.ForeBlueSlide->value()).arg(ui.BackRedSlide->value()).arg(
-		ui.BackGreenSlide->value()).arg(ui.BackBlueSlide->value()));
+
 }
 
-void GrpColorDlg::foreRChanged(int v) 
-{ 
-	ui.ForeRedEdit->setText(QString("%1").arg(v)); 
-	if (m_grp != NULL)
-	{
-		m_grp->color.r = v/255.0;
-		emit changed(m_gind);
-	}
-}
-void GrpColorDlg::foreGChanged(int v) 
-{ 
-	ui.ForeGreenEdit->setText(QString("%1").arg(v)); 
-	if (m_grp != NULL)
-	{
-		m_grp->color.g = v/255.0;
-		emit changed(m_gind);
-	}
-}
-void GrpColorDlg::foreBChanged(int v) 
-{ 
-	ui.ForeBlueEdit->setText(QString("%1").arg(v)); 
-	if (m_grp != NULL)
-	{
-		m_grp->color.b = v/255.0;
-		emit changed(m_gind);
-	}
-}
-void GrpColorDlg::backRChanged(int v) 
-{ 
-	ui.BackRedEdit->setText(QString("%1").arg(v)); 
-	if (m_grp != NULL)
-	{
-		m_grp->exColor.r = v/255.0;
-		emit changed(m_gind);
-	}
-}
-void GrpColorDlg::backGChanged(int v) 
-{ 
-	ui.BackGreenEdit->setText(QString("%1").arg(v)); 
-	if (m_grp != NULL)
-	{
-		m_grp->exColor.g = v/255.0;
-		emit changed(m_gind);
-	}
-}
-void GrpColorDlg::backBChanged(int v) 
-{ 
-	ui.BackBlueEdit->setText(QString("%1").arg(v)); 
-	if (m_grp != NULL)
-	{
-		m_grp->exColor.b = v/255.0;
-		emit changed(m_gind);
-	}
-}

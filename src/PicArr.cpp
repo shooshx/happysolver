@@ -55,13 +55,8 @@ bool PicArr::equalTo(const PicArr &dest, bool bSym) const
 
 void PicArr::copyTo(PicArr &dest) const
 {
-	for(int x = 0; x < 5; ++x)
-	{ 
-		for(int y = 0; y < 5; ++y)
-		{
-			dest.set(x,y) = axx(x,y);
-		}
-	}
+	for(int i = 0; i < 25; ++i)
+		dest.v[i] = v[i];
 	dest.turned = turned;
 	dest.rtnindx = rtnindx;
 }
@@ -79,4 +74,24 @@ TPicBits PicArr::getBits() const
 		b |= (axx(frameX[i], frameY[i]) != 0)?1:0;
 	}
 	return b;
+}
+
+
+void PicArr::makeRtns(PicArr rtns[8]) const{
+	PicArr tmppic;
+	copyTo(tmppic);
+
+	tmppic.turned = false;
+	for(int i = 0; i < 8; ++i)
+	{ // make all it's rotations
+		tmppic.copyTo(rtns[i]);
+		rtns[i].rtnindx = i;
+		if (i != 3) 
+			tmppic.turn();
+		else 
+		{
+			tmppic.turned = true;
+			tmppic.revY();
+		}
+	}
 }

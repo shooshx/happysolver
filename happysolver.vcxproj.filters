@@ -51,6 +51,27 @@
     <Filter Include="Misc\tinuxml">
       <UniqueIdentifier>{66607df8-8bc4-4eb4-b538-d7836e54b3c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="MyLib">
+      <UniqueIdentifier>{5e48c39b-4e08-45a7-a2f1-3e4183401cb4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Debug">
+      <UniqueIdentifier>{65a9f5aa-bc4c-4895-80db-4a1808c781ae}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Generated Files\Release">
+      <UniqueIdentifier>{07bf2375-adaa-4449-adfe-0ded4af34fbf}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Generated Files\Template">
+      <UniqueIdentifier>{63fc3066-5455-4cce-9e70-dcc474641e35}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="MyLib\QtAdd">
+      <UniqueIdentifier>{59f0a50f-9717-44c9-8ad7-1e85080076a8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GeneratedFiles\Debug\moc_ActFocusComboBox.cpp">
@@ -278,137 +299,63 @@
     <ClCompile Include="src\ObjExport.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="GeneratedFiles\ui_about.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_GrpColor.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_OptionsDlg.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_SolveDlg.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\BuildWorld.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Cube.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\CubeAcc.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Shape.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Space3D.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MyObject.h">
-      <Filter>3D</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MyPoint.h">
-      <Filter>3D</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MyPolygon.h">
-      <Filter>3D</Filter>
-    </ClInclude>
-    <ClInclude Include="src\PicPainter.h">
-      <Filter>3D</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Texture.h">
-      <Filter>3D</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Configuration.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="src\general.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GlobDefs.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MemoryMgmt.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MyFile.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="resource1.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SlvCube.h">
-      <Filter>Engine\solutions</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SlvPainter.h">
-      <Filter>Engine\solutions</Filter>
-    </ClInclude>
-    <ClInclude Include="src\PicArr.h">
-      <Filter>Engine\pieces</Filter>
-    </ClInclude>
-    <ClInclude Include="src\PicsSet.h">
-      <Filter>Engine\pieces</Filter>
-    </ClInclude>
-    <ClInclude Include="src\OpenGL\ShaderProgram.h">
-      <Filter>OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\OpenGL\Shaders.h">
-      <Filter>OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\OpenGL\GLTexture.h">
-      <Filter>OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\OpenGL\glGlob.h">
-      <Filter>OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Vec.h">
-      <Filter>3D</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Mat.h">
-      <Filter>3D</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Mesh.h">
-      <Filter>3D</Filter>
-    </ClInclude>
-    <ClInclude Include="src\OpenGL\build.vtx.glsl.h">
-      <Filter>OpenGL\generated</Filter>
-    </ClInclude>
-    <ClInclude Include="src\OpenGL\build.frag.glsl.h">
-      <Filter>OpenGL\generated</Filter>
-    </ClInclude>
-    <ClInclude Include="src\NoiseGenerator.h">
-      <Filter>3D</Filter>
-    </ClInclude>
-    <ClInclude Include="src\OpenGL\flat.frag.glsl.h">
-      <Filter>OpenGL\generated</Filter>
-    </ClInclude>
-    <ClInclude Include="src\OpenGL\flat.vtx.glsl.h">
-      <Filter>OpenGL\generated</Filter>
-    </ClInclude>
-    <ClInclude Include="src\OpenGL\cubesNoise.frag.glsl.h">
-      <Filter>OpenGL\generated</Filter>
-    </ClInclude>
-    <ClInclude Include="src\OpenGL\cubesNoise.vtx.glsl.h">
-      <Filter>OpenGL\generated</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MatStack.h">
-      <Filter>3D</Filter>
-    </ClInclude>
-    <ClInclude Include="src\tinyxml\tinyxml2.h">
-      <Filter>Misc\tinuxml</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ObjExport.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="src\sglu\sglu.h">
-      <Filter>OpenGL\glu</Filter>
-    </ClInclude>
+    <ClCompile Include="src\MyLib\MyColorPicker.cpp">
+      <Filter>MyLib</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_MyColorPicker.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_MyColorPicker.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_MyColorPicker.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MyLib\ParamBase.cpp">
+      <Filter>MyLib</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ParamBase.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ParamBase.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_ParamBase.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MyLib\MyInputDlg.cpp">
+      <Filter>MyLib</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_MyInputDlg.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_MyInputDlg.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_MyInputDlg.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MyLib\QtAdd\qtcolortriangle.cpp">
+      <Filter>MyLib\QtAdd</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_qtcolortriangle.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_qtcolortriangle.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_qtcolortriangle.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_MyDialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_MyDialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_MyDialog.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuildStep Include="images\about.png">
@@ -644,15 +591,178 @@
     <CustomBuild Include="src\OpenGL\cubesNoise.vtx.glsl">
       <Filter>OpenGL\glsl</Filter>
     </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="images\HappySolver.ico" />
-    <None Include="src\OpenGL\makeString.py">
-      <Filter>OpenGL</Filter>
-    </None>
-    <None Include="stdpcs.xml">
+    <CustomBuild Include="src\MyLib\MyColorPicker.h">
+      <Filter>MyLib</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\MyLib\MyColorPicker.ui">
+      <Filter>MyLib</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\MyLib\ParamBase.h">
+      <Filter>MyLib</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\MyLib\MyInputDlg.h">
+      <Filter>MyLib</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\MyLib\MyInputDlg.ui">
+      <Filter>MyLib</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\MyLib\QtAdd\qtcolortriangle.h">
+      <Filter>MyLib\QtAdd</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\MyLib\MyDialog.h">
+      <Filter>MyLib</Filter>
+    </CustomBuild>
+    <CustomBuild Include="images\HappySolver.ico" />
+    <CustomBuild Include="stdpcs.xml">
       <Filter>Resource Files</Filter>
-    </None>
+    </CustomBuild>
+    <CustomBuild Include="GeneratedFiles\ui_about.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GeneratedFiles\ui_GrpColor.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GeneratedFiles\ui_MyColorPicker.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GeneratedFiles\ui_MyInputDlg.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GeneratedFiles\ui_OptionsDlg.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GeneratedFiles\ui_SolveDlg.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource1.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\BuildWorld.h">
+      <Filter>Engine</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\Cube.h">
+      <Filter>Engine</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\CubeAcc.h">
+      <Filter>Engine</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\Shape.h">
+      <Filter>Engine</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\Space3D.h">
+      <Filter>Engine</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\PicArr.h">
+      <Filter>Engine\pieces</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\PicsSet.h">
+      <Filter>Engine\pieces</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\SlvCube.h">
+      <Filter>Engine\solutions</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\SlvPainter.h">
+      <Filter>Engine\solutions</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\Mat.h">
+      <Filter>3D</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\MatStack.h">
+      <Filter>3D</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\Mesh.h">
+      <Filter>3D</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\NoiseGenerator.h">
+      <Filter>3D</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\Vec.h">
+      <Filter>3D</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\MyObject.h">
+      <Filter>3D</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\MyPoint.h">
+      <Filter>3D</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\MyPolygon.h">
+      <Filter>3D</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\PicPainter.h">
+      <Filter>3D</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\Texture.h">
+      <Filter>3D</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\colorFuncs.h">
+      <Filter>Misc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\ObjExport.h">
+      <Filter>Misc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\Configuration.h">
+      <Filter>Misc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\general.h">
+      <Filter>Misc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\GlobDefs.h">
+      <Filter>Misc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\MemoryMgmt.h">
+      <Filter>Misc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\MyFile.h">
+      <Filter>Misc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\tinyxml\tinyxml2.h">
+      <Filter>Misc\tinuxml</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\OpenGL\glGlob.h">
+      <Filter>OpenGL</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\OpenGL\GLTexture.h">
+      <Filter>OpenGL</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\OpenGL\ShaderProgram.h">
+      <Filter>OpenGL</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\OpenGL\Shaders.h">
+      <Filter>OpenGL</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\OpenGL\makeString.py">
+      <Filter>OpenGL</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\OpenGL\build.frag.glsl.h">
+      <Filter>OpenGL\generated</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\OpenGL\build.vtx.glsl.h">
+      <Filter>OpenGL\generated</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\OpenGL\cubesNoise.frag.glsl.h">
+      <Filter>OpenGL\generated</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\OpenGL\cubesNoise.vtx.glsl.h">
+      <Filter>OpenGL\generated</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\OpenGL\flat.frag.glsl.h">
+      <Filter>OpenGL\generated</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\OpenGL\flat.vtx.glsl.h">
+      <Filter>OpenGL\generated</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\sglu\sglu.h">
+      <Filter>OpenGL\glu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\MyLib\paramSpecialization.h">
+      <Filter>MyLib</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\MyLib\QtAdd\QtColorTriangle">
+      <Filter>MyLib\QtAdd</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="happysolver.rc" />

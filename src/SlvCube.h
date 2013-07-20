@@ -25,18 +25,16 @@ public:
 	/// make up a single solution to the shape.
 	struct SlvPiece
 	{
-		SlvPiece(int _sc = -1, int _rt = -1, int _abs_sc = -1, int _abs_rt = -1) 
-			: sc(_sc), rt(_rt), abs_sc(_abs_sc), abs_rt(_abs_rt), sdef(NULL)
+		SlvPiece(int _abs_sc = -1, int _abs_rt = -1) 
+			: abs_sc(_abs_sc), abs_rt(_abs_rt), sdef(NULL)
 		{}
 		// loaded data
-		int sc; ///< the piece, from the compressed pics
-		int rt; ///< the rotation, from the compressed pics
+
 		int abs_sc; ///< the piece, from the 'added' pics set
 		int abs_rt; ///< absolute rotation [0,7]
 
 		// inferred data, using PicsSet
 		const PicDef *sdef;
-		//int rtindx; // absolute rotation index [0,7]
 	};
 
 	/// SlvPic holds the data of a single piece that was selected when the solution was generated.

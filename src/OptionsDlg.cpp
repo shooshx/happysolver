@@ -19,16 +19,16 @@
 #include "Configuration.h"
 #include <QMessageBox>
 #include "GlobDefs.h"
+#include "MyLib/MyInputDlg.h"
+#include "colorFuncs.h"
+#include "CubeDoc.h"
 
 #include "Pieces.h"
 
-int colorPremut[24] = { 1234, 1243, 1324, 1342, 1423, 1432,  
-                        2134, 2143, 2314, 2341, 2413, 2431,
-						3124, 3142, 3214, 3241, 3412, 3421,
-						4123, 4132, 4213, 4231, 4312, 4321 };
 
 OptionsDlg::OptionsDlg(QWidget *parent, Configuration *conf)
 	:QDialog(parent), m_conf(conf), m_wasPers(-1)
+	, m_bkColor(NULL, "bkColor", "bkColor", QColor(0,0,0))
 {
 	int i;
 	ui.setupUi(this);
@@ -74,11 +74,20 @@ OptionsDlg::OptionsDlg(QWidget *parent, Configuration *conf)
 	ui.SD_lines->addItem("All", (int)LINES_ALL);
 	ui.SD_lines->addItem("Whites", (int)LINES_WHITE);
 
+	(new ColorSelIn(&m_bkColor, ui.bkColor, false, WidgetIn::DoModal))->reload();
+	connect(&m_bkColor, SIGNAL(changed()), this, SLOT(changedSlvBkCol()));
+	m_bkColor = toCol(m_conf->disp.slvBkColor);
+
 // 	for(i = 0; i < 24; ++i)
 // 		ui.SD_colorFlip->addItem(QString("%1").arg(colorPremut[i]), colorPremut[i]);
 // 	connect(ui.SD_colorFlip, SIGNAL(currentIndexChanged(int)), this, SLOT(colorFlipChanged()));
 
 	updateAll(m_conf);
+}
+
+void OptionsDlg::changedSlvBkCol() {
+	m_conf->disp.slvBkColor = toVec(m_bkColor);
+	emit updateSlv3D(HINT_SLV_PAINT);
 }
 
 // check in

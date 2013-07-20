@@ -38,8 +38,7 @@ void SlvPainter::paintPiece(int f, GLWidget* context, bool fTargets) const
 	model.translate(0.5, 2.5, 2.5);
 	model.rotate(rtnindx * -90, 1, 0, 0);
 
-	if (rtnindx >= 4)
-	{
+	if (rtnindx >= 4) {
 		model.rotate(180, 0, 0, 1);
 		model.rotate(90, 1, 0, 0);
 	}
@@ -52,7 +51,8 @@ void SlvPainter::paintPiece(int f, GLWidget* context, bool fTargets) const
 	//printf("%d %d %d\n", name.x, name.y, name.z);
 
 	mglCheckErrorsC("x6");
-	pdef->painter.paint(fTargets, name, context);
+	// if dispRot >= 4 it means the real part we're drawing is inverted from the model so we need to draw the texture on the other side
+	pdef->painter.paint(fTargets, name, context, (pdef->dispRot < 4) );
 	mglCheckErrorsC("x7");
 
 	model.pop();
@@ -66,7 +66,6 @@ void SlvPainter::paintLines(int f, bool singleChoise, GLWidget *context, ELinesD
 	prog->trans.set(context->transformMat());
 	prog->drawtype.set(DRAW_FLAT);
 	prog->colorAu.set(Vec3(0.8f, 0.8f, 0.8f));
-
 
 	glPolygonOffset(0.0, 0.0); // go forward, draw the lines
 
@@ -112,11 +111,12 @@ void SlvPainter::paint(GLWidget* context, bool fTargets, int singleChoise, int u
 
 
 
-bool SlvPainter::exportPieceToObj(ObjExport& oe, int i) const
+bool SlvPainter::exportPieceToObj(ObjExport& oe, int f) const
 {
-	const PicDef *pdef = scube->dt[i].sdef;
-	Shape::FaceDef *face = &scube->shape->faces[i];
-	int rtnindx = scube->dt[i].abs_rt;
+	const PicDef *pdef = scube->dt[f].sdef;
+	Shape::FaceDef *face = &scube->shape->faces[f];
+	//int rtnindx = scube->dt[i].abs_rt;
+	int rtnindx = rotationSub(scube->dt[f].abs_rt, pdef->dispRot);
 
 	Mat4 curMatrix = Mat4::translation(face->ex.x, face->ex.y, face->ex.z);
 
@@ -138,8 +138,7 @@ bool SlvPainter::exportPieceToObj(ObjExport& oe, int i) const
 	curMatrix.translate(0.5, 2.5, 2.5);
 	curMatrix.rotate(rtnindx * -90, 1, 0, 0);
 
-	if (rtnindx >= 4)
-	{
+	if (rtnindx >= 4) {
 		curMatrix.rotate(180, 0, 0, 1);
 		curMatrix.rotate(90, 1, 0, 0);
 	}

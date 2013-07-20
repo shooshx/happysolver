@@ -25,9 +25,9 @@ string humanCount(mint64 n)
 	QString init = QString("%1").arg(n);
 	
 	if (init.length() < 4) 
-		return init.toAscii().data();
+		return init.toLatin1().data();
 
-	QByteArray buf = init.toAscii();
+	QByteArray buf = init.toLatin1();
 	int len = buf.count();
 	
 	char rbuf[50] = {0};
@@ -49,9 +49,9 @@ string humanCount(double n, int pers)
 	mint64 dn = (qint64)n;
 	mint64 pwr = powOf10[mMin(pers, 11)];
 	mint64 fl = (qint64)((n - dn) * pwr);
-	QString sfl = QString("%1").arg(fl).toAscii();
+	QString sfl = QString("%1").arg(fl).toLatin1();
 
-	return humanCount(dn) + "." + sfl.toAscii().data();
+	return humanCount(dn) + "." + sfl.toLatin1().data();
 
 }
 

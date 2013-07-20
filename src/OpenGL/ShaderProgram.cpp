@@ -76,7 +76,7 @@ void ShaderProgram::use() const
 		return;
 	mglCheckErrorsC("buse");
 	glUseProgram(m_progId);
-	mglCheckErrors("use");
+	mglCheckErrorsC("use");
 	g_current = const_cast<ShaderProgram*>(this);
 }
 void ShaderProgram::unuse() const 
@@ -129,7 +129,7 @@ bool ShaderProgram::init(const ProgCompileConf& conf)
 	for (int i = 0; i < m_vtxprog.size(); ++i)
 	{
 		uint vso = glCreateShader(GL_VERTEX_SHADER);
-		QByteArray ba = m_vtxprog[i].toAscii();
+		QByteArray ba = m_vtxprog[i].toLatin1();
 		const char *srcs[2] = { defines.c_str(), ba.data() };
 		glShaderSource(vso, 2, srcs, NULL);
 		glCompileShader(vso);
@@ -142,7 +142,7 @@ bool ShaderProgram::init(const ProgCompileConf& conf)
 	for (int i = 0; i < m_geomprog.size(); ++i)
 	{
 		uint gso = glCreateShader(GL_GEOMETRY_SHADER_EXT);
-		QByteArray ba = m_geomprog[i].toAscii();
+		QByteArray ba = m_geomprog[i].toLatin1();
 		const char *srcs[2] = { defines.c_str(), ba.data() };
 		glShaderSource(gso, 2, srcs, NULL);
 		glCompileShader(gso);
@@ -155,7 +155,7 @@ bool ShaderProgram::init(const ProgCompileConf& conf)
 	for (int i = 0; i < m_fragprog.size(); ++i)
 	{
 		uint fso = glCreateShader(GL_FRAGMENT_SHADER);
-		QByteArray ba = m_fragprog[i].toAscii();
+		QByteArray ba = m_fragprog[i].toLatin1();
 		const char *srcs[2] = { defines.c_str(), ba.data() };
 		glShaderSource(fso, 2, srcs, NULL);
 		glCompileShader(fso);
@@ -353,9 +353,9 @@ void UniformParam::getLocation(uint progId)
 {
 	if (m_name.isEmpty())
 		return;
-	m_uid = glGetUniformLocation(progId, m_name.toAscii().data());
+	m_uid = glGetUniformLocation(progId, m_name.toLatin1().data());
 	if (m_uid == -1)
-		printf("WARNING: uniform '%s' location is -1!\n", m_name.toAscii().data());
+		printf("WARNING: uniform '%s' location is -1!\n", m_name.toLatin1().data());
 }
 
 
@@ -364,9 +364,9 @@ void AttribParam::getLocation(uint progId)
 {
 	if (m_name.isEmpty())
 		return;
-	m_uid = glGetAttribLocation(progId, m_name.toAscii().data());
+	m_uid = glGetAttribLocation(progId, m_name.toLatin1().data());
 	if (m_uid == -1)
-		printf("WARNING: attribute '%s' location is -1!\n", m_name.toAscii().data());
+		printf("WARNING: attribute '%s' location is -1!\n", m_name.toLatin1().data());
 }
 
 

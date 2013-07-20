@@ -14,11 +14,11 @@ static float filterZero(float x) // don't allow numbers like 1.1e-16 to the outp
 void ObjExport::addMesh(const PicGroupDef *def, Mesh& mesh, const Mat4& fMatrix)
 {
 	bool didMtl = false;
-
+	++numObjs;
 	if (def != NULL && mtl != NULL) {
-		if (def->drawtype == DRAW_COLOR)
+		//if (def->drawtype == DRAW_COLOR)
 		{
-			(*mtl) << "newmtl material" << ++numObjs << "\n";
+			(*mtl) << "newmtl material" << numObjs << "\n";
 			(*mtl) << "  Ns 32\n  d 1\n  Tr 1\n  Tf 1 1 1\n  illum 2\n  Ka 0.0000 0.0000 0.0000\n  Ks 0.3500 0.3500 0.3500\n";
 			(*mtl) << "  Kd " << def->color.r << " " << def->color.g << " " << def->color.b << "\n";
 			didMtl = true;
@@ -35,7 +35,9 @@ void ObjExport::addMesh(const PicGroupDef *def, Mesh& mesh, const Mat4& fMatrix)
 
 	// We found unique vertices. Now let's put them to file
 	for (int i = 0; i < mesh.m_vtx.size(); ++i) {
-		meshout << "v " << filterZero(mesh.m_vtx[i].x) << " " << filterZero(mesh.m_vtx[i].y) << " " << filterZero(mesh.m_vtx[i].z) << "\n";
+		Vec3 v = mesh.m_vtx[i];
+		v = fMatrix.transformVec(v);
+		meshout << "v " << filterZero(v.x) << " " << filterZero(v.y) << " " << filterZero(v.z) << "\n";
 	}
 
 // 	if (hasTex)	{

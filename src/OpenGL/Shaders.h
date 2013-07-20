@@ -51,7 +51,7 @@ public:
 	Mat4Uniform modelMat;
 	Mat3Uniform normalMat;
 	Vec3Attrib normal;
-	Vec2Uniform texOffset;
+	Vec3Uniform texOffset;
 	Vec3Uniform lightPos;
 };
 

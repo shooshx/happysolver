@@ -43,6 +43,9 @@
 #define SIZE_DEFAULT_Y 560
 #define SIZE_DEFAULT_MAX 1 // maximized or not
 
+#define RESTRICTED_OPTIONS 1
+
+
 /// select a specific QAction from a QActionGroup according to its data.
 /// the data needs to be an int. if no such QAction is found, returns NULL.
 QAction *selectGroupAct(QActionGroup *group, int sel)
@@ -104,7 +107,7 @@ MainWindow::MainWindow()
 	m_slvdlg = new SolveDlg(this, m_doc);
 	m_slvdlg->move(pos().x() + width() - m_slvdlg->width() - 7, pos().y() + height() - m_slvdlg->height() - 10);
 	m_grpColDlg = new GrpColorDlg(this, m_doc);
-	m_grpColDlg->setAttribute(Qt::WA_Moved); //makes it stick to its position where it is moved
+	//m_grpColDlg->setAttribute(Qt::WA_Moved); //makes it stick to its position where it is moved
 	m_asmStepDlg = new AssembleStepDlg(this);
 	m_asmStepDlg->setAttribute(Qt::WA_Moved);
 
@@ -161,7 +164,7 @@ string readFile(const QString filename) {
 
 	QTextStream in(&file);
 	QString data = in.readAll();
-	return string(data.toAscii().data());
+	return string(data.toLatin1().data());
 }
 
 class DlgProg : public ProgressCallback {
@@ -426,7 +429,9 @@ void MainWindow::createMenus()
 	m_fileMenu->addAction(m_newShapeAct);
 	m_fileMenu->addAction(m_openAct);
 	m_fileMenu->addAction(m_saveAct);
+#ifdef RESTRICTED_OPTIONS
 	m_fileMenu->addAction(m_exportAct);
+#endif
 	m_fileMenu->addAction(m_resetSolAct);
 	m_fileMenu->addSeparator();
 //	m_recentFilesMenu = new QMenu(tr("Recent &Files"), m_fileMenu);
@@ -455,7 +460,9 @@ void MainWindow::createMenus()
 	//m_viewMenu->addSeparator();
 	m_viewMenu->addAction(m_editOptionsAct);
 	m_viewMenu->addAction(m_showSlvDlgAct);
-	//m_viewMenu->addAction(m_showGrpColorAct);
+#ifdef RESTRICTED_OPTIONS
+	m_viewMenu->addAction(m_showGrpColorAct);
+#endif
 	m_viewMenu->addAction(m_showAsmDlgAct);
 
 // 	m_actionsMenu = menuBar()->addMenu(tr("&3D"));
@@ -680,7 +687,7 @@ void MainWindow::connectActions()
 	connect(m_showGrpColorAct, SIGNAL(triggered(bool)), m_grpColDlg, SLOT(setVisible(bool)));
 	connect(m_grpColDlg, SIGNAL(visibilityChanged(bool)), m_showGrpColorAct, SLOT(setChecked(bool)));
 
-	//connect(m_grpColDlg, SIGNAL(changed(int)), &PicBucket::instance(), SLOT(updateTexture(int)));
+	connect(m_grpColDlg, SIGNAL(changed(int)), m_modelGlWidget, SLOT(updateView(int)));
 	connect(m_asmStepDlg, SIGNAL(stepChanged(int)), m_doc, SLOT(setShowUpToStep(int)));
 	connect(m_showAsmDlgAct, SIGNAL(triggered(bool)), m_asmStepDlg, SLOT(setVisible(bool)));
 	connect(m_asmStepDlg, SIGNAL(visibilityChanged(bool)), m_showAsmDlgAct, SLOT(setChecked(bool)));
@@ -725,6 +732,8 @@ void MainWindow::doModalOptionsDlg()
 	DisplayConf lastdc = m_doc->m_conf.disp;
 
 	OptionsDlg dlg(this, &m_doc->m_conf);
+	connect(&dlg, SIGNAL(updateSlv3D(int)), m_modelGlWidget, SLOT(updateView(int)));
+
 	if (dlg.exec() == QDialog::Accepted)
 	{
 		bool rend = lastdc.diffRender(m_doc->m_conf.disp);

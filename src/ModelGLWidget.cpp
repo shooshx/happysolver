@@ -71,23 +71,18 @@ void ModelGLWidget::paint(GLWidget* that, CubeDoc *doc, SlvCube *scube, bool fTa
 	if (!fTargets)
 	{
 		//glEnable(GL_COLOR_MATERIAL);
-
+		Vec3 bkc = doc->m_conf.disp.slvBkColor;
 		if ((singleChoise >= 0) && (scube->getPieceGrpDef(singleChoise)->blackness > BLACK_NOT))
 			glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 		else
-			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+			glClearColor(bkc.r, bkc.g, bkc.b, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
-	else 
-	{ // only drawing targets, no need to bother with colors. maybe disable lighting as well?
-		//glDisable(GL_COLOR_MATERIAL);
-	}
+	
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_POLYGON_OFFSET_FILL);
-	//glEnable(GL_LINE_SMOOTH);
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // just make sure
 
 	mglCheckErrorsC("x1");
 	// call the SlvPainter to do its job.

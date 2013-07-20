@@ -18,6 +18,7 @@ public:
 	void revY();
 	void copyTo(PicArr &dest) const;
 	bool equalTo(const PicArr &dest, bool bSym = false) const;
+	void makeRtns(PicArr rtns[8]) const;
 
 	int& set(int x, int y) { return v[x * 5 + y]; }
 	int axx(int x, int y) const { return v[(x << 2)+x + y]; }

@@ -99,7 +99,7 @@ Cube::Cube(const Shape* shapeset, const PicsSet* picset, const EngineConf* conf)
 	}
 
 	clear();
-	cout << picset->addedSize() << " pieces, " << picset->compSize() << " distinct-pieces, " << pics->totalRtnCount << " rtns, " << plc.size() << " places in shape" << endl;
+	cout << picset->added.size() << " pieces, " << picset->comp.size() << " distinct-pieces, " << pics->totalRtnCount << " rtns, " << plc.size() << " places in shape" << endl;
 }	
 
 
@@ -239,31 +239,20 @@ TPicBits Cube::getCurrentCirc(int fc)
 
 }
 
-void Cube::symetricGetNextRtn(int sc, int fc, int &nextrt)
-{
-/*	TBD
-	if (!isIndividual(pics->pics[sc].thegrp()->drawtype) )
-		return;
 
-	const PicType& ppp = pics->pics[sc];
+bool Cube::isGoodSym(const PicType &pt, int rti, int fc)
+{
+	if (!pt.isSym )
+		return true;
+
 	Shape::EFacing dest = (lconf.nAsym == ASYM_OUTSIDE)?(Shape::FACING_OUT):(Shape::FACING_IN); 	
 
-	while ( (nextrt < ppp.rtnnum) && (ppp.rtns[nextrt].turned != (shape->faces[fc].facing == dest)) )
-	   ++nextrt;
-*/
+	return pt.rtns[rti].turned != (shape->faces[fc].facing == dest);
+
 }
 
 
-
-
-
-
-
 inline void TriedPieces::clear() {
-	//std::fill(m_dt.begin(), m_dt.end(), false);
-	// 		for(int i = 0; i < m_dt.size(); ++i) {
-	// 			m_dt[i] = 0;
-	// 		}
 	memset(&m_dt[0], 0, m_dt.size() * sizeof(m_dt[0]));
 	cnt = 0;
 }
@@ -296,6 +285,8 @@ bool Cube::makePossibilities2(int fc, ShapePlace &plcfc)
 			uint cover = circ | rtn;
 			// check that it matchs fmask
 			if ((cover & fmask) != fmask)
+				continue;
+			if (pics->considerSymetric && !isGoodSym(pt, rti, fc)) 
 				continue;
 			plcfc.possible.push_back(TypeRef(ci, rti));
 		}
@@ -340,7 +331,7 @@ bool Cube::maskAssemble(int fc)
 			selPoss = SillyRand::silly_rand() % possCount;
 		else
 			selPoss = 1; // if we're here it means there is more than one possibility
-		while (plcfc.mtryd.get(selPoss)) {
+		while (plcfc.mtryd.get(selPoss)) { // can be either one of any of the possible rtns in the set
 			selPoss = (selPoss + 1) % possCount;
 		}
 	}
@@ -466,32 +457,29 @@ void Cube::puttgr(Solutions *slvs, SolveThread *thread)
 // take the data in the plc and deceminate it to real Pieces from the PicTypes
 SlvCube* Cube::generateConcreteSlv() 
 {
-	vector<int> counts(pics->compSize()); // how much of each PicType we used
-	std::fill(counts.begin(), counts.end(), 0);
+	// don't use vector<bool> since it is evil
+	vector<vector<int> > used(pics->comp.size()); // how much of each PicType we used
+	for(int i = 0; i < used.size(); ++i) {
+		used[i].resize(pics->comp[i].addedInds.size());
+		std::fill(used[i].begin(), used[i].end(), 0);
+	}
 
 	vector<ShapePlace> abs_plc(plc.size());
 	for(int i = 0; i < plc.size(); ++i) 
 	{
 		int ti = plc[i].sc;
 		const PicType& pt = pics->comp[ti];
-		const PicType::AddedRef& added = pt.addedInds[counts[ti]];
-		counts[ti]++;
+
+		auto &ut = used[ti];
+		int select = SillyRand::silly_rand() % ut.size();
+		while (ut[select] != 0)
+			select = (select + 1) % ut.size(); // must end since we placed a part
+		ut[select] = 1;
+
+		const PicType::AddedRef& added = pt.addedInds[select];
 		abs_plc[i].sc = added.addedInd;
-		// the order they were added to the solution is the same order as they are selected from the set.
-
-
-//		int dr = rotationAdd(pt.rtns[plc[i].rt].rtnindx, added.defRot);
-
-
-		int br = pt.rtns[plc[i].rt].rtnindx; // base rotation
-		int ds = added.defRot; // Piece definition start 
-		int dr = -1; // def rotation
-		if ((ds < 4) == (br < 4))
-			dr = (br - ds + 4) % 4;
-		else
-			dr = ((br + ds) % 4) + 4;
-
-
+		// the order they were added to the solution is NO LONGER the same order as they are selected from the set.
+		int dr = rotationAdd(pt.rtns[plc[i].rt].rtnindx, added.defRot);
 		abs_plc[i].rt = dr;
 	}
 
@@ -500,15 +488,16 @@ SlvCube* Cube::generateConcreteSlv()
 
 
 
-void Cube::putorig(int sc, int rt, int p, int abs_sc, int abs_rt)
+void Cube::putorig(int p, int abs_sc, int abs_rt)
 {
 	plc[p].sc = abs_sc;
 	plc[p].rt = abs_rt;
 	
-	const int cdr = shape->faces[p].dr; //, csc = plc[p].sc; //, crt = plc[p].rt;
+	const int cdr = shape->faces[p].dr; 
 	const int cx = shape->faces[p].ex.x, cy = shape->faces[p].ex.y, cz = shape->faces[p].ex.z;
 	int j, k, b;	
-	const PicArr &pmat = pics->comp[sc].rtns[rt];
+	//const PicArr &pmat = pics->comp[sc].rtns[rt];
+	const PicArr &pmat = pics->getDef(abs_sc)->defRtns[abs_rt];
 	
 	for (b = 0; b < 16; ++b)
 	{
@@ -617,7 +606,7 @@ void Cube::genLinesIFS(SlvCube *slvc, LinesCollection &ifs)
 	for (f = 0; f < shape->fcn; ++f) 
 	{
 		auto df = slvc->dt[f];
-		putorig(df.sc, df.rt, f, df.abs_sc, df.abs_rt); // rt is not used
+		putorig(f, df.abs_sc, df.abs_rt); // rt is not used
 	}
 	
 	ifs.resize(shape->fcn);
@@ -686,6 +675,20 @@ void Cube::genLinesIFS(SlvCube *slvc, LinesCollection &ifs)
 
 
 #if 0
+void Cube::symetricGetNextRtn(int sc, int fc, int &nextrt)
+{
+	TBD
+	if (!pics->pics[sc].thegrp()->isIndividual() )
+		return;
+
+	const PicType& ppp = pics->pics[sc];
+	Shape::EFacing dest = (lconf.nAsym == ASYM_OUTSIDE)?(Shape::FACING_OUT):(Shape::FACING_IN); 	
+
+	while ( (nextrt < ppp.rtnnum) && (ppp.rtns[nextrt].turned != (shape->faces[fc].facing == dest)) )
+	   ++nextrt;
+
+}
+
 
 bool Cube::makePossibilities(int fc, ShapePlace &plcfc)
 {

@@ -77,23 +77,25 @@ private:
 	bool isLineBlack(int p, int l);
 	void placeSidePolygon(int b, MyObject& obj, int f, int curf, bool is1, int x, int y, bool backface);
 
-	void symetricGetNextRtn(int sc, int fc, int &nextrt);
+	//void symetricGetNextRtn(int sc, int fc, int &nextrt);
 	void clear(int cl = 0);
 
 	inline void putPic(const int n, const int r, const int p);	// put piece n in place p
-	inline void putorig(int sc, int rt, int p, int abs_sc, int abs_rt); 
+	inline void putorig(int p, int abs_sc, int abs_rt); 
 	void rmvPic(const int p);
 
-	bool superCheck(const int fc);
-	bool anotherpic(ShapePlace &plcfc, int fc);
-	bool assemble(int fc);
+	//bool superCheck(const int fc);
+	//bool anotherpic(ShapePlace &plcfc, int fc);
+	//bool assemble(int fc);
 
 	TPicBits getCurrentCirc(int fc);
-	bool makePossibilities(int fc, ShapePlace &plcfc);
+	//bool makePossibilities(int fc, ShapePlace &plcfc);
 	bool makePossibilities2(int fc, ShapePlace &plcfc);
 	bool maskAssemble(int fc);
 
 	SlvCube* generateConcreteSlv();
+
+	bool isGoodSym(const PicType &pt, int rti, int fc);
 
 private:
 

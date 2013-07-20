@@ -37,7 +37,7 @@ public:
 	PatchQGLContext() :QGLContext(QGLFormat()) {}
 	void generateFontDisplayLists(const QFont & fnt, int listBase)
 	{
-		QGLContext::generateFontDisplayLists(fnt, listBase);
+		//QGLContext::generateFontDisplayLists(fnt, listBase);
 	}
 	bool initialized() const
 	{
@@ -632,7 +632,7 @@ void GLWidget::mglPrint(const QString &str)			// Custom GL "Print" Routine
 
 	glPushAttrib(GL_LIST_BIT);							// Pushes The Display List Bits
 	glListBase(m_fontBase);					// Sets The Base Character to 32
-	glCallLists(str.length(), GL_UNSIGNED_BYTE, str.toAscii());	// Draws The Display List Text
+	glCallLists(str.length(), GL_UNSIGNED_BYTE, str.toLatin1());	// Draws The Display List Text
 	glPopAttrib();										// Pops The Display List Bits
 }
 
@@ -658,14 +658,15 @@ void mglCheckErrors(const char* place = NULL)
 {
 	QString s;
 	GLenum code;
-	while ((code = glGetError()) != GL_NO_ERROR)
+	int count = 0;
+	while ((code = glGetError()) != GL_NO_ERROR && count++ < 10)
 		s += QString("  0x%1: %2\n").arg(code, 0, 16).arg(errorText(code));
 	if (!s.isNull())
 	{
 		QString ps =  "\n";
 		if (place != NULL)
 			ps = QString(place) + "\n";
-		s.sprintf("GLError: %s%s", ps.toAscii().data(), s.toAscii().data());
+		s.sprintf("GLError: %s%s", ps.toLatin1().data(), s.toLatin1().data());
 		int ret = QMessageBox::critical(NULL, "GLError", s, "Continue", "Exit", "Break");
 #ifdef Q_WS_WIN
 		if (ret == 1)
@@ -688,14 +689,15 @@ void mglCheckErrorsC(const char* place = NULL)
 {
 	QString s;
 	GLenum code;
-	while ((code = glGetError()) != GL_NO_ERROR)
+	int count = 0;
+	while ((code = glGetError()) != GL_NO_ERROR && count++ < 10)
 		s += QString("  0x%1: %2\n").arg(code, 0, 16).arg(errorText(code));
 	if (!s.isNull())
 	{
 		QString ps =  "\n";
 		if (place != NULL)
 			ps = QString(place) + "\n";
-		printf("GLError: %s%s", ps.toAscii().data(), s.toAscii().data());
+		printf("GLError: %s%s", ps.toLatin1().data(), s.toLatin1().data());
 	}
 }
 void mglCheckErrorsC(const string& s)
@@ -709,5 +711,5 @@ void GLWidget::checkErrors(const char* place)
 		QMessageBox::critical(NULL, "Error", "invalid context");
 		return;
 	}
-	mglCheckErrors(place);
+	mglCheckErrorsC(place);
 }

@@ -33,10 +33,10 @@
 class UsedPieces
 {	// binary array
 public:
-	UsedPieces(const PicsSet* picSet) : m_dt(picSet->compSize()) {
+	UsedPieces(const PicsSet* picSet) : m_dt(picSet->comp.size()) {
 		clear();
 		for(int i = 0; i < m_dt.size(); ++i) {
-			m_dt[i].count = picSet->comp[i].count;
+			m_dt[i].count = picSet->comp[i].count();
 		}
 	}
 

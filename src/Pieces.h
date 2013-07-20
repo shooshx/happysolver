@@ -23,6 +23,8 @@
 #include "PicPainter.h"
 #include "PicArr.h"
 
+#include <memory>
+
 /** \file
 	Declares all classes involved in piece decleration and storage.
 	Declares the PicArr, PicDef, PicGroupDef, PicFamily and PicBucket classes.
@@ -45,10 +47,6 @@ enum EDrawType
 	DRAW_FLAT = 0x100
 };
 
-inline bool isIndividual(EDrawType dt) {
-	return (dt & 0x10) != 0;
-}
-
 
 
 class PicGroupDef;
@@ -68,7 +66,7 @@ class PicDef
 public:
 	PicDef() : mygrpi(-1), indexInGroup(-1), pixmap(1, 1),
 		xOffs(-1), yOffs(-1), painter(NULL), tex(NULL), nUsed(0), lastnSelected(1), nSelected(0), pathlen(0), dispRot(-1)
-	{} // + 1 for the outlined line
+	{} 
 	void reset() {
 		painter = PicPainter(this);
 	}
@@ -81,9 +79,12 @@ public:
 
 	// to which group do I belong
 	const PicGroupDef *mygrp() const; 
+
+
 	int mygrpi; // index of the group this piece is part of
 	int indexInGroup;  // index of this piece in the group it is part of
 	PicArr v;
+	PicArr defRtns[8];
 	QPixmap pixmap;
 
 	int xOffs, yOffs; // in case of TEXTURE_INDIVIDUAL_***. the x,y offsets of the texture
@@ -93,7 +94,7 @@ public:
 	mutable int nUsed;
 	mutable int lastnSelected; // used for the repressing of the button. to return to the last value.
 
-	shared_ptr<PicDisp> disp;
+	std::shared_ptr<PicDisp> disp;
 	int dispRot;
 
 private:
@@ -172,6 +173,10 @@ public:
 	const PicDef& getPic(int myi) const;
 
 	int numPics() const { return picsi.size(); }
+
+	bool isIndividual() const {
+		return (drawtype & 0x10) != 0;
+	}
 
 	vector<int> picsi; // indices of this group pics in the bucket
 	GlTexture *gtex;
@@ -280,7 +285,7 @@ public:
 
 	vector<PicFamily> families;
 
-	vector<shared_ptr<PicDisp>> meshes;
+	vector<std::shared_ptr<PicDisp>> meshes;
 
 private:
 	/// private ctor, this is a singleton

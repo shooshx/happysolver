@@ -311,7 +311,7 @@ bool CubeDoc::generalSaveFile(const char *defext, const char *selfilter, const c
 				continue;
 		}
 
-		retname = (const char*)name.toAscii();
+		retname = (const char*)name.toLatin1();
 		return true;
 	}
 	return false;
@@ -336,7 +336,7 @@ void CubeDoc::OnFileExport()
 	QFileInfo fi(retname);
 	QString matFileName = fi.path() + "/" + fi.baseName() + ".mtl";
 
-	ofstream wrfl(retname.toAscii().data()), matFile(matFileName.toAscii().data());
+	ofstream wrfl(retname.toLatin1().data()), matFile(matFileName.toLatin1().data());
 
 	if (!wrfl.good())
 	{
@@ -360,7 +360,7 @@ void CubeDoc::OnFileExport()
 		return;
 	}
 
-	wrfl << "mtllib " << matFileName.toAscii().data() << "\n";
+	wrfl << "mtllib " << matFileName.toLatin1().data() << "\n";
 	ObjExport oe(wrfl, &matFile);
 
 	if (!pSolution->painter.exportToObj(oe))
@@ -423,7 +423,7 @@ bool CubeDoc::realSave(int unGenSlvAnswer)
 	}
 
 	MyFile wrfl;
-	wrfl.openWrite(retname.toAscii());
+	wrfl.openWrite(retname.toLatin1());
 
 	if (wrfl.getState() != STATE_OPEN_WRITE)
 	{
@@ -510,7 +510,7 @@ void CubeDoc::setShowUpToStep(int step)
 void CubeDoc::realOpen(QString name)
 {
 	MyFile rdfl;
-	rdfl.openRead(name.toAscii());
+	rdfl.openRead(name.toLatin1());
 	bool hasSolutions = false;
 	
 	BuildWorld *newbuild = new BuildWorld;
@@ -543,8 +543,8 @@ void CubeDoc::realOpen(QString name)
 		// don't use the shape just loaded, instead, generate the build, and draw a transform
 		// from the loaded shape for the genereted one.
 		// TBD MOVE THIS. only needed if there are solutions.
-		TTransformVec movedTo;
-		bool trivialTransform;
+		TTransformVec movedTo(loadedshp->fcn);
+		bool trivialTransform = false;
 		if (!loadedshp->createTrasformTo(gendshape, movedTo, &trivialTransform))
 		{
 			QMessageBox::critical(g_main, APP_NAME, "failed shape transform, bug.", QMessageBox::Ok, 0);
@@ -729,50 +729,48 @@ const RunStats* CubeDoc::getRunningStats()
 
 void CubeDoc::solveGo()
 {
-	if (!isSlvEngineRunning())
-	{
-
-		if ((m_shp == NULL) || (m_build->getChangedFromGen()))
-		{
-			if (!OnGenShape())
-				return;
-		}
-
-		// now build the Pics. it's important that the PicsSet will be built in this thread
-		// since it involves the bucket.
-		// here, the snapshot of the bucket piece selection
-		// for any solutions to be produced in this run
-		// the snapshot of the EngineConf is captured in Cube::Cube()
-		// in the thread itself. (is that too late?)
-		PicsSet *pics = new PicsSet(m_conf.engine.nAsym != ASYM_REGULAR);
-		if (pics->addedSize() < m_shp->fcn)
-		{
-			QMessageBox::critical(g_main, APP_NAME, tr("Unable to complay, too few pieces for this shape"), QMessageBox::Ok, 0);
-			return;
-		}
-
-		if (pics->addedSize() == m_shp->fcn + 42 + 1) // 42 is too easy to come by.
-			easter();
-
-		// we're all good to go!
-		
-		if (m_sthread == NULL)
-		{
-			m_sthread = new SolveThread;
-			
-			connect(m_sthread, SIGNAL(slvProgUpdated(int, int)), this, SIGNAL(slvProgUpdated(int, int)));
-			connect(m_sthread, SIGNAL(solvePopUp(int)), this, SLOT(OnSolveReadyS(int)));
-			connect(m_sthread, SIGNAL(fullEnumNoSlv()), this, SLOT(OnFullEnumNoSlv()));
-		}
-		m_sthread->fExitnow = FALSE;
-		m_sthread->setRuntime(m_slvs, m_shp, pics, &m_conf.engine);
-		m_sthread->start();
-
-	}
-	else
-	{
+	if (isSlvEngineRunning())	{
 		m_sthread->fExitnow = TRUE;
+		return;
 	}
+
+	printf("solveGo!\n");
+	if ((m_shp == NULL) || (m_build->getChangedFromGen()))
+	{
+		if (!OnGenShape())
+			return;
+	}
+
+	// now build the Pics. it's important that the PicsSet will be built in this thread
+	// since it involves the bucket.
+	// here, the snapshot of the bucket piece selection
+	// for any solutions to be produced in this run
+	// the snapshot of the EngineConf is captured in Cube::Cube()
+	// in the thread itself. (is that too late?)
+	PicsSet *pics = new PicsSet(m_conf.engine.nAsym != ASYM_REGULAR);
+	if (pics->added.size() < m_shp->fcn)
+	{
+		QMessageBox::critical(g_main, APP_NAME, tr("Unable to complay, too few pieces for this shape"), QMessageBox::Ok, 0);
+		return;
+	}
+
+	if (pics->added.size() == m_shp->fcn + 42 + 1) // 42 is too easy to come by.
+		easter();
+
+	// we're all good to go!
+		
+	if (m_sthread == NULL)
+	{
+		m_sthread = new SolveThread;
+			
+		connect(m_sthread, SIGNAL(slvProgUpdated(int, int)), this, SIGNAL(slvProgUpdated(int, int)));
+		connect(m_sthread, SIGNAL(solvePopUp(int)), this, SLOT(OnSolveReadyS(int)));
+		connect(m_sthread, SIGNAL(fullEnumNoSlv()), this, SLOT(OnFullEnumNoSlv()));
+	}
+	m_sthread->fExitnow = FALSE;
+	m_sthread->setRuntime(m_slvs, m_shp, pics, &m_conf.engine);
+	m_sthread->start();
+
 }
 
 void CubeDoc::solveStop()

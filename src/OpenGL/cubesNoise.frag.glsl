@@ -8,7 +8,7 @@ uniform int drawtype;
 
 const float offset= 4.72;
 const float offset2 = 0.5;
-uniform vec2 texOffset;
+uniform vec3 texOffset; // z non-zero means we need to invert x
 
 vec4 flat_texture3D(vec3 p)
 {
@@ -64,15 +64,20 @@ void main (void)
 		const float T_HIGH = 0.525;
 		const float T_LOW = 0.475;
 
-		if (MCposition.x > T_HIGH) {
+		float tx = MCposition.x;
+		if (texOffset.z != 0.0)
+			tx = 1.0 - tx;
+
+		if (tx > T_HIGH) {
 			gl_FragColor = vec4(colorA * LightIntensity, 1.0);
 			return;
 		}
 
-		vec2 t = texOffset + MCposition.yz / (8.0*5.0);
+		vec2 t = texOffset.xy + MCposition.yz / (8.0*5.0);
+
 		vec3 color = texture2D(noisef, t).rgb;
-		if (MCposition.x > T_LOW && MCposition.x <= T_HIGH) {
-			color = mix(color, colorA, smoothstep(T_LOW, T_HIGH, MCposition.x));
+		if (tx > T_LOW && tx <= T_HIGH) {
+			color = mix(color, colorA, smoothstep(T_LOW, T_HIGH, tx));
 		}
 
 		color *= LightIntensity;
@@ -80,11 +85,15 @@ void main (void)
 		return;
 	}
 	if (drawtype == 0x18) { //  DRAW_TEXTURE_INDIVIDUAL_WHOLE, no need for smoothstep since its the same color
-		if (MCposition.x > 0.2) {
+		float tx = MCposition.x;
+		if (texOffset.z != 0.0)
+			tx = 1.0 - tx;
+
+		if (tx > 0.2) {
 			gl_FragColor = vec4(colorA * LightIntensity, 1.0);
 			return;
 		}
-		vec2 t = texOffset + MCposition.yz / (8.0*5.0);
+		vec2 t = texOffset.xy + MCposition.yz / (8.0*5.0);
 		vec3 color = texture2D(noisef, t).rgb * LightIntensity;
 		gl_FragColor = vec4(color, 1.0);
 		return;

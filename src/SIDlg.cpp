@@ -198,7 +198,7 @@ void GameWidget::shotTimeout()
 			TShips::iterator ship = m_ships.begin();
 			while (ship != m_ships.end())
 			{
-				if (!ship->reg.intersect(it->reg).isEmpty())
+				if (!ship->reg.intersects(it->reg))
 				{
 					m_shotspreg += QRegion(ship->x, ship->y, 65, 65);
 					m_ships.erase(ship);
@@ -213,7 +213,7 @@ void GameWidget::shotTimeout()
 				}
 				++ship;
 			}
-			if (m_bShowSoser && (!m_soserMask.intersect(it->reg).isEmpty()))
+			if (m_bShowSoser && (!m_soserMask.intersects(it->reg)))
 			{
 				stopSoser();
 				m_shotspreg += QRegion(m_soserX, 0, m_soserX + SOSER_X_SIZE + 7, SOSER_Y_SIZE);

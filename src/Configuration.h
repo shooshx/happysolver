@@ -18,6 +18,8 @@
 #ifndef __CONFIGURATION_H__INCLUDED__
 #define __CONFIGURATION_H__INCLUDED__
 
+#include "Vec.h"
+
 /** \file
 	Declares the DisplayConf, EngineConf, Configuration classes which deal with the application configuration.
 	these classes save the application configuration parameters to persistant storage using the
@@ -103,7 +105,7 @@ public:
 	bool bLight; ///< is lighting enabled in the scene
 	ELinesDraw nLines; ///< should border lines be drawn
 	int nSwapTexEndians; ///< the texture endianiness permutation selected.
-
+	Vec3 slvBkColor; ///< Background color of solution 3d view
 };
 
 /** EngineConf holds configuration parameters for the solution engine.

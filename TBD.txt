@@ -5,13 +5,11 @@ save file
 load old files
 side panel in solution view
 symmetry
-Always selecting the same (first) parts in a solution. not randomized enough
-   select a random piece of a set
+
 
 build view - start tile
   not yellow
   white when cube is to be removed
-obj export is probably broken
 
 
 
@@ -46,8 +44,7 @@ Vista start menu short cut doesn't work
 - advanced pieces selection - not more then X of this cube.
 
 - move the production of the PicsSet to the thread? large latency when solving with 1000 pieces.
-- non scalability of solution engine with extreme pics sets
-  move to a more efficient representation instead of replication?
+
 
 - better shape heuristic:
   - different plane is better
@@ -64,7 +61,7 @@ Vista start menu short cut doesn't work
 - continuous ?
 - Save VS Save As.
 - kid mode? side bar with ready made shapes, "what do you want to do?"
-- black texture pixelized
+
 - backwards slashes in recent
 - solve it after changing the desing when there are solutions. should be a better message on what's going on.
 - new menu - pieces
@@ -116,16 +113,13 @@ QT4.3:
 - problems with step by step in solution: - same
    - white framed pieces are likely to change on all wrapped
    - missing lines due to single piece rendering
-- redesign rendering scheme, piece based.
-  - half - miscoloring
-  - more optimized? unify pieces?   
+
 - configurable pool size?
-- better textures of sides, not randomly turend.
 - fade of blue tiles is slow when rotating.
 
 - bad textures on mac.
 - further perspective
-- background color
+
 
 ---- Document Model ------------
 - export to PNG

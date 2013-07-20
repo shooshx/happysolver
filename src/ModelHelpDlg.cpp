@@ -297,7 +297,7 @@ void ModelHelpDlg::updatePixmapLabel(int piece)
 	if (piece < 0)
 		return;
 	SlvCube *slv = m_doc->getCurrentSolve();
-	const SlvCube::SlvPic &sps = slv->picdt[slv->dt[piece].sc];
+	const SlvCube::SlvPic &sps = slv->picdt[slv->dt[piece].abs_sc];
 	m_picImage->setPixmap(PicBucket::instance().getPic(sps.gind, sps.pind).pixmap);
 
 }

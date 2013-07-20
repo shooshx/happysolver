@@ -31,7 +31,7 @@
    <item>
     <widget class="QTabWidget" name="TabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="SEtab">
       <attribute name="title">
@@ -390,7 +390,7 @@
         <rect>
          <x>10</x>
          <y>10</y>
-         <width>411</width>
+         <width>441</width>
          <height>91</height>
         </rect>
        </property>
@@ -401,9 +401,9 @@
         <property name="geometry">
          <rect>
           <x>20</x>
-          <y>60</y>
+          <y>62</y>
           <width>167</width>
-          <height>19</height>
+          <height>20</height>
          </rect>
         </property>
         <property name="text">
@@ -439,13 +439,39 @@
        <widget class="QComboBox" name="AP_faceWhere">
         <property name="geometry">
          <rect>
-          <x>190</x>
-          <y>59</y>
+          <x>230</x>
+          <y>60</y>
           <width>91</width>
           <height>22</height>
          </rect>
         </property>
        </widget>
+      </widget>
+      <widget class="QLabel" name="label_2">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>120</y>
+         <width>141</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Solution Backgroup Color:</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="bkColor">
+       <property name="geometry">
+        <rect>
+         <x>170</x>
+         <y>110</y>
+         <width>41</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
       </widget>
      </widget>
      <widget class="QWidget" name="SDtab">

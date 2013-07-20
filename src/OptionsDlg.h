@@ -20,6 +20,7 @@
 
 #include <QDialog>
 #include "ui_OptionsDlg.h"
+#include "MyLib/ParamBase.h"
 
 /** \file
 	Declares the OptionsDlg class used for configuration editing.
@@ -54,10 +55,15 @@ private slots:
 	void updateSDhighLevel(int index);
 
 	void colorFlipChanged();
+	void changedSlvBkCol();
+
+signals:
+	void updateSlv3D(int hint);
 	
 private:
 	void updateAll(Configuration *conf);
 	void updateSDlowLevel(const DisplayConf& dspc);
+
 
 	Ui::OptionsDlg ui;
 
@@ -72,6 +78,8 @@ private:
 		QCheckBox *p;
 		QRadioButton *bs, *br;
 	} m_SD_pass[4];
+
+	TypeProp<QColor> m_bkColor;
 };
 
 
