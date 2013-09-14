@@ -21,7 +21,7 @@ void TypeProp<T>::addInnerWidget(WidgetLine& wl)
 	if (container != NULL)
 	{
 		const QMetaObject* mo = container->metaObject();
-		const type_info& ti = typeid(T);
+		const std::type_info& ti = typeid(T);
 		QString n(ti.name());
 
 		if (n.startsWith("enum") && (mo->enumeratorCount() != 0))

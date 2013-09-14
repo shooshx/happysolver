@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "void AttribParam::set&lt;Vec4&gt;(Vec4 const&amp;) const:ShaderProgram.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "CubeDoc::OnOpenDocument(QString):CubeDoc.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "Mesh::paint(bool) const:Mesh.cpp">
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>

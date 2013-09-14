@@ -359,7 +359,8 @@ void BuildGLWidget::drawErrorCyliders()
 void BuildGLWidget::drawTargets(bool inChoise)
 {
 	//printf("draw %d\n", inChoise);
-	auto tm = model.cur(), tp = proj.cur();
+    auto tp = proj.cur();    
+	auto tm = model.cur();
 	ProgramUser use(&m_prog);
 	m_prog.trans.set(transformMat());
 
@@ -553,7 +554,7 @@ bool BuildGLWidget::doMouseMove(QMouseEvent *event, bool remove)
 		{ // selection was changed
 			//printf("%8X (%d,%d,%d) != (%d,%d,%d)\n", choise, g.x, g.y, g.z, m_lastCubeChoise.x, m_lastCubeChoise.y, m_lastCubeChoise.z);
 			if (choise < 0x10000)
-				DebugBreak();
+				throw HCException("bad choise"); //DebugBreak();
 
 			if (m_bEditEnabled)
 			{

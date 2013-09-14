@@ -3,7 +3,7 @@
 #include "MyInputDlg.h"
 #include "paramSpecialization.h"
 
-
+#include <cfloat>
 #include "../Vec.h"
 // no where else to put it
 const Vec3 MAX_VEC(FLT_MAX, FLT_MAX, FLT_MAX), MIN_VEC(-FLT_MAX, -FLT_MAX, -FLT_MAX);
@@ -337,3 +337,31 @@ template<> QString TypeProp<StringSelect>::toString() const { return QString(); 
 template<> bool TypeProp<StringSelect>::fromStringImp(const QString& s) { return false; }
 template<> QString TypeProp<QStringList>::toString() const { return QString(); }
 template<> bool TypeProp<QStringList>::fromStringImp(const QString& s) { return false; }
+
+
+// complete MySettings defs
+
+void MySettings::addParam(ParamBase *pr, const QString& groupName)
+{
+    pr->m_groupName = groupName;
+    connect(pr, SIGNAL(changed()), this, SIGNAL(changed()));
+    m_params.append(pr);
+}
+
+void MySettings::storeToReg()
+{
+    foreach(ParamBase *pr, m_params)
+    pr->storeToReg(*this);
+}
+void MySettings::loadFromReg(bool setUnChange)
+{
+    foreach(ParamBase *pr, m_params)
+    pr->loadFromReg(*this, setUnChange);
+}
+void MySettings::reset()
+{
+    foreach(ParamBase *pr, m_params)
+    pr->reset();
+}
+
+

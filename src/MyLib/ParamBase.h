@@ -64,7 +64,7 @@ public:
 	virtual void reset() {}
 	virtual void copyFrom(const Prop* op) {} // default does nothing
 
-	const bool checkChanged() const 
+    bool checkChanged() const
 	{ 
 		bool ret = isUserCheckChanged();
 		setUserCheckedChanged(false);
@@ -159,6 +159,34 @@ class IPropGather : public QObject
 public:
 	virtual void addProperty(Prop *p) = 0;
 };
+
+
+class MySettings : public QSettings
+{
+	Q_OBJECT;
+public:
+	MySettings(const QString& group, const QString& name);
+    
+	void setOffline(bool off) { m_offline = off; }
+	bool isOffline() const { return m_offline; }
+    
+	void addParam(ParamBase *pr, const QString& groupName);
+    
+    public slots:
+	// returns true if we're ok to proceed.
+	void storeToReg();
+	void loadFromReg(bool setUnChange = true);
+	void reset();
+    
+signals:
+	void changed();
+    
+private:
+	bool m_offline;
+	QList<ParamBase*> m_params;
+    
+};
+
 
 // not something you would like to copy around
 template<class T>
@@ -317,7 +345,7 @@ private:
 template<typename T>
 QMetaEnum getMetaEnum(QObject *container)
 {
-	const type_info& ti = typeid(T);
+	const std::type_info& ti = typeid(T);
 	QString n(ti.name());
 	const QMetaObject* mo = container->metaObject();
 	int ie = mo->indexOfEnumerator(n.section(':', -1).toLatin1());
@@ -692,6 +720,9 @@ protected:
 	friend class MySettings;
 };
 
+
+
+
 // used as a temporary parent to parameters on the stack.
 class ParamTemp : public ParamBase
 {
@@ -757,48 +788,7 @@ signals:
 Q_DECLARE_METATYPE(StringSelect);
 
 
-class MySettings : public QSettings
-{
-	Q_OBJECT;
-public:
-	MySettings(const QString& group, const QString& name);
 
-	void setOffline(bool off) { m_offline = off; }
-	bool isOffline() const { return m_offline; }
-
-	void addParam(ParamBase *pr, const QString& groupName)
-	{
-		pr->m_groupName = groupName;
-		connect(pr, SIGNAL(changed()), this, SIGNAL(changed()));
-		m_params.append(pr);
-	}
-
-public slots:
-	// returns true if we're ok to proceed.
-	void storeToReg()
-	{
-		foreach(ParamBase *pr, m_params)
-			pr->storeToReg(*this);
-	}
-	void loadFromReg(bool setUnChange = true)
-	{
-		foreach(ParamBase *pr, m_params)
-			pr->loadFromReg(*this, setUnChange);
-	}
-	void reset()
-	{
-		foreach(ParamBase *pr, m_params)
-			pr->reset();
-	}
-
-signals:
-	void changed();
-
-private:
-	bool m_offline;
-	QList<ParamBase*> m_params;
-
-};
 
 class PushButtomProp : public Prop
 {
@@ -820,9 +810,9 @@ public:
 // specialization of just these problematic method from TypeProp.
 // use the serialization of StringSelect
 // although we're not using the QVariant serialization, so this is just here to prevent a compile error.
-template<> QVariant TypeProp<StringSelect>::getVal() { return QVariant::fromValue(value); }
-template<> QVariant TypeProp<StringSelect>::getDefVal() { return QVariant::fromValue(defaultVal); }
-template<> QString TypeProp<StringSelect>::typname() { return "StringSelect"; }
+template<> inline QVariant TypeProp<StringSelect>::getVal() { return QVariant::fromValue(value); }
+template<> inline QVariant TypeProp<StringSelect>::getDefVal() { return QVariant::fromValue(defaultVal); }
+template<> inline QString TypeProp<StringSelect>::typname() { return "StringSelect"; }
 
 // used to display some result in the dialog
 template<class T>
@@ -839,7 +829,7 @@ public:
 
 	virtual void addInnerWidget(WidgetLine& wl)
 	{
-		wl.dlg->addValueLabel(&m_text, wl);
+	//TBD	wl.dlg->addValueLabel(&m_text, wl);
 	}
 	virtual QString typname() { return "res"; }
 

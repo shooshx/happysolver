@@ -221,6 +221,7 @@ run qmake
 upgrade the project file
 in project settings set the derived directory to be relative to project
 use macdeployqt!
+qmake -spec macx-xcode
 
 
 ## tooth paste for noah cinimine

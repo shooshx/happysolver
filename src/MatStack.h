@@ -1,6 +1,7 @@
 #pragma once
 #include "Mat.h"
 #include <vector>
+#include "general.h"
 using namespace std;
 
 #define MAX_MATSTACK (20)
@@ -23,13 +24,13 @@ public:
 
 	void push(const char* msg = NULL) {
 		if (m_s.size() > MAX_MATSTACK)
-			throw exception("matrix stack overflow");
+			throw HCException("matrix stack overflow");
 		m_s.push_back(MatEntry(m_cur.m, msg));
 	}
 
 	void pop() {
 		if (m_s.size() <= 0)
-			throw exception("matrix stack underflow");
+			throw HCException("matrix stack underflow");
 		m_cur = m_s.back();
 		m_s.pop_back();
 	}

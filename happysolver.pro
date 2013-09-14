@@ -3,7 +3,7 @@
 ######################################################################
 
 TEMPLATE = app
-TARGET = 
+TARGET = mac_happysolver
 DEPENDPATH += . GeneratedFiles src 
 INCLUDEPATH += .
 QT += opengl xml
@@ -15,11 +15,11 @@ win32 {
 macx {
   CONFIG += x86_64
   ICON = images/mac_icon.icns
-  MAC_SDK  = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.6.sdk
+  MAC_SDK  = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk
   if( !exists( $$MAC_SDK) ) {
     error("The selected Mac OSX SDK does not exist at $$MAC_SDK!")
   }
-  macx:QMAKE_MAC_SDK = $$MAC_SDK
+  macx:QMAKE_MAC_SDK = macosx
 }
 linux-g++ {
 }
@@ -55,10 +55,39 @@ HEADERS += src/ActFocusComboBox.h \
            src/SIDlg.h \
            src/Solutions.h \
            src/SolveDlg.h \
+           src/SlvPainter.h \
            src/SolveThread.h \
            src/Space3D.h \
-           src/Texture.h
-FORMS += src/about.ui src/GrpColor.ui src/OptionsDlg.ui src/SolveDlg.ui
+           src/Texture.h \
+           src/PicArr.h \
+           src/SlvCube.h \
+           src/PicsSet.h \
+           src/NoiseGenerator.h \
+           src/Mat.h \
+           src/ObjExport.h \
+           src/Mesh.h \
+           src/OpenGL/GLTexture.h \
+           src/OpenGL/ShaderProgram.h \
+           src/OpenGL/Shaders.h \
+           src/MyLib/ParamBase.h \
+           src/MyLib/MyInputDlg.h \
+           src/MyLib/MyColorPicker.h \
+           src/MyLib/QtAdd/qtcolortriangle.h \
+           src/MyLib/MyDialog.h \
+           src/tinyxml/tinyxml2.h \
+           src/sglu/sglu.h \
+           src/OpenGL/build.frag.glsl.h \
+           src/OpenGL/build.vtx.glsl.h \
+           src/OpenGL/cubesNoise.frag.glsl.h \
+           src/OpenGL/cubesNoise.vtx.glsl.h \
+           src/OpenGL/flat.frag.glsl.h \
+           src/OpenGL/flat.vtx.glsl.h 
+FORMS += src/about.ui \
+         src/GrpColor.ui \ 
+         src/OptionsDlg.ui \ 
+         src/SolveDlg.ui \
+         src/MyLib/MyInputDlg.ui \
+         src/MyLib/MyColorPicker.ui
 SOURCES += src/ActFocusComboBox.cpp \
            src/AssembleStepDlg.cpp \
            src/BuildGLWidget.cpp \
@@ -86,6 +115,23 @@ SOURCES += src/ActFocusComboBox.cpp \
            src/SIDlg.cpp \
            src/Solutions.cpp \
            src/SolveDlg.cpp \
+           src/SlvPainter.cpp \
            src/SolveThread.cpp \
-           src/Space3D.cpp
+           src/Space3D.cpp \
+           src/PicArr.cpp \
+           src/SlvCube.cpp \
+           src/PicsSet.cpp \
+           src/NoiseGenerator.cpp \
+           src/Mat.cpp \
+           src/ObjExport.cpp \
+           src/Mesh.cpp \
+           src/OpenGL/GLTexture.cpp \
+           src/OpenGL/ShaderProgram.cpp \
+           src/OpenGL/Shaders.cpp \
+           src/MyLib/ParamBase.cpp \
+           src/MyLib/MyInputDlg.cpp \
+           src/MyLib/MyColorPicker.cpp \
+           src/MyLib/QtAdd/qtcolortriangle.cpp \
+           src/tinyxml/tinyxml2.cpp \
+           src/sglu/project.cpp 
 RESOURCES += resources.qrc

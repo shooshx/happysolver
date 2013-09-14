@@ -730,7 +730,7 @@ const RunStats* CubeDoc::getRunningStats()
 void CubeDoc::solveGo()
 {
 	if (isSlvEngineRunning())	{
-		m_sthread->fExitnow = TRUE;
+		m_sthread->fExitnow = 1;
 		return;
 	}
 
@@ -767,7 +767,7 @@ void CubeDoc::solveGo()
 		connect(m_sthread, SIGNAL(solvePopUp(int)), this, SLOT(OnSolveReadyS(int)));
 		connect(m_sthread, SIGNAL(fullEnumNoSlv()), this, SLOT(OnFullEnumNoSlv()));
 	}
-	m_sthread->fExitnow = FALSE;
+	m_sthread->fExitnow = 0;
 	m_sthread->setRuntime(m_slvs, m_shp, pics, &m_conf.engine);
 	m_sthread->start();
 
@@ -778,7 +778,7 @@ void CubeDoc::solveStop()
 	if (!isSlvEngineRunning())
 		return;
 
-	m_sthread->fExitnow = TRUE;
+	m_sthread->fExitnow = 1;
 	m_sthread->wait();
 }
 

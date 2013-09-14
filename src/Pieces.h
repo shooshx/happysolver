@@ -24,14 +24,13 @@
 #include "PicArr.h"
 
 #include <memory>
+using namespace std;
 
 /** \file
 	Declares all classes involved in piece decleration and storage.
 	Declares the PicArr, PicDef, PicGroupDef, PicFamily and PicBucket classes.
 	Declares the PicType and PicsSet classes.
 */
-
-
 
 
 /// Defines the way a piece is rendered and textured
@@ -250,7 +249,7 @@ public:
 	/// load the main configuration xml. this is one of the first things that
 	/// ever happen in the application
 	bool loadXML(const string& xmlname);
-	Texture* newTexture(QImage& img, bool in3d);
+	Texture* newTexture(const QImage& img, bool in3d);
 
 	static void createSingleton();
 	static const PicBucket& instance() { return *g_instance; }
@@ -285,7 +284,7 @@ public:
 
 	vector<PicFamily> families;
 
-	vector<std::shared_ptr<PicDisp>> meshes;
+	vector<std::shared_ptr<PicDisp> > meshes;
 
 private:
 	/// private ctor, this is a singleton

@@ -67,7 +67,7 @@ int MyInputDlg::getRadioResult()
 }
 
 
-QVariant fromString(const QString& v, const type_info& ti)
+QVariant fromString(const QString& v, const std::type_info& ti)
 {
 	if (ti == typeid(float))
 		return v.toFloat();

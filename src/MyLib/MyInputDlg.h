@@ -7,6 +7,7 @@
 #include <QComboBox>
 #include <QSpinBox>
 #include <QMetaEnum>
+#include <typeinfo>
 #include "ui_MyInputDlg.h"
 
 #include "ParamBase.h"
@@ -15,7 +16,7 @@
 class QRadioButton;
 
 
-QVariant fromString(const QString& v, const type_info& ti);
+QVariant fromString(const QString& v, const std::type_info& ti);
 
 inline QString toString(const float& v) 
 { 
@@ -457,7 +458,7 @@ public:
 	{
 		QLineEdit *c = new QLineEdit();
 		c->setMinimumWidth(0);
-		WidgetTIn<T>::LineEditIn *w = new WidgetTIn<T>::LineEditIn(v, c, m_autoCommit);
+		typename WidgetTIn<T>::LineEditIn *w = new typename WidgetTIn<T>::LineEditIn(v, c, m_autoCommit);
 		wl.layout->addWidget(c);
 		m_widgets.append(w);
 	}
@@ -469,7 +470,7 @@ public:
 		c->setFrameShadow(QFrame::Sunken);
 		c->setFrameShape(QFrame::Panel);
 		c->setAlignment(Qt::AlignRight);
-		WidgetTIn<T>::LabelIn *w = new WidgetTIn<T>::LabelIn(v, c, false);
+		typename WidgetTIn<T>::LabelIn *w = new typename WidgetTIn<T>::LabelIn(v, c, false);
 		wl.layout->addWidget(c);
 		m_widgets.append(w);
 	}

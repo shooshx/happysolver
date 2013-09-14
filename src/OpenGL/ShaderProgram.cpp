@@ -1,8 +1,9 @@
 
 #include <stdio.h>
 #define  GLEW_STATIC
+#ifdef _WINDOWS
 #include <gl/glew.h>
-
+#endif
 #include "ShaderProgram.h"
 #include "glGlob.h"
 
@@ -22,11 +23,13 @@ void shadersInit() {
 		return;
 	}
 
+#ifdef _WINDOWS
 	uint x = glewInit();
 	if (x != GLEW_OK) {
 		printf("Error: %s\n", glewGetErrorString(x));
 		exit(1);
 	}
+#endif
 	did = true;
 }
 
@@ -134,6 +137,7 @@ bool ShaderProgram::init(const ProgCompileConf& conf)
 		glShaderSource(vso, 2, srcs, NULL);
 		glCompileShader(vso);
 		glAttachShader(m_progId, vso);
+        printShaderInfoLog(vso);
 		m_createdShaders.push_back(vso);
 	}
 	mglCheckErrorsC(string("vtx ") + name);
@@ -147,6 +151,7 @@ bool ShaderProgram::init(const ProgCompileConf& conf)
 		glShaderSource(gso, 2, srcs, NULL);
 		glCompileShader(gso);
 		glAttachShader(m_progId, gso);
+        printShaderInfoLog(gso);
 		m_createdShaders.push_back(gso);
 	}
 	mglCheckErrorsC(string("geom ") + name);
@@ -160,6 +165,7 @@ bool ShaderProgram::init(const ProgCompileConf& conf)
 		glShaderSource(fso, 2, srcs, NULL);
 		glCompileShader(fso);
 		glAttachShader(m_progId, fso);
+        printShaderInfoLog(fso);
 		m_createdShaders.push_back(fso);
 	}
 	mglCheckErrorsC(string("frag ") + name);

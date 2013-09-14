@@ -204,7 +204,7 @@
   <customwidget>
    <class>QtColorTriangle</class>
    <extends>QWidget</extends>
-   <header>QtAdd/qtcolortriangle.h</header>
+   <header>src/MyLib/QtAdd/qtcolortriangle.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

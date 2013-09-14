@@ -1,3 +1,9 @@
 /obj/
 /bin/
 /GeneratedFiles
+/mac_happysolver.build
+/Debug
+ui_*
+moc_*
+qrc_*
+Makefile

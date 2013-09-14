@@ -13,6 +13,9 @@ const char *code_cubesNoise_frag_glsl = " \
   const float offset2 = 0.5; \n\
   uniform vec3 texOffset; // z non-zero means we need to invert x \n\
    \n\
+  float mod(int x, float y){ \n\
+      return float(x) - y * floor(float(x) / y); \n\
+  } \n\
   vec4 flat_texture3D(vec3 p) \n\
   { \n\
   	vec2 inimg = p.xy; \n\

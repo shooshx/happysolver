@@ -18,6 +18,7 @@
 #include <QApplication>
 #include <QIcon>
 #include <QtGui>
+#include <iostream>
 
 #include "MainWindow.h"
 #include "Pieces.h"
@@ -35,8 +36,9 @@ extern QGLFormat g_format;
 #include <QVBoxLayout>
 #include <QGroupBox>
 
+using namespace std;
 
-
+/*
 static int rotationAdd(int base, int defRot) 
 {
 	if ((defRot < 4) == (base < 4))
@@ -62,7 +64,7 @@ static int rotationSub(int x, int defRot)
 	}
 
 }
-
+*/
 
 int main(int argc, char *argv[])
 {
@@ -118,6 +120,7 @@ int main(int argc, char *argv[])
 	QString filename;
 	for (int i = 1; i < argc; ++i)
 	{
+        cout << "arg " << i << argv[i] << endl;
 		if (argv[i][0] != '-')
 		{
 			filename = argv[i];
@@ -126,6 +129,7 @@ int main(int argc, char *argv[])
 	}
 	if (!filename.isEmpty())
 	{
+        cout << "Opening file " << filename.toLatin1().data() << endl;
 		window.loadStartupFile(filename);
 	}
 

@@ -40,10 +40,10 @@ public:
 	bool isValid() const {
 		return m_uid != -1; 
 	}
-	uint id() { return m_uid; }
+	int id() { return m_uid; }
 
 protected:
-	uint m_uid;
+	int m_uid;
 	QString m_name;
 };
 
@@ -101,7 +101,8 @@ public:
 		T* c = dynamic_cast<T*>(g_current);
 		if (c == NULL) {
 			printf("ERROR: Wrong program type!");
-			DebugBreak();
+			//DebugBreak();
+            throw HCException("Wrong program type");
 		}
 		return c; 
 	};

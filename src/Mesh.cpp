@@ -12,7 +12,7 @@ static uint glType(Mesh::Type t) {
 	case Mesh::QUADS: return GL_QUADS;
 	case Mesh::TRI_STRIP: return GL_TRIANGLE_STRIP;
 	case Mesh::TRI_FAN: return GL_TRIANGLE_FAN;
-	default: throw exception("bad mesh type");
+	default: throw HCException("bad mesh type");
 	}
 }
 
@@ -97,12 +97,12 @@ int Mesh::elemSize() {
 	case LINES: return 2; break;
 	case TRIANGLES: return 3; break;
 	case QUADS: return 4; break;
-	default: throw exception("bad mesh type");
+	default: throw HCException("bad mesh type");
 	}
 }
 int Mesh::numElem() {
 	int es = elemSize();
 	if ((m_idx.size() % es) != 0)
-		throw exception("bad idx size");
+		throw HCException("bad idx size");
 	return m_idx.size() / es;
 }

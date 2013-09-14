@@ -99,6 +99,15 @@ inline const T &mMin(const T &a, const T &b) { if (a < b) return a; return b; }
 template <typename T>
 inline const T &mMax(const T &a, const T &b) { if (a < b) return b; return a; }
 
+class HCException : public std::exception {
+public:
+    HCException(const char* msg) : m_msg(msg) {}
+    virtual const char* what() const throw() {
+        return m_msg;
+    }
+private:
+    const char* m_msg;
+};
 
 
 // profile command line VC6

@@ -243,7 +243,7 @@ void PicBucket::makeBitmapList()
 
 
 
-Texture* PicBucket::newTexture(QImage& im, bool in3d) 
+Texture* PicBucket::newTexture(const QImage& im, bool in3d)
 {
 	Texture *t = new Texture(im);
 	texs.push_back(t);
