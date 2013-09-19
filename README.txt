@@ -1,8 +1,8 @@
 
 Happy Cube Solver - Build and design models for the Happy Cube puzzles
-Copyright (C) 1995-2007 Shy Shalom, shooshX@gmail.com
+Copyright (C) 1995-2013 Shy Shalom, shooshX@gmail.com
 
-Version 2.0.2
+Version 2.1.0
 
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ http://happysolver.sourceforge.net/
 sourceforge project site:
 http://sourceforge.net/projects/happysolver/
 
-Puzzles copyright (C) Dirk Laureyssens 1986-2007. All rights reserved. 
+Puzzles copyright (C) Dirk Laureyssens 1986-2013. All rights reserved. 
 Happy Cube, Little Genius, Profi Cube and Marble Cube are registered  trademarks of Happy n.v., Zoersel, Belgium. 
 See http://www.happycube.com for more information. 
 
@@ -34,12 +34,10 @@ Contacting me:
 
 Email: 
   shooshX@gmail.com
-ICQ: 
-  UIN=12207397
 
 snail mail:
   Shy Shalom
-  9 Mazkeret Batya st.
-  Petach Tikva 
-  49729
+  12 Arba Aratson st.
+  Tel Aviv
+  62486
   ISRAEL

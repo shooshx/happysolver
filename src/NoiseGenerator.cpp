@@ -386,8 +386,10 @@ GlTexture* NoiseGenerator::make3Dnoise(int size, float ampStart, float ampDiv, i
 	tex->init(GL_TEXTURE_2D, Vec2i(sz2d.x, sz2d.y), 1, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, 
 			  buf2d, GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE); 
 	
-	QImage img(buf2d, sz2d.x, sz2d.y, QImage::Format_ARGB32);
-	img.save("c:\\temp\\cubeTex.jpg");
+/*	
+    QImage img(buf2d, sz2d.x, sz2d.y, QImage::Format_ARGB32);
+	img.save("c:/temp/cubeTex.jpg");
+*/
 	delete[] buf2d;
 
 	return tex;

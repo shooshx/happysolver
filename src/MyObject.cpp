@@ -416,7 +416,7 @@ void MyObject::toMesh(Mesh& mesh)
 			int index = 0;
 			if (vtxrep.add(curpn->p, &index)) {
 				mesh.m_normals.push_back(curpn->n);
-				mesh.m_texCoord.push_back(Vec2(curpl.texAncs[pni].x, curpl.texAncs[pni].y));
+				//mesh.m_texCoord.push_back(Vec2(curpl.texAncs[pni].x, curpl.texAncs[pni].y));
 			}
 			mesh.m_idx.push_back(index);
 		}
@@ -425,7 +425,7 @@ void MyObject::toMesh(Mesh& mesh)
 
 	mesh.m_type = Mesh::QUADS;
 	mesh.m_hasNormals = true;
-	mesh.m_hasTexCoord = true;
+//	mesh.m_hasTexCoord = true;
 	mesh.m_hasIdx = true;
 
 }
