@@ -2,10 +2,10 @@
 #ifndef TEXTURE_H_INCLUDED
 #define TEXTURE_H_INCLUDED
 
-#include <QGLWidget>
+//#include <QGLWidget>
 #include "../general.h"
 #include "../Vec.h"
-
+#include "glGlob.h"
 
 
 #ifndef GL_CLAMP_TO_EDGE

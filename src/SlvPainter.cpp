@@ -6,8 +6,8 @@
 #include "OpenGL/glGlob.h"
 #include "OpenGL/Shaders.h"
 
-
-void SlvPainter::paintPiece(int f, GLWidget* context, bool fTargets) const
+// TBD - GLControl
+void SlvPainter::paintPiece(int f, BaseGLWidget* context, bool fTargets) const
 {
 	const PicDef *pdef = scube->dt[f].sdef;
 	Shape::FaceDef *face = &scube->shape->faces[f];
@@ -60,7 +60,7 @@ void SlvPainter::paintPiece(int f, GLWidget* context, bool fTargets) const
 
 
 
-void SlvPainter::paintLines(int f, bool singleChoise, GLWidget *context, ELinesDraw cfgLines) const
+void SlvPainter::paintLines(int f, bool singleChoise, BaseGLWidget *context, ELinesDraw cfgLines) const
 {
 	NoiseSlvProgram* prog = ShaderProgram::currentt<NoiseSlvProgram>();
 	prog->trans.set(context->transformMat());
@@ -73,7 +73,7 @@ void SlvPainter::paintLines(int f, bool singleChoise, GLWidget *context, ELinesD
 
 }
 
-void SlvPainter::paint(GLWidget* context, bool fTargets, int singleChoise, int upToStep, ELinesDraw cfgLines) const
+void SlvPainter::paint(BaseGLWidget* context, bool fTargets, int singleChoise, int upToStep, ELinesDraw cfgLines) const
 {
 	if (singleChoise < 0)
 	{

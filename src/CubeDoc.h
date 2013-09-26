@@ -69,6 +69,12 @@ class PicsSet;
 class SolveThread;
 class QImage;
 
+/// this is a global pointer to the main MainWindow instance. it is used in places where
+/// there is no easy reach to a parent window. 
+/// This pointer is set in the main() and instantiated in main.cpp
+extern QWidget* g_main;
+
+
 /** CubeDoc centeralizes the data of the current design and solutions displayed in the application.
 	The Happy Cube Solver generally implements an MFC inspired Document-View model.
 	All of the data which defines the current "state" of the application is stored in this class.

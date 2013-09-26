@@ -27,12 +27,16 @@
 #include "ActFocusComboBox.h"
 #include "SlvCube.h"
 
+#include <QSplitter>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QMovie>
+#include <QGroupBox>
+
 PieceGLWidget::PieceGLWidget(QWidget *parent, CubeDoc *doc, QGLWidget *shareFrom) 
 	:GLWidget(parent, shareFrom), m_doc(doc), m_lastSelectedPiece(-1), m_selectedPiece(-1),  
 	 m_bSelectAll(false), m_bHasPushedMatrix(false)
 {
-	m_viewState = GLWidget::Perspective;
-
 	aqmin = Vec3(0.0, 0.0, 0.0);
 	aqmax = Vec3(5.0, 5.0, 1.0);
 }
@@ -99,9 +103,7 @@ void PieceGLWidget::myPaintGL()
 void PieceGLWidget::mouseMoveEvent(QMouseEvent *event)
 {
 	makeCurrent();
-	if (!m_bHasPushedMatrix)
-	{
-		//glPushMatrix();
+	if (!m_bHasPushedMatrix) {
 		m_bHasPushedMatrix = true;
 	}
 	GLWidget::mouseMoveEvent(event);
@@ -111,9 +113,7 @@ void PieceGLWidget::mouseMoveEvent(QMouseEvent *event)
 void PieceGLWidget::externRotate(GLWidget::EAxis axis, int x, int y)
 {
 	makeCurrent();
-	if (m_bHasPushedMatrix)
-	{
-		//glPopMatrix();
+	if (m_bHasPushedMatrix) {
 		m_bHasPushedMatrix = false;
 	}
 	rotate(axis, x, y);
@@ -123,9 +123,7 @@ void PieceGLWidget::externRotate(GLWidget::EAxis axis, int x, int y)
 /// clear the view of any object in it. forget any state we may have had.
 void PieceGLWidget::clear()
 {
-	if (m_bHasPushedMatrix)
-	{
-		//glPopMatrix();
+	if (m_bHasPushedMatrix) {
 		m_bHasPushedMatrix = false;
 	}
 	m_bSelectAll = false;
@@ -155,7 +153,7 @@ ModelHelpDlg::ModelHelpDlg(QWidget *parent, MainWindow* main, CubeDoc *doc, QGLW
 	gllayout->setSpacing(0);
 	glwin->setLayout(gllayout);
 	m_pieceView = new PieceGLWidget(glwin, m_doc, shareFrom);
-	m_pieceView->setUsingLight(m_doc->m_conf.disp.bLight);
+	//m_pieceView->setUsingLight(m_doc->m_conf.disp.bLight);
 
 	gllayout->addSpacing(4);
 	gllayout->addWidget(m_pieceView);

@@ -1,9 +1,6 @@
 
 #include <stdio.h>
-#ifdef _WINDOWS
-#define  GLEW_STATIC
-#include <gl/glew.h>
-#endif
+
 #include "ShaderProgram.h"
 #include "glGlob.h"
 
@@ -13,7 +10,7 @@ int ShaderProgram::g_users = 0;
 ShaderProgram *ShaderProgram::g_current = NULL;
 
 
-ShaderParam::ShaderParam(const QString& name, ShaderProgram* prog) :m_uid(-1), m_name(name) {
+ShaderParam::ShaderParam(const string& name, ShaderProgram* prog) :m_uid(-1), m_name(name) {
     prog->addParam(this);
 }
 
@@ -55,14 +52,14 @@ bool ShaderProgram::printShaderInfoLog(uint obj)
 bool ShaderProgram::printProgramInfoLog(uint obj)
 {
     int infologLength = 0, charsWritten  = 0;
-    QByteArray infoLog;
+    string infoLog;
 
     glGetProgramiv(obj, GL_INFO_LOG_LENGTH,&infologLength);
     if (infologLength > 1)
     {
         infoLog.resize(infologLength);
-        glGetProgramInfoLog(obj, infologLength, &charsWritten, infoLog.data());
-        printf("Program Info Log:\n%s\n", infoLog.data());
+        glGetProgramInfoLog(obj, infologLength, &charsWritten, (char*)infoLog.data());
+        printf("Program Info Log:\n%s\n", infoLog.c_str());
     }
     int ret;
     glGetProgramiv(obj, GL_LINK_STATUS, &ret);
@@ -113,7 +110,8 @@ bool ShaderProgram::init(const ProgCompileConf& conf)
 
     m_progId = glCreateProgram();
 
-    ShaderDefines defines;
+    //ShaderDefines defines;
+    string defines; // not used
 
     getCodes(); // populate the lists, set m_type.
     m_isOk = false;
@@ -132,8 +130,7 @@ bool ShaderProgram::init(const ProgCompileConf& conf)
     for (int i = 0; i < m_vtxprog.size(); ++i)
     {
         uint vso = glCreateShader(GL_VERTEX_SHADER);
-        QByteArray ba = m_vtxprog[i].toLatin1();
-        const char *srcs[2] = { defines.c_str(), ba.data() };
+        const char *srcs[2] = { defines.c_str(), m_vtxprog[i].c_str() };
         glShaderSource(vso, 2, srcs, NULL);
         glCompileShader(vso);
         glAttachShader(m_progId, vso);
@@ -146,8 +143,7 @@ bool ShaderProgram::init(const ProgCompileConf& conf)
     for (int i = 0; i < m_geomprog.size(); ++i)
     {
         uint gso = glCreateShader(GL_GEOMETRY_SHADER_EXT);
-        QByteArray ba = m_geomprog[i].toLatin1();
-        const char *srcs[2] = { defines.c_str(), ba.data() };
+        const char *srcs[2] = { defines.c_str(), m_geomprog[i].c_str() };
         glShaderSource(gso, 2, srcs, NULL);
         glCompileShader(gso);
         glAttachShader(m_progId, gso);
@@ -160,8 +156,7 @@ bool ShaderProgram::init(const ProgCompileConf& conf)
     for (int i = 0; i < m_fragprog.size(); ++i)
     {
         uint fso = glCreateShader(GL_FRAGMENT_SHADER);
-        QByteArray ba = m_fragprog[i].toLatin1();
-        const char *srcs[2] = { defines.c_str(), ba.data() };
+        const char *srcs[2] = { defines.c_str(), m_fragprog[i].data() };
         glShaderSource(fso, 2, srcs, NULL);
         glCompileShader(fso);
         glAttachShader(m_progId, fso);
@@ -357,22 +352,22 @@ void Mat3Uniform::set(const Mat3& v) const {
 
 void UniformParam::getLocation(uint progId)
 {
-    if (m_name.isEmpty())
+    if (m_name.empty())
         return;
-    m_uid = glGetUniformLocation(progId, m_name.toLatin1().data());
+    m_uid = glGetUniformLocation(progId, m_name.c_str());
     if (m_uid == -1)
-        printf("WARNING: uniform '%s' location is -1!\n", m_name.toLatin1().data());
+        printf("WARNING: uniform '%s' location is -1!\n", m_name.c_str());
 }
 
 
 
 void AttribParam::getLocation(uint progId)
 {
-    if (m_name.isEmpty())
+    if (m_name.empty())
         return;
-    m_uid = glGetAttribLocation(progId, m_name.toLatin1().data());
+    m_uid = glGetAttribLocation(progId, m_name.c_str());
     if (m_uid == -1)
-        printf("WARNING: attribute '%s' location is -1!\n", m_name.toLatin1().data());
+        printf("WARNING: attribute '%s' location is -1!\n", m_name.c_str());
 }
 
 

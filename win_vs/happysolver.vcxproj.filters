@@ -1,0 +1,798 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Form Files">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
+      <Extensions>moc;h;cpp</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{0a7ca66a-8287-4939-a770-6e38e1e0e7c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI">
+      <UniqueIdentifier>{65354981-0a49-4def-8490-430af8208ece}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DocView">
+      <UniqueIdentifier>{5c0a0b1d-9761-4a82-8e10-01c3075c6608}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3D">
+      <UniqueIdentifier>{7b153960-cb6b-4a00-a7da-b1cea73a2ff9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Misc">
+      <UniqueIdentifier>{432437b7-67d9-4b92-89d1-73bdba784cd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\pieces">
+      <UniqueIdentifier>{158217d1-f914-4957-87e9-18f2bdfc4848}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\solutions">
+      <UniqueIdentifier>{0511c7e6-2782-41e2-88f5-a160d2668ed3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenGL">
+      <UniqueIdentifier>{a3968379-e423-43f5-a08e-71a14408ae92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenGL\glsl">
+      <UniqueIdentifier>{a8a0e41a-b924-47bf-835c-0e934dde6213}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenGL\generated">
+      <UniqueIdentifier>{2ab15829-32ff-4d99-8644-30a79ea63b6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Misc\tinuxml">
+      <UniqueIdentifier>{66607df8-8bc4-4eb4-b538-d7836e54b3c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MyLib">
+      <UniqueIdentifier>{5e48c39b-4e08-45a7-a2f1-3e4183401cb4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Debug">
+      <UniqueIdentifier>{65a9f5aa-bc4c-4895-80db-4a1808c781ae}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Generated Files\Release">
+      <UniqueIdentifier>{07bf2375-adaa-4449-adfe-0ded4af34fbf}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Generated Files\Template">
+      <UniqueIdentifier>{63fc3066-5455-4cce-9e70-dcc474641e35}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="MyLib\QtAdd">
+      <UniqueIdentifier>{59f0a50f-9717-44c9-8ad7-1e85080076a8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ActFocusComboBox.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ActFocusComboBox.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_AssembleStepDlg.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_AssembleStepDlg.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_BuildGLWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_BuildGLWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_BuildHelpDlg.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_BuildHelpDlg.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_CubeDoc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_CubeDoc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_DataWidgets.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_DataWidgets.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_GLWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_GLWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_GrpColorDlg.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_GrpColorDlg.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_MainWindow.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_MainWindow.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ModelGLWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ModelGLWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ModelHelpDlg.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ModelHelpDlg.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_OptionsDlg.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_OptionsDlg.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_PicsSelectWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_PicsSelectWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_SIDlg.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_SIDlg.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_SolveDlg.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_SolveDlg.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_SolveThread.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_SolveThread.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\BuildWorld.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Cube.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Shape.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SolveThread.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Space3D.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ActFocusComboBox.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\AssembleStepDlg.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\BuildHelpDlg.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\DataWidgets.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\GrpColorDlg.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\OptionsDlg.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SIDlg.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SolveDlg.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\BuildGLWidget.cpp">
+      <Filter>DocView</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\CubeDoc.cpp">
+      <Filter>DocView</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MainWindow.cpp">
+      <Filter>DocView</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\PicsSelectWidget.cpp">
+      <Filter>DocView</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MyObject.cpp">
+      <Filter>3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MyPolygon.cpp">
+      <Filter>3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\PicPainter.cpp">
+      <Filter>3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Configuration.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\general.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\main.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MyFile.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ModelHelpDlg.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Pieces.cpp">
+      <Filter>Engine\pieces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Solutions.cpp">
+      <Filter>Engine\solutions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SlvCube.cpp">
+      <Filter>Engine\solutions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SlvPainter.cpp">
+      <Filter>Engine\solutions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\PicsSet.cpp">
+      <Filter>Engine\pieces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\PicArr.cpp">
+      <Filter>Engine\pieces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\OpenGL\ShaderProgram.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\OpenGL\Shaders.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ModelGLWidget.cpp">
+      <Filter>DocView</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Mesh.cpp">
+      <Filter>3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\NoiseGenerator.cpp">
+      <Filter>3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\OpenGL\GLTexture.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Mat.cpp">
+      <Filter>3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tinyxml\tinyxml2.cpp">
+      <Filter>Misc\tinuxml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ObjExport.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MyLib\MyColorPicker.cpp">
+      <Filter>MyLib</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_MyColorPicker.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_MyColorPicker.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_MyColorPicker.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MyLib\ParamBase.cpp">
+      <Filter>MyLib</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ParamBase.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ParamBase.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_ParamBase.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MyLib\MyInputDlg.cpp">
+      <Filter>MyLib</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_MyInputDlg.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_MyInputDlg.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_MyInputDlg.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MyLib\QtAdd\qtcolortriangle.cpp">
+      <Filter>MyLib\QtAdd</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_qtcolortriangle.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_qtcolortriangle.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_qtcolortriangle.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_MyDialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_MyDialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_MyDialog.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\qrc_resources.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\GLWidget.cpp">
+      <Filter>DocView</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\BaseGLWidget.cpp">
+      <Filter>DocView</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\src\about.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\GrpColor.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\OptionsDlg.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\SolveDlg.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\SolveThread.h">
+      <Filter>Engine</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\ActFocusComboBox.h">
+      <Filter>GUI</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\AssembleStepDlg.h">
+      <Filter>GUI</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\BuildHelpDlg.h">
+      <Filter>GUI</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\DataWidgets.h">
+      <Filter>GUI</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\GrpColorDlg.h">
+      <Filter>GUI</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\ModelHelpDlg.h">
+      <Filter>GUI</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\OptionsDlg.h">
+      <Filter>GUI</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\SIDlg.h">
+      <Filter>GUI</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\SolveDlg.h">
+      <Filter>GUI</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\BuildGLWidget.h">
+      <Filter>DocView</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\CubeDoc.h">
+      <Filter>DocView</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\MainWindow.h">
+      <Filter>DocView</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\ModelGLWidget.h">
+      <Filter>DocView</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\PicsSelectWidget.h">
+      <Filter>DocView</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\Pieces.h">
+      <Filter>Engine\pieces</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\Solutions.h">
+      <Filter>Engine\solutions</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\OpenGL\build.frag.glsl">
+      <Filter>OpenGL\glsl</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\OpenGL\build.vtx.glsl">
+      <Filter>OpenGL\glsl</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\OpenGL\flat.vtx.glsl">
+      <Filter>OpenGL\glsl</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\OpenGL\flat.frag.glsl">
+      <Filter>OpenGL\glsl</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\OpenGL\cubesNoise.frag.glsl">
+      <Filter>OpenGL\glsl</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\OpenGL\cubesNoise.vtx.glsl">
+      <Filter>OpenGL\glsl</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\MyLib\MyColorPicker.h">
+      <Filter>MyLib</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\MyLib\MyColorPicker.ui">
+      <Filter>MyLib</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\MyLib\ParamBase.h">
+      <Filter>MyLib</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\MyLib\MyInputDlg.h">
+      <Filter>MyLib</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\MyLib\MyInputDlg.ui">
+      <Filter>MyLib</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\MyLib\QtAdd\qtcolortriangle.h">
+      <Filter>MyLib\QtAdd</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\MyLib\MyDialog.h">
+      <Filter>MyLib</Filter>
+    </CustomBuild>
+    <CustomBuild Include="images\HappySolver.ico" />
+    <CustomBuild Include="GeneratedFiles\ui_about.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GeneratedFiles\ui_GrpColor.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GeneratedFiles\ui_MyColorPicker.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GeneratedFiles\ui_MyInputDlg.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GeneratedFiles\ui_OptionsDlg.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GeneratedFiles\ui_SolveDlg.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource1.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\BuildWorld.h">
+      <Filter>Engine</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\Cube.h">
+      <Filter>Engine</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\CubeAcc.h">
+      <Filter>Engine</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\Shape.h">
+      <Filter>Engine</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\Space3D.h">
+      <Filter>Engine</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\PicArr.h">
+      <Filter>Engine\pieces</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\PicsSet.h">
+      <Filter>Engine\pieces</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\SlvCube.h">
+      <Filter>Engine\solutions</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\SlvPainter.h">
+      <Filter>Engine\solutions</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\Mat.h">
+      <Filter>3D</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\MatStack.h">
+      <Filter>3D</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\Mesh.h">
+      <Filter>3D</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\NoiseGenerator.h">
+      <Filter>3D</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\Vec.h">
+      <Filter>3D</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\MyObject.h">
+      <Filter>3D</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\MyPoint.h">
+      <Filter>3D</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\MyPolygon.h">
+      <Filter>3D</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\PicPainter.h">
+      <Filter>3D</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\Texture.h">
+      <Filter>3D</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\colorFuncs.h">
+      <Filter>Misc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\ObjExport.h">
+      <Filter>Misc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\Configuration.h">
+      <Filter>Misc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\general.h">
+      <Filter>Misc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\GlobDefs.h">
+      <Filter>Misc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\MemoryMgmt.h">
+      <Filter>Misc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\MyFile.h">
+      <Filter>Misc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\tinyxml\tinyxml2.h">
+      <Filter>Misc\tinuxml</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\OpenGL\glGlob.h">
+      <Filter>OpenGL</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\OpenGL\GLTexture.h">
+      <Filter>OpenGL</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\OpenGL\ShaderProgram.h">
+      <Filter>OpenGL</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\OpenGL\Shaders.h">
+      <Filter>OpenGL</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\OpenGL\makeString.py">
+      <Filter>OpenGL</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\OpenGL\build.frag.glsl.h">
+      <Filter>OpenGL\generated</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\OpenGL\build.vtx.glsl.h">
+      <Filter>OpenGL\generated</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\OpenGL\cubesNoise.frag.glsl.h">
+      <Filter>OpenGL\generated</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\OpenGL\cubesNoise.vtx.glsl.h">
+      <Filter>OpenGL\generated</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\OpenGL\flat.frag.glsl.h">
+      <Filter>OpenGL\generated</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\OpenGL\flat.vtx.glsl.h">
+      <Filter>OpenGL\generated</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\MyLib\paramSpecialization.h">
+      <Filter>MyLib</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\MyLib\QtAdd\QtColorTriangle">
+      <Filter>MyLib\QtAdd</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\qt\resources.qrc">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\GLWidget.h">
+      <Filter>DocView</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="happysolver.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\images\newshape.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\about.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\resetview.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\HappySolver16f.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\HappySolver32f.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\HappySolver64f.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\viewortho.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\viewpersp.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\axisXY.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\axisXZ.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\axisYZ.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\axisX.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\axisY.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\axisZ.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\continueRotate.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\objectspace.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\worldspace.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\rotate.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\translate.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\scale.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\modelview.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\buildview.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\picsview.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\selectyellow.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\selectblue.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\showallblues.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\solvefirst.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\solveprev.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\solvenext.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\solvelast.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\solvedlg.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\options.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\resetsolves.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\cube_ts.gif">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\openshape.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\opensolve.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\saveshape.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\savesolve.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\sampleLittleGenius.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\sampleHappyCube.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\sampleBlackProfi.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\sampleColorProfi.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\sampleMarble.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\run_error.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\run_ok.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\run_warn.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\addtile.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\removetile.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\stepbystep.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\sampleMicro.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\sampleBaub.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\sampleConstruct.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\images\sampleNewLittleGenius.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\black64.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\marbleg2_2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\littlegenious128_2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\new_genious128.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\stdpcs.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\BaseGLWidget.h">
+      <Filter>DocView</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

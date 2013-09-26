@@ -23,6 +23,10 @@
 #include "PicPainter.h"
 #include "PicArr.h"
 
+#ifdef _WINDOWS
+#include <QPixmap>
+#endif
+
 #include <memory>
 using namespace std;
 
@@ -84,7 +88,9 @@ public:
     int indexInGroup;  // index of this piece in the group it is part of
     PicArr v;
     PicArr defRtns[8];
+#ifdef _WINDOWS
     QPixmap pixmap;
+#endif
 
     int xOffs, yOffs; // in case of TEXTURE_INDIVIDUAL_***. the x,y offsets of the texture
     PicPainter painter;

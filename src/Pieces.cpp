@@ -30,15 +30,16 @@
 #include "general.h"
 #include "Pieces.h"
 #include "Texture.h"
-#include "CubeDoc.h"
-//#include "GLWidget.h"
-#include "MainWindow.h" ///< MainWindow::wasClosed() is being used.
 #include "PicsSet.h"
 #include "NoiseGenerator.h"
 #include "tinyxml/tinyxml2.h"
 #include "OpenGL/GLTexture.h"
 
 #include <fstream>
+
+#ifdef _WINDOWS
+#include <QPainter>
+#endif
 
 
 using namespace tinyxml2;
@@ -222,6 +223,7 @@ void PicBucket::makeBitmapList()
 
             cpic.makeBoundingPath();
 
+#ifdef _WINDOWS
             cpic.pixmap = QPixmap::fromImage(img);
             QPolygon poly;
             for (i = 0; i < cpic.pathlen; ++i)
@@ -236,7 +238,7 @@ void PicBucket::makeBitmapList()
 
             painter.drawPolyline(poly);
             painter.end();
-
+#endif
 
         }
     }
@@ -318,7 +320,6 @@ bool PicBucket::loadXML(const string& data)
 
     if (doc.Parse(data.c_str()) != XML_NO_ERROR) {
         printf("error parsing XML file:\n");
-        //QMessageBox::critical(g_main, APP_NAME,  + xmlname, QMessageBox::Ok, 0);
         return false;
     }
 

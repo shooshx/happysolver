@@ -27,11 +27,7 @@
 /// used in message boxes
 #define APP_NAME QObject::tr("Happy Cube Solver")
 
-class QWidget;
-/// this is a global pointer to the main MainWindow instance. it is used in places where
-/// there is no easy reach to a parent window. 
-/// This pointer is set in the main() and instantiated in main.cpp
-extern QWidget* g_main;
+
 
 #if (defined(Q_WS_MAC) || defined(Q_WS_X11))
  // OSX has special sizes for some things

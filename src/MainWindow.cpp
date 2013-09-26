@@ -16,10 +16,6 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "GlobDefs.h"
-#include <QtGui>
-#include <QActionGroup>
-#include <QScrollArea>
-#include <QStackedWidget>
 
 #include "ModelGLWidget.h"
 #include "BuildGLWidget.h"
@@ -35,8 +31,19 @@
 #include "ActFocusComboBox.h"
 #include "AssembleStepDlg.h"
 
-
 #include "ui_about.h"
+
+#include <QtGui>
+#include <QActionGroup>
+#include <QScrollArea>
+#include <QStackedWidget>
+#include <QDockWidget>
+#include <QMessageBox>
+#include <QProgressDialog>
+#include <QMenuBar>
+#include <QMenu>
+#include <QToolBar>
+#include <QStatusBar>
 
 
 #define SIZE_DEFAULT_X 800
@@ -63,7 +70,7 @@ QAction *selectGroupAct(QActionGroup *group, int sel)
 
 
 MainWindow::MainWindow()
-    :m_picsInitThread(NULL), m_wasClosed(false), m_bChanged(false), m_lastViewIndex(-1)
+    :m_picsInitThread(NULL), m_wasClosed(false), m_bChanged(false), m_lastViewIndex(-1), m_curView(-1)
 {
     setWindowTitle(APP_NAME);
 
@@ -72,7 +79,7 @@ MainWindow::MainWindow()
     m_doc = new CubeDoc(this);
 
     createActions();
-    createToolBars();
+    //createToolBars();
     createStatusBar();
     // the main creation of the menubar needs to be done after the creation of the dock
     // since the dock has actions that needs to be in the menu
@@ -84,9 +91,23 @@ MainWindow::MainWindow()
     // this should come before the dock creation due to call list ownership
     m_stack = new QStackedWidget(this);
     setCentralWidget(m_stack);
-    m_modelGlWidget = new ModelGLWidget(m_stack, m_doc); // views need to start with MainWindow as parent
-    m_buildGlWidget = new BuildGLWidget(m_stack, m_doc);
+    m_glWidget = new GLWidget(m_stack);
+    m_modelGlWidget = new ModelGLWidget(m_glWidget, m_doc); // views need to start with MainWindow as parent
+    m_buildGlWidget = new BuildGLWidget(m_glWidget, m_doc);
+    m_glWidget->m_handlers.push_back(m_modelGlWidget);
+    m_glWidget->m_handlers.push_back(m_buildGlWidget);
+    m_glWidget->switchHandler(m_buildGlWidget);
+    m_curView = BuildView;
+
+    reConnect3DActions(m_glWidget);
+    EnableBuildActs(true);
+
     m_picsWidget = new PicsSelectWidget(m_stack, m_doc);
+
+    m_stack->addWidget(m_glWidget);
+    m_stack->addWidget(m_picsWidget);
+    m_stack->setCurrentIndex(0);
+
 
     m_dock = new QDockWidget(this);
     m_dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -96,13 +117,12 @@ MainWindow::MainWindow()
 
     m_buildDlg = new BuildHelpDlg(m_docktab, this, m_doc); 
     m_docktab->addTab(m_buildDlg, QIcon(":/images/buildview.png"), "Design");
-    m_modelDlg = new ModelHelpDlg(m_docktab, this, m_doc, m_modelGlWidget);
+    m_modelDlg = new ModelHelpDlg(m_docktab, this, m_doc, m_glWidget);
     m_docktab->addTab(m_modelDlg, QIcon(":/images/modelview.png"), "Solutions");
 
     addDockWidget(Qt::RightDockWidgetArea, m_dock);
 
     createMenus();  // need to be after we created the docks
-
 
     m_slvdlg = new SolveDlg(this, m_doc);
     m_slvdlg->move(pos().x() + width() - m_slvdlg->width() - 7, pos().y() + height() - m_slvdlg->height() - 10);
@@ -111,15 +131,7 @@ MainWindow::MainWindow()
     m_asmStepDlg = new AssembleStepDlg(this);
     m_asmStepDlg->setAttribute(Qt::WA_Moved);
 
-    m_stack->addWidget(m_modelGlWidget);
-    m_stack->addWidget(m_buildGlWidget);
-    m_stack->addWidget(m_picsWidget);
-    m_stack->setCurrentIndex(BuildView);
 
-    m_currentGlWidget = m_buildGlWidget;
-    reConnect3DActions(m_buildGlWidget);
-    EnableBuildActs(true);
-    m_buildGlWidget->switchIn();
 
     updateSolveBrowseEnable();
     updateFileEnables();
@@ -319,7 +331,7 @@ void MainWindow::createActions()
     m_continueModeAct->setCheckable(true);
 
     QAction *act;
-    m_viewFrustrumActs = new QActionGroup(this);
+    /*m_viewFrustrumActs = new QActionGroup(this);
     act = new QAction(QIcon(":/images/viewortho.png"), tr("&Orthographic"), m_viewFrustrumActs);
     act->setData(GLWidget::Ortho);
     act->setCheckable(true);
@@ -365,6 +377,7 @@ void MainWindow::createActions()
     act = new QAction(QIcon(":/images/objectspace.png"), tr("&Object Space"), m_spaceActs);
     act->setData(GLWidget::ObjectSpace);
     act->setCheckable(true);
+    */
 
     m_viewActs = new QActionGroup(this);
     act = new QAction(QIcon(":/images/modelview.png"), tr("&Solution View"), m_viewActs);
@@ -492,17 +505,18 @@ void MainWindow::createMenus()
 
 }
 
+/*
 void MainWindow::createToolBars()
 {
     m_3DviewToolbar = addToolBar(tr("3D view control"));
     m_3DviewToolbar->addAction(m_resetViewAct);
     QObject::connect(m_statusBarTriggered, SIGNAL(triggered(bool)), statusBar(), SLOT(setVisible(bool)));
     m_3DviewToolbar->addSeparator();
-    m_3DviewToolbar->addActions(m_viewFrustrumActs->actions());
-    m_3DviewToolbar->addSeparator();
-    m_3DviewToolbar->addActions(m_actionsActs->actions());
-    m_3DviewToolbar->addSeparator();
-    m_3DviewToolbar->addActions(m_axisActs->actions());
+   // m_3DviewToolbar->addActions(m_viewFrustrumActs->actions());
+   // m_3DviewToolbar->addSeparator();
+//    m_3DviewToolbar->addActions(m_actionsActs->actions());
+  //  m_3DviewToolbar->addSeparator();
+   // m_3DviewToolbar->addActions(m_axisActs->actions());
 //	m_3DviewToolbar->addSeparator();
 //	m_3DviewToolbar->addActions(m_spaceActs->actions());
 
@@ -515,7 +529,7 @@ void MainWindow::createToolBars()
     m_buildToolbar->addAction(m_newShapeAct);
     m_buildToolbar->addAction(m_selectYellowAct);
     m_buildToolbar->addAction(m_selectBlueAct);
-    m_buildToolbar->addAction(m_showAllBlueAct);
+   // m_buildToolbar->addAction(m_showAllBlueAct);
 
     m_solvesToolbar = addToolBar(tr("Solutions"));
     m_solvesToolbar->addAction(m_slvFirstAct);
@@ -536,6 +550,7 @@ void MainWindow::createToolBars()
     m_solvesToolbar->hide();
 
 }
+*/
 
 void MainWindow::createStatusBar()
 {
@@ -576,6 +591,7 @@ void MainWindow::reConnect3DActions(GLWidget *target)
 
 }
 
+/*
 void MainWindow::changedActionsAct(QAction *act)
 {
     // if the current action of the current view is scale, make sure the axis actions are disabled
@@ -585,6 +601,7 @@ void MainWindow::changedActionsAct(QAction *act)
         m_axisActs->setEnabled(!isScale);
     }
 }
+*/
 
 void MainWindow::connectActions()
 {
@@ -592,8 +609,8 @@ void MainWindow::connectActions()
     connect(m_exitAct, SIGNAL(triggered(bool)), this, SLOT(close()));
     // build
     connect(m_selectYellowAct, SIGNAL(triggered(bool)), m_buildGlWidget, SLOT(setSelectYellow(bool)));
-    connect(m_selectBlueAct, SIGNAL(triggered(bool)), m_buildGlWidget, SLOT(setUnSetBlueMode(bool)));
-    connect(m_showAllBlueAct, SIGNAL(triggered(bool)), m_buildGlWidget, SLOT(showAllBlue()));
+   // connect(m_selectBlueAct, SIGNAL(triggered(bool)), m_buildGlWidget, SLOT(setUnSetBlueMode(bool)));
+    //connect(m_showAllBlueAct, SIGNAL(triggered(bool)), m_buildGlWidget, SLOT(showAllBlue()));
 
     // views
     connect(m_viewActs, SIGNAL(triggered(QAction*)), this, SLOT(setView(QAction*)));
@@ -673,9 +690,9 @@ void MainWindow::connectActions()
     connect(m_doc, SIGNAL(slvProgUpdated(int, int)), m_modelDlg, SLOT(statsUpdate(int, int)));
     connect(m_doc, SIGNAL(slvProgUpdated(int, int)), m_buildGlWidget, SLOT(slvProgStatsUpdate(int, int)));
     connect(m_doc, SIGNAL(slvProgUpdated(int, int)), m_picsWidget, SLOT(slvProgStatsUpdate(int, int)));
-    connect(m_buildDlg, SIGNAL(zoomChanged(int)), m_buildGlWidget, SLOT(zoom(int)));
+    connect(m_buildDlg, SIGNAL(zoomChanged(int)), m_buildGlWidget, SLOT(externalZoom(int)));
     connect(m_buildGlWidget, SIGNAL(zoomChanged(int)), m_buildDlg, SLOT(updateZoom(int)));
-    connect(m_modelDlg, SIGNAL(zoomChanged(int)), m_modelGlWidget, SLOT(zoom(int)));
+    connect(m_modelDlg, SIGNAL(zoomChanged(int)), m_modelGlWidget, SLOT(externalZoom(int)));
     connect(m_modelGlWidget, SIGNAL(zoomChanged(int)), m_modelDlg, SLOT(updateZoom(int)));
 
     connect(m_modelGlWidget, SIGNAL(changedHoverPiece(int)), m_modelDlg, SLOT(changeViewPiece(int)));
@@ -746,9 +763,9 @@ void MainWindow::doModalOptionsDlg()
         }
         if (rend || lastdc.diffOnlyPaint(m_doc->m_conf.disp))
         {
-            m_modelGlWidget->setUsingLight(m_doc->m_conf.disp.bLight);
-            m_modelGlWidget->updateGL();
-            m_modelDlg->getPieceView()->setUsingLight(m_doc->m_conf.disp.bLight);
+        //    m_modelGlWidget->setUsingLight(m_doc->m_conf.disp.bLight);
+            m_glWidget->updateGL();
+        //    m_modelDlg->getPieceView()->setUsingLight(m_doc->m_conf.disp.bLight);
             m_modelDlg->getPieceView()->updateGL();
         }
         if (lastdc.nSwapTexEndians != m_doc->m_conf.disp.nSwapTexEndians) // swap endians changed
@@ -967,10 +984,10 @@ void MainWindow::Enable3DActions(bool en)
 {
     m_resetViewAct->setEnabled(en);
     m_continueModeAct->setEnabled(en);
-    m_viewFrustrumActs->setEnabled(en);
-    m_axisActs->setEnabled(en);
-    m_actionsActs->setEnabled(en);
-    m_spaceActs->setEnabled(en);
+//    m_viewFrustrumActs->setEnabled(en);
+//    m_axisActs->setEnabled(en);
+//    m_actionsActs->setEnabled(en);
+//    m_spaceActs->setEnabled(en);
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event) // capture the keys from all windows
@@ -1016,23 +1033,23 @@ void MainWindow::switchTo_NoLast(EView view)
 
 void MainWindow::SwitchView(int nSwitchTo, bool bToLast)
 {
-    int active = m_stack->currentIndex();
-    if (active == nSwitchTo)
+    if (m_curView == nSwitchTo)
     {
-        if ((bToLast) && (m_lastViewIndex != -1)) active = m_lastViewIndex;
-        else return; // do nothing, don't change it
-    }
-    else
-    {
-        m_lastViewIndex = active;
-        active = nSwitchTo;
+        if ((bToLast) && (m_lastViewIndex != -1)) 
+            m_curView = m_lastViewIndex;
+        else 
+            return; // do nothing, don't change it
+    } 
+    else {
+        m_lastViewIndex = m_curView;
+        m_curView = nSwitchTo;
     }
 
     // needed in order for the actions to depress
     QList<QAction*> acts = m_viewActs->actions();
     for(int i = 0; i < 3; ++i)
     {
-        if (i != active)
+        if (i != m_curView)
             acts[i]->setChecked(false);
         else
             acts[i]->setChecked(true);
@@ -1042,51 +1059,38 @@ void MainWindow::SwitchView(int nSwitchTo, bool bToLast)
     //setUpdatesEnabled(false);
     //m_docktab->blockSignals(true);
 
-    if ((m_lastViewIndex == BuildView) && (active != BuildView))
-        m_buildGlWidget->switchOut();
-
-    switch (active)
+    switch (m_curView)
     {
     case ModelView:
-        //m_dock->show(); // ensure it is shown (TBD... unless?)
         m_docktab->setCurrentIndex(1);
+        m_stack->setCurrentIndex(0);
 
-        m_currentGlWidget = m_modelGlWidget;
-        m_modelGlWidget->makeCurrent();
-        m_modelGlWidget->show(); // needed to avoid flicker to the pics widget (4.3.0 regress)
+        m_glWidget->switchHandler(m_modelGlWidget);
+        m_glWidget->updateGL();
 
         Enable3DActions(true);
-        reConnect3DActions(m_modelGlWidget);
         EnableBuildActs(false);
         break;
 
     case BuildView:
-        //m_dock->show(); // ensure it is shown (TBD... unless?)
         m_docktab->setCurrentIndex(0);
+        m_stack->setCurrentIndex(0);
 
-        m_currentGlWidget = m_buildGlWidget;
-        m_buildGlWidget->switchIn();
-        m_buildGlWidget->makeCurrent();
-        m_buildGlWidget->show(); // needed to avoid flicker to the pics widget (4.3.0 regress)
+        m_glWidget->switchHandler(m_buildGlWidget);
+        m_glWidget->updateGL();
 
         Enable3DActions(true);
-        reConnect3DActions(m_buildGlWidget);
         EnableBuildActs(true);
         break;
 
     case PicsView:
         m_docktab->setCurrentIndex(0); // pics selection wants the design dialog
+        m_stack->setCurrentIndex(1);
+
         Enable3DActions(false);
         EnableBuildActs(false);
         break;
     }
-
-    //m_docktab->blockSignals(false);
-    m_stack->setCurrentIndex(active);
-    // the last call only posted a paint event, didn't call it yet, so the new view isn't current yet.
-
-    //flushAllEvents();
-    //setUpdatesEnabled(true);
 
 
 }

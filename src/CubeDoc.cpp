@@ -15,8 +15,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-//#include <QFileDialog>
-#include <QMessageBox>
+
 
 #include "GlobDefs.h"
 #include "CubeDoc.h"
@@ -33,7 +32,16 @@
 #include "SlvCube.h"
 #include "ObjExport.h"
 
+#include <QMessageBox>
+#include <QEventLoop>
+#include <QFileDialog>
+#include <QFile>
+#include <QFileInfo>
+#include <QAction>
+#include <QCoreApplication>
+
 #include <fstream>
+
 
 QString extractExtension(QString &path)
 {

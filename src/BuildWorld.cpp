@@ -15,10 +15,9 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-#include <QMessageBox>
-
 #include "BuildWorld.h"
 #include "MyFile.h"
+
 
 
 BuildDimension::BuildPage::BuildPage()
@@ -413,8 +412,8 @@ bool BuildWorld::loadFrom(MyFile *rdfl)
 		return false;
 	rdfl->readNums(3, &size.x, &size.y, &size.z);
 
-	Q_ASSERT((size.x == size.y) && (size.y == size.z));
-	Q_ASSERT(size.x <= BUILD_SIZE);
+	assert((size.x == size.y) && (size.y == size.z));
+	assert(size.x <= BUILD_SIZE);
 
 	m_limits.Init(size.x); 
 

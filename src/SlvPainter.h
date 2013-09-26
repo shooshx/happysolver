@@ -6,7 +6,7 @@
 #include "Mesh.h"
 
 class SlvCube;
-class GLWidget;
+class BaseGLWidget;
 class ObjExport;
 
 
@@ -53,21 +53,21 @@ class SlvPainter
 public:
 	// contains a pointer to its parent
 	SlvPainter(const SlvCube* _scube) :scube(_scube) {}
-	void paint(GLWidget* context, bool fTargets, int singleChoise, int upToStep, ELinesDraw cfgLines) const;
+	void paint(BaseGLWidget* context, bool fTargets, int singleChoise, int upToStep, ELinesDraw cfgLines) const;
 
 	bool exportToObj(ObjExport& oe) const;
 
 	bool isNull() const { return scube == NULL; }
 	void setSlvCube(const SlvCube *sc) { scube = sc; }
 
-
+public:
 	Vec3 qmin, qmax; // 2 opposites for bounding box
 
 	LinesCollection m_linesIFS;
 
 private:
-	void paintPiece(int f, GLWidget* context, bool fTargets) const;
-	void paintLines(int f, bool singleChoise, GLWidget *context, ELinesDraw cfgLines) const;
+	void paintPiece(int f, BaseGLWidget* context, bool fTargets) const;
+	void paintLines(int f, bool singleChoise, BaseGLWidget *context, ELinesDraw cfgLines) const;
 
 	bool exportPieceToObj(ObjExport& oe, int i) const;
 

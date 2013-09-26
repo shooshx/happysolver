@@ -1,5 +1,12 @@
-
 #pragma once
+
+#ifdef _WINDOWS
+#define  GLEW_STATIC
+#include <gl/glew.h>
+#else
+
+#endif
+
 
 #include <string>
 using namespace std;

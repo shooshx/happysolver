@@ -1,10 +1,6 @@
 #include "GLTexture.h"
 
 
-
-#include "glGlob.h"
-
-
 void GlTexture::init(GLenum target, const Vec2i& size, int depth, GLenum internal_format, 
 				   GLenum format, GLenum type, const void* ptr, GLenum minFilter, GLenum magFilter, GLenum wrap)
 {

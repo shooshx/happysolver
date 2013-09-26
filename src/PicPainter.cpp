@@ -300,8 +300,8 @@ void PicDisp::init(const DisplayConf& dpc)
 
 
 /// do the actual painting of a single piece in the actual OpenGL view.
-/// call the display list of the piece.
-void PicPainter::paint(bool fTargets, const Vec3& name, GLWidget *context, bool invertTex) const
+
+void PicPainter::paint(bool fTargets, const Vec3& name, BaseGLWidget *context, bool invertTex) const
 {
     glPolygonOffset(1.0, 1.0); // go backward, draw polygons TBD- move to slvpainter
 

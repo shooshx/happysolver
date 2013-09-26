@@ -15,13 +15,14 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+#include "MainWindow.h"
+#include "Pieces.h"
+
 #include <QApplication>
 #include <QIcon>
 #include <QtGui>
 #include <iostream>
 
-#include "MainWindow.h"
-#include "Pieces.h"
 
 QWidget* g_main = NULL;
 

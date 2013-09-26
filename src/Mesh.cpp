@@ -2,8 +2,6 @@
 #include "OpenGL/Shaders.h"
 #include "OpenGL/glGlob.h"
 
-#include <QGLWidget>
-
 
 static uint glType(Mesh::Type t) {
     switch (t){

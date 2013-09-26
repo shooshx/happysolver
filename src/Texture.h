@@ -18,7 +18,7 @@
 #ifndef __TEXTURE_H__INCLUDED__
 #define __TEXTURE_H__INCLUDED__
 
-#include <QtOpenGL>
+//#include <QtOpenGL>
 #include <QImage>
 
 /** \file
