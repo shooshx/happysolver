@@ -17,8 +17,8 @@
 
 #include "GlobDefs.h"
 
-#include "ModelGLWidget.h"
-#include "BuildGLWidget.h"
+#include "ModelGLControl.h"
+#include "BuildGLControl.h"
 #include "PicsSelectWidget.h"
 #include "MainWindow.h"
 #include "CubeDoc.h"
@@ -92,11 +92,11 @@ MainWindow::MainWindow()
     m_stack = new QStackedWidget(this);
     setCentralWidget(m_stack);
     m_glWidget = new GLWidget(m_stack);
-    m_modelGlWidget = new ModelGLWidget(m_glWidget, m_doc); // views need to start with MainWindow as parent
-    m_buildGlWidget = new BuildGLWidget(m_glWidget, m_doc);
-    m_glWidget->m_handlers.push_back(m_modelGlWidget);
-    m_glWidget->m_handlers.push_back(m_buildGlWidget);
-    m_glWidget->switchHandler(m_buildGlWidget);
+    m_modelGLControl = new ModelGLControl(m_glWidget, m_doc); // views need to start with MainWindow as parent
+    m_buildGLControl = new BuildGLControl(m_glWidget, m_doc);
+    m_glWidget->m_handlers.push_back(m_modelGLControl);
+    m_glWidget->m_handlers.push_back(m_buildGLControl);
+    m_glWidget->switchHandler(m_buildGLControl);
     m_curView = BuildView;
 
     reConnect3DActions(m_glWidget);
@@ -208,7 +208,7 @@ bool MainWindow::initialize()
 {
     PicBucket::mutableInstance().setSwapEndians(m_doc->m_conf.disp.nSwapTexEndians);
 
-    m_modelGlWidget->initTex();
+    m_modelGLControl->initTex();
     // needs to be here because only here we have the glwidget
     if (!PicBucket::mutableInstance().loadXML(readFile(":/stdpcs.xml")))
         return false;
@@ -608,9 +608,9 @@ void MainWindow::connectActions()
     // main
     connect(m_exitAct, SIGNAL(triggered(bool)), this, SLOT(close()));
     // build
-    connect(m_selectYellowAct, SIGNAL(triggered(bool)), m_buildGlWidget, SLOT(setSelectYellow(bool)));
-   // connect(m_selectBlueAct, SIGNAL(triggered(bool)), m_buildGlWidget, SLOT(setUnSetBlueMode(bool)));
-    //connect(m_showAllBlueAct, SIGNAL(triggered(bool)), m_buildGlWidget, SLOT(showAllBlue()));
+    connect(m_selectYellowAct, SIGNAL(triggered(bool)), m_buildGLControl, SLOT(setSelectYellow(bool)));
+   // connect(m_selectBlueAct, SIGNAL(triggered(bool)), m_buildGLControl, SLOT(setUnSetBlueMode(bool)));
+    //connect(m_showAllBlueAct, SIGNAL(triggered(bool)), m_buildGLControl, SLOT(showAllBlue()));
 
     // views
     connect(m_viewActs, SIGNAL(triggered(QAction*)), this, SLOT(setView(QAction*)));
@@ -624,12 +624,12 @@ void MainWindow::connectActions()
 
     // document
     connect(this, SIGNAL(picsLoadComplete()), m_picsWidget, SLOT(continueCreate()));
-    connect(m_doc, SIGNAL(updateViews(int)), m_modelGlWidget, SLOT(updateView(int)));
-    connect(m_doc, SIGNAL(updateViews(int)), m_buildGlWidget, SLOT(updateView(int)));
+    connect(m_doc, SIGNAL(updateViews(int)), m_modelGLControl, SLOT(updateView(int)));
+    connect(m_doc, SIGNAL(updateViews(int)), m_buildGLControl, SLOT(updateView(int)));
     connect(m_doc, SIGNAL(updateViews(int)), m_picsWidget, SLOT(updateView(int)));
     connect(m_doc, SIGNAL(updateViews(int)), m_modelDlg, SLOT(updateView(int)));
-    //connect(&PicBucket::instance(), SIGNAL(boundTexture(int, QImage)), m_modelGlWidget, SLOT(doBindTexture(int, QImage)));
-    //connect(&PicBucket::instance(), SIGNAL(updateTexture(int, QImage)), m_modelGlWidget, SLOT(doUpdateTexture(int, QImage)));
+    //connect(&PicBucket::instance(), SIGNAL(boundTexture(int, QImage)), m_modelGLControl, SLOT(doBindTexture(int, QImage)));
+    //connect(&PicBucket::instance(), SIGNAL(updateTexture(int, QImage)), m_modelGLControl, SLOT(doUpdateTexture(int, QImage)));
 
     connect(m_doc, SIGNAL(newSolutionsLoaded(QString)), this, SLOT(setCurrentFile(QString)));
     connect(m_doc, SIGNAL(newShapeLoaded(QString)), this, SLOT(setCurrentFile(QString)));
@@ -675,12 +675,12 @@ void MainWindow::connectActions()
     // dialogs
     connect(m_editOptionsAct, SIGNAL(triggered()), this, SLOT(doModalOptionsDlg()));
 
-    connect(m_buildDlg, SIGNAL(changedAction(bool)), m_buildGlWidget, SLOT(changeAction(bool)));
-    connect(m_buildGlWidget, SIGNAL(changedAction(bool)), m_buildDlg, SLOT(changeAction(bool)));
+    connect(m_buildDlg, SIGNAL(changedAction(bool)), m_buildGLControl, SLOT(changeAction(bool)));
+    connect(m_buildGLControl, SIGNAL(changedAction(bool)), m_buildDlg, SLOT(changeAction(bool)));
     // TBD-changedTilesCount, should pass via CubeDoc (updateView and from BuildWorld)
-    connect(m_buildGlWidget, SIGNAL(changedTilesCount(int)), m_buildDlg, SLOT(setTilesCount(int)));
-    connect(m_buildGlWidget, SIGNAL(changedTilesCount(int)), m_picsWidget, SLOT(setBuildTilesCount(int)));
-    connect(m_buildGlWidget, SIGNAL(changedTilesCount(int)), m_asmStepDlg, SLOT(setTilesCount(int)));
+    connect(m_buildGLControl, SIGNAL(changedTilesCount(int)), m_buildDlg, SLOT(setTilesCount(int)));
+    connect(m_buildGLControl, SIGNAL(changedTilesCount(int)), m_picsWidget, SLOT(setBuildTilesCount(int)));
+    connect(m_buildGLControl, SIGNAL(changedTilesCount(int)), m_asmStepDlg, SLOT(setTilesCount(int)));
     connect(m_picsWidget, SIGNAL(changedPieceCount(int)), m_buildDlg, SLOT(setPieceCount(int)));
     connect(this, SIGNAL(picsLoadComplete()), m_buildDlg, SLOT(completePicsWidgets()));
     connect(m_buildDlg, SIGNAL(changedFamBox(int, int)), m_picsWidget, SLOT(changeFamBox(int, int)));
@@ -688,32 +688,33 @@ void MainWindow::connectActions()
     connect(m_buildDlg, SIGNAL(switchToPicsTab(int)), m_picsWidget, SLOT(changeTab(int)));
     connect(m_doc, SIGNAL(slvProgUpdated(int, int)), m_buildDlg, SLOT(statsUpdate(int, int)));
     connect(m_doc, SIGNAL(slvProgUpdated(int, int)), m_modelDlg, SLOT(statsUpdate(int, int)));
-    connect(m_doc, SIGNAL(slvProgUpdated(int, int)), m_buildGlWidget, SLOT(slvProgStatsUpdate(int, int)));
+    connect(m_doc, SIGNAL(slvProgUpdated(int, int)), m_buildGLControl, SLOT(slvProgStatsUpdate(int, int)));
     connect(m_doc, SIGNAL(slvProgUpdated(int, int)), m_picsWidget, SLOT(slvProgStatsUpdate(int, int)));
-    connect(m_buildDlg, SIGNAL(zoomChanged(int)), m_buildGlWidget, SLOT(externalZoom(int)));
-    connect(m_buildGlWidget, SIGNAL(zoomChanged(int)), m_buildDlg, SLOT(updateZoom(int)));
-    connect(m_modelDlg, SIGNAL(zoomChanged(int)), m_modelGlWidget, SLOT(externalZoom(int)));
-    connect(m_modelGlWidget, SIGNAL(zoomChanged(int)), m_modelDlg, SLOT(updateZoom(int)));
+    //connect(m_buildDlg, SIGNAL(zoomChanged(int)), m_glWidget, SLOT(externalZoom(int)));
+    connect(m_buildDlg, SIGNAL(zoomChanged(int)), m_buildGLControl, SLOT(changeRotAngle(int)));
+    connect(m_buildGLControl, SIGNAL(zoomChanged(int)), m_buildDlg, SLOT(updateZoom(int)));
+    connect(m_modelDlg, SIGNAL(zoomChanged(int)), m_glWidget, SLOT(externalZoom(int)));
+    connect(m_modelGLControl, SIGNAL(zoomChanged(int)), m_modelDlg, SLOT(updateZoom(int)));
 
-    connect(m_modelGlWidget, SIGNAL(changedHoverPiece(int)), m_modelDlg, SLOT(changeViewPiece(int)));
-    connect(m_modelGlWidget, SIGNAL(rotated(GLWidget::EAxis, int, int)), m_modelDlg->getPieceView(), SLOT(externRotate(GLWidget::EAxis, int, int)));
-    connect(m_modelGlWidget, SIGNAL(callReset()), m_modelDlg->getPieceView(), SLOT(resetState()));
-    connect(m_modelGlWidget, SIGNAL(chosenSinglePiece(int)), m_modelDlg, SLOT(changedExternViewPiece(int)));
+    connect(m_modelGLControl, SIGNAL(changedHoverPiece(int)), m_modelDlg, SLOT(changeViewPiece(int)));
+    connect(m_modelGLControl, SIGNAL(rotated(GLWidget::EAxis, int, int)), m_modelDlg->getPieceView(), SLOT(externRotate(GLWidget::EAxis, int, int)));
+    connect(m_modelGLControl, SIGNAL(callReset()), m_modelDlg->getPieceView(), SLOT(resetState()));
+    connect(m_modelGLControl, SIGNAL(chosenSinglePiece(int)), m_modelDlg, SLOT(changedExternViewPiece(int)));
 
-    connect(m_buildGlWidget, SIGNAL(changedTilesCount(int)), m_doc, SLOT(evaluateBstatus()));
+    connect(m_buildGLControl, SIGNAL(changedTilesCount(int)), m_doc, SLOT(evaluateBstatus()));
     connect(m_picsWidget, SIGNAL(changedPieceCount(int)), m_doc, SLOT(evaluateBstatus()));
 
     connect(m_showGrpColorAct, SIGNAL(triggered(bool)), m_grpColDlg, SLOT(setVisible(bool)));
     connect(m_grpColDlg, SIGNAL(visibilityChanged(bool)), m_showGrpColorAct, SLOT(setChecked(bool)));
 
-    connect(m_grpColDlg, SIGNAL(changed(int)), m_modelGlWidget, SLOT(updateView(int)));
+    connect(m_grpColDlg, SIGNAL(changed(int)), m_modelGLControl, SLOT(updateView(int)));
     connect(m_asmStepDlg, SIGNAL(stepChanged(int)), m_doc, SLOT(setShowUpToStep(int)));
     connect(m_showAsmDlgAct, SIGNAL(triggered(bool)), m_asmStepDlg, SLOT(setVisible(bool)));
     connect(m_asmStepDlg, SIGNAL(visibilityChanged(bool)), m_showAsmDlgAct, SLOT(setChecked(bool)));
 
 
     // status bar
-    connect(m_buildGlWidget, SIGNAL(changedTileHover(int, BuildGLWidget::EActStatus)), this, SLOT(setStatusTextBuild(int, BuildGLWidget::EActStatus)));
+    connect(m_buildGLControl, SIGNAL(changedTileHover(int, BuildGLControl::EActStatus)), this, SLOT(setStatusTextBuild(int, BuildGLControl::EActStatus)));
 }
 
 void MainWindow::setActSlvIndex(int n)
@@ -726,7 +727,7 @@ void MainWindow::setDocSlvIndex()
     m_doc->slvSetIndex(m_slvNumAct->data().value<SlvData>().index);
 }
 
-void MainWindow::setStatusTextBuild(int t, BuildGLWidget::EActStatus act)
+void MainWindow::setStatusTextBuild(int t, BuildGLControl::EActStatus act)
 {
     if (t == -1)
         statusBar()->clearMessage();
@@ -734,13 +735,13 @@ void MainWindow::setStatusTextBuild(int t, BuildGLWidget::EActStatus act)
     {
         switch (act)
         {
-        case BuildGLWidget::REMOVE:
+        case BuildGLControl::REMOVE:
             statusBar()->showMessage("Double click a tile to Remove a cube"); break;
-        case BuildGLWidget::CANT_REMOVE:
+        case BuildGLControl::CANT_REMOVE:
             statusBar()->showMessage("You Cannot remove the only cube in the design"); break;
-        case BuildGLWidget::ADD:
+        case BuildGLControl::ADD:
             statusBar()->showMessage("Double click a tile to Add a cube"); break;
-        case BuildGLWidget::EDIT_DISABLE:
+        case BuildGLControl::EDIT_DISABLE:
             statusBar()->showMessage("Can't edit while trying to solve design."); break;
         }
     }
@@ -751,7 +752,7 @@ void MainWindow::doModalOptionsDlg()
     DisplayConf lastdc = m_doc->m_conf.disp;
 
     OptionsDlg dlg(this, &m_doc->m_conf);
-    connect(&dlg, SIGNAL(updateSlv3D(int)), m_modelGlWidget, SLOT(updateView(int)));
+    connect(&dlg, SIGNAL(updateSlv3D(int)), m_modelGLControl, SLOT(updateView(int)));
 
     if (dlg.exec() == QDialog::Accepted)
     {
@@ -763,7 +764,7 @@ void MainWindow::doModalOptionsDlg()
         }
         if (rend || lastdc.diffOnlyPaint(m_doc->m_conf.disp))
         {
-        //    m_modelGlWidget->setUsingLight(m_doc->m_conf.disp.bLight);
+        //    m_modelGLControl->setUsingLight(m_doc->m_conf.disp.bLight);
             m_glWidget->updateGL();
         //    m_modelDlg->getPieceView()->setUsingLight(m_doc->m_conf.disp.bLight);
             m_modelDlg->getPieceView()->updateGL();
@@ -992,12 +993,12 @@ void MainWindow::Enable3DActions(bool en)
 
 void MainWindow::keyPressEvent(QKeyEvent *event) // capture the keys from all windows
 {
-    m_buildGlWidget->keyEvent(event); // delegate to the build view
+    m_buildGLControl->keyEvent(event); // delegate to the build view
     QMainWindow::keyPressEvent(event);
 }
 void MainWindow::keyReleaseEvent(QKeyEvent *event)
 {
-    m_buildGlWidget->keyEvent(event);
+    m_buildGLControl->keyEvent(event);
     QMainWindow::keyReleaseEvent(event);
 }
 
@@ -1065,7 +1066,7 @@ void MainWindow::SwitchView(int nSwitchTo, bool bToLast)
         m_docktab->setCurrentIndex(1);
         m_stack->setCurrentIndex(0);
 
-        m_glWidget->switchHandler(m_modelGlWidget);
+        m_glWidget->switchHandler(m_modelGLControl);
         m_glWidget->updateGL();
 
         Enable3DActions(true);
@@ -1076,7 +1077,7 @@ void MainWindow::SwitchView(int nSwitchTo, bool bToLast)
         m_docktab->setCurrentIndex(0);
         m_stack->setCurrentIndex(0);
 
-        m_glWidget->switchHandler(m_buildGlWidget);
+        m_glWidget->switchHandler(m_buildGLControl);
         m_glWidget->updateGL();
 
         Enable3DActions(true);

@@ -57,10 +57,9 @@ QString extractExtension(QString &path)
 
 
 CubeDoc::CubeDoc(QWidget *parent)
-  :QObject(parent), m_shp(NULL), m_slvs(NULL), m_curWarning(WARN_NONE), m_curPicsWarning(WARN_NONE), m_slvDone(this)
+  :QObject(parent), m_curWarning(WARN_NONE), m_curPicsWarning(WARN_NONE), m_slvDone(this)
 {
-	m_build = new BuildWorld;
-	m_slvs = new Solutions;
+
 	m_slvs->changedFromSave = &m_slvDone;
 
 	//connect(m_slvs, SIGNAL(changedFromSave(bool)), this, SIGNAL(changedFromSave(bool)));
@@ -99,8 +98,7 @@ void CubeDoc::OnNewBuild() //SLOT
 	if (!checkUnsaved())
 		return;
 
-	delete m_shp;
-	m_shp = NULL;
+	m_shp.reset();
 
 	m_slvs->clear();
 
@@ -255,21 +253,20 @@ bool CubeDoc::OnGenShape() // not called by GUI
 	if (!checkWhileRunning("Cannot process shape while running"))
 		return false;
 
-	if (m_shp != NULL)
+	if (m_shp.get() != NULL)
 	{
 		if (!checkUnsaved(DTSolutions))
 			return false;
 	}
 
-	Shape *newshp = new Shape;
-	bool ret = callGenerate(newshp, false);
+	auto_ptr<Shape> newshp(new Shape);
+	bool ret = callGenerate(newshp.get(), false);
 
 	if (ret) 
 	{
 		m_build->justGen();
 
-		delete m_shp;
-		m_shp = newshp;
+		m_shp.reset(newshp.release());
 
 		m_slvs->clear(m_shp->fcn);
 		m_nCurSlv = 0;
@@ -280,11 +277,6 @@ bool CubeDoc::OnGenShape() // not called by GUI
 		emit solveReset(); // resets the title of the main window
 
 		return true;
-	}
-	else
-	{
-		delete newshp;
-		newshp = NULL;
 	}
 
 	return false;
@@ -440,11 +432,11 @@ bool CubeDoc::realSave(int unGenSlvAnswer)
 		return false;
 	}
 
-	BuildWorld *savebuild = m_build;
+	BuildWorld* savebuild = m_build;
 	if (doUngenerate)
 	{
 		savebuild = new BuildWorld;
-		savebuild->unGenerate(m_shp);
+		savebuild->unGenerate(m_shp.get());
 	}
 	if (!savebuild->saveTo(&wrfl))
 	{
@@ -461,17 +453,17 @@ bool CubeDoc::realSave(int unGenSlvAnswer)
 
 	if (saveCurShape)
 	{
-		if ((!hasSolves) && ((m_shp == NULL) || (m_build->getChangedFromGen())))
+		if ((!hasSolves) && ((m_shp.get() == NULL) || (m_build->getChangedFromGen())))
 		{ // no solves - not the unGenerate case. if we have solves, don't generate and erase them.
 			Shape tmpshp;
 			if (callGenerate(&tmpshp, true)) // ok to try a generate
 			{
 				OnGenShape(); // TBD: use return value?
-				Q_ASSERT(m_shp != NULL); // we just checked it earlyer.
+				Q_ASSERT(m_shp.get() != NULL); // we just checked it earlyer.
 			}
 		}
 
-		if (m_shp != NULL) // the shape has something.
+		if (m_shp.get() != NULL) // the shape has something.
 		{
 			if (!m_shp->saveTo(&wrfl))
 			{
@@ -533,16 +525,15 @@ void CubeDoc::realOpen(QString name)
 	}
 
 	// generate the shape from the build. this is the shape we're going to use in the end
-	Shape *gendshape = new Shape;
+	auto_ptr<Shape> gendshape(new Shape);
 	gendshape->generate(newbuild); // get the return value? no real need to.
 
 	Solutions *newslvs = NULL;	
-	Shape *loadedshp = new Shape;
+	auto_ptr<Shape> loadedshp(new Shape);
 
 	if (!loadedshp->loadFrom(&rdfl))
 	{ // no shape (hence no solutions) but there is a build
-		delete loadedshp; 
-		loadedshp = NULL; // get rid of it, its no good.
+		loadedshp.reset(); // get rid of it, its no good.
 		// newbuild - no call to justGen (stay with ctor values)
 
 	}
@@ -553,19 +544,18 @@ void CubeDoc::realOpen(QString name)
 		// TBD MOVE THIS. only needed if there are solutions.
 		TTransformVec movedTo(loadedshp->fcn);
 		bool trivialTransform = false;
-		if (!loadedshp->createTrasformTo(gendshape, movedTo, &trivialTransform))
+		if (!loadedshp->createTrasformTo(gendshape.get(), movedTo, &trivialTransform))
 		{
 			QMessageBox::critical(g_main, APP_NAME, "failed shape transform, bug.", QMessageBox::Ok, 0);
 			return;
 		}
 
-		delete loadedshp; // we're done with it.
-		loadedshp = NULL;
+		loadedshp.reset(); // we're done with it.
 
 		newbuild->justGen(); // shouldn't gen it next time.
 
 		newslvs = new Solutions(gendshape->fcn);
-		if (!newslvs->readFrom(&rdfl, gendshape))
+		if (!newslvs->readFrom(&rdfl, gendshape.get()))
 		{
 			delete newslvs; newslvs = NULL;
 		}
@@ -592,8 +582,7 @@ void CubeDoc::realOpen(QString name)
 	delete m_build;	
 	m_build = newbuild;
 
-	delete m_shp; 
-	m_shp = gendshape;
+	m_shp.reset(gendshape.release());
 
 	// directly initialize the step indicator now.
 	m_nUpToStep = m_shp->fcn;
@@ -631,7 +620,7 @@ void CubeDoc::realOpen(QString name)
 	}
 	else // an open without solutions
 	{
-		if (m_shp != NULL)
+		if (m_shp.get() != NULL)
 			m_slvs->clear(m_shp->fcn);
 		else
 			m_slvs->clear(); // size will get set when generated
@@ -743,7 +732,7 @@ void CubeDoc::solveGo()
 	}
 
 	printf("solveGo!\n");
-	if ((m_shp == NULL) || (m_build->getChangedFromGen()))
+	if ((m_shp.get() == NULL) || (m_build->getChangedFromGen()))
 	{
 		if (!OnGenShape())
 			return;
@@ -776,7 +765,7 @@ void CubeDoc::solveGo()
 		connect(m_sthread, SIGNAL(fullEnumNoSlv()), this, SLOT(OnFullEnumNoSlv()));
 	}
 	m_sthread->fExitnow = 0;
-	m_sthread->setRuntime(m_slvs, m_shp, pics, &m_conf.engine);
+	m_sthread->setRuntime(m_slvs, m_shp.get(), pics, &m_conf.engine);
 	m_sthread->start();
 
 }

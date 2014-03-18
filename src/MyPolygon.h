@@ -20,7 +20,6 @@
 
 #include "MyPoint.h"
 #include "general.h"
-//#include "Texture.h"
 
 class Texture;
 
@@ -53,10 +52,10 @@ class MyPolygon
 {
 public:
 
-	MyPolygon(MyPoint* inVtx[], TexAnchor *inAncs, Texture *_tex)
-	 : tex(_tex), he(NULL), f(NULL)
+	MyPolygon(MyPoint* inVtx[], TexAnchor *inAncs)
+	 : he(NULL), f(NULL)
 	{	// point are shallow and anchors are deep copied
-		init(inVtx, inAncs, _tex);
+		init(inVtx, inAncs);
 		++g_ctorCount;
 	}
 
@@ -64,14 +63,13 @@ public:
 	~MyPolygon() { ++g_dtorCount; }
 
 	// two versions, to help the branch prediction :)
-	void init(MyPoint* inVtx[], TexAnchor *inAncs, Texture *_tex)
+	void init(MyPoint* inVtx[], TexAnchor *inAncs)
 	{
 		for(int i = 0; i < 4; ++i)
 		{
 			vtx[i] = inVtx[i];
 			texAncs[i] = inAncs[i];
 		}
-		tex = _tex;
 	}
 
 	void init(TexAnchor *inAncs, Texture *_tex)
@@ -80,7 +78,6 @@ public:
 		{
 			texAncs[i] = inAncs[i];
 		}
-		tex = _tex;
 	}
 
 	/// calculate the normal of this polygon which is the vector pependicular to it.
@@ -94,7 +91,7 @@ public:
 	Vec3 center; ///< The normal of polygon
 
 	TexAnchor texAncs[4]; ///< Texture anchors by the order of 0,0 - 1,0 - 1,1 - 0,1
-	Texture *tex; 
+	//Texture *tex; 
 	// relevant only to half-textured pieces per-polygon texture, use sort for this to be efficient
 	// NULL to disable texturing
 

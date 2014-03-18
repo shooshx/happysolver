@@ -75,10 +75,10 @@ inline void MyObject::basicAddPoint(MyPoint *pnt)
 }
 
 // add a polygon made of points in the repository, without duplicacy checks.
-inline void MyObject::basicAddPoly(MyPoint *inparr[], TexAnchor *ancs, Texture *tex)
+inline void MyObject::basicAddPoly(MyPoint *inparr[], TexAnchor *ancs)
 { 
     MyPolygon *nply = m_alloc->m_polyPool.allocate();
-    nply->init(inparr, ancs, tex);
+    nply->init(inparr, ancs);
     plylst.push_back(nply); 
 }
 
@@ -114,6 +114,7 @@ void MyObject::vectorify()
     poly = new MyPolygon*[nPolys];
 
     // add the polygons sorted according to their texture, NULL first
+    /*
     Texture *availTexs[4] = { NULL }; // no more the 4 textues in an object.. actually, no more then 3 in reality.
     int availTexAdd = 1, availTexGet = 0;
     while (insPoly < nPolys) // until we got all the polygons in
@@ -128,6 +129,7 @@ void MyObject::vectorify()
         }
         ++availTexGet;
     }
+    */
     plylst.clear();
 
     if (lines != NULL)
@@ -380,10 +382,10 @@ void MyObject::subdivide(bool smooth)
         TexAnchor tx3[] = { tf, te[1], tv[2], te[2] };
         TexAnchor tx4[] = { te[3], tf, te[2], tv[3] };
 
-        basicAddPoly(pl1, tx1, pol.tex);
-        basicAddPoly(pl2, tx2, pol.tex);
-        basicAddPoly(pl3, tx3, pol.tex);
-        basicAddPoly(pl4, tx4, pol.tex);
+        basicAddPoly(pl1, tx1);
+        basicAddPoly(pl2, tx2);
+        basicAddPoly(pl3, tx3);
+        basicAddPoly(pl4, tx4);
 
     }
 

@@ -15,23 +15,21 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-#ifndef __BUILDGLWIDGET_H__INCLUDED__
-#define __BUILDGLWIDGET_H__INCLUDED__
+#ifndef __BuildGLControl_H__INCLUDED__
+#define __BuildGLControl_H__INCLUDED__
 
+#include "BuildControlBase.h"
 #include "GLWidget.h"
-#include "BuildWorld.h"
-#include "Shape.h"
-#include "Mesh.h"
-#include "OpenGL/Shaders.h"
 
-/** @file
-    Declares the BuildGLWidget class.
-*/
+#include <QObject>
+#include <QKeyEvent>
 
+
+class GLWidget;
 class CubeDoc;
 class QTimer;
 
-/** BuildGLWidget is the interactive GLWidget used for designing the structure to solve.
+/** BuildGLControl is the interactive GLWidget used for designing the structure to solve.
     The current design displayed in this view is maintained at all times in its
     rawest form in the BuildWorld instance in CubeDoc. The method drawTargets()
     mades several passes on this structure to display it, polygon by polygon on
@@ -72,26 +70,28 @@ class QTimer;
     and keeping it in the BuildWorld::m_testShape member.
     \see BuildWorld Shape CubeDoc
 */
-class BuildGLWidget : public QObject, public GLHandler
+class BuildGLControl : public QObject, public BuildControlBase
 {
     Q_OBJECT
 public:
-    BuildGLWidget(GLWidget *gl, CubeDoc *document);
-    virtual ~BuildGLWidget() {}
+    BuildGLControl(GLWidget *gl, CubeDoc *document);
+    virtual ~BuildGLControl() {}
 
     /// keyboard events are delegated from MainWindow to this widget using this method.
     /// key delegation is needed in the case this widget is not the one in focus and we
     /// still want it to respond to ctrl presses that switch from EActStatus::ADD to EActStatus::REMOVE
     void keyEvent(QKeyEvent *event);
 
-    /// the action a double click would cause
-    enum EActStatus 
-    { 
-        ADD, ///< a double click would add a box
-        REMOVE,  ///< a double click would remove a box
-        CANT_REMOVE, ///< a double click can't remove a box because it is the only box in the design
-        EDIT_DISABLE ///< a double click would do nothing because edits are disable which solution engine is running.
-    };
+protected:
+    virtual void emitTilesCount(int n) {
+        emit changedTilesCount(n);
+    }
+    virtual void emitTileHover(int tile, BuildGLControl::EActStatus act) {
+        emit changedTileHover(tile, act);
+    }
+
+    void switchIn();
+    void switchOut();
 
 public slots:
     virtual void updateView(int hint);
@@ -104,90 +104,29 @@ public slots:
     }
     //void showAllBlue();
     void fadeTimeout();
-    void enableEdit(bool v) { m_bEditEnabled = v; }
+    void enableEdit(bool v) { 
+        m_bEditEnabled = v; 
+    }
     void slvProgStatsUpdate(int hint, int data);
 
     void changeAction(bool remove); // someone is saying its changed
 
+    void changeRotAngle(int a);
+
 signals:
     void changedAction(bool remove); // signal that I know it changed
     void changedTilesCount(int count);
-    void changedTileHover(int tile, BuildGLWidget::EActStatus act); // changed the tile on which the mouse hovers, -1 is no tile
+    void changedTileHover(int tile, BuildGLControl::EActStatus act); // changed the tile on which the mouse hovers, -1 is no tile
 
-protected: 
-    virtual void initialized();
-    virtual void drawTargets(bool inChoise);
-    virtual void myPaintGL();
-    virtual void switchIn();
-    virtual void switchOut();
-
-    virtual bool scrDblClick(int x, int y);
-    virtual void scrMove(bool rightButton, bool ctrlPressed, int x, int y);
-
-private:
-    bool isInRemove();
-    bool tiledDblClick(int choise);
-    bool boxedDblClick(int choise, int x, int y);
-
-    bool doMouseMove(int x, int y, bool makeBufs = true);
-
-    bool getChoiseTiles(int choise, bool remove, CoordBuild bb[6], Vec3i &g);
-
-    //void drawTargetsPart(bool fTrans, bool fLines);
-    void drawErrorCyliders();
-    void checkSides();
-
-    void reCalcBldMinMax();
-
-    void makeBuffers();
 
 private:
     /// the document is needed for access to the current BuildWorld data
     GLWidget *m_gl;
-    CubeDoc *m_doc;
 
     /// this timer is used to produce the slight fade effect of the transparent blue outline
     /// of a potential box to be added or the red outline of a box to be removed.
     QTimer *m_fadeTimer;
 
-    bool m_bEditEnabled;
-    bool m_fSetStrtMode;
-    bool m_fUnSetBlueMode;
-
-    bool m_bBoxedMode;
-
-    bool m_bInternalBoxRemove; // internal, from ctrl
-    bool m_bBoxRemove; // from the GUI button. this represents the external status, not including Ctrl button
-
-    bool m_bLastBoxRemove; ///< used in mouseMoveEvent()
-    int m_lastChoise; ///< used in mouseMoveEvent()
-    Vec3i m_lastCubeChoise; ///< used in mouseMoveEvent()
-
-    /// number of valid tiles in m_curMarkedTiles
-    int m_nMarkedTiles;
-    bool m_inFade;
-    float m_fadeFactor;
-    /// the tiles marked with blue or red under the mouse pointer
-    CoordBuild m_curMarkedTiles[6];
-
-    /// when a D2 error occur the offending sides are marked by blinking cylinders
-    /// to make the blinking effect we need to remember theie current alpha and
-    /// the direction where that alpha was going.
-    float m_errCylindrAlpha;
-    float m_errCylindrAlphaDt; ///< advancing of the alpha
-
-
-   // bool m_bDoneUpdate; ///< optmization. avoiding multiple updates in mouseMoveEvent()
-
-    Mesh m_realTiles;
-    Mesh m_transTiles;
-    Mesh m_realLines;
-    Mesh m_transLines;
-
-    Mesh m_cylinder;
-
-    BuildProgram m_prog;
-    Vec3 m_buildmin, m_buildmax;
 };
 
 

@@ -20,7 +20,7 @@
 #include "MyObject.h"
 #include "CubeDoc.h"
 #include "Pieces.h"
-#include "ModelGLWidget.h"
+#include "ModelGLControl.h"
 #include "Solutions.h"
 #include "Shape.h"
 #include "MainWindow.h"
@@ -95,7 +95,7 @@ void PieceGLWidget::myPaintGL()
 		return;
 	}
 
-	ModelGLWidget::paint(this, m_doc, slv, false, m_selectedPiece, -1);
+	ModelGLControl::paint(this, m_doc, slv, false, m_selectedPiece, -1);
 	*/
 }
 

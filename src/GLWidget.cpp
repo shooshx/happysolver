@@ -209,11 +209,15 @@ void GLWidget::mouseReleaseEvent(QMouseEvent *event)
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
     makeCurrent();
+    bool needupdate = false;
     if (m_handler)
-        m_handler->scrMove( event->button() == Qt::RightButton, ((event->modifiers() & Qt::ControlModifier) != 0), event->x(), event->y());
+        needupdate = m_handler->scrMove( event->button() == Qt::RightButton, ((event->modifiers() & Qt::ControlModifier) != 0), event->x(), event->y());
 
-    if (event->buttons() == 0)
+    if (event->buttons() == 0) {
+        if (needupdate)
+            updateGL();
         return;
+    }
 
     int dx = event->x() - m_lastPos.x();
     int dy = event->y() - m_lastPos.y();

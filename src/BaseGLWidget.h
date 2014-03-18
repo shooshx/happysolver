@@ -1,3 +1,4 @@
+#pragma once
 #include "general.h"
 #include "Mat.h"
 #include "MatStack.h"
@@ -24,7 +25,8 @@ public:
     // return true for default handling
     virtual void scrPress(bool rightButton, int x, int y) {  }
     virtual void scrRelease(bool rightButton) {  }
-    virtual void scrMove(bool rightButton, bool ctrlPressed, int x, int y) {  }
+    // returns true if need update
+    virtual bool scrMove(bool rightButton, bool ctrlPressed, int x, int y) { return false; }
     virtual bool scrDblClick(int x, int y) { return false; }
 protected:
     BaseGLWidget *m_bgl;

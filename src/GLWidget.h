@@ -134,8 +134,8 @@ private:
 
     int m_fontBase;
 
-    friend class ModelGLWidget;
-    friend class BuildGLWidget;
+    friend class ModelGLControl;
+    friend class BuildGLControl;
 
 };
 
