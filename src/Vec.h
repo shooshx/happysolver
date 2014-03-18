@@ -2,9 +2,11 @@
 
 #include "general.h"
 #include <cmath>
+#include <ostream>
 
 typedef unsigned char byte;
 typedef unsigned int uint;
+using namespace std;
 
 #define PI (3.141592653589793)
 #define TWOPI (2.0 * PI)
@@ -64,6 +66,12 @@ struct Vec2i
     };
 };
 
+inline ostream& operator<<(ostream& o, const Vec2i v) {
+    o << v.x << "," << v.y;
+    return o;
+}
+
+class Vec3;
 
 /** Vec3i is a general purpose three dimentional vertor of ints.
     It is used in various places where there is no need for a float vector
@@ -74,7 +82,8 @@ struct Vec3i
 public:
     Vec3i() :x(0), y(0), z(0) {}
     Vec3i(int dx, int dy, int dz) :x(dx), y(dy), z(dz) {}
-    Vec3i(const Vec3i& src) :x(src.x), y(src.y), z(src.z) {};
+    Vec3i(const Vec3i& src) :x(src.x), y(src.y), z(src.z) {}
+    explicit Vec3i(const Vec3& src);
     void clear() {
         x = 0; y = 0; z = 0;
     }
@@ -101,6 +110,11 @@ inline Vec3i operator+(const Vec3i &a, const Vec3i &b)
 inline Vec3i operator-(const Vec3i &a, const Vec3i &b)
 {
     return Vec3i(a.x - b.x, a.y - b.y, a.z - b.z);
+}
+
+inline ostream& operator<<(ostream& o, const Vec3i& v) {
+    o << v.x << "," << v.y << "," << v.z;
+    return o;
 }
 
 #define EPSILON (1e-5)
@@ -232,6 +246,8 @@ inline bool operator==(const Vec3& a, const Vec3& b)
     return ((a.v[0] == b.v[0]) && (a.v[1] == b.v[1]) && (a.v[2] == b.v[2]));
 }
 
+ostream& operator<<(ostream& o, const Vec3& v);
+
 struct Vec2
 {
 public:
@@ -267,3 +283,6 @@ public:
         };
     };
 };
+
+inline Vec3i::Vec3i(const Vec3& src) :x((int)src.x), y((int)src.y), z(src.z) 
+{}

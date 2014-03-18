@@ -1,0 +1,21 @@
+before changes
+
+square-star: little,happy,col-profi,marble (144 pieces)
+	67,000 - 158,000 ch/s
+	58,000 - 190,000 ch/s
+	1,360,000 ch/s
+normal-star: marble
+	250,000 ch/s
+	206,000 ch/s
+	793,000 ch/s
+	2,230,000 ch/s
+connected-snake: little,2*happy,black-profi,3*col-profi,marble
+	50,000 - 90,000 ch/s
+	82,000 - 150,000 ch/s
+	1,126,000 ch/s
+	
+TBD:
+
+- symmetry
+- save file
+- full enum

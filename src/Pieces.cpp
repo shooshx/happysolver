@@ -29,7 +29,7 @@
 
 #include "general.h"
 #include "Pieces.h"
-#include "Texture.h"
+//#include "Texture.h"
 #include "PicsSet.h"
 #include "NoiseGenerator.h"
 #include "tinyxml/tinyxml2.h"
@@ -124,21 +124,21 @@ void PicBucket::makeBitmapList()
 
     unsigned char staticbuf[128 * 128 * 4];
     unsigned char *origcbuf = NULL;
-    QSize origsize(0, 0);
+    Vec2i origsize(0, 0);
     int origfactor = 1;
 
     for(gind = 0; gind < grps.size(); ++gind)
     {
         //printf("bitmaps %d\n", gind);
         PicGroupDef &cgrp = grps[gind];
-        const QImage &gimg = cgrp.tex->img;
+        const ImgBuf &gimg = *cgrp.tex;
         switch (cgrp.drawtype)
         {
         case DRAW_COLOR:
             origcbuf = staticbuf;
-            origsize = QSize(64, 64);
+            origsize = Vec2i(64, 64);
             origfactor = 1;
-            tmp = origsize.width() * origsize.height() * 4;
+            tmp = origsize.width * origsize.height * 4;
             for (i = 0; i < tmp; i += 4)
             {// little endian images
                 origcbuf[i + 0] = int(cgrp.color.b * 255.0); 
@@ -149,9 +149,9 @@ void PicBucket::makeBitmapList()
             break;
         case DRAW_TEXTURE_NORM:
             origcbuf = staticbuf;
-            origsize = gimg.size();
+            origsize = Vec2i(gimg.width(), gimg.height());
             origfactor = (gimg.width() == 64)?1:2; // otherwise its 128.
-            tmp = origsize.width() * origsize.height() * 4;
+            tmp = origsize.width * origsize.height * 4;
             for (i = 0;  i < tmp; i += 4)
             {
                 origcbuf[i + 0] = int( float(gimg.bits()[i]) * cgrp.color.b);
@@ -163,7 +163,7 @@ void PicBucket::makeBitmapList()
         case DRAW_TEXTURE_BLEND:
         case DRAW_TEXTURE_MARBLE:
             origcbuf = (unsigned char*)gimg.bits(); // move to unsigned, rid of const.
-            origsize = gimg.size();
+            origsize = Vec2i(gimg.width(), gimg.height());
             origfactor = (gimg.width() == 64)?1:2; // otherwise its 128.
         }
 
@@ -171,19 +171,20 @@ void PicBucket::makeBitmapList()
         { // TBD: for every other then INDIVIDUAL do this for only one time for grp
             PicDef &cpic = cgrp.getPic(pind); //'p'
 
-            QImage pimg; // needs to be in this scope so it won't get destroyed
+            
+            ImgBuf *pimg; // needs to be in this scope so it won't get destroyed
             if (cgrp.isIndividual())
             {
-                pimg = cpic.tex->img.mirrored(false, true); // transform it back 
-                origcbuf = (unsigned char*)pimg.bits(); // move to unsigned, rid of const.
-                origsize = pimg.size();
-                origfactor = (pimg.width() == 64)?1:2; // otherwise its 128.
+                pimg = cpic.tex;//->mirrored(false, true); // transform it back 
+                origcbuf = (unsigned char*)pimg->bits(); // move to unsigned, rid of const.
+                origsize = Vec2i(pimg->width(), pimg->height());
+                origfactor = (pimg->width() == 64)?1:2; // otherwise its 128.
             }
 
-            QImage img(TEX_X + 1, TEX_Y + 1, QImage::Format_ARGB32);
+            ImgBuf img(TEX_X + 1, TEX_Y + 1);
             // image is 1 pixel longer and wider then the texture to save place for the line.
             // this was grueling.
-            img.fill(0x00000000);
+            //img.fill(0);
 
             unsigned char *cbuf = img.bits();
 
@@ -193,7 +194,7 @@ void PicBucket::makeBitmapList()
                 { 
                     for (int i = 0; i < 4; ++i)
                     {
-                        cbuf[(x+(TEX_X+1)*y)*4 + i] = origcbuf[(x*origfactor + origsize.width()*y*origfactor)*4 + i];
+                        cbuf[(x+(TEX_X+1)*y)*4 + i] = origcbuf[(x * origfactor + origsize.width * y * origfactor)*4 + i];
                     }
                 }
             }
@@ -224,7 +225,7 @@ void PicBucket::makeBitmapList()
             cpic.makeBoundingPath();
 
 #ifdef _WINDOWS
-            cpic.pixmap = QPixmap::fromImage(img);
+            cpic.pixmap = QPixmap::fromImage(QImage(img.bits(), img.width(), img.height(), QImage::Format_ARGB32));
             QPolygon poly;
             for (i = 0; i < cpic.pathlen; ++i)
             { // path includes last point == first point
@@ -247,15 +248,14 @@ void PicBucket::makeBitmapList()
 
 
 
-Texture* PicBucket::newTexture(const QImage& im, bool in3d)
+ImgBuf* PicBucket::newTexture(ImgBuf* t, bool in3d)
 {
-    Texture *t = new Texture(im);
     texs.push_back(t);
 
     if (in3d) {
-        QImage b = im.rgbSwapped();
+        //ImgBuf* b = im.rgbSwapped();
         GlTexture *gt = new GlTexture();
-        gt->init(GL_TEXTURE_2D, Vec2i(b.width(), b.width()), 1, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, b.bits(), GL_LINEAR, GL_LINEAR);
+        gt->init(GL_TEXTURE_2D, Vec2i(t->width(), t->width()), 1, GL_RGBA, GL_BGRA, GL_UNSIGNED_BYTE, t->bits(), GL_LINEAR, GL_LINEAR);
         gtexs.push_back(gt);
     }
     else {
@@ -265,18 +265,18 @@ Texture* PicBucket::newTexture(const QImage& im, bool in3d)
 
 }
 
-QImage PicGroupDef::blendImage(Texture* baseTex)
-{
-    QImage img(baseTex->img.width(), baseTex->img.height(), QImage::Format_ARGB32);
-    int size = baseTex->img.width() * baseTex->img.height() * 4;
-    unsigned char *cbuf = img.bits();
 
-    const QImage& baseTexImg = baseTex->img;
+ImgBuf* PicGroupDef::blendImage(ImgBuf* baseTex)
+{
+    ImgBuf *img = new ImgBuf(baseTex->width(), baseTex->height());
+    int size = baseTex->width() * baseTex->height() * 4;
+    uchar *cbuf = img->bits();
+
     for (int c = 0;  c < size; c += 4)
     {
-        float fb = float(baseTexImg.bits()[c]);
-        float fg = float(baseTexImg.bits()[c + 1]);
-        float fr = float(baseTexImg.bits()[c + 2]);	
+        float fb = float(baseTex->bits()[c]);
+        float fg = float(baseTex->bits()[c + 1]);
+        float fr = float(baseTex->bits()[c + 2]);	
 
         cbuf[c + 0] = int( (255.0-fb) * color.b + fb * exColor.b);
         cbuf[c + 1] = int( (255.0-fg) * color.g + fg * exColor.g);
@@ -339,14 +339,14 @@ bool PicBucket::loadXML(const string& data)
         {
             string txname(txnamep);
             QImage img(txname.c_str(), "PNG");
-            
             if (img.isNull())
             {
                 printf("Failed to load texture file: ");
                 return false;
             }
+            ImgBuf *imgbuf = new ImgBuf(img.width(), img.height(), img.bits());
             
-            newTexture(img, in3d);
+            newTexture(imgbuf, in3d);
         }
 
 
@@ -406,7 +406,7 @@ bool PicBucket::loadXML(const string& data)
 
             cgrp.drawtype = getDrawType(fill->Attribute("type"));
 
-            Texture* baseTex = NULL;
+            ImgBuf* baseTex = NULL;
             GlTexture* baseGTex = NULL;
             if (fill->Attribute("texind") != NULL)
             {
@@ -468,7 +468,7 @@ bool PicBucket::loadXML(const string& data)
                     {
                         curdef.xOffs = xpic->IntAttribute("x1");
                         curdef.yOffs = xpic->IntAttribute("y1");
-                        curdef.tex = newTexture(cgrp.tex->img.copy(curdef.xOffs, curdef.yOffs, 128, 128).mirrored(false, true), false);
+                        curdef.tex = newTexture(cgrp.tex->copy(curdef.xOffs, curdef.yOffs, 128, 128)/*.mirrored(false, true)*/, false);
                     }
                     curdef.v.makeRtns(curdef.defRtns);
                     cgrp.picsi.push_back(pdefi); // the index in the bucket
@@ -504,7 +504,7 @@ bool PicBucket::loadXML(const string& data)
                     {
                         curdef.xOffs = fromDef.xOffs;
                         curdef.yOffs = fromDef.yOffs;
-                        curdef.tex = newTexture(cgrp.tex->img.copy(curdef.xOffs, curdef.yOffs, 128, 128).mirrored(false, true), false);
+                        curdef.tex = newTexture(cgrp.tex->copy(curdef.xOffs, curdef.yOffs, 128, 128)/*.mirrored(false, true)*/, false);
                     }
 
                     cgrp.picsi.push_back(pdefi);

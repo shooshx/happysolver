@@ -67,6 +67,23 @@ static int rotationSub(int x, int defRot)
 }
 */
 
+void console()
+{
+    AllocConsole();
+    FILE *pFileCon = NULL;
+    pFileCon = freopen("CONOUT$", "w", stdout);
+    pFileCon = freopen("CONIN$", "r", stdin);
+
+    COORD coordInfo;
+    coordInfo.X = 130;
+    coordInfo.Y = 3000;
+
+    SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), coordInfo);
+    SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE),ENABLE_QUICK_EDIT_MODE| ENABLE_EXTENDED_FLAGS | ENABLE_MOUSE_INPUT);
+}
+
+
+
 int main(int argc, char *argv[])
 {
 // 	int res[8][8];
@@ -93,6 +110,7 @@ int main(int argc, char *argv[])
 // 	return 0;
 
     QApplication app(argc, argv);
+    console();
 
     QIcon appicon(":/images/HappySolver64f.png");
     appicon.addFile(":/images/HappySolver32f.png");

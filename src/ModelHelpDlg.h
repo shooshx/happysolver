@@ -32,7 +32,7 @@ class QSplitter;
 
 /** PieceGLWidget is the small OpenGL widget in the solution sidebar which shows 
 	the current piece. The piece viewed is the last piece hovered by the mouse 
-	in the main ModelGLWidget. This view is mostly for convenience so that the user 
+	in the main ModelGLControl. This view is mostly for convenience so that the user 
 	would be able to see the exact shape and orientation of a possibly obscured 
 	piece in the solution. When the user right clicks a piece in the main solution
 	view the solution view and the piece view switch places so that the single 
@@ -40,8 +40,8 @@ class QSplitter;
 	piece view. The object in the piece view can be freely rotated on its own
 	but it will reset its rotation when the there is a rotation in the main view
 	or when a different piece is selected.
-	This class uses the static ModelGLWidget::paint() to do all its 3D display.
-	\see ModelGLWidget ModelHelpDlg
+	This class uses the static ModelGLControl::paint() to do all its 3D display.
+	\see ModelGLControl ModelHelpDlg
 */
 class PieceGLWidget : public GLWidget
 {
@@ -76,7 +76,7 @@ class QPushButton;
 class MainWindow;
 class ActionPushButton;
 
-/** ModelHelpDlg is the solution view sidebar displayed next to ModelGLWidget.
+/** ModelHelpDlg is the solution view sidebar displayed next to ModelGLControl.
 	the solution sidebar contains the following widgets:
 	- a small 3D piece view with the currently selected piece which shows its
 	orientation in 3D space (m_pieceView)
@@ -85,7 +85,7 @@ class ActionPushButton;
 	- (bottom) the solution browser which enables the user to browse within the
 	currently found solutions. this browser is also available as a toolbar which 
 	is off by default.
-	- a zoom sliderer for the ModelGLWidget
+	- a zoom sliderer for the ModelGLControl
 	- a button for showing the step-by-step dialog
 
 	the botder betweent the 3D piece view and the rest of the sidebar is a split

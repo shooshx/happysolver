@@ -18,7 +18,7 @@
 #ifndef __MAINWINDOW_H__INCLUDED__
 #define __MAINWINDOW_H__INCLUDED__
 
-#include "BuildGLWidget.h" ///< needed for the enum BuildGLWidget::EActStatus
+#include "BuildGLControl.h" ///< needed for the enum BuildGLControl::EActStatus
 
 #include <QMainWindow>
 
@@ -27,7 +27,7 @@
 */
 
 class QSlider;
-class ModelGLWidget;
+class ModelGLControl;
 class PicsSelectWidget;
 class QAction;
 class QActionGroup;
@@ -99,7 +99,7 @@ public slots:
     void doUsage();
     void doHomepage();
 
-    void setStatusTextBuild(int t, BuildGLWidget::EActStatus remove);
+    void setStatusTextBuild(int t, BuildGLControl::EActStatus remove);
 
 private slots:
     void openRecentFile();
@@ -150,8 +150,8 @@ protected:
 private:
     PicInitThread *m_picsInitThread;
 
-    ModelGLWidget *m_modelGlWidget;
-    BuildGLWidget *m_buildGlWidget;
+    ModelGLControl *m_modelGLControl;
+    BuildGLControl *m_buildGLControl;
     PicsSelectWidget *m_picsWidget;
     QStackedWidget *m_stack;
     BuildHelpDlg *m_buildDlg;
@@ -159,7 +159,7 @@ private:
     QDockWidget *m_dock;
     QTabWidget *m_docktab;
 
-    GLWidget *m_glWidget; ///< points to either m_modelGlWidget or m_buildGlWidget
+    GLWidget *m_glWidget; ///< points to either m_modelGLControl or m_buildGLControl
 
     SolveDlg *m_slvdlg;
     GrpColorDlg *m_grpColDlg;

@@ -19,9 +19,9 @@
 #define __PIECES_H_INCLUDED__
 
 #include "general.h"
-#include "Texture.h"
 #include "PicPainter.h"
 #include "PicArr.h"
+#include "ImgBuf.h"
 
 #ifdef _WINDOWS
 #include <QPixmap>
@@ -68,7 +68,7 @@ class PicDef
 {
 public:
     PicDef() : mygrpi(-1), indexInGroup(-1), pixmap(1, 1),
-        xOffs(-1), yOffs(-1), painter(NULL), tex(NULL), nUsed(0), lastnSelected(1), nSelected(0), pathlen(0), dispRot(-1)
+        xOffs(-1), yOffs(-1), painter(NULL), nUsed(0), lastnSelected(1), nSelected(0), pathlen(0), dispRot(-1)
     {} 
     void reset() {
         painter = PicPainter(this);
@@ -88,13 +88,15 @@ public:
     int indexInGroup;  // index of this piece in the group it is part of
     PicArr v;
     PicArr defRtns[8];
+
 #ifdef _WINDOWS
     QPixmap pixmap;
 #endif
 
+    ImgBuf *tex; // Pic specific texture or NULL
+
     int xOffs, yOffs; // in case of TEXTURE_INDIVIDUAL_***. the x,y offsets of the texture
     PicPainter painter;
-    Texture *tex; // Pic specific texture or NULL
 
     mutable int nUsed;
     mutable int lastnSelected; // used for the repressing of the button. to return to the last value.
@@ -168,11 +170,11 @@ class PicGroupDef
 {
 public:
     PicGroupDef() 
-    : tex(NULL), drawtype(DRAW_UKNOWN), color(1.0f, 1.0f, 1.0f),   
+    : drawtype(DRAW_UKNOWN), color(1.0f, 1.0f, 1.0f),   
       exColor(0.0f, 0.0f, 0.0f), blackness(BLACK_NOT), gtex(NULL)
     {}
 
-    QImage blendImage(Texture* baseTex); // produce an image from the texture, and the colors in blend mode
+    ImgBuf* blendImage(ImgBuf* baseTex); // produce an image from the texture, and the colors in blend mode
 
     PicDef& getPic(int myi);
     const PicDef& getPic(int myi) const;
@@ -186,7 +188,7 @@ public:
     vector<int> picsi; // indices of this group pics in the bucket
     GlTexture *gtex;
 
-    Texture *tex;  // the texture used
+    ImgBuf* tex;  // the texture used
 
     string name;
     EDrawType drawtype; // could be that according to the type there is a texture but tex is NULL
@@ -255,7 +257,7 @@ public:
     /// load the main configuration xml. this is one of the first things that
     /// ever happen in the application
     bool loadXML(const string& xmlname);
-    Texture* newTexture(const QImage& img, bool in3d);
+    ImgBuf* newTexture(ImgBuf* img, bool in3d);
 
     static void createSingleton();
     static const PicBucket& instance() { return *g_instance; }
@@ -287,7 +289,7 @@ public:
     vector<PicGroupDef> grps; ///< (defs) group definitions, inside them the piece definitions
     vector<PicDef> pdefs;
 
-    vector<Texture*> texs;
+    vector<ImgBuf*> texs;
     vector<GlTexture*> gtexs;
 
     vector<PicFamily> families;

@@ -83,12 +83,6 @@
     <ClCompile Include="GeneratedFiles\Debug\moc_AssembleStepDlg.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_BuildGLWidget.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_BuildGLWidget.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_BuildHelpDlg.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
@@ -123,12 +117,6 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_MainWindow.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_ModelGLWidget.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_ModelGLWidget.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_ModelHelpDlg.cpp">
@@ -206,9 +194,6 @@
     <ClCompile Include="..\src\SolveDlg.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\BuildGLWidget.cpp">
-      <Filter>DocView</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\CubeDoc.cpp">
       <Filter>DocView</Filter>
     </ClCompile>
@@ -265,9 +250,6 @@
     </ClCompile>
     <ClCompile Include="..\src\OpenGL\Shaders.cpp">
       <Filter>OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\ModelGLWidget.cpp">
-      <Filter>DocView</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Mesh.cpp">
       <Filter>3D</Filter>
@@ -353,6 +335,30 @@
     <ClCompile Include="..\src\BaseGLWidget.cpp">
       <Filter>DocView</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\BuildGLControl.cpp">
+      <Filter>DocView</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_BuildGLControl.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_BuildGLControl.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\BuildControlBase.cpp">
+      <Filter>DocView</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ModelControlBase.cpp">
+      <Filter>DocView</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ModelGLControl.cpp">
+      <Filter>DocView</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ModelGLControl.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ModelGLControl.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\src\about.ui">
@@ -397,16 +403,10 @@
     <CustomBuild Include="..\src\SolveDlg.h">
       <Filter>GUI</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\src\BuildGLWidget.h">
-      <Filter>DocView</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\src\CubeDoc.h">
       <Filter>DocView</Filter>
     </CustomBuild>
     <CustomBuild Include="..\src\MainWindow.h">
-      <Filter>DocView</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\src\ModelGLWidget.h">
       <Filter>DocView</Filter>
     </CustomBuild>
     <CustomBuild Include="..\src\PicsSelectWidget.h">
@@ -536,9 +536,6 @@
     <CustomBuild Include="..\src\PicPainter.h">
       <Filter>3D</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\src\Texture.h">
-      <Filter>3D</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\src\colorFuncs.h">
       <Filter>Misc</Filter>
     </CustomBuild>
@@ -606,6 +603,12 @@
       <Filter>Resource Files</Filter>
     </CustomBuild>
     <CustomBuild Include="..\src\GLWidget.h">
+      <Filter>DocView</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\BuildGLControl.h">
+      <Filter>DocView</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\ModelGLControl.h">
       <Filter>DocView</Filter>
     </CustomBuild>
   </ItemGroup>
@@ -793,6 +796,18 @@
   <ItemGroup>
     <ClInclude Include="..\src\BaseGLWidget.h">
       <Filter>DocView</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\CubeDocBase.h">
+      <Filter>DocView</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\BuildControlBase.h">
+      <Filter>DocView</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ModelControlBase.h">
+      <Filter>DocView</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ImgBuf.h">
+      <Filter>Misc</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
