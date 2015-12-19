@@ -11,7 +11,7 @@ build view - start tile
   not yellow
   white when cube is to be removed
 
-
+new shape doesn't work
 
 
 ------------------------------------------------------------------------------------------

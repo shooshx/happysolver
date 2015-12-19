@@ -202,7 +202,7 @@ void DisplayConf::fromRegistry(QSettings &reg)
 	bLight = (bool)reg.value("bLight", 0).toInt();
 	nLines = (ELinesDraw)reg.value("nLines", LINES_WHITE).toInt(); // might not exist, LINES_BLACK is default
 
-	slvBkColor = vec3FromText(reg.value("slvBkColor", "").toString());
+	slvBkColor = vec3FromText(reg.value("slvBkColor", "1.0, 1.0, 1.0").toString());
 
 	int swapRes = reg.value("nSwapTexEndians", -1).toInt();
 	if (swapRes == -1)

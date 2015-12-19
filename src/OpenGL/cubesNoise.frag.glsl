@@ -10,115 +10,119 @@ const float offset= 4.72;
 const float offset2 = 0.5;
 uniform vec3 texOffset; // z non-zero means we need to invert x
 
+float mod(int x, float y){
+    return float(x) - y * floor(float(x) / y);
+}
+
 vec4 flat_texture3D(vec3 p)
 {
-	vec2 inimg = p.xy;
-	inimg.y = max(inimg.y, 0.00390625);
-	inimg.y = min(inimg.y, 0.99609375);
+    vec2 inimg = p.xy;
+    inimg.y = max(inimg.y, 0.00390625);
+    inimg.y = min(inimg.y, 0.99609375);
 
-	float fpz = p.z*128.0;
-	int d1 = int(fpz);
-	float ix1 = mod(d1, 8.0); 
-	float iy1 = float(d1 / 8);
-	vec2 oc1 = inimg + vec2(ix1, iy1);
-	oc1 *= vec2(0.125, 0.25);
+    float fpz = p.z*128.0;
+    int d1 = int(fpz);
+    float ix1 = mod(d1, 8.0); 
+    float iy1 = float(d1 / 8);
+    vec2 oc1 = inimg + vec2(ix1, iy1);
+    oc1 *= vec2(0.125, 0.25);
 
-	int d2 = d1 + 1;
-	float ix2 = mod(d2, 8.0); 
-	float iy2 = float(d2 / 8);
-	vec2 oc2 = inimg + vec2(ix2, iy2);
-	oc2 *= vec2(0.125, 0.25);
+    int d2 = d1 + 1;
+    float ix2 = mod(d2, 8.0); 
+    float iy2 = float(d2 / 8);
+    vec2 oc2 = inimg + vec2(ix2, iy2);
+    oc2 *= vec2(0.125, 0.25);
 
-	vec4 t1 = texture2D(noisef, oc1);
-	vec4 t2 = texture2D(noisef, oc2);
+    vec4 t1 = texture2D(noisef, oc1);
+    vec4 t2 = texture2D(noisef, oc2);
 
-	vec4 t = mix(t1, t2, fract(fpz));
+    vec4 t = mix(t1, t2, fract(fpz));
 
-	return t;
+    return t;
 }
 
 void main (void)
 {
-	if (drawtype == 0) { // DRAW_COLOR
-		vec3 color = colorA * LightIntensity;
-		gl_FragColor = vec4(color, 1.0);
-		return;
-	}
-	if (drawtype == 2) { // blend black
-		vec3 p = MCposition.yzx * 0.2;
+    if (drawtype == 0) { // DRAW_COLOR
+        vec3 color = colorA * LightIntensity;
+        gl_FragColor = vec4(color, 1.0);
+        return;
+    }
+    if (drawtype == 2) { // blend black
+        vec3 p = MCposition.yzx * 0.2;
 
-		vec4 noisevec = flat_texture3D(p);
+        vec4 noisevec = flat_texture3D(p);
     
-		float intensity = (noisevec[0] - offset2);
+        float intensity = (noisevec[0] - offset2);
 
-		float sineval = sin(intensity * offset) * 2.0;
-		sineval = clamp(sineval, 0.0, 1.0);
+        float sineval = sin(intensity * offset) * 2.0;
+        sineval = clamp(sineval, 0.0, 1.0);
 
-		vec3 color   = mix(colorA, colorB, sineval);
-		color       *= LightIntensity;
+        vec3 color   = mix(colorA, colorB, sineval);
+        color       *= LightIntensity;
 
-		gl_FragColor = vec4(color, 1.0);
-		return;
-	}
-	if (drawtype == 0x14) {  // DRAW_TEXTURE_INDIVIDUAL_HALF 
-		const float T_HIGH = 0.525;
-		const float T_LOW = 0.475;
+        gl_FragColor = vec4(color, 1.0);
+        return;
+    }
+    if (drawtype == 0x14) {  // DRAW_TEXTURE_INDIVIDUAL_HALF 
+        const float T_HIGH = 0.525;
+        const float T_LOW = 0.475;
 
-		float tx = MCposition.x;
-		if (texOffset.z != 0.0)
-			tx = 1.0 - tx;
+        float tx = MCposition.x;
+        if (texOffset.z != 0.0)
+            tx = 1.0 - tx;
 
-		if (tx > T_HIGH) {
-			gl_FragColor = vec4(colorA * LightIntensity, 1.0);
-			return;
-		}
+        if (tx > T_HIGH) {
+            gl_FragColor = vec4(colorA * LightIntensity, 1.0);
+            return;
+        }
 
-		vec2 t = texOffset.xy + MCposition.yz / (8.0*5.0);
+        vec2 t = texOffset.xy + MCposition.yz / (8.0*5.0);
 
-		vec3 color = texture2D(noisef, t).rgb;
-		if (tx > T_LOW && tx <= T_HIGH) {
-			color = mix(color, colorA, smoothstep(T_LOW, T_HIGH, tx));
-		}
+        vec3 color = texture2D(noisef, t).rgb;
+        if (tx > T_LOW && tx <= T_HIGH) {
+            color = mix(color, colorA, smoothstep(T_LOW, T_HIGH, tx));
+        }
 
-		color *= LightIntensity;
-		gl_FragColor = vec4(color, 1.0);
-		return;
-	}
-	if (drawtype == 0x18) { //  DRAW_TEXTURE_INDIVIDUAL_WHOLE, no need for smoothstep since its the same color
-		float tx = MCposition.x;
-		if (texOffset.z != 0.0)
-			tx = 1.0 - tx;
+        color *= LightIntensity;
+        gl_FragColor = vec4(color, 1.0);
+        return;
+    }
+    if (drawtype == 0x18) { //  DRAW_TEXTURE_INDIVIDUAL_WHOLE, no need for smoothstep since its the same color
+        float tx = MCposition.x;
+        if (texOffset.z != 0.0)
+            tx = 1.0 - tx;
 
-		if (tx > 0.2) {
-			gl_FragColor = vec4(colorA * LightIntensity, 1.0);
-			return;
-		}
-		vec2 t = texOffset.xy + MCposition.yz / (8.0*5.0);
-		vec3 color = texture2D(noisef, t).rgb * LightIntensity;
-		gl_FragColor = vec4(color, 1.0);
-		return;
-	}
-	if (drawtype == 4) { // DRAW_TEXTURE_MARBLE
-		vec3 p = MCposition.yzx * 0.2;
+        if (tx > 0.2) {
+            gl_FragColor = vec4(colorA * LightIntensity, 1.0);
+            return;
+        }
+        vec2 t = texOffset.xy + MCposition.yz / (8.0*5.0);
+        vec3 color = texture2D(noisef, t).rgb * LightIntensity;
+        gl_FragColor = vec4(color, 1.0);
+        return;
+    }
+    if (drawtype == 4) { // DRAW_TEXTURE_MARBLE
+        vec3 p = MCposition.yzx * 0.2;
 
-		vec4 noisevec = flat_texture3D(p);
+        vec4 noisevec = flat_texture3D(p);
     
-		float x = noisevec[0] - 0.54; 
-		float y = noisevec[1] - 0.54;
+        float x = noisevec[0] - 0.54; 
+        float y = noisevec[1] - 0.54;
 
-		float intensity = abs(x)*0.5 + abs(y)*0.5;
+        float intensity = abs(x)*0.5 + abs(y)*0.5;
 
-		float sineval = sin(intensity) * 2.98;
-		sineval = clamp(sineval, 0.0, 1.0);
+        float sineval = sin(intensity) * 2.98;
+        sineval = clamp(sineval, 0.0, 1.0);
 
-		vec3 color   = mix(colorA, colorB, sineval);
-		color       *= LightIntensity;
+        vec3 color   = mix(colorA, colorB, sineval);
+        color       *= LightIntensity;
 
-		gl_FragColor = vec4(color, 1.0);
-		return;
-	}
-	if (drawtype == 0x100) { // flat
-		gl_FragColor = vec4(colorA, 1.0);
-	}
+        gl_FragColor = vec4(color, 1.0);
+        return;
+    }
+    if (drawtype == 0x100) { // flat
+        gl_FragColor = vec4(colorA, 1.0);
+    }
 
 }

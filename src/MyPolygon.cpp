@@ -19,8 +19,6 @@
 #include "MyPolygon.h"
 #include "Pieces.h"
 
-#include "Texture.h"
-
 
 
 void MyPolygon::calcNorm() //use the regular point and not the temp one

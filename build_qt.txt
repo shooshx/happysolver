@@ -1,0 +1,4 @@
+QT5
+
+configure.bat -opensource -confirm-license -opengl desktop -mp -skip qtwebkit -skip qtconnectivity -skip qtandroidextras -skip qtsensors -skip qtserialport -skip qtwebkit-examples -nomake examples -nomake tests -debug-and-release -c++11 -platform win32-msvc2012
+

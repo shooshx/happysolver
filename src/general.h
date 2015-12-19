@@ -27,34 +27,36 @@
 using namespace std;
 
 /** \file
-	Declares various classes and types which are used widely across the code base.
+    Declares various classes and types which are used widely across the code base.
 */
 
 enum EPlane
 {
-	PLANE_NONE = -1,
-	YZ_PLANE = 0,
-	XZ_PLANE = 1,
-	XY_PLANE = 2 
+    PLANE_NONE = -1,
+    YZ_PLANE = 0,
+    XZ_PLANE = 1,
+    XY_PLANE = 2 
 };
 
 enum EAxis
 {
-	AXIS_NONE = -1,
-	X_AXIS = 1,
-	Y_AXIS = 2,
-	Z_AXIS = 3
+    AXIS_NONE = -1,
+    X_AXIS = 1,
+    Y_AXIS = 2,
+    Z_AXIS = 3
 };
 
 
 typedef unsigned int uint;
 typedef unsigned char byte;
+typedef unsigned char uchar;
+typedef unsigned short ushort;
 
 #ifdef WIN32
-	typedef __int64 mint64;
+    typedef __int64 mint64;
 #else
-	#include <inttypes.h>
-	typedef int64_t mint64;
+    #include <inttypes.h>
+    typedef int64_t mint64;
 #endif
 
 /// takes a number and transforms it to a quoted string such as 1,234,567.09.
@@ -71,26 +73,26 @@ void flushAllEvents();
 /// boolean xor
 inline bool hXor(bool a, bool b)
 {
-	return ((a && !b) || (!a && b));
+    return ((a && !b) || (!a && b));
 }
 /// bitwise xor
 inline uint bXor(uint a, uint b)
 {
-	return (a ^ b);
+    return (a ^ b);
 }
 
 /// used by several different files which don't include each other. no better place to declare this.
 typedef vector<int> TTransformVec;
 
 #define DISALLOW_COPY(className) \
-	 className(const className &); \
+     className(const className &); \
      className &operator=(const className &)
 
 
 #ifdef _DEBUG
-	#define M_ASSERT(cond) do { if (!(cond)) throw std::exception(#cond); } while(0)
+    #define M_ASSERT(cond) do { if (!(cond)) throw std::exception(#cond); } while(0)
 #else
-	#define M_ASSERT(cond)
+    #define M_ASSERT(cond)
 #endif
 
 

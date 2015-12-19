@@ -313,9 +313,9 @@
 				<piece>0 0 1 0 0  0 1 1 1 1  1 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>
 			</group>
 		</family>
-		<family name="Baubox" index="6" onResetSetCount="0" size="10mm" icon="images/sampleBaub.png">
-			<group name="BB-Blue"> <!-- blue -->
-				<fill type="COLOR" k="0" r="51" g="204" b="204"/>
+		<family name="Smart Cube" index="6" onResetSetCount="0" size="10mm" icon="images/sampleBaub.png">
+			<group name="SC-Blue"> <!-- blue was r="51" g="204" b="204"-->
+				<fill type="COLOR" k="0" r="73" g="129" b="255"/>
 				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 0 0</piece>
 				<piece>0 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>
 				<piece>1 0 1 0 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
@@ -323,25 +323,25 @@
 				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 0 0</piece>
 				<piece>0 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>
 			</group>
-			<group name="BB-Green"> <!-- green -->
-				<fill type="COLOR" k="0" r="136" g="183" b="0"/>
-				<pieces copy="BB-Blue"/>
+			<group name="SC-Green"> <!-- green was r="136" g="183" b="0"-->
+				<fill type="COLOR" k="0" r="43" g="221" b="56"/>
+				<pieces copy="SC-Blue"/>
 			</group>
-			<group name="BB-Yellow"> <!-- yellow -->
-				<fill type="COLOR" k="0" r="255" g="204" b="0"/>
-				<pieces copy="BB-Blue"/>
+			<group name="SC-Yellow"> <!-- yellow was r="255" g="204" b="0"-->
+				<fill type="COLOR" k="0" r="255" g="255" b="0"/>
+				<pieces copy="SC-Blue"/>
 			</group>
-			<group name="BB-Orange"> <!-- orange --> 
-				<fill type="COLOR" k="0" r="255" g="102" n="0"/>
-				<pieces copy="BB-Blue"/>
+			<group name="SC-Orange"> <!-- orange was r="255" g="102" n="0" --> 
+				<fill type="COLOR" k="0" r="255" g="140" n="0"/>
+				<pieces copy="SC-Blue"/>
 			</group>
-			<group name="BB-Red"> <!-- red -->
+			<group name="SC-Red"> <!-- red -->
 				<fill type="COLOR" k="0" r="255" g="0" b="0"/>
-				<pieces copy="BB-Blue"/>
+				<pieces copy="SC-Blue"/>
 			</group>
-			<group name="BB-Purple"> <!-- purple -->
-				<fill type="COLOR" k="0" r="153" g="51" b="102"/>
-				<pieces copy="BB-Blue"/>
+			<group name="SC-Purple"> <!-- purple was r="153" g="51" b="102" -->
+				<fill type="COLOR" k="0" r="148" g="0" b="136"/>
+				<pieces copy="SC-Blue"/>
 			</group>
 		</family>
 		<family name="Construct" index="7" onResetSetCount="0" size="10mm" icon="images/sampleConstruct.png">

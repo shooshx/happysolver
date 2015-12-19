@@ -56,7 +56,7 @@ public:
 	the main method, run() is the thread's entry point.
 	\see Configuration
 */
-class SolveThread :public QThread
+class SolveThread :public QThread // TBD-ios
 {
 	Q_OBJECT
 public:

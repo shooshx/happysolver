@@ -36,7 +36,7 @@ class MainWindow;
 class QGroupBox;
 class ActionPushButton;
 
-/** BuildHelpDlg is the design sidebar widget displayed next to BuildGLWidget.
+/** BuildHelpDlg is the design sidebar widget displayed next to BuildGLControl.
 	The design sidebar contains the following widgets:
 	- Add and remove buttons which control the double click action in the design view.
 	- Global piece family selection and an "advanced" button to open the detailed
@@ -44,7 +44,7 @@ class ActionPushButton;
 	- Counters of the currently selected tiles and tiles needed for the structures.
 	- A textual frame with the current message for the user, possibly for error messages
 	- A big "Solve It!" button
-	- zoom control for the BuildGLWidget
+	- zoom control for the BuildGLControl
 
 	The design sidebar is designed to be as much intuitive and self explanatory as 
 	possible. It is expected that the user would follow it top to bottom. First, add and
@@ -53,7 +53,7 @@ class ActionPushButton;
 	The Global piece family selection has strong relation to the detailed piece selection.
 	It directly affects the selection in it and is directly affected by selection
 	made in it.
-	\see BuildGLWidget PicsSelectWidget
+	\see BuildGLControl PicsSelectWidget
 */
 class BuildHelpDlg :public SizedWidget
 {

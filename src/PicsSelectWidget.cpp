@@ -25,6 +25,11 @@
 #include "SlvCube.h"
 
 #include <QLabel>
+#include <QTabWidget>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QGroupBox>
+#include <QScrollArea>
 
 // these constants define the positioning of the widgets in the PicsSelectWidget
 #define BOT_X 95

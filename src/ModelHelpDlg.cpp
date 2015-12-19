@@ -20,19 +20,23 @@
 #include "MyObject.h"
 #include "CubeDoc.h"
 #include "Pieces.h"
-#include "ModelGLWidget.h"
+#include "ModelGLControl.h"
 #include "Solutions.h"
 #include "Shape.h"
 #include "MainWindow.h"
 #include "ActFocusComboBox.h"
 #include "SlvCube.h"
 
+#include <QSplitter>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QMovie>
+#include <QGroupBox>
+
 PieceGLWidget::PieceGLWidget(QWidget *parent, CubeDoc *doc, QGLWidget *shareFrom) 
 	:GLWidget(parent, shareFrom), m_doc(doc), m_lastSelectedPiece(-1), m_selectedPiece(-1),  
 	 m_bSelectAll(false), m_bHasPushedMatrix(false)
 {
-	m_viewState = GLWidget::Perspective;
-
 	aqmin = Vec3(0.0, 0.0, 0.0);
 	aqmax = Vec3(5.0, 5.0, 1.0);
 }
@@ -83,7 +87,7 @@ void PieceGLWidget::setSelectAll(int piece)
 
 void PieceGLWidget::myPaintGL()
 {
-/*	SlvCube *slv = m_doc->getCurrentSolve();
+	/*SlvCube *slv = m_doc->getCurrentSolve();
 	if ((slv == NULL) || ((m_selectedPiece == -1) && (!m_bSelectAll)))
 	{ // clean the view from older things
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -91,7 +95,7 @@ void PieceGLWidget::myPaintGL()
 		return;
 	}
 
-	ModelGLWidget::paint(this, m_doc, slv, false, m_selectedPiece, -1);
+	ModelGLControl::paint(this, m_doc, slv, false, m_selectedPiece, -1);
 	*/
 }
 
@@ -99,9 +103,7 @@ void PieceGLWidget::myPaintGL()
 void PieceGLWidget::mouseMoveEvent(QMouseEvent *event)
 {
 	makeCurrent();
-	if (!m_bHasPushedMatrix)
-	{
-		//glPushMatrix();
+	if (!m_bHasPushedMatrix) {
 		m_bHasPushedMatrix = true;
 	}
 	GLWidget::mouseMoveEvent(event);
@@ -111,9 +113,7 @@ void PieceGLWidget::mouseMoveEvent(QMouseEvent *event)
 void PieceGLWidget::externRotate(GLWidget::EAxis axis, int x, int y)
 {
 	makeCurrent();
-	if (m_bHasPushedMatrix)
-	{
-		//glPopMatrix();
+	if (m_bHasPushedMatrix) {
 		m_bHasPushedMatrix = false;
 	}
 	rotate(axis, x, y);
@@ -123,9 +123,7 @@ void PieceGLWidget::externRotate(GLWidget::EAxis axis, int x, int y)
 /// clear the view of any object in it. forget any state we may have had.
 void PieceGLWidget::clear()
 {
-	if (m_bHasPushedMatrix)
-	{
-		//glPopMatrix();
+	if (m_bHasPushedMatrix) {
 		m_bHasPushedMatrix = false;
 	}
 	m_bSelectAll = false;
@@ -150,17 +148,19 @@ ModelHelpDlg::ModelHelpDlg(QWidget *parent, MainWindow* main, CubeDoc *doc, QGLW
 	toplayout->addWidget(m_splitter);
 
 	QWidget *glwin = new QWidget(NULL);
-	QHBoxLayout *gllayout = new QHBoxLayout;
+	/*QHBoxLayout *gllayout = new QHBoxLayout;
 	gllayout->setMargin(3);
 	gllayout->setSpacing(0);
-	glwin->setLayout(gllayout);
-	m_pieceView = new PieceGLWidget(glwin, m_doc, shareFrom);
-	m_pieceView->setUsingLight(m_doc->m_conf.disp.bLight);
+	glwin->setLayout(gllayout);*/
 
-	gllayout->addSpacing(4);
-	gllayout->addWidget(m_pieceView);
-	gllayout->addSpacing(4);
-	m_splitter->addWidget(glwin);
+    // the piece view is disabled since drawing the piece there would require all of the context from the main window
+	//m_pieceView = new PieceGLWidget(glwin, m_doc, shareFrom);
+	//m_pieceView->setUsingLight(m_doc->m_conf.disp.bLight);
+
+	//gllayout->addSpacing(4);
+	//gllayout->addWidget(m_pieceView);
+	//gllayout->addSpacing(4);
+	//m_splitter->addWidget(glwin);
 
 	QWidget *topwin = new QWidget(NULL); // additional widget needed for free resizing
 	m_splitter->addWidget(topwin);
@@ -205,9 +205,23 @@ ModelHelpDlg::ModelHelpDlg(QWidget *parent, MainWindow* main, CubeDoc *doc, QGLW
 	sblayout->addWidget(stepbot);
 	vlay->addLayout(sblayout);
 
-	QHBoxLayout *zlayout = new QHBoxLayout;
-	zlayout->setSpacing(0);
-	zlayout->setMargin(3);
+    QHBoxLayout *alayout = new QHBoxLayout;
+    alayout->setSpacing(0);
+    alayout->setMargin(3);
+
+    QGroupBox *anglec = new QGroupBox("Angle");
+    m_angleSlider = new QSlider(Qt::Horizontal);
+    m_angleSlider->setRange(0, 90);
+    m_angleSlider->setValue(90);
+    connect(m_angleSlider, SIGNAL(valueChanged(int)), this, SIGNAL(angleChanged(int)));
+    anglec->setLayout(alayout);
+    alayout->addWidget(m_angleSlider);
+    vlay->addWidget(anglec);
+
+    QHBoxLayout *zlayout = new QHBoxLayout;
+    zlayout->setSpacing(0);
+    zlayout->setMargin(3);
+
 	QGroupBox *zoomc = new QGroupBox("Zoom");
 	m_zoomSlider = new QSlider(Qt::Horizontal);
 	m_zoomSlider->setRange(ZOOM_MIN, ZOOM_MAX);
@@ -298,7 +312,9 @@ void ModelHelpDlg::updatePixmapLabel(int piece)
 		return;
 	SlvCube *slv = m_doc->getCurrentSolve();
 	const SlvCube::SlvPic &sps = slv->picdt[slv->dt[piece].abs_sc];
-	m_picImage->setPixmap(PicBucket::instance().getPic(sps.gind, sps.pind).pixmap);
+    auto& pc = PicBucket::instance().getPic(sps.gind, sps.pind);
+    auto& px = pc.pixmap;
+	m_picImage->setPixmap(px);
 
 }
 
@@ -308,23 +324,25 @@ void ModelHelpDlg::changeViewPiece(int piece)
 		return; // means there is not thing under the mouse. ignore it and stay with the last one
 
 	updatePixmapLabel(piece);
-	m_pieceView->makeCurrent();
+	/*m_pieceView->makeCurrent();
 	m_pieceView->setSelectedPiece(piece);
 	m_pieceView->updateGL();
+    */
 }
 
 void ModelHelpDlg::changedExternViewPiece(int piece)
 {
 	updatePixmapLabel(piece);
-	m_pieceView->makeCurrent();
+	/*m_pieceView->makeCurrent();
 	m_pieceView->setSelectAll(piece);
 	m_pieceView->updateGL();
+    */
 }
 
 void ModelHelpDlg::clear()
 {
 	m_picImage->clear();
-	m_pieceView->clear();
+	//m_pieceView->clear();
 }
 
 void ModelHelpDlg::updateView(int lHint)

@@ -22,7 +22,7 @@
 
 string humanCount(mint64 n)
 {
-	QString init = QString("%1").arg(n);
+	QString init = QString("%1").arg(n); 
 	
 	if (init.length() < 4) 
 		return init.toLatin1().data();

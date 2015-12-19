@@ -83,7 +83,7 @@ public:
 		for(int i = 0; i < 4; ++i)
 			passRound[i] = false;
 	}
-	void toRegistry(QSettings &reg);
+	void toRegistry(QSettings &reg); // TBD-ios
 	void fromRegistry(QSettings &reg);
 	void fromDefaults();
 
