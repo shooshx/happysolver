@@ -644,6 +644,11 @@ void Cube::genLinesIFS(SlvCube *slvc, LinesCollection &ifs)
 
                 placeInto(2, f, shpp, pnti1, pnti2);
 
+                pnti1[0].z -= 1; // I have no idea why these are needed but for some reason they are
+                pnti1[1].z -= 1;
+                pnti2[0].z -= 1;
+                pnti2[1].z -= 1;
+
                 ELineType t = ((curp == curf) || (lcurp == curf))?(LINE_ALWAYS):(LINE_ONLY_WHOLE);
                 obj.addLine(pnti1[0], pnti1[1], linecol, t);
                 obj.addLine(pnti2[0], pnti2[1], linecol, t);
@@ -662,6 +667,12 @@ void Cube::genLinesIFS(SlvCube *slvc, LinesCollection &ifs)
                 shpp[1][0] = PicDisp::build[b].bot[1].x; shpp[1][1] = PicDisp::build[b].bot[1].y; shpp[1][2] = 0.0;
 
                 placeInto(2, f, shpp, pnti1, pnti2);
+
+                pnti1[0].z -= 1;
+                pnti1[1].z -= 1;
+                pnti2[0].z -= 1;
+                pnti2[1].z -= 1;
+
                 obj.addLine(pnti1[0], pnti1[1], linecol, LINE_ALWAYS);
                 obj.addLine(pnti2[0], pnti2[1], linecol, LINE_ALWAYS);
             }

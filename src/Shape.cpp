@@ -23,6 +23,7 @@
 #include "MatStack.h"
 
 #include <stdio.h>
+#include <cmath>
 #include <iostream>
 #include <iomanip>
 using namespace std;
@@ -902,13 +903,13 @@ const char* drName(int d) {
 
 int g_count = 0;
 
-void Shape::checkAddQuad(MatStack& m, bool white) 
+void Shape::checkAddQuad(const Mat4& m) 
 {
-    testQuads.push_back( m.cur().transformVec(Vec3(0.1,0.1,0.0)) );
-    testQuads.push_back( m.cur().transformVec(Vec3(3.9,0.1,0.0)) );
-    testQuads.push_back( m.cur().transformVec(Vec3(3.9,3.9,0.0)) );
-    testQuads.push_back( m.cur().transformVec(Vec3(0.1,3.9,0.0)) );
-    if (white)
+    testQuads.push_back( m.transformVec(Vec3(0.1,0.1,0.0)) );
+    testQuads.push_back( m.transformVec(Vec3(3.9,0.1,0.0)) );
+    testQuads.push_back( m.transformVec(Vec3(3.9,3.9,0.0)) );
+    testQuads.push_back( m.transformVec(Vec3(0.1,3.9,0.0)) );
+    if (false)
         testQuads.push_back( Vec3(1,1,1));
     else
         testQuads.push_back( Vec3(0.3,0.3,1));
@@ -926,82 +927,117 @@ bool itemIn(T v, T (&arr)[N]) {
 }
 
 #define SQRT_2_INV (0.70710678118654752440084436210485)
+float mRound(float x) {
+    return floor(x + 0.5);
+}
 
+// transform m from face fi[0-fcn) to neighbour ni[0-3] of fi
+void Shape::transformFromFaceToNei(MatStack& m, int fi, int ni, float baseAng) const
+{
+    NeiTransform& t = faces[fi].neiTrans[ni];
 
-void Shape::checkNeiTran(MatStack& m, int fi, vector<int>& pass, int lvl) 
+    m.translate(t.planeMove.x, t.planeMove.y, 0);
+
+    if (t.angleType != ANG_ZERO) {
+        float sa = 0;
+        switch (t.angleType) {
+        case ANG_PLUS:     sa = baseAng; break;
+        case ANG_MINUS:    sa = -baseAng; break;
+        case ANG_180MINUS: sa = 180-baseAng; break;
+        case ANG_180PLUS:  sa = 180+baseAng; break;
+        }
+        m.rotate(sa, t.rotAxis.x, t.rotAxis.y, t.rotAxis.z);
+    }
+
+    if (t.flip) {
+        m.translate(2, 2, 0);
+        m.rotate(180, t.rotAxis.x, t.rotAxis.y, t.rotAxis.z);
+        m.translate(-2, -2, 0);
+    }
+    if (t.flipDiag) {
+        m.translate(2, 2, 0);
+        m.rotate(180, SQRT_2_INV,SQRT_2_INV,0);
+        m.translate(-2, -2, 0);
+    }
+}
+
+template<typename FAdd>
+void Shape::checkNeiTranDFS(MatStack& m, int fi, vector<int>& pass, int lvl, float ang, FAdd& addPiece) 
 {
     FaceDef& f = faces[fi]; 
 
-    int ap = 4;
-    Vec3 res = m.cur().transformVec(Vec3(0,0,0));
-    ++g_count;
-
-    //int pa[]={1,7};
-    //int pa[] = {1,2,7,12,17, /*3,4,5,6, 8,9,10,11*/};
-    //int pa[] = {1,7,9};
-    //int pa[] = {1,2,3,12,13};
-    //int pa[] = {1,2,5,12,15};
-    //int pa[] = {1,2,4,6,12,14,16};
-    //int pa[] = {1,7,9,17,19};
-    //int pa[] = {1,7,11,17,21};
-    int pa[] = {1,17,18,20,7,8,10};
-    if (true) {//itemIn(g_count, pa) ) {
-        m.push();
-        //m.rotate(90, 0,1,0);
-        checkAddQuad(m, g_count == pa[0]);
-        m.pop();
-        if (doPrint)
-            cout << "P";
-        ap--;
-    }
-    else {
-        //return;
-    }
-    if (doPrint)
-        cout << g_count;
-    ap -= (g_count <= 9)?1:2;
-
-
-    if (doPrint) {
-        for(int i = 0; i < ap+lvl; ++i)
-            cout << "  ";
-        cout << Vec3i(res) << " == " << f.ex << "  " << fi << "(" << drName(faces[fi].dr) << ")";
-        if (Vec3i(res) != f.ex)
-            cout << "     ###";
-        cout << endl;
-    }
-
-    if (lvl == 4)
+    if (pass[fi] > 0)
         return;
+    pass[fi]++;
+
+    addPiece(m.cur(), fi);
 
     for (int ni = 0; ni < 4; ++ni) 
     {
         int n = f.nei[ni];
         if (n == -1)
             continue;
-        NeiTransform& t = f.neiTrans[ni];
-        //cout << "[[" << t.planeMove.x << "," << t.planeMove.y << "  " << t.rotAngle << ":" << t.rotAxis.x << t.rotAxis.y << t.rotAxis.z << "]]" << endl;
         m.push();
 
-        m.translate(t.planeMove.x, t.planeMove.y, 0);
+        transformFromFaceToNei(m, fi, ni, ang);
 
-        if (t.rotAngle != 0)
-            m.rotate(t.rotAngle, t.rotAxis.x, t.rotAxis.y, t.rotAxis.z);
-
-        if (t.flip) {
-            m.translate(2, 2, 0);
-            m.rotate(180, t.rotAxis.x, t.rotAxis.y, t.rotAxis.z);
-            m.translate(-2, -2, 0);
-        }
-        if (t.flipDiag) {
-            m.translate(2, 2, 0);
-            m.rotate(180, SQRT_2_INV,SQRT_2_INV,0);
-            m.translate(-2, -2, 0);
-        }
-
-        checkNeiTran(m, f.nei[ni], pass, lvl + 1);
+        checkNeiTranDFS(m, f.nei[ni], pass, lvl + 1, ang, addPiece);
         m.pop();
     }
+}
+
+
+struct BNode {
+    BNode(int _fi, int _ni) : fi(_fi), ni(_ni) {}
+    int fi, ni;
+    list<BNode> c;
+};
+
+template<typename FAdd>
+void Shape::runBFSTree(MatStack& m, const BNode& node, float ang, FAdd& addPiece) const
+{
+    addPiece(m.cur(), node.fi);
+    for(const BNode& next : node.c)  {
+        m.push();
+
+        transformFromFaceToNei(m, node.fi, next.ni, ang);
+
+        runBFSTree(m, next, ang, addPiece);
+        m.pop();
+    }
+}
+
+template<typename FAdd>
+void Shape::checkNeiTranBFS(MatStack& m, float ang, FAdd& addPiece) const
+{
+    BNode root(0, -1);
+    
+    vector<int> passed(fcn);
+    list<BNode*> fq;
+    fq.push_back(&root);
+    passed[root.fi]++;
+
+    while (!fq.empty())
+    {
+        BNode* cur = fq.front();
+        int fi = cur->fi;
+        fq.pop_front();
+        FaceDef& f = faces[fi]; 
+
+        for(int ni = 0; ni < 4; ++ni) {        
+            int n = f.nei[ni];
+            if (n == -1)
+                continue;
+            if (passed[n] > 0)
+                continue;
+            passed[n]++;
+            cur->c.push_back(BNode(n, ni));
+            fq.push_back( &cur->c.back() );
+        }
+    }
+
+    runBFSTree(m, root, ang, addPiece);
+
 }
 
 
@@ -1013,8 +1049,7 @@ void Shape::makeNeiTransforms()
     for (int fi = 0; fi < fcn; ++fi) 
     {
         FaceDef& f = faces[fi];
-        int ang = g_testAngle[f.dr];
-        int sa = 0;
+        EAngleType sa = ANG_ZERO;
         //cout << fi << ": " << f.dr << endl;
         for (int ni = 0; ni < 4; ++ni) 
         {
@@ -1027,22 +1062,22 @@ void Shape::makeNeiTransforms()
             bool flip = false, flipDiag = false;
             if (f.dr == XY_PLANE) { // V
                 if (nf.dr == XY_PLANE) {
-                    nt = NeiTransform(diff.x, diff.y, 0, 0,0,0); // 0,-4,0|4,0,0|0,4,0|-4,0,0
+                    nt = NeiTransform(diff.x, diff.y, ANG_ZERO, 0,0,0); // 0,-4,0|4,0,0|0,4,0|-4,0,0
                 }
                 else if (nf.dr == XZ_PLANE) { // 3->5
                     if (diff.y == 0) {
                         if (diff.z == 0)
-                            sa = 180+ang; // V
+                            sa = ANG_180PLUS; //180+ang; // V
                         else {
-                            sa = 180-ang; // V
+                            sa = ANG_180MINUS; //180-ang; // V
                             flip = true;
                         }
                     }
                     else
                         if (diff.z == 0) 
-                            sa = -ang; // V
+                            sa = ANG_MINUS; //-ang; // V
                         else {
-                            sa = ang; //V
+                            sa = ANG_PLUS; //ang; //V
                             flip = true;
                         }
                     nt = NeiTransform(diff.x, diff.y, sa, 1,0,0, flip); // VV XZ_PLANE: 0,0,0|0,4,0|0,0,-4|0,4,-4 
@@ -1050,42 +1085,42 @@ void Shape::makeNeiTransforms()
                 else if (nf.dr == YZ_PLANE) {
                      if (diff.x == 0) {
                         if (diff.z != 0) {
-                            sa = 180+ang; // V
+                            sa = ANG_180PLUS; //180+ang; // V
                             flip = true;
                         }
                         else 
-                            sa = 180-ang; // V
+                            sa = ANG_180MINUS; //180-ang; // V
                      }
                      else
                         if (diff.z != 0){
-                            sa = -ang; // V
+                            sa = ANG_MINUS; //-ang; // V
                             flip = true;
                         }
                         else
-                            sa = ang; // V
+                            sa = ANG_PLUS; //ang; // V
                     nt = NeiTransform(diff.x, diff.y, sa, 0,1,0, flip); // VV YZ_PLANE: 4,0,0|0,0,0|4,0,-4|0,0,-4
                 }
             }
             // -----------------------------------
             else if (f.dr == XZ_PLANE) {
                 if (nf.dr == XZ_PLANE) {
-                    nt = NeiTransform(diff.x, diff.z, 0, 0,0,0); //  //0,0,-4|4,0,0|0,0,4|-4,0,0
+                    nt = NeiTransform(diff.x, diff.z, ANG_ZERO, 0,0,0); //  //0,0,-4|4,0,0|0,0,4|-4,0,0
                 }
                 else if (nf.dr == XY_PLANE) { // 0,-4,0|0,-4,4|0,0,0|0,0,4
                     if (diff.z == 0) {
                         if (diff.y == 0) {
-                            sa = 180-ang; // V
+                            sa = ANG_180MINUS; //180-ang; // V
                         }
                         else {
-                            sa = 180+ang;
+                            sa = ANG_180PLUS; //180+ang;
                             flip = true; // V
                         }
                     }
                     else {
                         if (diff.y == 0) 
-                            sa = ang;  //V 2->3
+                            sa = ANG_PLUS; //ang;  //V 2->3
                         else {
-                            sa = -ang; //V 5->3
+                            sa = ANG_MINUS; //-ang; //V 5->3
                             flip = true;
                         }
                     }
@@ -1094,17 +1129,17 @@ void Shape::makeNeiTransforms()
                 else if (nf.dr == YZ_PLANE) {
                     if (diff.x == 0) {
                         if (diff.y == 0) 
-                            sa = 180+ang; // V 5->4
+                            sa = ANG_180PLUS; //180+ang; // V 5->4
                         else {
-                            sa = 180-ang; // V
+                            sa = ANG_180MINUS; //180-ang; // V
                             flip = true;
                         }
                     }
                     else {
                         if (diff.y == 0) 
-                            sa = -ang;  // V 5->1
+                            sa = ANG_MINUS; //-ang;  // V 5->1
                         else {
-                            sa = ang;  // V
+                            sa = ANG_PLUS; //ang;  // V
                             flip = true;
                         }
                     }
@@ -1113,22 +1148,22 @@ void Shape::makeNeiTransforms()
             }
             else if (f.dr == YZ_PLANE) {
                 if (nf.dr == YZ_PLANE) {
-                    nt = NeiTransform(diff.z, diff.y, 0, 0,0,0); //0,-4,0|*0,0,4|0,4,0|0,0,-4                   
+                    nt = NeiTransform(diff.z, diff.y, ANG_ZERO, 0,0,0); //0,-4,0|*0,0,4|0,4,0|0,0,-4                   
                 }
                 else if (nf.dr == XY_PLANE) { // 1->3
                     if (diff.x == 0) {
                         if (diff.z == 0) 
-                            sa = 180+ang; // V 4->0
+                            sa = ANG_180PLUS; //180+ang; // V 4->0
                         else 
-                            sa = -ang; // V 4->3
+                            sa = ANG_MINUS; //-ang; // V 4->3
                     }
                     else {
                         if (diff.z == 0) { 
-                            sa = 180-ang;  // V1->0
+                            sa = ANG_180MINUS; //180-ang;  // V1->0
                             flip = true;
                         }
                         else {
-                            sa = ang;  //  V 1->3
+                            sa = ANG_PLUS; //ang;  //  V 1->3
                             flip = true;
                         }
                     }
@@ -1137,17 +1172,17 @@ void Shape::makeNeiTransforms()
                 else if (nf.dr == XZ_PLANE) {
                     if (diff.y == 0) {
                         if (diff.x == 0) 
-                            sa = 180-ang; // V 4->5
+                            sa = ANG_180MINUS; //180-ang; // V 4->5
                         else {
-                            sa = 180+ang;
+                            sa = ANG_180PLUS; //180+ang;
                             flip = true;
                         }
                     }
                     else {
                         if (diff.x == 0)  
-                            sa = ang; // V 4->2
+                            sa = ANG_PLUS; //ang; // V 4->2
                         else {
-                            sa = -ang; 
+                            sa = ANG_MINUS; //-ang; 
                             flip = true;
                         }
                     }
@@ -1160,24 +1195,53 @@ void Shape::makeNeiTransforms()
 
     // check
     g_count = 0;
-    MatStack m;
-    m.identity();
-    vector<int> pass(fcn);
-    //int start = 3;
+
     // move to the first face
-    //FaceDef& face = faces[start];    	
-   // m.translate(face.ex.x, face.ex.y, face.ex.z);
 
-    testQuads.clear();
-
-    //m.rotate(90, 0,1,0);
-
-    checkNeiTran(m, 0, pass, 0);
+    int ang = g_testAngle[0];
+    //checkNeiTranDFS(m, start, pass, 0, ang, checkAddQuad);
 
     g_count = 0;
+    testQuads.clear();
+
+    MatStack m;
+    startNeiTransform(m);
+    checkNeiTranBFS(m, ang, [this](const Mat4& m, int){ this->checkAddQuad(m); } );
     //m.translate(0,0,-4);
     //checkNeiTran(m, 3, pass, 0);
 
     //getchar();
     //exit(1);
+}
+
+void Shape::startNeiTransform(MatStack& m) const {
+    int start = 0;
+    m.identity();
+    FaceDef& face = faces[start];    	
+    m.translate(face.ex.x, face.ex.y, face.ex.z);
+    m.scale(1,1,-1); // opengl Z axis is inside out
+
+    if (face.dr == YZ_PLANE) {
+        m.rotate(90, 0,1,0);
+    }
+    else if (face.dr == XZ_PLANE) {
+        m.rotate(-90, 1,0,0);
+    }
+
+}
+
+
+
+
+void Shape::makeTransformsMatrics(float angle, vector<Mat4>& mats) const
+{
+    angle = g_testAngle[0];
+
+    mats.resize(fcn);
+    MatStack m;
+    startNeiTransform(m);
+
+
+    checkNeiTranBFS(m, angle, [&mats](const Mat4& m, int fi) { mats[fi] = m; });
+
 }

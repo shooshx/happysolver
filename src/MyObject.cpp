@@ -186,7 +186,7 @@ struct PointPair
 };
 
 struct PpHash {
-    size_t operator()(const PointPair &pp)
+    size_t operator()(const PointPair& pp) const
     {
         uint x = (pp.p1->hash() + pp.p2->hash()); // commutative
     //	qDebug("%f,%f,%f:%f,%f,%f - %X", (*pp.p1).p[0], (*pp.p1).p[1], (*pp.p1).p[2], (*pp.p2).p[0], (*pp.p2).p[1], (*pp.p2).p[2], x);
@@ -194,7 +194,7 @@ struct PpHash {
     }
 };
 
-bool operator==(const PointPair &pp1, const PointPair &pp2)
+bool operator==(const PointPair& pp1, const PointPair& pp2)
 {	// compare pointers
     return ((pp1.p1 == pp2.p1) && (pp1.p2 == pp2.p2)) || ((pp1.p2 == pp2.p1) && (pp1.p1 == pp2.p2)); // commutative
 }

@@ -36,7 +36,9 @@
 //#define ZOOM_WHEEL_FACTOR (5)
 
 #define ZOOM_MIN (50)
-#define ZOOM_MAX (300)
+#define ZOOM_MAX (200)
+
+
 #define ZOOM_WHEEL_FACTOR (13)
 
 class QActionGroup;

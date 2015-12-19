@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>441</width>
-    <height>272</height>
+    <width>424</width>
+    <height>611</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -27,8 +27,8 @@
     <rect>
      <x>10</x>
      <y>16</y>
-     <width>71</width>
-     <height>56</height>
+     <width>111</width>
+     <height>91</height>
     </rect>
    </property>
    <property name="text">
@@ -41,7 +41,7 @@
   <widget class="QPushButton" name="okButton">
    <property name="geometry">
     <rect>
-     <x>360</x>
+     <x>330</x>
      <y>10</y>
      <width>77</width>
      <height>25</height>
@@ -54,7 +54,7 @@
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>96</x>
+     <x>140</x>
      <y>40</y>
      <width>141</width>
      <height>31</height>
@@ -72,14 +72,14 @@
     </font>
    </property>
    <property name="text">
-    <string>Version 2.2.2</string>
+    <string>Version 2.3.0</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_4">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>80</y>
+     <y>110</y>
      <width>421</width>
      <height>21</height>
     </rect>
@@ -96,7 +96,7 @@
     </font>
    </property>
    <property name="text">
-    <string>Designed and implemented by Shy Shalom, Israel (1995 - 2012)</string>
+    <string>Designed and implemented by Shy Shalom, Israel (1995 - 2016)</string>
    </property>
    <property name="scaledContents">
     <bool>false</bool>
@@ -109,9 +109,9 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>230</y>
-     <width>421</width>
-     <height>41</height>
+     <y>240</y>
+     <width>391</width>
+     <height>361</height>
     </rect>
    </property>
    <property name="font">
@@ -129,8 +129,16 @@
     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Puzzles copyright (C) Dirk Laureyssens 1986-2012. All rights reserved. Happy Cube, Little Genius, Profi Cube and Marble Cube are registered trademarks of Happy n.v., Zoersel, Belgium. See &lt;a href=&quot;http://www.happycube.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://www.happycube.com&lt;/span&gt;&lt;/a&gt; for more information. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Tahoma'; font-size:7pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Using this program automatically implies that you respect the copyrights on the Happy Cube©® Puzzles.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;This program is indented to support you while playing live with the Happy Cube©® Puzzles. These puzzles are worldwide manufacturered by HAPPY bvba, Belgium, on licensed and thus restricted base (&lt;/span&gt;&lt;a href=&quot;www.happy.be&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;www.happy.be&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;). The Happy Cube puzzles are the result of a real invention in 1986 by Dirk Laureyssens. This means that using the puzzle snits as well as puzzle piece shapes to create or manufacture your own puzzles is illegal and against law, since the Happy Cube Puzzles are worldwide protected by many US copyrights since 1987. &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Please note that using the puzzle snits as well as puzzle piece shapes to create or manufacture your own puzzles is illegal and against law, since the Happy Cube©® Puzzles are worldwide protected by US copyrights since 1987. &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Puzzles copyright (C) Dirk Laureyssens 1986-2016. All rights reserved. The Happy Cube puzzles are protected with several US copyrights since 1987 (TXU 271722, TX2332525, TX2359816 and many others). They are exclusively manufactured by Happy bvba, B-2980 Zoersel, Belgium, and distributed worldwide by partners. Using the puzzle snits as well as puzzle piece shapes to create or manufacture your own puzzles is illegal and against law. &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Happy Cube, Little Genius, Profi Cube and Marble Cube are registered trademarks of Happy bvba, Zoersel, Belgium. &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;If you have any questions concerning the usage of HAPPY materials, please send your detailed request in writing to info@happy.be. See &lt;/span&gt;&lt;a href=&quot;http://www.happy.be&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;http://www.happy.be&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; for more information&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="textFormat">
     <enum>Qt::RichText</enum>
@@ -145,7 +153,7 @@ p, li { white-space: pre-wrap; }
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>90</x>
+     <x>140</x>
      <y>10</y>
      <width>171</width>
      <height>31</height>
@@ -172,41 +180,11 @@ p, li { white-space: pre-wrap; }
     <bool>true</bool>
    </property>
   </widget>
-  <widget class="QLabel" name="label_6">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>100</y>
-     <width>51</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>Tahoma</family>
-     <pointsize>9</pointsize>
-     <weight>75</weight>
-     <italic>false</italic>
-     <bold>true</bold>
-     <underline>false</underline>
-     <strikeout>false</strikeout>
-    </font>
-   </property>
-   <property name="text">
-    <string>e-mail:</string>
-   </property>
-   <property name="scaledContents">
-    <bool>false</bool>
-   </property>
-   <property name="wordWrap">
-    <bool>true</bool>
-   </property>
-  </widget>
   <widget class="QLabel" name="label_8">
    <property name="geometry">
     <rect>
      <x>8</x>
-     <y>142</y>
+     <y>172</y>
      <width>381</width>
      <height>22</height>
     </rect>
@@ -222,7 +200,7 @@ p, li { white-space: pre-wrap; }
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>160</y>
+     <y>190</y>
      <width>411</width>
      <height>61</height>
     </rect>
@@ -237,10 +215,10 @@ p, li { white-space: pre-wrap; }
   <widget class="QLineEdit" name="emailEdit">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>100</y>
-     <width>211</width>
-     <height>20</height>
+     <x>10</x>
+     <y>130</y>
+     <width>261</width>
+     <height>21</height>
     </rect>
    </property>
    <property name="font">
@@ -251,7 +229,7 @@ p, li { white-space: pre-wrap; }
     </font>
    </property>
    <property name="text">
-    <string>shooshX@gmail.com</string>
+    <string>shooshx@gmail.com</string>
    </property>
    <property name="frame">
     <bool>false</bool>
@@ -262,7 +240,7 @@ p, li { white-space: pre-wrap; }
   </widget>
  </widget>
  <resources>
-  <include location="../resources.qrc"/>
+  <include location="qt/resources.qrc"/>
  </resources>
  <connections>
   <connection>

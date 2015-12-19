@@ -67,7 +67,7 @@ class GlTexture;
 class PicDef
 {
 public:
-    PicDef() : mygrpi(-1), indexInGroup(-1), pixmap(1, 1),
+    PicDef() : mygrpi(-1), indexInGroup(-1), pixmap(1, 1), tex(nullptr),
         xOffs(-1), yOffs(-1), painter(NULL), nUsed(0), lastnSelected(1), nSelected(0), pathlen(0), dispRot(-1)
     {} 
     void reset() {
@@ -270,8 +270,12 @@ public:
 
     int selectedCount() const;
 
-    const PicDef& getPic(int gind, int pind) const { return pdefs[getPicInd(gind, pind)]; }
-    int getPicInd(int gind, int pind) const { return grps[gind].picsi[pind]; }
+    const PicDef& getPic(int gind, int pind) const { 
+        return pdefs[getPicInd(gind, pind)]; 
+    }
+    int getPicInd(int gind, int pind) const { 
+        return grps[gind].picsi[pind]; 
+    }
     void getGP(int picInd, int* gind, int* pind) const {
         *gind = pdefs[picInd].mygrpi;
         *pind = pdefs[picInd].indexInGroup;

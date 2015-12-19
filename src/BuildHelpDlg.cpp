@@ -155,6 +155,7 @@ BuildHelpDlg::BuildHelpDlg(QWidget* parent, MainWindow* main, CubeDoc *doc)
     zlayout->setSpacing(0);
     zlayout->setMargin(3);
     m_zoomSlider = new QSlider(Qt::Horizontal);
+    //m_zoomSlider->setRange(ZOOM_MIN, ZOOM_MAX);
     m_zoomSlider->setRange(ZOOM_MIN, ZOOM_MAX);
     m_zoomSlider->setValue(100);
     connect(m_zoomSlider, SIGNAL(valueChanged(int)), this, SIGNAL(zoomChanged(int)));

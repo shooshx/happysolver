@@ -104,7 +104,7 @@ private:
     };
 
     struct MpHash {
-        size_t operator()(const MyObject::MyPointWrapper &pnt) {
+        size_t operator()(const MyObject::MyPointWrapper &pnt) const {
             return pnt.ptr->hash();
         }
     };

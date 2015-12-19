@@ -225,7 +225,10 @@ void PicBucket::makeBitmapList()
             cpic.makeBoundingPath();
 
 #ifdef _WINDOWS
-            cpic.pixmap = QPixmap::fromImage(QImage(img.bits(), img.width(), img.height(), QImage::Format_ARGB32));
+            // QImage wrapper around the buffer, does not copy of delete the buffer
+            QImage qimg(img.bits(), img.width(), img.height(), QImage::Format_ARGB32);
+            // this copies the image into the pixmap, avoid move c'tor by having qimg be named variable (r-value)
+            cpic.pixmap = QPixmap::fromImage(qimg);
             QPolygon poly;
             for (i = 0; i < cpic.pathlen; ++i)
             { // path includes last point == first point
@@ -239,10 +242,14 @@ void PicBucket::makeBitmapList()
 
             painter.drawPolyline(poly);
             painter.end();
+
+            //cpic.pixmap.save(QString("c:/temp/cpic_%1_%2.png").arg(gind).arg(pind));
 #endif
 
         }
     }
+
+    getPic(0, 0).pixmap.save(QString("c:/temp/tst_%1_%2.png").arg(0).arg(0));
 
 }
 
@@ -555,7 +562,7 @@ void PicBucket::distinctMeshes()
     for(int i = 0; i < pdefs.size(); ++i) {
         ps.add(i, false);
     }
-    printf("%d distinct meshes out of %d pieces\n", ps.comp.size(), pdefs.size());
+    printf("%d distinct meshes out of %d pieces\n", (int)ps.comp.size(), (int)pdefs.size());
 
     m_meshes.clear();
     for(int i = 0; i < ps.comp.size(); ++i) {

@@ -97,6 +97,7 @@ public slots:
     virtual void updateView(int hint);
     void setSelectYellow(bool v) { 
         m_fSetStrtMode = v; 
+        makeBuffers();
         m_gl->updateGL(); 
     }
     void setUnSetBlueMode(bool v) { 

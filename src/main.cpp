@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 // 	return 0;
 
     QApplication app(argc, argv);
-    console();
+   // console();
 
     QIcon appicon(":/images/HappySolver64f.png");
     appicon.addFile(":/images/HappySolver32f.png");

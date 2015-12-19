@@ -120,6 +120,7 @@ public slots:
 
 signals:
 	void zoomChanged(int v);
+    void angleChanged(int v);
 
 protected:
 	void resizeEvent(QResizeEvent *event);
@@ -132,6 +133,7 @@ private:
 	PieceGLWidget *m_pieceView;
 	QLabel *m_picImage;
 	CubeDoc *m_doc;
+    QSlider *m_angleSlider;
 	QSlider *m_zoomSlider;
 	QLabel *m_animLabel;
 	QMovie *m_cubeAnim;

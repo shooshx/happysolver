@@ -22,6 +22,7 @@
 #include "MyFile.h"
 #include "Space3D.h"
 #include "PicArr.h"
+#include "Mat.h"
 
 #include <list>
 
@@ -29,6 +30,7 @@ class BuildWorld;
 struct SqrLimits;
 struct BoundedBlock;
 class MatStack;
+struct BNode;
 template<class T> class Space3D;
 
 /** \file
@@ -79,15 +81,16 @@ public:
     bool loadFrom(MyFile *rdfl);
 
     enum EFacing { FACING_OUT = 0, FACING_IN, FACING_UNKNOWN };
-
+    enum EAngleType { ANG_ZERO, ANG_PLUS, ANG_MINUS, ANG_180MINUS, ANG_180PLUS };
     
     // for every neighbor of a face, holds, what's the transformation to get to it from the current face
     struct NeiTransform {
         NeiTransform() {}
-        NeiTransform(int px, int py, int angle, int rx, int ry, int rz, bool _flip=false, bool _flipDiag=false) 
-            : planeMove(px, py), rotAngle(angle), rotAxis(rx, ry, rz), flip(_flip), flipDiag(_flipDiag) {}
+        NeiTransform(int px, int py, EAngleType angleType, int rx, int ry, int rz, bool _flip=false, bool _flipDiag=false) 
+            : planeMove(px, py), angleType(angleType), rotAxis(rx, ry, rz), flip(_flip), flipDiag(_flipDiag) {}
         Vec2i planeMove; // same plane as the piece
-        int rotAngle;
+        //int rotAngle;
+        EAngleType angleType;
         Vec3i rotAxis;
         bool flip, flipDiag;
 
@@ -206,14 +209,21 @@ private:
     EGenResult reArrangeFacesDFS(FaceDef faces[], FaceDef revis[], TransType trans[]);
     EGenResult reArrangeFacesBFS(FaceDef faces[], FaceDef revis[], TransType trans[]);
 
+    // stuff related to neighbor transformations
     void makeNeiTransforms();
-    void checkNeiTran(MatStack& m, int fi, vector<int>& pass, int lvl);
-    void checkAddQuad(MatStack& m, bool white);
+    void checkAddQuad(const Mat4& m);
+    template<typename FAdd>
+    void checkNeiTranDFS(MatStack& m, int fi, vector<int>& pass, int lvl, float ang, FAdd& addPiece);
+    void transformFromFaceToNei(MatStack& m, int fi, int ni, float baseAng) const; // baseAng is in [0,90]
+    template<typename FAdd>
+    void checkNeiTranBFS(MatStack& m, float ang, FAdd& addPiece) const;
+    template<typename FAdd>
+    void runBFSTree(MatStack& m, const BNode& node, float ang, FAdd& addPiece) const;
+    void startNeiTransform(MatStack& m) const;
 
-    // used for optimization of the generate process
-    // an array of 3 Space3D, each for every plane
-    // contains the numbers of faces present in the build.
-    Space3D<int> m_opt_facesLoc[3];
+public:
+    void makeTransformsMatrics(float angle, vector<Mat4>& mats) const;
+
     
 public:
     Vec3i size;	///< size in basic units
@@ -232,6 +242,12 @@ public:
 
 private:
     int volume; ///< volume == 0 means it's an open shape. volume == -1 means it was not calculated
+
+    // used for optimization of the generate process
+    // an array of 3 Space3D, each for every plane
+    // contains the numbers of faces present in the build.
+    Space3D<int> m_opt_facesLoc[3];
+
 
 public:
     /// SideFind is the datum of the normSide lookup table used in Shape::checkSide().

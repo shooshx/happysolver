@@ -95,12 +95,12 @@ void BaseGLWidget::reCalcProj(bool fFromScratch) // = true default
 {
     if (fFromScratch)
     {
-        double figX = max(aqmax[0] - aqmin[0], (float)m_minScaleReset),
-               figY = max(aqmax[1] - aqmin[1], (float)m_minScaleReset),
-               figZ = max(aqmax[2] - aqmin[2], (float)m_minScaleReset);
+        double figX = mMax(aqmax[0] - aqmin[0], (float)m_minScaleReset),
+               figY = mMax(aqmax[1] - aqmin[1], (float)m_minScaleReset),
+               figZ = mMax(aqmax[2] - aqmin[2], (float)m_minScaleReset);
 
-        m_scrScale = min(min(4/figX, 4/figY), 4/figZ)*0.7;
-        m_realScale = min(min(m_cxClient/figX, m_cyClient/figY), m_cxClient/figZ)*0.7; // for translate
+        m_scrScale = mMin(mMin(4/figX, 4/figY), 4/figZ)*0.7;
+        m_realScale = mMin(mMin(m_cxClient/figX, m_cyClient/figY), m_cxClient/figZ)*0.7; // for translate
 
         m_aspectRatio = (GLdouble)m_cxClient/(GLdouble)m_cyClient;
 
@@ -196,13 +196,7 @@ void BaseGLWidget::callDrawTargets()
     model.pop();
 }
 
-/*
-void BaseGLWidget::myPaintGL()
-{
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-}
-*/
+
 
 static void sgluPickMatrix(double x, double y, double deltax, double deltay, int viewport[4], MatStack& mat)
 {

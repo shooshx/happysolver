@@ -4,7 +4,7 @@
 #include "general.h"
 using namespace std;
 
-#define MAX_MATSTACK (20)
+//#define MAX_MATSTACK (20)
 
 class MatStack
 {
@@ -23,8 +23,10 @@ public:
     }
 
     void push(const char* msg = NULL) {
+#ifdef MAX_MATSTACK
         if (m_s.size() > MAX_MATSTACK)
             throw HCException("matrix stack overflow");
+#endif
         m_s.push_back(MatEntry(m_cur.m, msg));
     }
 

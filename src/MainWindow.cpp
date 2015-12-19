@@ -690,15 +690,18 @@ void MainWindow::connectActions()
     connect(m_doc, SIGNAL(slvProgUpdated(int, int)), m_modelDlg, SLOT(statsUpdate(int, int)));
     connect(m_doc, SIGNAL(slvProgUpdated(int, int)), m_buildGLControl, SLOT(slvProgStatsUpdate(int, int)));
     connect(m_doc, SIGNAL(slvProgUpdated(int, int)), m_picsWidget, SLOT(slvProgStatsUpdate(int, int)));
-    //connect(m_buildDlg, SIGNAL(zoomChanged(int)), m_glWidget, SLOT(externalZoom(int)));
-    connect(m_buildDlg, SIGNAL(zoomChanged(int)), m_buildGLControl, SLOT(changeRotAngle(int)));
-    connect(m_buildGLControl, SIGNAL(zoomChanged(int)), m_buildDlg, SLOT(updateZoom(int)));
+
+    connect(m_buildDlg, SIGNAL(zoomChanged(int)), m_glWidget, SLOT(externalZoom(int)));
     connect(m_modelDlg, SIGNAL(zoomChanged(int)), m_glWidget, SLOT(externalZoom(int)));
+    //connect(m_buildDlg, SIGNAL(zoomChanged(int)), m_buildGLControl, SLOT(changeRotAngle(int)));
+    connect(m_modelDlg, SIGNAL(angleChanged(int)), m_buildGLControl, SLOT(changeRotAngle(int)));
+
+    connect(m_buildGLControl, SIGNAL(zoomChanged(int)), m_buildDlg, SLOT(updateZoom(int)));
     connect(m_modelGLControl, SIGNAL(zoomChanged(int)), m_modelDlg, SLOT(updateZoom(int)));
 
     connect(m_modelGLControl, SIGNAL(changedHoverPiece(int)), m_modelDlg, SLOT(changeViewPiece(int)));
-    connect(m_modelGLControl, SIGNAL(rotated(GLWidget::EAxis, int, int)), m_modelDlg->getPieceView(), SLOT(externRotate(GLWidget::EAxis, int, int)));
-    connect(m_modelGLControl, SIGNAL(callReset()), m_modelDlg->getPieceView(), SLOT(resetState()));
+//    connect(m_modelGLControl, SIGNAL(rotated(GLWidget::EAxis, int, int)), m_modelDlg->getPieceView(), SLOT(externRotate(GLWidget::EAxis, int, int)));
+//    connect(m_modelGLControl, SIGNAL(callReset()), m_modelDlg->getPieceView(), SLOT(resetState()));
     connect(m_modelGLControl, SIGNAL(chosenSinglePiece(int)), m_modelDlg, SLOT(changedExternViewPiece(int)));
 
     connect(m_buildGLControl, SIGNAL(changedTilesCount(int)), m_doc, SLOT(evaluateBstatus()));
@@ -767,7 +770,7 @@ void MainWindow::doModalOptionsDlg()
         //    m_modelGLControl->setUsingLight(m_doc->m_conf.disp.bLight);
             m_glWidget->updateGL();
         //    m_modelDlg->getPieceView()->setUsingLight(m_doc->m_conf.disp.bLight);
-            m_modelDlg->getPieceView()->updateGL();
+        //    m_modelDlg->getPieceView()->updateGL();
         }
         if (lastdc.nSwapTexEndians != m_doc->m_conf.disp.nSwapTexEndians) // swap endians changed
         {

@@ -51,7 +51,7 @@
 	
 	<summary>
 		<codepage>1252</codepage>
-		<title>Happy Cube Solver Install</title>
+		<title>##ID_STRING5##</title>
 		<subject></subject>
 		<author>Shy Shalom</author>
 		<keywords>happy cube solver cubeit wirrel warrel</keywords>
@@ -252,7 +252,7 @@
 		<col def="S255">ISBuildSourcePath</col>
 		<row><td>ISExpHlp.dll</td><td/><td>&lt;ISRedistPlatformDependentFolder&gt;\ISExpHlp.dll</td></row>
 		<row><td>ISSELFREG.DLL</td><td/><td>&lt;ISRedistPlatformDependentFolder&gt;\isregsvr.dll</td></row>
-		<row><td>NewBinary1</td><td/><td>&lt;ISProductFolder&gt;\Support\Themes\InstallShield Blue Theme\banner.jpg</td></row>
+		<row><td>NewBinary1</td><td/><td>&lt;VSSolutionFolder&gt;\..\images\installer_title.bmp</td></row>
 		<row><td>NewBinary10</td><td/><td>&lt;ISProductFolder&gt;\Redist\Language Independent\OS Independent\CompleteSetupIco.ibd</td></row>
 		<row><td>NewBinary11</td><td/><td>&lt;ISProductFolder&gt;\Redist\Language Independent\OS Independent\CustomSetupIco.ibd</td></row>
 		<row><td>NewBinary12</td><td/><td>&lt;ISProductFolder&gt;\Redist\Language Independent\OS Independent\DestIcon.ibd</td></row>
@@ -265,9 +265,11 @@
 		<row><td>NewBinary19</td><td/><td>&lt;VSSolutionFolder&gt;\..\images\HappySolver64f.png</td></row>
 		<row><td>NewBinary2</td><td/><td>&lt;ISProductFolder&gt;\Redist\Language Independent\OS Independent\New.ibd</td></row>
 		<row><td>NewBinary20</td><td/><td>&lt;VSSolutionFolder&gt;\..\images\HappySolver64f.bmp</td></row>
+		<row><td>NewBinary21</td><td/><td>&lt;VSSolutionFolder&gt;\..\images\installer_back.bmp</td></row>
+		<row><td>NewBinary22</td><td/><td>&lt;VSSolutionFolder&gt;\..\images\installer_title.bmp</td></row>
 		<row><td>NewBinary3</td><td/><td>&lt;ISProductFolder&gt;\Redist\Language Independent\OS Independent\Up.ibd</td></row>
 		<row><td>NewBinary4</td><td/><td>&lt;ISProductFolder&gt;\Redist\Language Independent\OS Independent\WarningIcon.ibd</td></row>
-		<row><td>NewBinary5</td><td/><td>&lt;ISProductFolder&gt;\Support\Themes\InstallShield Blue Theme\welcome.jpg</td></row>
+		<row><td>NewBinary5</td><td/><td>&lt;VSSolutionFolder&gt;\..\images\installer_back.bmp</td></row>
 		<row><td>NewBinary6</td><td/><td>&lt;ISProductFolder&gt;\Redist\Language Independent\OS Independent\CustomSetupIco.ibd</td></row>
 		<row><td>NewBinary7</td><td/><td>&lt;ISProductFolder&gt;\Redist\Language Independent\OS Independent\ReinstIco.ibd</td></row>
 		<row><td>NewBinary8</td><td/><td>&lt;ISProductFolder&gt;\Redist\Language Independent\OS Independent\RemoveIco.ibd</td></row>
@@ -342,7 +344,6 @@
 		<col def="S0">ISDotNetInstallerArgsUninstall</col>
 		<col def="S0">ISDotNetInstallerArgsRollback</col>
 		<row><td>C__0FDA8DA6303244CDBEF2BC44958A9B64</td><td>{31205CB3-9F5C-45BE-BB70-C35AC7CE7EA7}</td><td>_82DE260A42E24273B334D4FD1703FA0C</td><td>2</td><td/><td>_0FDA8DA6303244CDBEF2BC44958A9B64</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>C__117D4B2B2BC64FDDA7CE3CCD7A9C6EB8</td><td>{57AA2B23-7BE2-4658-8B57-4D709A2103EB}</td><td>INSTALLDIR</td><td>2</td><td/><td>_117D4B2B2BC64FDDA7CE3CCD7A9C6EB8</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>C__13B348AAC3AA4BDAB5F511E2D7AD359C</td><td>{2D146640-4C82-420B-BA07-D94569ADC2CC}</td><td>_82DE260A42E24273B334D4FD1703FA0C</td><td>2</td><td/><td>_13B348AAC3AA4BDAB5F511E2D7AD359C</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>C__164C90CCFBF04501ACCCDB6C8E0FDF61</td><td>{0546A143-8455-470F-832F-53D1BAE1426E}</td><td>_82DE260A42E24273B334D4FD1703FA0C</td><td>2</td><td/><td>_164C90CCFBF04501ACCCDB6C8E0FDF61</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>C__16BB0EBC3C534F888F976DDED253B3E2</td><td>{7ED550A4-4E98-498A-A906-76B4B8A96216}</td><td>_82DE260A42E24273B334D4FD1703FA0C</td><td>2</td><td/><td>_16BB0EBC3C534F888F976DDED253B3E2</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
@@ -412,10 +413,14 @@
 		<row><td>C__F869EBD4F655492183A785456C235896</td><td>{F11059D8-CD62-4737-929B-814E4894DB8A}</td><td>_82DE260A42E24273B334D4FD1703FA0C</td><td>2</td><td/><td>_F869EBD4F655492183A785456C235896</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT</td><td>{E154FEAC-39C3-4FE9-954E-09568917619B}</td><td>ProgramFilesFolder</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT1</td><td>{42A54918-2A9B-4BB8-9290-EB108AD912B9}</td><td>INSTALLDIR</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT2</td><td>{F58F49BB-38CA-49F9-821C-FF1C968FBE0D}</td><td>IMAGEFORMATS</td><td>258</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT3</td><td>{AD8E76D8-A754-4AB3-BF54-2CE0907F948C}</td><td>PLATFORMS</td><td>258</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Qt5Core.dll</td><td>{00520740-DE8D-491C-BD84-03C160EB6298}</td><td>INSTALLDIR</td><td>2</td><td/><td>qt5core.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Qt5Gui.dll</td><td>{2B738E64-C5D7-49A5-9FCA-57EA01840365}</td><td>INSTALLDIR</td><td>2</td><td/><td>qt5gui.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Qt5OpenGL.dll</td><td>{FECBC5C1-BBC4-4D54-8E9B-B4D13C31FDD3}</td><td>INSTALLDIR</td><td>2</td><td/><td>qt5opengl.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Qt5Widgets.dll</td><td>{81D6F2A9-1FEA-4184-AFF1-82B2B4F28B82}</td><td>INSTALLDIR</td><td>2</td><td/><td>qt5widgets.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>qgif.dll</td><td>{4E7CA49C-4E35-4E36-95EE-6007CFB9E054}</td><td>IMAGEFORMATS</td><td>258</td><td/><td>qgif.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>qwindows.dll</td><td>{0D215976-D0C9-4CCA-946E-49396E79C3F1}</td><td>PLATFORMS</td><td>258</td><td/><td>qwindows.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 	</table>
 
 	<table name="Condition">
@@ -556,7 +561,7 @@
 		<row><td>DatabaseFolder</td><td>Location</td><td>Text</td><td>57</td><td>65</td><td>240</td><td>40</td><td>3</td><td>_BrowseProperty</td><td>##IDS__DatabaseFolder_DatabaseDir##</td><td/><td/><td>0</td><td/><td/><td/></row>
 		<row><td>DatabaseFolder</td><td>Next</td><td>PushButton</td><td>230</td><td>243</td><td>66</td><td>17</td><td>3</td><td/><td>##IDS_NEXT##</td><td>Cancel</td><td/><td>0</td><td/><td/><td/></row>
 		<row><td>DestinationFolder</td><td>Back</td><td>PushButton</td><td>164</td><td>243</td><td>66</td><td>17</td><td>3</td><td/><td>##IDS_BACK##</td><td>Next</td><td/><td>0</td><td/><td/><td/></row>
-		<row><td>DestinationFolder</td><td>Banner</td><td>Bitmap</td><td>0</td><td>0</td><td>374</td><td>44</td><td>1</td><td/><td/><td/><td/><td>0</td><td/><td/><td>NewBinary20</td></row>
+		<row><td>DestinationFolder</td><td>Banner</td><td>Bitmap</td><td>0</td><td>0</td><td>374</td><td>44</td><td>1</td><td/><td/><td/><td/><td>0</td><td/><td/><td>NewBinary22</td></row>
 		<row><td>DestinationFolder</td><td>BannerLine</td><td>Line</td><td>0</td><td>44</td><td>374</td><td>0</td><td>1</td><td/><td/><td/><td/><td>0</td><td/><td/><td/></row>
 		<row><td>DestinationFolder</td><td>Branding1</td><td>Text</td><td>4</td><td>229</td><td>50</td><td>13</td><td>3</td><td/><td>##IDS_INSTALLSHIELD_FORMATTED##</td><td/><td/><td>0</td><td/><td/><td/></row>
 		<row><td>DestinationFolder</td><td>Branding2</td><td>Text</td><td>3</td><td>228</td><td>50</td><td>13</td><td>65537</td><td/><td>##IDS_INSTALLSHIELD##</td><td/><td/><td>0</td><td/><td/><td/></row>
@@ -611,7 +616,7 @@
 		<row><td>InstallWelcome</td><td>Cancel</td><td>PushButton</td><td>301</td><td>243</td><td>66</td><td>17</td><td>3</td><td/><td>##IDS_CANCEL##</td><td>Back</td><td/><td>0</td><td/><td/><td/></row>
 		<row><td>InstallWelcome</td><td>Copyright</td><td>Text</td><td>135</td><td>144</td><td>228</td><td>73</td><td>65539</td><td/><td>##IDS__IsWelcomeDlg_WarningCopyright##</td><td>Next</td><td/><td>0</td><td/><td/><td/></row>
 		<row><td>InstallWelcome</td><td>DlgLine</td><td>Line</td><td>0</td><td>234</td><td>374</td><td>0</td><td>1</td><td/><td/><td/><td/><td>0</td><td/><td/><td/></row>
-		<row><td>InstallWelcome</td><td>Image</td><td>Bitmap</td><td>0</td><td>0</td><td>374</td><td>234</td><td>1</td><td/><td/><td/><td/><td>0</td><td/><td/><td>NewBinary19</td></row>
+		<row><td>InstallWelcome</td><td>Image</td><td>Bitmap</td><td>0</td><td>0</td><td>374</td><td>234</td><td>1</td><td/><td/><td/><td/><td>0</td><td/><td/><td>NewBinary21</td></row>
 		<row><td>InstallWelcome</td><td>Next</td><td>PushButton</td><td>230</td><td>243</td><td>66</td><td>17</td><td>3</td><td/><td>##IDS_NEXT##</td><td>Cancel</td><td/><td>0</td><td/><td/><td/></row>
 		<row><td>InstallWelcome</td><td>TextLine1</td><td>Text</td><td>135</td><td>8</td><td>225</td><td>45</td><td>196611</td><td/><td>##IDS__IsWelcomeDlg_WelcomeProductName##</td><td/><td/><td>0</td><td/><td/><td/></row>
 		<row><td>InstallWelcome</td><td>TextLine2</td><td>Text</td><td>135</td><td>55</td><td>228</td><td>45</td><td>196611</td><td/><td>##IDS__IsWelcomeDlg_InstallProductName##</td><td/><td/><td>0</td><td/><td/><td/></row>
@@ -692,7 +697,7 @@
 		<row><td>ReadmeInformation</td><td>Next</td><td>PushButton</td><td>230</td><td>243</td><td>66</td><td>17</td><td>1048579</td><td/><td>##IDS_NEXT##</td><td>Cancel</td><td/><td>0</td><td/><td/><td/></row>
 		<row><td>ReadmeInformation</td><td>Readme</td><td>ScrollableText</td><td>10</td><td>55</td><td>353</td><td>166</td><td>3</td><td/><td/><td>Banner</td><td/><td>0</td><td/><td>&lt;VSSolutionFolder&gt;\..\README.txt</td><td/></row>
 		<row><td>ReadyToInstall</td><td>Back</td><td>PushButton</td><td>164</td><td>243</td><td>66</td><td>17</td><td>3</td><td/><td>##IDS_BACK##</td><td>GroupBox1</td><td/><td>0</td><td/><td/><td/></row>
-		<row><td>ReadyToInstall</td><td>Banner</td><td>Bitmap</td><td>0</td><td>0</td><td>374</td><td>44</td><td>1</td><td/><td/><td/><td/><td>0</td><td/><td/><td>NewBinary20</td></row>
+		<row><td>ReadyToInstall</td><td>Banner</td><td>Bitmap</td><td>0</td><td>0</td><td>374</td><td>44</td><td>1</td><td/><td/><td/><td/><td>0</td><td/><td/><td>NewBinary22</td></row>
 		<row><td>ReadyToInstall</td><td>BannerLine</td><td>Line</td><td>0</td><td>44</td><td>374</td><td>0</td><td>1</td><td/><td/><td/><td/><td>0</td><td/><td/><td/></row>
 		<row><td>ReadyToInstall</td><td>Branding1</td><td>Text</td><td>4</td><td>229</td><td>50</td><td>13</td><td>3</td><td/><td>##IDS_INSTALLSHIELD_FORMATTED##</td><td/><td/><td>0</td><td/><td/><td/></row>
 		<row><td>ReadyToInstall</td><td>Branding2</td><td>Text</td><td>3</td><td>228</td><td>50</td><td>13</td><td>65537</td><td/><td>##IDS_INSTALLSHIELD##</td><td/><td/><td>0</td><td/><td/><td/></row>
@@ -751,7 +756,7 @@
 		<row><td>SetupCompleteSuccess</td><td>CheckLaunchReadme</td><td>CheckBox</td><td>151</td><td>148</td><td>10</td><td>9</td><td>2</td><td>LAUNCHREADME</td><td/><td>CheckBoxUpdates</td><td/><td>0</td><td/><td/><td/></row>
 		<row><td>SetupCompleteSuccess</td><td>CheckShowMsiLog</td><td>CheckBox</td><td>151</td><td>182</td><td>10</td><td>9</td><td>2</td><td>ISSHOWMSILOG</td><td/><td>Back</td><td/><td>0</td><td/><td/><td/></row>
 		<row><td>SetupCompleteSuccess</td><td>DlgLine</td><td>Line</td><td>0</td><td>234</td><td>374</td><td>0</td><td>1</td><td/><td/><td/><td/><td>0</td><td/><td/><td/></row>
-		<row><td>SetupCompleteSuccess</td><td>Image</td><td>Bitmap</td><td>0</td><td>0</td><td>374</td><td>234</td><td>1</td><td/><td/><td>CheckLaunchProgram</td><td/><td>0</td><td/><td/><td>NewBinary19</td></row>
+		<row><td>SetupCompleteSuccess</td><td>Image</td><td>Bitmap</td><td>0</td><td>0</td><td>374</td><td>234</td><td>1</td><td/><td/><td>CheckLaunchProgram</td><td/><td>0</td><td/><td/><td>NewBinary21</td></row>
 		<row><td>SetupCompleteSuccess</td><td>LaunchProgramText</td><td>Text</td><td>164</td><td>112</td><td>98</td><td>15</td><td>65538</td><td/><td>##IDS__IsExitDialog_LaunchProgram##</td><td/><td/><td>0</td><td>0</td><td/><td/></row>
 		<row><td>SetupCompleteSuccess</td><td>LaunchReadmeText</td><td>Text</td><td>164</td><td>148</td><td>120</td><td>13</td><td>65538</td><td/><td>##IDS__IsExitDialog_ShowReadMe##</td><td/><td/><td>0</td><td>0</td><td/><td/></row>
 		<row><td>SetupCompleteSuccess</td><td>OK</td><td>PushButton</td><td>230</td><td>243</td><td>66</td><td>17</td><td>3</td><td/><td>##IDS__IsExitDialog_Finish##</td><td>Cancel</td><td/><td>0</td><td/><td/><td/></row>
@@ -796,7 +801,7 @@
 		<row><td>SetupProgress</td><td>ActionProgress95</td><td>ProgressBar</td><td>59</td><td>113</td><td>275</td><td>12</td><td>65537</td><td/><td>##IDS__IsProgressDlg_ProgressDone##</td><td/><td/><td>0</td><td/><td/><td/></row>
 		<row><td>SetupProgress</td><td>ActionText</td><td>Text</td><td>59</td><td>100</td><td>275</td><td>12</td><td>3</td><td/><td>##IDS__IsProgressDlg_2##</td><td/><td/><td>0</td><td/><td/><td/></row>
 		<row><td>SetupProgress</td><td>Back</td><td>PushButton</td><td>164</td><td>243</td><td>66</td><td>17</td><td>1</td><td/><td>##IDS_BACK##</td><td>Next</td><td/><td>0</td><td/><td/><td/></row>
-		<row><td>SetupProgress</td><td>Banner</td><td>Bitmap</td><td>0</td><td>0</td><td>374</td><td>44</td><td>1</td><td/><td/><td/><td/><td>0</td><td/><td/><td>NewBinary20</td></row>
+		<row><td>SetupProgress</td><td>Banner</td><td>Bitmap</td><td>0</td><td>0</td><td>374</td><td>44</td><td>1</td><td/><td/><td/><td/><td>0</td><td/><td/><td>NewBinary22</td></row>
 		<row><td>SetupProgress</td><td>BannerLine</td><td>Line</td><td>0</td><td>44</td><td>374</td><td>0</td><td>1</td><td/><td/><td/><td/><td>0</td><td/><td/><td/></row>
 		<row><td>SetupProgress</td><td>Branding1</td><td>Text</td><td>4</td><td>229</td><td>50</td><td>13</td><td>3</td><td/><td>##IDS_INSTALLSHIELD_FORMATTED##</td><td/><td/><td>0</td><td/><td/><td/></row>
 		<row><td>SetupProgress</td><td>Branding2</td><td>Text</td><td>3</td><td>228</td><td>50</td><td>13</td><td>65537</td><td/><td>##IDS_INSTALLSHIELD##</td><td/><td/><td>0</td><td/><td/><td/></row>
@@ -995,7 +1000,7 @@
 		<row><td>DatabaseFolder</td><td>ChangeFolder</td><td>SpawnDialog</td><td>InstallChangeFolder</td><td>1</td><td>1</td></row>
 		<row><td>DatabaseFolder</td><td>ChangeFolder</td><td>[_BrowseProperty]</td><td>DATABASEDIR</td><td>1</td><td>2</td></row>
 		<row><td>DatabaseFolder</td><td>Next</td><td>NewDialog</td><td>SetupType</td><td>1</td><td>1</td></row>
-		<row><td>DestinationFolder</td><td>Back</td><td>NewDialog</td><td>ReadmeInformation</td><td>NOT Installed</td><td>0</td></row>
+		<row><td>DestinationFolder</td><td>Back</td><td>NewDialog</td><td>InstallWelcome</td><td>NOT Installed</td><td>0</td></row>
 		<row><td>DestinationFolder</td><td>Cancel</td><td>SpawnDialog</td><td>CancelSetup</td><td>1</td><td>1</td></row>
 		<row><td>DestinationFolder</td><td>ChangeFolder</td><td>SpawnDialog</td><td>InstallChangeFolder</td><td>1</td><td>1</td></row>
 		<row><td>DestinationFolder</td><td>ChangeFolder</td><td>[_BrowseProperty]</td><td>INSTALLDIR</td><td>1</td><td>2</td></row>
@@ -1012,7 +1017,7 @@
 		<row><td>InstallChangeFolder</td><td>Up</td><td>DirectoryListUp</td><td>0</td><td>1</td><td>0</td></row>
 		<row><td>InstallWelcome</td><td>Back</td><td>NewDialog</td><td>SplashBitmap</td><td>Display_IsBitmapDlg</td><td>0</td></row>
 		<row><td>InstallWelcome</td><td>Cancel</td><td>SpawnDialog</td><td>CancelSetup</td><td>1</td><td>0</td></row>
-		<row><td>InstallWelcome</td><td>Next</td><td>NewDialog</td><td>ReadmeInformation</td><td>1</td><td>0</td></row>
+		<row><td>InstallWelcome</td><td>Next</td><td>NewDialog</td><td>DestinationFolder</td><td>1</td><td>0</td></row>
 		<row><td>LicenseAgreement</td><td>Back</td><td>NewDialog</td><td>InstallWelcome</td><td>1</td><td>0</td></row>
 		<row><td>LicenseAgreement</td><td>Cancel</td><td>SpawnDialog</td><td>CancelSetup</td><td>1</td><td>0</td></row>
 		<row><td>LicenseAgreement</td><td>ISPrintButton</td><td>DoAction</td><td>ISPrint</td><td>1</td><td>0</td></row>
@@ -1124,8 +1129,9 @@
 	<table name="CreateFolder">
 		<col key="yes" def="s72">Directory_</col>
 		<col key="yes" def="s72">Component_</col>
+		<row><td>IMAGEFORMATS</td><td>ISX_DEFAULTCOMPONENT2</td></row>
+		<row><td>IMAGEFORMATS</td><td>qgif.dll</td></row>
 		<row><td>INSTALLDIR</td><td>C__0FDA8DA6303244CDBEF2BC44958A9B64</td></row>
-		<row><td>INSTALLDIR</td><td>C__117D4B2B2BC64FDDA7CE3CCD7A9C6EB8</td></row>
 		<row><td>INSTALLDIR</td><td>C__13B348AAC3AA4BDAB5F511E2D7AD359C</td></row>
 		<row><td>INSTALLDIR</td><td>C__164C90CCFBF04501ACCCDB6C8E0FDF61</td></row>
 		<row><td>INSTALLDIR</td><td>C__16BB0EBC3C534F888F976DDED253B3E2</td></row>
@@ -1195,10 +1201,16 @@
 		<row><td>INSTALLDIR</td><td>C__F869EBD4F655492183A785456C235896</td></row>
 		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT</td></row>
 		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT1</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT2</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT3</td></row>
 		<row><td>INSTALLDIR</td><td>Qt5Core.dll</td></row>
 		<row><td>INSTALLDIR</td><td>Qt5Gui.dll</td></row>
 		<row><td>INSTALLDIR</td><td>Qt5OpenGL.dll</td></row>
 		<row><td>INSTALLDIR</td><td>Qt5Widgets.dll</td></row>
+		<row><td>INSTALLDIR</td><td>qgif.dll</td></row>
+		<row><td>INSTALLDIR</td><td>qwindows.dll</td></row>
+		<row><td>PLATFORMS</td><td>ISX_DEFAULTCOMPONENT3</td></row>
+		<row><td>PLATFORMS</td><td>qwindows.dll</td></row>
 		<row><td>ProgramFilesFolder</td><td>ISX_DEFAULTCOMPONENT</td></row>
 		<row><td>ProgramMenuFolder</td><td>C__98538D5434A94D3090F152517A1410E3</td></row>
 		<row><td>_1F8A21F8B729489E9FBE6D4E599EB519</td><td>C__9514A0B53EC149D8A3B2E37002613ECA</td></row>
@@ -1357,6 +1369,7 @@
 		<row><td>GlobalAssemblyCache</td><td>TARGETDIR</td><td>.:Global~1|GlobalAssemblyCache</td><td/><td>0</td><td/></row>
 		<row><td>HAPPY_CUBE_SOLVER</td><td>ProgramFilesFolder</td><td>HAPPYC~1|Happy Cube Solver</td><td/><td>0</td><td/></row>
 		<row><td>HAPPY_CUBE_SOLVER1</td><td>ProgramFiles64Folder</td><td>HAPPYC~1|Happy Cube Solver</td><td/><td>0</td><td/></row>
+		<row><td>IMAGEFORMATS</td><td>INSTALLDIR</td><td>IMAGEF~1|imageformats</td><td/><td>0</td><td/></row>
 		<row><td>INSTALLDIR</td><td>HAPPY_CUBE_SOLVER1</td><td>.</td><td/><td>0</td><td/></row>
 		<row><td>ISCommonFilesFolder</td><td>CommonFilesFolder</td><td>Instal~1|InstallShield</td><td/><td>0</td><td/></row>
 		<row><td>ISMyCompanyDir</td><td>ProgramFilesFolder</td><td>MYCOMP~1|My Company Name</td><td/><td>0</td><td/></row>
@@ -1366,6 +1379,7 @@
 		<row><td>MY_PRODUCT_NAME</td><td>SHY_SHALOM</td><td>MYPROD~1|My Product Name</td><td/><td>0</td><td/></row>
 		<row><td>MyPicturesFolder</td><td>TARGETDIR</td><td>.:MyPict~1|MyPictures</td><td/><td>0</td><td/></row>
 		<row><td>NetHoodFolder</td><td>TARGETDIR</td><td>.:NetHood</td><td/><td>0</td><td/></row>
+		<row><td>PLATFORMS</td><td>INSTALLDIR</td><td>PLATFO~1|platforms</td><td/><td>0</td><td/></row>
 		<row><td>PersonalFolder</td><td>TARGETDIR</td><td>.:Personal</td><td/><td>0</td><td/></row>
 		<row><td>PrimaryVolumePath</td><td>TARGETDIR</td><td>.:Primar~1|PrimaryVolumePath</td><td/><td>0</td><td/></row>
 		<row><td>PrintHoodFolder</td><td>TARGETDIR</td><td>.:PRINTH~1|PrintHood</td><td/><td>0</td><td/></row>
@@ -2082,7 +2096,6 @@
 		<col key="yes" def="s38">Feature_</col>
 		<col key="yes" def="s72">Component_</col>
 		<row><td>AlwaysInstall</td><td>C__0FDA8DA6303244CDBEF2BC44958A9B64</td></row>
-		<row><td>AlwaysInstall</td><td>C__117D4B2B2BC64FDDA7CE3CCD7A9C6EB8</td></row>
 		<row><td>AlwaysInstall</td><td>C__13B348AAC3AA4BDAB5F511E2D7AD359C</td></row>
 		<row><td>AlwaysInstall</td><td>C__164C90CCFBF04501ACCCDB6C8E0FDF61</td></row>
 		<row><td>AlwaysInstall</td><td>C__16BB0EBC3C534F888F976DDED253B3E2</td></row>
@@ -2152,10 +2165,14 @@
 		<row><td>AlwaysInstall</td><td>C__F869EBD4F655492183A785456C235896</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT1</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT2</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT3</td></row>
 		<row><td>AlwaysInstall</td><td>Qt5Core.dll</td></row>
 		<row><td>AlwaysInstall</td><td>Qt5Gui.dll</td></row>
 		<row><td>AlwaysInstall</td><td>Qt5OpenGL.dll</td></row>
 		<row><td>AlwaysInstall</td><td>Qt5Widgets.dll</td></row>
+		<row><td>AlwaysInstall</td><td>qgif.dll</td></row>
+		<row><td>AlwaysInstall</td><td>qwindows.dll</td></row>
 	</table>
 
 	<table name="File">
@@ -2171,7 +2188,6 @@
 		<col def="I4">ISAttributes</col>
 		<col def="S72">ISComponentSubFolder_</col>
 		<row><td>_0FDA8DA6303244CDBEF2BC44958A9B64</td><td>C__0FDA8DA6303244CDBEF2BC44958A9B64</td><td>twolink.slv</td><td>0</td><td/><td/><td>512</td><td>1</td><td>&lt;VSSolutionFolder&gt;\..\Examples\twolink.slv</td><td>5</td><td/></row>
-		<row><td>_117D4B2B2BC64FDDA7CE3CCD7A9C6EB8</td><td>C__117D4B2B2BC64FDDA7CE3CCD7A9C6EB8</td><td>HAPPYS~1.BMP|HappySolver64f.bmp</td><td>0</td><td/><td/><td>512</td><td>1</td><td>&lt;VSSolutionFolder&gt;\..\images\HappySolver64f.bmp</td><td>5</td><td/></row>
 		<row><td>_13B348AAC3AA4BDAB5F511E2D7AD359C</td><td>C__13B348AAC3AA4BDAB5F511E2D7AD359C</td><td>threes.shp</td><td>0</td><td/><td/><td>512</td><td>1</td><td>&lt;VSSolutionFolder&gt;\..\Examples\threes.shp</td><td>5</td><td/></row>
 		<row><td>_164C90CCFBF04501ACCCDB6C8E0FDF61</td><td>C__164C90CCFBF04501ACCCDB6C8E0FDF61</td><td>etz.slv</td><td>0</td><td/><td/><td>512</td><td>1</td><td>&lt;VSSolutionFolder&gt;\..\Examples\etz.slv</td><td>5</td><td/></row>
 		<row><td>_16BB0EBC3C534F888F976DDED253B3E2</td><td>C__16BB0EBC3C534F888F976DDED253B3E2</td><td>PIE-TN~1.SLV|pie-TNG-trim.slv</td><td>0</td><td/><td/><td>512</td><td>1</td><td>&lt;VSSolutionFolder&gt;\..\Examples\pie-TNG-trim.slv</td><td>5</td><td/></row>
@@ -2238,10 +2254,12 @@
 		<row><td>_E95969CD5FD946899C1B9545F0F57543</td><td>C__E95969CD5FD946899C1B9545F0F57543</td><td>LADDER~1.SHP|ladder3x3.shp</td><td>0</td><td/><td/><td>512</td><td>1</td><td>&lt;VSSolutionFolder&gt;\..\Examples\ladder3x3.shp</td><td>5</td><td/></row>
 		<row><td>_EDEFB71420C740EFB8E90FB22AD001EB</td><td>C__EDEFB71420C740EFB8E90FB22AD001EB</td><td>snake.shp</td><td>0</td><td/><td/><td>512</td><td>1</td><td>&lt;VSSolutionFolder&gt;\..\Examples\snake.shp</td><td>5</td><td/></row>
 		<row><td>_F869EBD4F655492183A785456C235896</td><td>C__F869EBD4F655492183A785456C235896</td><td>FLAT10~1.SLV|flat10x10.slv</td><td>0</td><td/><td/><td>512</td><td>1</td><td>&lt;VSSolutionFolder&gt;\..\Examples\flat10x10.slv</td><td>5</td><td/></row>
+		<row><td>qgif.dll</td><td>qgif.dll</td><td>qgif.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\cubeGL\happysolver\win_vs\bin\Release_x64\imageformats\qgif.dll</td><td>1</td><td/></row>
 		<row><td>qt5core.dll</td><td>Qt5Core.dll</td><td>Qt5Core.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\lib\Qt5.5.0\5.5\msvc2013_64\bin\Qt5Core.dll</td><td>1</td><td/></row>
 		<row><td>qt5gui.dll</td><td>Qt5Gui.dll</td><td>Qt5Gui.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\lib\Qt5.5.0\5.5\msvc2013_64\bin\Qt5Gui.dll</td><td>1</td><td/></row>
 		<row><td>qt5opengl.dll</td><td>Qt5OpenGL.dll</td><td>QT5OPE~1.DLL|Qt5OpenGL.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\lib\Qt5.5.0\5.5\msvc2013_64\bin\Qt5OpenGL.dll</td><td>1</td><td/></row>
 		<row><td>qt5widgets.dll</td><td>Qt5Widgets.dll</td><td>QT5WID~1.DLL|Qt5Widgets.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\lib\Qt5.5.0\5.5\msvc2013_64\bin\Qt5Widgets.dll</td><td>1</td><td/></row>
+		<row><td>qwindows.dll</td><td>qwindows.dll</td><td>qwindows.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\cubeGL\happysolver\win_vs\bin\Release_x64\platforms\qwindows.dll</td><td>1</td><td/></row>
 	</table>
 
 	<table name="FileSFPCatalog">
@@ -2384,7 +2402,6 @@
 		<col def="S0">HTTPLocation</col>
 		<col def="S0">Miscellaneous</col>
 		<row><td>C__0FDA8DA6303244CDBEF2BC44958A9B64</td><td/><td/><td>_05FF0FD6_1BAE_4FDD_826A_62924E44D1B5_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>C__117D4B2B2BC64FDDA7CE3CCD7A9C6EB8</td><td/><td/><td>_7F96E957_D742_4802_AAB2_EEDCF8D4DCE3_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>C__13B348AAC3AA4BDAB5F511E2D7AD359C</td><td/><td/><td>_AB54841A_CE46_4458_9771_4E08B3AC00DC_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>C__164C90CCFBF04501ACCCDB6C8E0FDF61</td><td/><td/><td>_D00DED1A_417F_407D_9E37_1DC8AE0BBB4A_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>C__16BB0EBC3C534F888F976DDED253B3E2</td><td/><td/><td>_4D3743B4_1880_4A08_9907_DCEBFE4455C3_FILTER</td><td/><td/><td/><td/></row>
@@ -2454,10 +2471,14 @@
 		<row><td>C__F869EBD4F655492183A785456C235896</td><td/><td/><td>_4E5B6147_0492_426A_B898_A21CD4294651_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT</td><td/><td/><td>_49D8D9C7_A9A6_473A_8D12_F9D4BAFFEFB7_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT1</td><td/><td/><td>_06714AE5_54D4_4C46_A874_4919DC7D854B_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT2</td><td/><td/><td>_FC135EBD_A668_4474_92EF_531407BE9935_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT3</td><td/><td/><td>_3704CCCE_6328_475C_AEBB_7FEC9A9B118D_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Qt5Core.dll</td><td/><td/><td>_B12458F5_9AD5_4FFD_B3BE_4BBA5910D6EE_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Qt5Gui.dll</td><td/><td/><td>_FAE47F62_3EA0_4A79_B3CD_C6239FCC50DE_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Qt5OpenGL.dll</td><td/><td/><td>_3CD07EF0_F62D_4D9B_A5EC_F5E87F2756D5_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Qt5Widgets.dll</td><td/><td/><td>_B2F64216_4FE3_4483_8AEC_FAA15A9EE870_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>qgif.dll</td><td/><td/><td>_9FDB05F9_8218_46F4_92B6_5E1793AF09B8_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>qwindows.dll</td><td/><td/><td>_DFF4380C_0761_49F7_BFFB_0437BDC7DAC6_FILTER</td><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="ISCustomActionReference">
@@ -2536,6 +2557,7 @@
 		<col key="yes" def="s38">Feature_</col>
 		<col key="yes" def="s255">ISMergeModule_</col>
 		<col key="yes" def="i2">Language_</col>
+		<row><td>AlwaysInstall</td><td>Microsoft_VC120_CRT_x64.05F0B5F5_44A8_3793_976B_A4F17AECF92C</td><td>0</td></row>
 	</table>
 
 	<table name="ISFeatureSetupPrerequisites">
@@ -2658,6 +2680,7 @@
 		<col def="s255">Name</col>
 		<col def="S255">Destination</col>
 		<col def="I4">ISAttributes</col>
+		<row><td>Microsoft_VC120_CRT_x64.05F0B5F5_44A8_3793_976B_A4F17AECF92C</td><td>0</td><td>Visual C++ 12.0 CRT (x64)</td><td/><td/></row>
 	</table>
 
 	<table name="ISMergeModuleCfgValues">
@@ -4150,6 +4173,7 @@
 		<row><td>ID_STRING2</td><td>1033</td><td>Shy Shalom</td><td>0</td><td/><td>-1641818255</td></row>
 		<row><td>ID_STRING3</td><td>1033</td><td>Shy Shalom</td><td>0</td><td/><td>-1641838574</td></row>
 		<row><td>ID_STRING4</td><td>1033</td><td>Build and design models for the Happy Cube puzzles</td><td>0</td><td/><td>-1641838574</td></row>
+		<row><td>ID_STRING5</td><td>1033</td><td>Happy Cube Solver Install 2.3.0</td><td>0</td><td/><td>-1641814253</td></row>
 		<row><td>IIDS_UITEXT_FeatureUninstalled</td><td>1033</td><td>This feature will remain uninstalled.</td><td>0</td><td/><td>-1641818255</td></row>
 	</table>
 
@@ -4779,7 +4803,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS</td><td>##IDS_PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS##</td><td/></row>
 		<row><td>ProductCode</td><td>{EC0E49B4-C2F4-4F91-8D86-630E9C9725D0}</td><td/></row>
 		<row><td>ProductName</td><td>Happy Cube Solver</td><td/></row>
-		<row><td>ProductVersion</td><td>2.2.3</td><td/></row>
+		<row><td>ProductVersion</td><td>2.3.0</td><td/></row>
 		<row><td>ProgressType0</td><td>install</td><td/></row>
 		<row><td>ProgressType1</td><td>Installing</td><td/></row>
 		<row><td>ProgressType2</td><td>installed</td><td/></row>

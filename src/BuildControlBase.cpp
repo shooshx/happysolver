@@ -114,6 +114,7 @@ static void makeCylinder(Mesh& mesh, int slices, float radius, float length)
 
 void BuildControlBase::myPaintGL()
 {
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     drawTargets(false);
@@ -263,7 +264,7 @@ void BuildControlBase::makeBuffers()
 
     if (m_bBoxRemove) {
         const Shape& shp = m_doc->getBuild().getTestShape();
-        Vec3 offs(25, 25, 25);
+        Vec3 offs = Vec3(24,24,24) - Vec3(shp.faces[0].ex)/4.0;
         for(int i = 0; i < shp.testQuads.size(); i += 5) {
             Vec3 c = shp.testQuads[i+4];
             if (c.r == 1.0)
@@ -326,11 +327,13 @@ void BuildControlBase::makeBuffers()
                     else
                     {
                         uint tag = 0;
-                        if (valshow == FACE_NORM_SELR) {
+                        if (valshow == FACE_NORM_SELR || valshow == FACE_STRT_SELR) {
                             color = Vec4(0.0f, 0.25f, 0.25f, 0.0f); // red (real color is 1-this, in shader
                             tag = 2;
                         }
-                        else 
+                        else if (valshow == FACE_STRT && m_fSetStrtMode) 
+                            color = Vec4(1.0f, 1.0f, 0.0f, 1.0f); // yellow start tile
+                        else
                             color = Vec4(1.0f, 1.0f, 1.0f, 1.0f); // normal white 
                         realTiles.add(a, b, c, d, color, name, tag);
                         realLines.add(a, b, c, d, Vec4(0.2f, 0.2f, 0.2f, 1.0f));
@@ -437,7 +440,11 @@ bool BuildControlBase::boxedDblClick(int choise, int x, int y)
     int strtOrigDim = -1; // the original dimention of the strt tile
     for (int j = 0; j < 6; ++j) {// check if we're going to step on a start tile
         if (GET_VAL(build.get(bb[j])) == FACE_STRT)
-        { hasStrt = true; strtOrigDim = bb[j].dim; break; }
+        { 
+            hasStrt = true; 
+            strtOrigDim = bb[j].dim;
+            break; 
+        }
     }
         
     int facePut = -1;
@@ -452,7 +459,10 @@ bool BuildControlBase::boxedDblClick(int choise, int x, int y)
         {
             facePut = FACE_NORM; 
             // search for a face with the orginal dimention
-            if (hasStrt && (bb[j].dim == strtOrigDim)) { facePut = FACE_STRT; hasStrt = false; }
+            if (hasStrt && (bb[j].dim == strtOrigDim)) { 
+                facePut = FACE_STRT; 
+                hasStrt = false; 
+            }
             build.set(bb[j], facePut);
             ++build.nFaces;
         }
@@ -463,7 +473,10 @@ bool BuildControlBase::boxedDblClick(int choise, int x, int y)
         if (facePut != -1) // there are faces, but not ones in the original dimention
         {
             for (int j = 0; j < 6; ++j) // choose a face we put NORM in and change it to STRT
-                if (build.get(bb[j]) == FACE_NORM) { build.set(bb[j], FACE_STRT); break; }
+                if (build.get(bb[j]) == FACE_NORM) { 
+                    build.set(bb[j], FACE_STRT); 
+                    break; 
+                }
         }
         else // there are no faces to transfer the STRT to... settle for anything
         {
@@ -713,6 +726,7 @@ bool BuildControlBase::tiledDblClick(int choise)
             }
         }
     }
+    makeBuffers();
     return true;
 }
 

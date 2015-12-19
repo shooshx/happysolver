@@ -1,0 +1,8 @@
+/bin
+/obj
+*.sdf
+*.opensdf
+*.aps
+/.vs
+*.suo
+/GeneratedFiles
