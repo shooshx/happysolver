@@ -23,12 +23,12 @@ manufacture your own puzzles is illegal and against law, since the Happy Cube(c)
 are worldwide protected by US copyrights since 1987. 
 
 Puzzles copyright (C) Dirk Laureyssens 1986-2016. All rights reserved. The Happy Cube puzzles are protected
-with several US copyrights since 1987 (TXU 271722, TX2332525, TX2359816 and many others). They are exclusively
-manufactured by Happy bvba, B-2980 Zoersel, Belgium, and distributed worldwide by partners. Using the puzzle
-snits as well as puzzle piece shapes to create or manufacture your own puzzles is illegal and against law. 
-Happy Cube, Little Genius, Profi Cube and Marble Cube are registered trademarks of Happy bvba, Zoersel, Belgium. 
-If you have any questions concerning the usage of HAPPY materials, please send your detailed request in writing
-to info@happy.be. See http://www.happy.be for more information
+with several US copyrights since 1987 (TXU 271722, TX2332525, TX2359816 and many others). They are 
+exclusively manufactured by Happy bvba, B-2980 Zoersel, Belgium, and distributed worldwide by partners. 
+Using the puzzle snits as well as puzzle piece shapes to create or manufacture your own puzzles is illegal 
+and against law. Happy Cube, Little Genius, Profi Cube and Marble Cube are registered trademarks of 
+Happy bvba, Zoersel, Belgium. If you have any questions concerning the usage of HAPPY materials, please
+send your detailed request in writing to info@happy.be. See http://www.happy.be for more information
 
 Happy Cube is also known as "CubeIt"
 
