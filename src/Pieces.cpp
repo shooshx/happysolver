@@ -39,6 +39,8 @@
 
 //#ifdef _WINDOWS
 #include <QPainter>
+#include <QFile>
+#include <QTextStream>
 //#endif
 
 
@@ -638,7 +640,7 @@ bool PicBucket::loadUnified(const string& filename)
     //    return false;
     QFile iff(filename.c_str());
     if (!iff.open(QIODevice::ReadOnly | QIODevice::Text))
-        return;
+        return false;
     
     shared_ptr<Mesh::CommonData> cd(new Mesh::CommonData);
     double a,b,c;
