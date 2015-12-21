@@ -67,6 +67,7 @@ static int rotationSub(int x, int defRot)
 }
 */
 
+#ifdef _WINDOWS
 void console()
 {
     AllocConsole();
@@ -81,7 +82,7 @@ void console()
     SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), coordInfo);
     SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE),ENABLE_QUICK_EDIT_MODE| ENABLE_EXTENDED_FLAGS | ENABLE_MOUSE_INPUT);
 }
-
+#endif
 
 
 int main(int argc, char *argv[])

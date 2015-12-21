@@ -217,11 +217,18 @@ Add to .pro:
   macx:QMAKE_MAC_SDK = $$MAC_SDK
 
 set arch to x86_64
-run qmake
-upgrade the project file
-in project settings set the derived directory to be relative to project
-use macdeployqt!
+run qmake  /Users/shooshx/Qt5.1.1/5.1.1/clang_64/bin/qmake
 qmake -spec macx-xcode
+upgrade the project file
+in project settings 
+   ??? set the derived directory to be relative to project
+   LLVM C++ Language Dialect to C++11
+        C++ Standard Library to libc++
+   Deployment - OSX Deployment Target to OSX 10.7
+   set icon  
+
+use macdeployqt ./Release/happysolver.app -dmg
+
 
 enrollment id R53LAQ9JG2
 

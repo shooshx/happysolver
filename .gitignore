@@ -3,6 +3,7 @@
 /GeneratedFiles
 /mac_happysolver.build
 /Debug
+/Release
 ui_*
 moc_*
 qrc_*

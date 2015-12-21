@@ -37,9 +37,9 @@
 
 #include <fstream>
 
-#ifdef _WINDOWS
+//#ifdef _WINDOWS
 #include <QPainter>
-#endif
+//#endif
 
 
 using namespace tinyxml2;
@@ -224,7 +224,7 @@ void PicBucket::makeBitmapList()
 
             cpic.makeBoundingPath();
 
-#ifdef _WINDOWS
+//#ifdef _WINDOWS
             // QImage wrapper around the buffer, does not copy of delete the buffer
             QImage qimg(img.bits(), img.width(), img.height(), QImage::Format_ARGB32);
             // this copies the image into the pixmap, avoid move c'tor by having qimg be named variable (r-value)
@@ -244,7 +244,7 @@ void PicBucket::makeBitmapList()
             painter.end();
 
             //cpic.pixmap.save(QString("c:/temp/cpic_%1_%2.png").arg(gind).arg(pind));
-#endif
+//#endif
 
         }
     }
@@ -633,18 +633,26 @@ bool PicBucket::loadUnified(const string& filename)
 {
     distinctMeshes();
 
-    ifstream iff(filename);
-    if (!iff.good())
-        return false;
-    char linebuf[BUF_LEN] = {0};
+    //ifstream iff(filename);
+    //if (!iff.good())
+    //    return false;
+    QFile iff(filename.c_str());
+    if (!iff.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+    
     shared_ptr<Mesh::CommonData> cd(new Mesh::CommonData);
     double a,b,c;
     char *pa;
     Mesh *mesh = NULL;
-    while (!iff.eof())
+
+    QTextStream in(&iff);
+    while (!in.atEnd())
     {
-        iff.getline(linebuf, BUF_LEN);
-        uint len = strnlen(linebuf, BUF_LEN);
+        QString line = in.readLine();
+        QByteArray ba = line.toLatin1();
+        char* linebuf = ba.data();
+
+        uint len = ba.size();
         if (len < 3)
             continue;
         if (linebuf[0] == 'v') { // vertex

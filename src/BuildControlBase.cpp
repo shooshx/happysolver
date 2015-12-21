@@ -32,7 +32,7 @@
 #define GET_Y(name) (((name) >> 9) & 0x7F)
 #define GET_PAGE(name) (((name) >> 16) & 0xFF)
 
-void makeCylinder(Mesh& mesh, int slices, float radius, float length);
+static void makeCylinder(Mesh& mesh, int slices, float radius, float length);
 
 
 BuildControlBase::BuildControlBase(BaseGLWidget* gl, CubeDocBase* doc)

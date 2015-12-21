@@ -1008,7 +1008,7 @@ void Shape::runBFSTree(MatStack& m, const BNode& node, float ang, FAdd& addPiece
 }
 
 template<typename FAdd>
-void Shape::checkNeiTranBFS(MatStack& m, float ang, FAdd& addPiece) const
+void Shape::checkNeiTranBFS(MatStack& m, float ang, const FAdd& addPiece) const
 {
     BNode root(0, -1);
     

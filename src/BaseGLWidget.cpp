@@ -2,6 +2,7 @@
 #include "OpenGL/glGlob.h"
 #include <sstream>
 #include <iostream>
+#include <QtOpenGL>
 using namespace std;
 
 BaseGLWidget::BaseGLWidget()

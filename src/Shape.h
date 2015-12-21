@@ -216,7 +216,7 @@ private:
     void checkNeiTranDFS(MatStack& m, int fi, vector<int>& pass, int lvl, float ang, FAdd& addPiece);
     void transformFromFaceToNei(MatStack& m, int fi, int ni, float baseAng) const; // baseAng is in [0,90]
     template<typename FAdd>
-    void checkNeiTranBFS(MatStack& m, float ang, FAdd& addPiece) const;
+    void checkNeiTranBFS(MatStack& m, float ang, const FAdd& addPiece) const;
     template<typename FAdd>
     void runBFSTree(MatStack& m, const BNode& node, float ang, FAdd& addPiece) const;
     void startNeiTransform(MatStack& m) const;

@@ -6,6 +6,7 @@
 #include "../general.h"
 #include "../Vec.h"
 #include "glGlob.h"
+#include <QtOpenGL>
 
 
 #ifndef GL_CLAMP_TO_EDGE

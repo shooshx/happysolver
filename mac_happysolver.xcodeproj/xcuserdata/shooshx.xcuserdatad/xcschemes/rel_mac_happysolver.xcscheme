@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "CC89E898B976AEEA2972482B"
+               BlueprintIdentifier = "A5F5406CE6ADD38FC6714828"
                BuildableName = "mac_happysolver.app"
                BlueprintName = "mac_happysolver"
                ReferencedContainer = "container:mac_happysolver.xcodeproj">
@@ -32,7 +32,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "CC89E898B976AEEA2972482B"
+            BlueprintIdentifier = "A5F5406CE6ADD38FC6714828"
             BuildableName = "mac_happysolver.app"
             BlueprintName = "mac_happysolver"
             ReferencedContainer = "container:mac_happysolver.xcodeproj">
@@ -44,14 +44,14 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
-      buildConfiguration = "Debug"
+      buildConfiguration = "Release"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "NO"
       allowLocationSimulation = "YES">
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "CC89E898B976AEEA2972482B"
+            BlueprintIdentifier = "A5F5406CE6ADD38FC6714828"
             BuildableName = "mac_happysolver.app"
             BlueprintName = "mac_happysolver"
             ReferencedContainer = "container:mac_happysolver.xcodeproj">
@@ -75,7 +75,7 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "CC89E898B976AEEA2972482B"
+            BlueprintIdentifier = "A5F5406CE6ADD38FC6714828"
             BuildableName = "mac_happysolver.app"
             BlueprintName = "mac_happysolver"
             ReferencedContainer = "container:mac_happysolver.xcodeproj">

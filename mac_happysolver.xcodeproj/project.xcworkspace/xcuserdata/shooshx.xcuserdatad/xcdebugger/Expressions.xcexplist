@@ -3,7 +3,31 @@
    version = "1.0">
    <ContextStates>
       <ContextState
-         contextName = "void AttribParam::set&lt;Vec4&gt;(Vec4 const&amp;) const:ShaderProgram.cpp">
+         contextName = "ShaderProgram::use() const:ShaderProgram.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "g_users">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "SlvPainter::paintPiece(int, BaseGLWidget*, bool) const:SlvPainter.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "m_mats">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "Mesh::paint(bool) const:Mesh.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "m_vtx">
+            </PersistentString>
+            <PersistentString
+               value = "m_normals">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "CubeDoc::OnOpenDocument(QString):CubeDoc.cpp">
@@ -14,7 +38,7 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "Mesh::paint(bool) const:Mesh.cpp">
+         contextName = "void AttribParam::set&lt;Vec4&gt;(Vec4 const&amp;) const:ShaderProgram.cpp">
       </ContextState>
    </ContextStates>
 </VariablesViewState>

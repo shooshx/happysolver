@@ -170,7 +170,7 @@ string readFile(const QString filename) {
         if (!file.open(QIODevice::ReadOnly))
         {
             QMessageBox::critical(g_main, APP_NAME, "error opening file:\n" + filename, QMessageBox::Ok, 0);
-            return false;
+            return string();
         }
     }
 
@@ -220,7 +220,7 @@ bool MainWindow::initialize()
     DlgProg dlgprog(false);
     //PicBucket::mutableInstance().buildMeshes(m_doc->m_conf.disp, &dlgprog);
     //PicBucket::mutableInstance().loadMeshes("C:/projects/cubeGL/happysolver/small_meshes_all.txt");
-    PicBucket::mutableInstance().loadUnified("C:/projects/cubeGL/happysolver/unified_meshes_all.txt");
+    PicBucket::mutableInstance().loadUnified(":/unified_meshes_all.txt");
 
     return true;
 }
@@ -691,8 +691,8 @@ void MainWindow::connectActions()
     connect(m_doc, SIGNAL(slvProgUpdated(int, int)), m_buildGLControl, SLOT(slvProgStatsUpdate(int, int)));
     connect(m_doc, SIGNAL(slvProgUpdated(int, int)), m_picsWidget, SLOT(slvProgStatsUpdate(int, int)));
 
-    connect(m_buildDlg, SIGNAL(zoomChanged(int)), m_glWidget, SLOT(externalZoom(int)));
-    connect(m_modelDlg, SIGNAL(zoomChanged(int)), m_glWidget, SLOT(externalZoom(int)));
+   // connect(m_buildDlg, SIGNAL(zoomChanged(int)), m_glWidget, SLOT(externalZoom(int)));
+   // connect(m_modelDlg, SIGNAL(zoomChanged(int)), m_glWidget, SLOT(externalZoom(int)));
     //connect(m_buildDlg, SIGNAL(zoomChanged(int)), m_buildGLControl, SLOT(changeRotAngle(int)));
     connect(m_modelDlg, SIGNAL(angleChanged(int)), m_buildGLControl, SLOT(changeRotAngle(int)));
 

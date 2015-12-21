@@ -27,7 +27,9 @@ linux-g++ {
 # Input
 HEADERS += src/ActFocusComboBox.h \
            src/AssembleStepDlg.h \
-           src/BuildGLWidget.h \
+           src/BuildControlBase.h \
+           src/BuildGLControl.h \
+           src/BaseGLWidget.h \
            src/BuildHelpDlg.h \
            src/BuildWorld.h \
            src/Configuration.h \
@@ -41,7 +43,8 @@ HEADERS += src/ActFocusComboBox.h \
            src/GrpColorDlg.h \
            src/MainWindow.h \
            src/MemoryMgmt.h \
-           src/ModelGLWidget.h \
+           src/ModelGLControl.h \
+           src/ModelControlBase.h \
            src/ModelHelpDlg.h \
            src/MyFile.h \
            src/MyObject.h \
@@ -58,7 +61,6 @@ HEADERS += src/ActFocusComboBox.h \
            src/SlvPainter.h \
            src/SolveThread.h \
            src/Space3D.h \
-           src/Texture.h \
            src/PicArr.h \
            src/SlvCube.h \
            src/PicsSet.h \
@@ -90,7 +92,9 @@ FORMS += src/about.ui \
          src/MyLib/MyColorPicker.ui
 SOURCES += src/ActFocusComboBox.cpp \
            src/AssembleStepDlg.cpp \
-           src/BuildGLWidget.cpp \
+           src/BaseGLWidget.cpp \
+           src/BuildControlBase.cpp \
+           src/BuildGLControl.cpp \
            src/BuildHelpDlg.cpp \
            src/BuildWorld.cpp \
            src/Configuration.cpp \
@@ -100,31 +104,33 @@ SOURCES += src/ActFocusComboBox.cpp \
            src/general.cpp \
            src/GLWidget.cpp \
            src/GrpColorDlg.cpp \
+           src/ImageBuf.cpp \
            src/main.cpp \
            src/MainWindow.cpp \
-           src/ModelGLWidget.cpp \
+           src/Mat.cpp \
+           src/Mesh.cpp \
+           src/ModelControlBase.cpp \
+           src/ModelGLControl.cpp \
            src/ModelHelpDlg.cpp \
            src/MyFile.cpp \
            src/MyObject.cpp \
            src/MyPolygon.cpp \
+           src/NoiseGenerator.cpp \
+           src/ObjExport.cpp \
            src/OptionsDlg.cpp \
+           src/PicArr.cpp \
            src/PicPainter.cpp \
            src/PicsSelectWidget.cpp \
+           src/PicsSet.cpp \
            src/Pieces.cpp \
            src/Shape.cpp \
            src/SIDlg.cpp \
+           src/SlvCube.cpp \
            src/Solutions.cpp \
-           src/SolveDlg.cpp \
            src/SlvPainter.cpp \
+           src/SolveDlg.cpp \
            src/SolveThread.cpp \
            src/Space3D.cpp \
-           src/PicArr.cpp \
-           src/SlvCube.cpp \
-           src/PicsSet.cpp \
-           src/NoiseGenerator.cpp \
-           src/Mat.cpp \
-           src/ObjExport.cpp \
-           src/Mesh.cpp \
            src/OpenGL/GLTexture.cpp \
            src/OpenGL/ShaderProgram.cpp \
            src/OpenGL/Shaders.cpp \
@@ -134,4 +140,4 @@ SOURCES += src/ActFocusComboBox.cpp \
            src/MyLib/QtAdd/qtcolortriangle.cpp \
            src/tinyxml/tinyxml2.cpp \
            src/sglu/project.cpp 
-RESOURCES += resources.qrc
+RESOURCES += src/qt/resources.qrc

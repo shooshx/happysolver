@@ -19,7 +19,7 @@
 #include <QAction>
 #include <QActionEvent>
 
-
+ 
 void ActFocusComboBox::updateList()
 {
 	SlvData dat = m_defaultAction->data().value<SlvData>();

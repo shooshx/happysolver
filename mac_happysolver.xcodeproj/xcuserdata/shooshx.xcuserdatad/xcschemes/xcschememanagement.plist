@@ -9,6 +9,11 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>rel_mac_happysolver.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
@@ -17,7 +22,17 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>A5F5406CE6ADD38FC6714828</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>CC89E898B976AEEA2972482B</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>F629A97743B830933952058D</key>
 		<dict>
 			<key>primary</key>
 			<true/>

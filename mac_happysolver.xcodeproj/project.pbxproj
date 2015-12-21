@@ -6,247 +6,290 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		F629A97743B830933952058D /* Qt Preprocess */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 6CC3B5D2136C7CD6A5CF5A59 /* Build configuration list for PBXNativeTarget "mac_happysolver" */;
+			buildPhases = (
+				5E618435888B9D49F8540165 /* Qt Qmake */,
+				7EF0942E79C014DCEC8976BC /* Qt Preprocessors */,
+			);
+			dependencies = (
+			);
+			name = "Qt Preprocess";
+			productName = "Qt Preprocess";
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
-		096DEDA3EF92772BBBAE18CB /* CubeDoc.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = EB7189CF1DA5A105A670FD84 /* CubeDoc.cpp */; settings = {ATTRIBUTES = (); }; };
-		0C6D4628EE0B0D1479A20551 /* AGL.framework in Link Binary With Libraries */ = {isa = PBXBuildFile; fileRef = C6766F86E49E9C8701C8E637 /* AGL.framework */; };
-		0E0C0757D2C86F86C45BCE84 /* SIDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = E1F65FB30504183D3D4D825E /* SIDlg.cpp */; settings = {ATTRIBUTES = (); }; };
-		0F97E9F90DE1EEB8871FD73B /* OptionsDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 15AF03C9FB24AB319D5C52A4 /* OptionsDlg.cpp */; settings = {ATTRIBUTES = (); }; };
-		19801083DF3805006A3CB252 /* moc_qtcolortriangle.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 0D73F3C5668AA643A78F8C45 /* moc_qtcolortriangle.cpp */; settings = {ATTRIBUTES = (); }; };
-		1D875E9A37347168BC97011B /* moc_SolveDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 07EAAFD1DB768F5B06F76D81 /* moc_SolveDlg.cpp */; settings = {ATTRIBUTES = (); }; };
-		1DD4092B25149B7493B2C800 /* Space3D.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 6654AE3C54A2F79C186B1662 /* Space3D.cpp */; settings = {ATTRIBUTES = (); }; };
-		1F5377F9C8A3D23000C6B792 /* MyInputDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = C6BAC8972BBDAA972444727D /* MyInputDlg.cpp */; settings = {ATTRIBUTES = (); }; };
-		1FADB1E8DDF40B35761C8454 /* SlvCube.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 5A3A4A7D14A36F987D06B472 /* SlvCube.cpp */; settings = {ATTRIBUTES = (); }; };
-		20DF7278846E28C660A005C7 /* moc_ActFocusComboBox.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 44486FACD36221F3363D15BA /* moc_ActFocusComboBox.cpp */; settings = {ATTRIBUTES = (); }; };
-		22734E26637A232FB64B50A2 /* moc_BuildGLWidget.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 3BCE58290C400B4B5F86E022 /* moc_BuildGLWidget.cpp */; settings = {ATTRIBUTES = (); }; };
-		244CED95A5CB24E1319D783E /* QtCore.framework in Link Binary With Libraries */ = {isa = PBXBuildFile; fileRef = 625B639177FB5EE13A298F27 /* QtCore.framework */; };
-		294633F308296305B3510995 /* QtWidgets.framework in Link Binary With Libraries */ = {isa = PBXBuildFile; fileRef = 893B0E316971AD514C499B6B /* QtWidgets.framework */; };
-		35EF3EE170245FDB9E5225FC /* DataWidgets.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = F05E45E5137DD187BD98E7F7 /* DataWidgets.cpp */; settings = {ATTRIBUTES = (); }; };
-		37781462E5DE91041B7F5799 /* Shaders.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 18D6303E1DF2C0C946080733 /* Shaders.cpp */; settings = {ATTRIBUTES = (); }; };
-		3E415DA51A8DB5C0376538F9 /* Solutions.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 25B751BE915FC92E10CA94D9 /* Solutions.cpp */; settings = {ATTRIBUTES = (); }; };
-		411D6A66C1BE6D3723C868E8 /* PicArr.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 5FAC1C4CB42900082CB7C0BC /* PicArr.cpp */; settings = {ATTRIBUTES = (); }; };
-		440774CDE1D673838C0113DB /* moc_AssembleStepDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 3D57B6AD1CD01E216D2EA622 /* moc_AssembleStepDlg.cpp */; settings = {ATTRIBUTES = (); }; };
-		4673EF72D6A34BE8BA53B335 /* moc_DataWidgets.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 5AA2263CFF6F8F0D1E94C792 /* moc_DataWidgets.cpp */; settings = {ATTRIBUTES = (); }; };
-		46EC2FFE3CF896C7F01CC623 /* moc_GLWidget.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 1B676BCE814D278338617BB7 /* moc_GLWidget.cpp */; settings = {ATTRIBUTES = (); }; };
-		480CBDC24A88007C95DE093C /* general.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 51F526CCE9495E25732E59EB /* general.cpp */; settings = {ATTRIBUTES = (); }; };
-		49E427E8B678B8EADA17BFA9 /* GLTexture.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = F647EEDCD44FF43E39B991D2 /* GLTexture.cpp */; settings = {ATTRIBUTES = (); }; };
-		4FD0A6480B131F3592D31373 /* BuildGLWidget.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = BF66A4DA0D5DE7D0B471DDB9 /* BuildGLWidget.cpp */; settings = {ATTRIBUTES = (); }; };
-		543E36727C54BE88767BAB0A /* GrpColorDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 70FB13F0782AE7544B7F604F /* GrpColorDlg.cpp */; settings = {ATTRIBUTES = (); }; };
-		5AEE7B8EC6F50DB9EDC35AC3 /* moc_GrpColorDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = F562DBFC7DD4D9B3620DAB5E /* moc_GrpColorDlg.cpp */; settings = {ATTRIBUTES = (); }; };
-		5D1E3E8A76BEB9F97657076C /* GLWidget.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 4853F391925B4262B0F08748 /* GLWidget.cpp */; settings = {ATTRIBUTES = (); }; };
-		5DA20DDC4A2741EF12E7D72C /* ObjExport.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 92EC94FE3E6CC0E42CE85BCC /* ObjExport.cpp */; settings = {ATTRIBUTES = (); }; };
-		5DED32F71E2FE3330480EAB7 /* moc_ModelGLWidget.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 42CD1BE7551EDF343F972AEF /* moc_ModelGLWidget.cpp */; settings = {ATTRIBUTES = (); }; };
-		64C9FBE277ECF8F94F4BDDF8 /* MyPolygon.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 2667976E2B02436274D3229F /* MyPolygon.cpp */; settings = {ATTRIBUTES = (); }; };
-		723235EB75FF370972A428F1 /* MyColorPicker.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 39889CE98CF66B10DEF9F4C8 /* MyColorPicker.cpp */; settings = {ATTRIBUTES = (); }; };
-		73479B785F7F5AE6342375CA /* moc_CubeDoc.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 3F0663AD809DDAD0A7ED7AB9 /* moc_CubeDoc.cpp */; settings = {ATTRIBUTES = (); }; };
-		765F8F9A369FC70EB13BC24C /* BuildWorld.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 2BD4C2C56498BBF65133593B /* BuildWorld.cpp */; settings = {ATTRIBUTES = (); }; };
-		7939434C4B64F8B3CA141A74 /* Configuration.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 4C574E686807544C394ACDCB /* Configuration.cpp */; settings = {ATTRIBUTES = (); }; };
-		79DF4C7E2DA9E379C806CC63 /* moc_SIDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 926A7D54EF396871D73E4D1F /* moc_SIDlg.cpp */; settings = {ATTRIBUTES = (); }; };
-		7EA64FE941764E3B603E310B /* moc_MyColorPicker.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 238D406C5D6499EDB6396C3E /* moc_MyColorPicker.cpp */; settings = {ATTRIBUTES = (); }; };
-		7FD688DCA8992721CDC0FF45 /* ShaderProgram.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 567F8B90108A52106E8CA167 /* ShaderProgram.cpp */; settings = {ATTRIBUTES = (); }; };
-		82A433E5F65863FAAF4BDC39 /* QtOpenGL.framework in Link Binary With Libraries */ = {isa = PBXBuildFile; fileRef = 49B35B64BE1795E447D9F01F /* QtOpenGL.framework */; };
-		83F099913C247E1428184083 /* NoiseGenerator.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 225B3BF959C5C61289BD39BD /* NoiseGenerator.cpp */; settings = {ATTRIBUTES = (); }; };
-		86CCFB86488AD4DC85312AD1 /* ModelHelpDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 77A422C94EBC267F5921FB26 /* ModelHelpDlg.cpp */; settings = {ATTRIBUTES = (); }; };
-		8BABCD30AED4AFE02B804323 /* tinyxml2.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = EE1199DADDDE791DDC1FAB71 /* tinyxml2.cpp */; settings = {ATTRIBUTES = (); }; };
-		939C1D430CDE200594FAFBBB /* AssembleStepDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = F1A89462469614E1777A97C5 /* AssembleStepDlg.cpp */; settings = {ATTRIBUTES = (); }; };
-		939FE281492BAFC20C030819 /* PicPainter.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 76F7EE759804A762F8F468CE /* PicPainter.cpp */; settings = {ATTRIBUTES = (); }; };
-		959E2EC9BF5173F35A4598C1 /* SolveDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 654B08162A754AFF568DD4F6 /* SolveDlg.cpp */; settings = {ATTRIBUTES = (); }; };
-		9A746CB8826245311213860D /* Mesh.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 0D8BDFAF2848D954AFA86F26 /* Mesh.cpp */; settings = {ATTRIBUTES = (); }; };
-		9FE76FE52CDA37B3F529F879 /* QtGui.framework in Link Binary With Libraries */ = {isa = PBXBuildFile; fileRef = 16CC7C7C5EB4BCCA8059142B /* QtGui.framework */; };
-		A08C3D6A915DE383420B2508 /* ParamBase.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 86F26C0FD83511AA56AFED42 /* ParamBase.cpp */; settings = {ATTRIBUTES = (); }; };
-		A2A5E40AB56F90010F56737B /* moc_OptionsDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = EBF8815A7CE6F88E0268F87C /* moc_OptionsDlg.cpp */; settings = {ATTRIBUTES = (); }; };
-		A4582233947FB7FB159573BB /* moc_MainWindow.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 26827F2FC4DC4FBB23DE8287 /* moc_MainWindow.cpp */; settings = {ATTRIBUTES = (); }; };
-		A6EFA23AACA1DF3E139F1B46 /* moc_BuildHelpDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = D387E7DE7C7851E1EFC27820 /* moc_BuildHelpDlg.cpp */; settings = {ATTRIBUTES = (); }; };
-		AAC1168526D0C37A3F415917 /* MainWindow.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 1C0B64226A129D35F02DC004 /* MainWindow.cpp */; settings = {ATTRIBUTES = (); }; };
-		AD92B8EBE687BCAD169B467A /* moc_PicsSelectWidget.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 469AB6D2DAAC32639E2AE0AC /* moc_PicsSelectWidget.cpp */; settings = {ATTRIBUTES = (); }; };
-		B508B6686EDCBDAB1359FDFF /* moc_ParamBase.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = CEB4C41A03E947D515B87C0C /* moc_ParamBase.cpp */; settings = {ATTRIBUTES = (); }; };
-		B557C9B411A46560C8864F3F /* PicsSelectWidget.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 36D95234C717B4BD3FB4777F /* PicsSelectWidget.cpp */; settings = {ATTRIBUTES = (); }; };
-		B75CA489271036B1D7916AD6 /* moc_MyDialog.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = BF85285BEDA3863C6F7040EF /* moc_MyDialog.cpp */; settings = {ATTRIBUTES = (); }; };
-		BA8AEADC1988F2D0833AA1FB /* Shape.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 58AC82F7B76D588E6B234F8C /* Shape.cpp */; settings = {ATTRIBUTES = (); }; };
-		BCBAC2B2172143F920A6B692 /* Mat.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 03E7140E2B9DEC3D8D860ABC /* Mat.cpp */; settings = {ATTRIBUTES = (); }; };
-		BCEF71E1EDFB18DA77DC750B /* OpenGL.framework in Link Binary With Libraries */ = {isa = PBXBuildFile; fileRef = DA18A6831232F53228631AD1 /* OpenGL.framework */; };
-		CC2FDEDF42C5E23D36452611 /* project.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = A5BB6B6A9CC15C35CDB795E9 /* project.cpp */; settings = {ATTRIBUTES = (); }; };
-		CEB4B82A75E7D55D16BE0E51 /* moc_SolveThread.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = FA257F15582CB0B4EA3BF6E4 /* moc_SolveThread.cpp */; settings = {ATTRIBUTES = (); }; };
-		D20F9666583B09CD3CBDD985 /* MyObject.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 81CC3D9F977FAFABAC3709A5 /* MyObject.cpp */; settings = {ATTRIBUTES = (); }; };
-		D303516168D59210B1EC31DE /* SlvPainter.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 4940C2C9005F9D976FCFF37B /* SlvPainter.cpp */; settings = {ATTRIBUTES = (); }; };
-		DAE08C7DA7F2049AD816E50C /* BuildHelpDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 5B55D91FC6BE9568579F6B87 /* BuildHelpDlg.cpp */; settings = {ATTRIBUTES = (); }; };
-		DDB23D05F00310EFE948C659 /* QtXml.framework in Link Binary With Libraries */ = {isa = PBXBuildFile; fileRef = 1AA1F26B27743C80B9545449 /* QtXml.framework */; };
-		DFF69535BBCA46D0F570F19A /* MyFile.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 07A4D1B1CF3094AF0C1969D3 /* MyFile.cpp */; settings = {ATTRIBUTES = (); }; };
-		E6FE771C31BD888969BD1E79 /* qrc_resources.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 43657A1495917FFB693BCFFE /* qrc_resources.cpp */; settings = {ATTRIBUTES = (); }; };
-		E81C55CE90A94386879C3E3F /* ActFocusComboBox.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 5781941D499A212639609EC5 /* ActFocusComboBox.cpp */; settings = {ATTRIBUTES = (); }; };
-		EBCD2A9E322D2197EA03E035 /* ModelGLWidget.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 792B06B7AADECB4BED259D2F /* ModelGLWidget.cpp */; settings = {ATTRIBUTES = (); }; };
-		EE976BA8F1666436DCB9BCC2 /* PicsSet.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 9FAA78DDFB3509C58802587F /* PicsSet.cpp */; settings = {ATTRIBUTES = (); }; };
-		EF11D12AE9A044D2DCCD5F97 /* Cube.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 1E5AD5998E302E7F4ADB466F /* Cube.cpp */; settings = {ATTRIBUTES = (); }; };
-		F5FE44A59BD446D0C767862E /* qtcolortriangle.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 995B0A03B8BB49151630143D /* qtcolortriangle.cpp */; settings = {ATTRIBUTES = (); }; };
-		F7F567D56C0724D1D8F1BA9B /* moc_MyInputDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 2EC5688DD9071A853848E1D8 /* moc_MyInputDlg.cpp */; settings = {ATTRIBUTES = (); }; };
-		FBABB8CCC8AF12FC8D11D99B /* moc_ModelHelpDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = C0FA5B1E26E9D8C22852506D /* moc_ModelHelpDlg.cpp */; settings = {ATTRIBUTES = (); }; };
-		FC1A3BB34761774A41A4560A /* Pieces.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 743D993171BC89CF1EB19AC6 /* Pieces.cpp */; settings = {ATTRIBUTES = (); }; };
-		FD1638E377D97C82BDB438FB /* main.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 7EC3C68A81EFFF79B6CA22AC /* main.cpp */; settings = {ATTRIBUTES = (); }; };
-		FFA01E53692EF9B717ED896A /* SolveThread.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 0671E3B0032AC39873F68F45 /* SolveThread.cpp */; settings = {ATTRIBUTES = (); }; };
+		0140267446CBE44EE99BF73E /* SlvPainter.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = BF0631935C62E4FF722DDB9A /* SlvPainter.cpp */; settings = {ATTRIBUTES = (); }; };
+		026EC9D6D2DC7D1860341426 /* moc_MyDialog.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 35CDB347D789CB6A0E448BF9 /* moc_MyDialog.cpp */; settings = {ATTRIBUTES = (); }; };
+		0A4382120F4AB38CEBDC3D7C /* DataWidgets.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = EF855C760F0995EC09E7C07B /* DataWidgets.cpp */; settings = {ATTRIBUTES = (); }; };
+		0F63258AC05E78324626E108 /* general.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 22E92D1236A5CB363CED810A /* general.cpp */; settings = {ATTRIBUTES = (); }; };
+		137CB4B250CE070ABCB55571 /* ModelGLControl.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 3A94FDF56E71EB9E85B1D077 /* ModelGLControl.cpp */; settings = {ATTRIBUTES = (); }; };
+		14813376175FD6B07D3099F3 /* GLTexture.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = B8864FBE6311BE35B0BF35E2 /* GLTexture.cpp */; settings = {ATTRIBUTES = (); }; };
+		17492934D1F1BCB0C2725FAA /* moc_GLWidget.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = C55E141E2E7819F03FF5E332 /* moc_GLWidget.cpp */; settings = {ATTRIBUTES = (); }; };
+		24BDF14ADD519C4EC48840DF /* SlvCube.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 10D00D8FB21A7EDDCA1B236C /* SlvCube.cpp */; settings = {ATTRIBUTES = (); }; };
+		27DE826F1C277A3B00675792 /* mac_icon.icns in Copy Bundle Resources */ = {isa = PBXBuildFile; fileRef = AF804AE29DC3004D8E222AF1 /* mac_icon.icns */; };
+		2A8EB4B0D7D5DBDA2C4BFB6B /* PicsSet.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 4D37EDF6AF2DB423110FE6BD /* PicsSet.cpp */; settings = {ATTRIBUTES = (); }; };
+		2B51E1FD4FDD70DE83C4A2BB /* BuildControlBase.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = BCE64F2BC75FE9497AE7BB4F /* BuildControlBase.cpp */; settings = {ATTRIBUTES = (); }; };
+		35C004C2619BC24AE64B3A99 /* moc_BuildHelpDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 8946577C6F7D022F18A08AE5 /* moc_BuildHelpDlg.cpp */; settings = {ATTRIBUTES = (); }; };
+		38E085E504388AED05AC96A3 /* OptionsDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 2FA88816795CA1F6EC6A7E85 /* OptionsDlg.cpp */; settings = {ATTRIBUTES = (); }; };
+		3F89E3242FD429251D00E50F /* SIDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 629B5587E81A551EF5C193C1 /* SIDlg.cpp */; settings = {ATTRIBUTES = (); }; };
+		439E3A73471FDF787BF8276B /* qrc_resources.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 4A01C35A6C27EB827C06F653 /* qrc_resources.cpp */; settings = {ATTRIBUTES = (); }; };
+		4564504EB4889A509123EA3E /* CubeDoc.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 6A6D744ABF555D86C6ED7771 /* CubeDoc.cpp */; settings = {ATTRIBUTES = (); }; };
+		4677F9622A855808E11E438D /* moc_OptionsDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 57606894AC2AAFD0ADBF7515 /* moc_OptionsDlg.cpp */; settings = {ATTRIBUTES = (); }; };
+		4E5ABC97B7AB5C54EAD98560 /* MyFile.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 457143EE0643CDD4DBE7B68E /* MyFile.cpp */; settings = {ATTRIBUTES = (); }; };
+		591648E0C89D63C5A3CFA3FF /* MyInputDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 764DD77A09726542992671A6 /* MyInputDlg.cpp */; settings = {ATTRIBUTES = (); }; };
+		5A5A83D875DBCB31FFEB8F8E /* ParamBase.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 6117A1D221E8841B2A127658 /* ParamBase.cpp */; settings = {ATTRIBUTES = (); }; };
+		5DBDB56840C325D7E6C069A7 /* MyObject.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 74F541B5D13D5FE3D58A315D /* MyObject.cpp */; settings = {ATTRIBUTES = (); }; };
+		5E82309FC5EA37439D5B8B9D /* moc_MyInputDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = FDCF1434ECE0C7FBB08535A8 /* moc_MyInputDlg.cpp */; settings = {ATTRIBUTES = (); }; };
+		5EE93FAD561075F3AC0CDBF9 /* QtWidgets.framework in Link Binary With Libraries */ = {isa = PBXBuildFile; fileRef = 40F09C785423A26962D9C79E /* QtWidgets.framework */; };
+		6163DCEA81B1A63FEE746AE9 /* moc_ActFocusComboBox.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 8D2C92B8E651AEDFE0C6BF71 /* moc_ActFocusComboBox.cpp */; settings = {ATTRIBUTES = (); }; };
+		616B78BE66E731F5AAF19453 /* MainWindow.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 799FFA6175A8DCDD8F731B8D /* MainWindow.cpp */; settings = {ATTRIBUTES = (); }; };
+		634100F86FB422D5C9BFAD8D /* QtGui.framework in Link Binary With Libraries */ = {isa = PBXBuildFile; fileRef = AC6343512C3295BDFC212CA4 /* QtGui.framework */; };
+		63E07A61241389FE4A75FCE8 /* ImageBuf.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 229780C7FF4A87E2F2482293 /* ImageBuf.cpp */; settings = {ATTRIBUTES = (); }; };
+		68600C4CD9B77C980E814344 /* Configuration.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = ED7002CA99DB08FC1CA02D6E /* Configuration.cpp */; settings = {ATTRIBUTES = (); }; };
+		7006686F198281939B04D052 /* moc_SolveDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = AC49BDC47F64A8C135437637 /* moc_SolveDlg.cpp */; settings = {ATTRIBUTES = (); }; };
+		73018F46DF7AAE1D2AEC8465 /* Shaders.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 24EDBD4C854A09F62D427ADF /* Shaders.cpp */; settings = {ATTRIBUTES = (); }; };
+		732E05EDB0826B65537F0E9E /* moc_SolveThread.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = DB569F6641D8E2FEBACA66CB /* moc_SolveThread.cpp */; settings = {ATTRIBUTES = (); }; };
+		76099ED545DFC1EA9AC01374 /* BuildHelpDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = A8C3467DA46BD608553D2F23 /* BuildHelpDlg.cpp */; settings = {ATTRIBUTES = (); }; };
+		7660A8A8518009AC992FFA09 /* moc_MyColorPicker.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 3E7131C99D54E25D7515B8BF /* moc_MyColorPicker.cpp */; settings = {ATTRIBUTES = (); }; };
+		76D0375F48F773173F91759D /* moc_ModelHelpDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 1BA5307F9622BE899B35D427 /* moc_ModelHelpDlg.cpp */; settings = {ATTRIBUTES = (); }; };
+		7BFC5C1FAE3732AF97D97FF9 /* moc_qtcolortriangle.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 993A321501F249896AFBA0A0 /* moc_qtcolortriangle.cpp */; settings = {ATTRIBUTES = (); }; };
+		7E80F7FA2F375D0B0A00398E /* AssembleStepDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 97396181D4F21C3FD0DA8629 /* AssembleStepDlg.cpp */; settings = {ATTRIBUTES = (); }; };
+		7F94941E59E3B94E9E47AC00 /* ObjExport.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = BB08CEC055A497D58A596F56 /* ObjExport.cpp */; settings = {ATTRIBUTES = (); }; };
+		8085BA6FF6AD5A99FAF1CC55 /* Solutions.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 2394A34B3DF28E544C9E410D /* Solutions.cpp */; settings = {ATTRIBUTES = (); }; };
+		8504A1B1469CB69C01C8B76F /* QtXml.framework in Link Binary With Libraries */ = {isa = PBXBuildFile; fileRef = 7489557FC166BCE246374B7E /* QtXml.framework */; };
+		8771A8C96E9C391044035D99 /* OpenGL.framework in Link Binary With Libraries */ = {isa = PBXBuildFile; fileRef = D4B32C2222F82AC56BADEB21 /* OpenGL.framework */; };
+		8B0D5821F81C31A05FACA5CC /* project.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = B2E7F2DF446D83F836832FA9 /* project.cpp */; settings = {ATTRIBUTES = (); }; };
+		8B42D147F875EB2B64533DE3 /* QtCore.framework in Link Binary With Libraries */ = {isa = PBXBuildFile; fileRef = 32125DB39DFF65768A1AFD45 /* QtCore.framework */; };
+		8C43C8AAD9EFC216224B471F /* moc_PicsSelectWidget.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = DD743EB501F1F58D30A3BA5F /* moc_PicsSelectWidget.cpp */; settings = {ATTRIBUTES = (); }; };
+		8C7B0C23414F7B81EE8E23A5 /* PicArr.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 78323F11B6F14786D89EEFB3 /* PicArr.cpp */; settings = {ATTRIBUTES = (); }; };
+		8D267F2E4776F0ECA2F49DC8 /* IOKit.framework in Link Binary With Libraries */ = {isa = PBXBuildFile; fileRef = A1A67BEAA744704B29168D39 /* IOKit.framework */; };
+		8D64D65D817A0D0B225DFEE2 /* moc_AssembleStepDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = E3476D3E4E4434EE1FCAFCFB /* moc_AssembleStepDlg.cpp */; settings = {ATTRIBUTES = (); }; };
+		8F115AEDF0F5887A4C3DB2B0 /* SolveDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 82516546DEE30EE76A6BB295 /* SolveDlg.cpp */; settings = {ATTRIBUTES = (); }; };
+		8FB3B7BD7729C8DF7710CCCB /* moc_MainWindow.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 8C31057BA8CE36BBFCCEE07E /* moc_MainWindow.cpp */; settings = {ATTRIBUTES = (); }; };
+		932FBE4E3D6B3B580F108312 /* NoiseGenerator.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = E7CB2FC2F9274F03193B1A32 /* NoiseGenerator.cpp */; settings = {ATTRIBUTES = (); }; };
+		98509BFDDC78FAA183A569FB /* moc_CubeDoc.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 8279374DEEF53FC8EB977E93 /* moc_CubeDoc.cpp */; settings = {ATTRIBUTES = (); }; };
+		9D4613BE01D414CD969A2616 /* Pieces.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = E41216AA41DCA59F6234B937 /* Pieces.cpp */; settings = {ATTRIBUTES = (); }; };
+		A26EAF4ADF9808CD6A79F2C9 /* ActFocusComboBox.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = BDCA2FD29997169C466A0BEE /* ActFocusComboBox.cpp */; settings = {ATTRIBUTES = (); }; };
+		A99B2AA0F9CBBDD12BA126A4 /* DiskArbitration.framework in Link Binary With Libraries */ = {isa = PBXBuildFile; fileRef = 2B774D8E4178765CE52EAAF5 /* DiskArbitration.framework */; };
+		AC52E0EE08413F34AD86A5C4 /* PicsSelectWidget.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 5A1249A86CD37828F5018203 /* PicsSelectWidget.cpp */; settings = {ATTRIBUTES = (); }; };
+		ADEED5EA5697404EB05BD239 /* ModelHelpDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 08BA963320C84D1380C15D21 /* ModelHelpDlg.cpp */; settings = {ATTRIBUTES = (); }; };
+		AE03AB0D1BF2531C6190AF02 /* moc_GrpColorDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = C9744D03F267EC714B90DACA /* moc_GrpColorDlg.cpp */; settings = {ATTRIBUTES = (); }; };
+		AFC7A61CBE80DDCD410061F1 /* Mat.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = E253CF81580A6B0444067F04 /* Mat.cpp */; settings = {ATTRIBUTES = (); }; };
+		B5E4E000C9159BBF35B9028E /* moc_ParamBase.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 348AAD37440C2B2D1E4EA834 /* moc_ParamBase.cpp */; settings = {ATTRIBUTES = (); }; };
+		B99D2698B508231FF49239E4 /* ModelControlBase.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 303914966E7D0582250D0DB9 /* ModelControlBase.cpp */; settings = {ATTRIBUTES = (); }; };
+		BAF36A0EE76CBAA4E8528438 /* Space3D.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 469ABDEA9CFF658E20A704E8 /* Space3D.cpp */; settings = {ATTRIBUTES = (); }; };
+		BE486F18271BB015EE5CE7C6 /* BaseGLWidget.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 1B5A3363C62689B1D7427E27 /* BaseGLWidget.cpp */; settings = {ATTRIBUTES = (); }; };
+		CCE63513293FF00E0D2AA61B /* MyColorPicker.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 366CFE9E9A9F6B289975EC0C /* MyColorPicker.cpp */; settings = {ATTRIBUTES = (); }; };
+		CF1B0F0828C2922FD4B17F1C /* moc_ModelGLControl.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 5758A868AF3AC5262B15BAE8 /* moc_ModelGLControl.cpp */; settings = {ATTRIBUTES = (); }; };
+		CFE56C37E9CA61B136CD0D38 /* qtcolortriangle.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 509080CBA2C208BA04EC4990 /* qtcolortriangle.cpp */; settings = {ATTRIBUTES = (); }; };
+		D11901A3EB467ECE73F5AE78 /* GrpColorDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 954C458166D4A2D37E592FE2 /* GrpColorDlg.cpp */; settings = {ATTRIBUTES = (); }; };
+		D1D911D6E42F76FD5A180E67 /* main.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 8AEEB020D25E02477FF93C92 /* main.cpp */; settings = {ATTRIBUTES = (); }; };
+		D4456D88456422C671C36103 /* moc_BuildGLControl.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 8842719157F2BF81C21FF6AB /* moc_BuildGLControl.cpp */; settings = {ATTRIBUTES = (); }; };
+		D9555649165B4214B9312B90 /* moc_DataWidgets.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 297009335C352F97DC3C54E9 /* moc_DataWidgets.cpp */; settings = {ATTRIBUTES = (); }; };
+		DC558FB0C94C92583BF18BBA /* MyPolygon.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 0277331854F30A69CA249763 /* MyPolygon.cpp */; settings = {ATTRIBUTES = (); }; };
+		DCB604C4C3BF2BCC1AF70BD6 /* moc_SIDlg.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 0AFE251897D43C2B37CCB643 /* moc_SIDlg.cpp */; settings = {ATTRIBUTES = (); }; };
+		DF20BEA79C2CDE7678B91869 /* Cube.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 840CB7C50FCDFAF0A8B76752 /* Cube.cpp */; settings = {ATTRIBUTES = (); }; };
+		E378B5071E94580500513136 /* SolveThread.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = B20AEB2EE8443884F15F9E2B /* SolveThread.cpp */; settings = {ATTRIBUTES = (); }; };
+		E45E51A644D5FC9F942ECE55 /* AGL.framework in Link Binary With Libraries */ = {isa = PBXBuildFile; fileRef = 8D9815BDB5BD9F90D2BC05C5 /* AGL.framework */; };
+		E87C132A0C79791CD1C52142 /* BuildGLControl.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = E55F0606CCB493B3A3E2ABA4 /* BuildGLControl.cpp */; settings = {ATTRIBUTES = (); }; };
+		E9E4FE41C2349BE5D293B004 /* tinyxml2.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = C8E674094B4F3CFE5D70DB3F /* tinyxml2.cpp */; settings = {ATTRIBUTES = (); }; };
+		EA3649AF0E630E5F6534084B /* ShaderProgram.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 2863DAFB0872ED85AEAB6C63 /* ShaderProgram.cpp */; settings = {ATTRIBUTES = (); }; };
+		F3384554BA6B3B0CD0182B11 /* QtOpenGL.framework in Link Binary With Libraries */ = {isa = PBXBuildFile; fileRef = 9C593738E0EB0601E166B5FD /* QtOpenGL.framework */; };
+		F35A098F49A16E39C7B3B094 /* Shape.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 1F12520A09DB21832DB23181 /* Shape.cpp */; settings = {ATTRIBUTES = (); }; };
+		F6F1CC6F285E9AF19095D395 /* Mesh.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = EFD5631C2B48E10E4453C420 /* Mesh.cpp */; settings = {ATTRIBUTES = (); }; };
+		F8B31900DA2D949F2E5DB83F /* PicPainter.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = DAA8D8CB4EAAE9A79B8D03E3 /* PicPainter.cpp */; settings = {ATTRIBUTES = (); }; };
+		FB2EA7B8789F9FCEACECB849 /* GLWidget.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = D608641C2D71B4019CB05295 /* GLWidget.cpp */; settings = {ATTRIBUTES = (); }; };
+		FB51E0A486E458E5363A35F7 /* BuildWorld.cpp in Compile Sources */ = {isa = PBXBuildFile; fileRef = 6649BAE18DCB2DC365AA7E79 /* BuildWorld.cpp */; settings = {ATTRIBUTES = (); }; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		27DE826E1C27773500675792 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6DB9C3763D02B1415CD9D565 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F629A97743B830933952058D;
+			remoteInfo = "Qt Preprocess";
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
-		006286297F013F37150FD208 /* qtcolortriangle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = qtcolortriangle.h; path = src/MyLib/QtAdd/qtcolortriangle.h; sourceTree = "<absolute>"; };
-		03E7140E2B9DEC3D8D860ABC /* Mat.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Mat.cpp; path = src/Mat.cpp; sourceTree = "<absolute>"; };
-		04222BC2EB1D1B8A05EA48F1 /* DataWidgets.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DataWidgets.h; path = src/DataWidgets.h; sourceTree = "<absolute>"; };
-		0629137BD31DF2E92137086B /* SlvCube.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SlvCube.h; path = src/SlvCube.h; sourceTree = "<absolute>"; };
-		0671E3B0032AC39873F68F45 /* SolveThread.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = SolveThread.cpp; path = src/SolveThread.cpp; sourceTree = "<absolute>"; };
-		07A4D1B1CF3094AF0C1969D3 /* MyFile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MyFile.cpp; path = src/MyFile.cpp; sourceTree = "<absolute>"; };
-		07EAAFD1DB768F5B06F76D81 /* moc_SolveDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moc_SolveDlg.cpp; sourceTree = "<absolute>"; };
-		0873ED10512EA0A1EEF07016 /* MyDialog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MyDialog.h; path = src/MyLib/MyDialog.h; sourceTree = "<absolute>"; };
-		09F4E339D4D2712E4C5F83BD /* SolveDlg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SolveDlg.h; path = src/SolveDlg.h; sourceTree = "<absolute>"; };
-		0D73F3C5668AA643A78F8C45 /* moc_qtcolortriangle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moc_qtcolortriangle.cpp; sourceTree = "<absolute>"; };
-		0D8BDFAF2848D954AFA86F26 /* Mesh.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Mesh.cpp; path = src/Mesh.cpp; sourceTree = "<absolute>"; };
-		0FFF730DEF7BB0B20E49AD69 /* ObjExport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ObjExport.h; path = src/ObjExport.h; sourceTree = "<absolute>"; };
-		15AF03C9FB24AB319D5C52A4 /* OptionsDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OptionsDlg.cpp; path = src/OptionsDlg.cpp; sourceTree = "<absolute>"; };
-		168987697DA27BABDE358204 /* PicPainter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PicPainter.h; path = src/PicPainter.h; sourceTree = "<absolute>"; };
-		16CC7C7C5EB4BCCA8059142B /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = ../../Qt5.1.1/5.1.1/clang_64/lib/QtGui.framework; sourceTree = "<absolute>"; };
-		18D6303E1DF2C0C946080733 /* Shaders.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Shaders.cpp; path = src/OpenGL/Shaders.cpp; sourceTree = "<absolute>"; };
-		1AA1F26B27743C80B9545449 /* QtXml.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtXml.framework; path = ../../Qt5.1.1/5.1.1/clang_64/lib/QtXml.framework; sourceTree = "<absolute>"; };
-		1B676BCE814D278338617BB7 /* moc_GLWidget.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moc_GLWidget.cpp; sourceTree = "<absolute>"; };
-		1C0B64226A129D35F02DC004 /* MainWindow.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MainWindow.cpp; path = src/MainWindow.cpp; sourceTree = "<absolute>"; };
-		1C961612317406BD548DB962 /* SolveDlg.ui */ = {isa = PBXFileReference; lastKnownFileType = file; name = SolveDlg.ui; path = src/SolveDlg.ui; sourceTree = "<absolute>"; };
-		1D9D60BEF8D00444FCB12951 /* MemoryMgmt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MemoryMgmt.h; path = src/MemoryMgmt.h; sourceTree = "<absolute>"; };
-		1E5AD5998E302E7F4ADB466F /* Cube.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Cube.cpp; path = src/Cube.cpp; sourceTree = "<absolute>"; };
-		1E65E72C17B2245C62C68706 /* Shaders.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Shaders.h; path = src/OpenGL/Shaders.h; sourceTree = "<absolute>"; };
-		20931F6C57CA8BC075176C04 /* build.vtx.glsl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = build.vtx.glsl.h; path = src/OpenGL/build.vtx.glsl.h; sourceTree = "<absolute>"; };
-		2223D1BDDA7F3213F8A12E54 /* Mat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Mat.h; path = src/Mat.h; sourceTree = "<absolute>"; };
-		225B3BF959C5C61289BD39BD /* NoiseGenerator.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = NoiseGenerator.cpp; path = src/NoiseGenerator.cpp; sourceTree = "<absolute>"; };
-		238D406C5D6499EDB6396C3E /* moc_MyColorPicker.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moc_MyColorPicker.cpp; sourceTree = "<absolute>"; };
-		2560F28AC8216F382A5DED74 /* mac_icon.icns */ = {isa = PBXFileReference; lastKnownFileType = file; name = mac_icon.icns; path = images/mac_icon.icns; sourceTree = "<absolute>"; };
-		25B751BE915FC92E10CA94D9 /* Solutions.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Solutions.cpp; path = src/Solutions.cpp; sourceTree = "<absolute>"; };
-		2667976E2B02436274D3229F /* MyPolygon.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MyPolygon.cpp; path = src/MyPolygon.cpp; sourceTree = "<absolute>"; };
-		26827F2FC4DC4FBB23DE8287 /* moc_MainWindow.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moc_MainWindow.cpp; sourceTree = "<absolute>"; };
-		2BD4C2C56498BBF65133593B /* BuildWorld.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BuildWorld.cpp; path = src/BuildWorld.cpp; sourceTree = "<absolute>"; };
-		2E1FA4DCCFA0FD52F981D3BC /* tinyxml2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tinyxml2.h; path = src/tinyxml/tinyxml2.h; sourceTree = "<absolute>"; };
-		2EC5688DD9071A853848E1D8 /* moc_MyInputDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moc_MyInputDlg.cpp; sourceTree = "<absolute>"; };
-		30CB0C1B0E3C5081AEFC2B76 /* MyColorPicker.ui */ = {isa = PBXFileReference; lastKnownFileType = file; name = MyColorPicker.ui; path = src/MyLib/MyColorPicker.ui; sourceTree = "<absolute>"; };
-		341441029BADB228FAF512DB /* PicsSelectWidget.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PicsSelectWidget.h; path = src/PicsSelectWidget.h; sourceTree = "<absolute>"; };
-		36D95234C717B4BD3FB4777F /* PicsSelectWidget.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PicsSelectWidget.cpp; path = src/PicsSelectWidget.cpp; sourceTree = "<absolute>"; };
-		375BD86B94F45502FFB8C7FC /* Space3D.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Space3D.h; path = src/Space3D.h; sourceTree = "<absolute>"; };
-		39889CE98CF66B10DEF9F4C8 /* MyColorPicker.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MyColorPicker.cpp; path = src/MyLib/MyColorPicker.cpp; sourceTree = "<absolute>"; };
-		3A367D1D22C7C2F1303D92DA /* SolveThread.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SolveThread.h; path = src/SolveThread.h; sourceTree = "<absolute>"; };
-		3BC338EB54B5D323151DEF99 /* ui_about.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ui_about.h; sourceTree = "<absolute>"; };
-		3BCE58290C400B4B5F86E022 /* moc_BuildGLWidget.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moc_BuildGLWidget.cpp; sourceTree = "<absolute>"; };
-		3D57B6AD1CD01E216D2EA622 /* moc_AssembleStepDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moc_AssembleStepDlg.cpp; sourceTree = "<absolute>"; };
-		3E1707CCAF689929763EB7C6 /* ui_OptionsDlg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ui_OptionsDlg.h; sourceTree = "<absolute>"; };
-		3F0663AD809DDAD0A7ED7AB9 /* moc_CubeDoc.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moc_CubeDoc.cpp; sourceTree = "<absolute>"; };
-		404F2962897B55BB69302BAA /* MyInputDlg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MyInputDlg.h; path = src/MyLib/MyInputDlg.h; sourceTree = "<absolute>"; };
-		42CD1BE7551EDF343F972AEF /* moc_ModelGLWidget.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moc_ModelGLWidget.cpp; sourceTree = "<absolute>"; };
-		43657A1495917FFB693BCFFE /* qrc_resources.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = qrc_resources.cpp; sourceTree = "<absolute>"; };
-		44486FACD36221F3363D15BA /* moc_ActFocusComboBox.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moc_ActFocusComboBox.cpp; sourceTree = "<absolute>"; };
-		45EC2ECC02A2E3965B5BD8C2 /* Mesh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Mesh.h; path = src/Mesh.h; sourceTree = "<absolute>"; };
-		469AB6D2DAAC32639E2AE0AC /* moc_PicsSelectWidget.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moc_PicsSelectWidget.cpp; sourceTree = "<absolute>"; };
-		474594C49A3DAF15A0499EFC /* BuildHelpDlg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BuildHelpDlg.h; path = src/BuildHelpDlg.h; sourceTree = "<absolute>"; };
-		4853F391925B4262B0F08748 /* GLWidget.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = GLWidget.cpp; path = src/GLWidget.cpp; sourceTree = "<absolute>"; };
-		48E9AD780920776BA62B47A3 /* Cube.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Cube.h; path = src/Cube.h; sourceTree = "<absolute>"; };
-		4940C2C9005F9D976FCFF37B /* SlvPainter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = SlvPainter.cpp; path = src/SlvPainter.cpp; sourceTree = "<absolute>"; };
-		49B35B64BE1795E447D9F01F /* QtOpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtOpenGL.framework; path = ../../Qt5.1.1/5.1.1/clang_64/lib/QtOpenGL.framework; sourceTree = "<absolute>"; };
-		4BB24A18A0B6AE48CDCEFF9C /* Solutions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Solutions.h; path = src/Solutions.h; sourceTree = "<absolute>"; };
-		4C574E686807544C394ACDCB /* Configuration.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Configuration.cpp; path = src/Configuration.cpp; sourceTree = "<absolute>"; };
-		4E793C8CD42312BD38E61CBF /* flat.frag.glsl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = flat.frag.glsl.h; path = src/OpenGL/flat.frag.glsl.h; sourceTree = "<absolute>"; };
-		50FAE8FF64355EF993312282 /* MyFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MyFile.h; path = src/MyFile.h; sourceTree = "<absolute>"; };
-		51F526CCE9495E25732E59EB /* general.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = general.cpp; path = src/general.cpp; sourceTree = "<absolute>"; };
-		52A630EEB009024336A07731 /* ui_SolveDlg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ui_SolveDlg.h; sourceTree = "<absolute>"; };
-		567F8B90108A52106E8CA167 /* ShaderProgram.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ShaderProgram.cpp; path = src/OpenGL/ShaderProgram.cpp; sourceTree = "<absolute>"; };
-		5781941D499A212639609EC5 /* ActFocusComboBox.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ActFocusComboBox.cpp; path = src/ActFocusComboBox.cpp; sourceTree = "<absolute>"; };
-		58AC82F7B76D588E6B234F8C /* Shape.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Shape.cpp; path = src/Shape.cpp; sourceTree = "<absolute>"; };
-		5A3A4A7D14A36F987D06B472 /* SlvCube.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = SlvCube.cpp; path = src/SlvCube.cpp; sourceTree = "<absolute>"; };
-		5AA2263CFF6F8F0D1E94C792 /* moc_DataWidgets.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moc_DataWidgets.cpp; sourceTree = "<absolute>"; };
-		5B55D91FC6BE9568579F6B87 /* BuildHelpDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BuildHelpDlg.cpp; path = src/BuildHelpDlg.cpp; sourceTree = "<absolute>"; };
-		5BACE555D1876CA5553C5929 /* PicsSet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PicsSet.h; path = src/PicsSet.h; sourceTree = "<absolute>"; };
-		5C23A40191C925C4964FBF32 /* PicArr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PicArr.h; path = src/PicArr.h; sourceTree = "<absolute>"; };
-		5D8F8893E055A509BEE0B094 /* ModelGLWidget.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ModelGLWidget.h; path = src/ModelGLWidget.h; sourceTree = "<absolute>"; };
-		5FAC1C4CB42900082CB7C0BC /* PicArr.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PicArr.cpp; path = src/PicArr.cpp; sourceTree = "<absolute>"; };
-		625B639177FB5EE13A298F27 /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = ../../Qt5.1.1/5.1.1/clang_64/lib/QtCore.framework; sourceTree = "<absolute>"; };
-		640D63F38EF4B9E5E52DED4B /* GlobDefs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GlobDefs.h; path = src/GlobDefs.h; sourceTree = "<absolute>"; };
-		64FAC3FF14C2C9FF366DDABC /* mac_happysolver.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mac_happysolver.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		654B08162A754AFF568DD4F6 /* SolveDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = SolveDlg.cpp; path = src/SolveDlg.cpp; sourceTree = "<absolute>"; };
-		65F3EAB82631E85399BCC969 /* ui_MyInputDlg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ui_MyInputDlg.h; sourceTree = "<absolute>"; };
-		6654AE3C54A2F79C186B1662 /* Space3D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Space3D.cpp; path = src/Space3D.cpp; sourceTree = "<absolute>"; };
-		67A551D7DA8C1E54B6794CA5 /* about.ui */ = {isa = PBXFileReference; lastKnownFileType = file; name = about.ui; path = src/about.ui; sourceTree = "<absolute>"; };
-		70896887E81B9111684946C2 /* Configuration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Configuration.h; path = src/Configuration.h; sourceTree = "<absolute>"; };
-		70FB13F0782AE7544B7F604F /* GrpColorDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = GrpColorDlg.cpp; path = src/GrpColorDlg.cpp; sourceTree = "<absolute>"; };
-		71429B9C1571ACE4AF450B66 /* Pieces.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Pieces.h; path = src/Pieces.h; sourceTree = "<absolute>"; };
-		7197FF76783CC6F36EC622A4 /* NoiseGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = NoiseGenerator.h; path = src/NoiseGenerator.h; sourceTree = "<absolute>"; };
-		743D993171BC89CF1EB19AC6 /* Pieces.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Pieces.cpp; path = src/Pieces.cpp; sourceTree = "<absolute>"; };
-		7620142FE23E296F84D0555D /* cubesNoise.vtx.glsl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = cubesNoise.vtx.glsl.h; path = src/OpenGL/cubesNoise.vtx.glsl.h; sourceTree = "<absolute>"; };
-		76F7EE759804A762F8F468CE /* PicPainter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PicPainter.cpp; path = src/PicPainter.cpp; sourceTree = "<absolute>"; };
-		774489C68F0AD96ADFF643AE /* BuildGLWidget.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BuildGLWidget.h; path = src/BuildGLWidget.h; sourceTree = "<absolute>"; };
-		77A422C94EBC267F5921FB26 /* ModelHelpDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ModelHelpDlg.cpp; path = src/ModelHelpDlg.cpp; sourceTree = "<absolute>"; };
-		77FCD284E68ACA47933C857D /* flat.vtx.glsl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = flat.vtx.glsl.h; path = src/OpenGL/flat.vtx.glsl.h; sourceTree = "<absolute>"; };
-		792B06B7AADECB4BED259D2F /* ModelGLWidget.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ModelGLWidget.cpp; path = src/ModelGLWidget.cpp; sourceTree = "<absolute>"; };
-		79D612E664CF79E206F793EE /* MyColorPicker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MyColorPicker.h; path = src/MyLib/MyColorPicker.h; sourceTree = "<absolute>"; };
-		79E0EE126CC046F91AEC7F89 /* OptionsDlg.ui */ = {isa = PBXFileReference; lastKnownFileType = file; name = OptionsDlg.ui; path = src/OptionsDlg.ui; sourceTree = "<absolute>"; };
-		7EC3C68A81EFFF79B6CA22AC /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = src/main.cpp; sourceTree = "<absolute>"; };
-		81CC3D9F977FAFABAC3709A5 /* MyObject.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MyObject.cpp; path = src/MyObject.cpp; sourceTree = "<absolute>"; };
-		821B08E0AF6C424D9176D180 /* Shape.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Shape.h; path = src/Shape.h; sourceTree = "<absolute>"; };
-		853844A88B5A5B76F53DD02A /* SlvPainter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SlvPainter.h; path = src/SlvPainter.h; sourceTree = "<absolute>"; };
-		858CD4DE2B5307F8FC61C3C9 /* general.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = general.h; path = src/general.h; sourceTree = "<absolute>"; };
-		85E23E7609FBCC106D75B139 /* AssembleStepDlg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AssembleStepDlg.h; path = src/AssembleStepDlg.h; sourceTree = "<absolute>"; };
-		86F26C0FD83511AA56AFED42 /* ParamBase.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ParamBase.cpp; path = src/MyLib/ParamBase.cpp; sourceTree = "<absolute>"; };
-		8760C1085F84A0C04EBFA65C /* CubeAcc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CubeAcc.h; path = src/CubeAcc.h; sourceTree = "<absolute>"; };
-		88A47EBCDBA972388DC5E6C6 /* OptionsDlg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OptionsDlg.h; path = src/OptionsDlg.h; sourceTree = "<absolute>"; };
-		893B0E316971AD514C499B6B /* QtWidgets.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtWidgets.framework; path = ../../Qt5.1.1/5.1.1/clang_64/lib/QtWidgets.framework; sourceTree = "<absolute>"; };
-		8979754F7C00CC2CD4ABBAD4 /* ShaderProgram.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ShaderProgram.h; path = src/OpenGL/ShaderProgram.h; sourceTree = "<absolute>"; };
-		926A7D54EF396871D73E4D1F /* moc_SIDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moc_SIDlg.cpp; sourceTree = "<absolute>"; };
-		92EC94FE3E6CC0E42CE85BCC /* ObjExport.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ObjExport.cpp; path = src/ObjExport.cpp; sourceTree = "<absolute>"; };
-		95D3A04FFD2F3907BDD2951B /* MyPoint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MyPoint.h; path = src/MyPoint.h; sourceTree = "<absolute>"; };
-		995B0A03B8BB49151630143D /* qtcolortriangle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = qtcolortriangle.cpp; path = src/MyLib/QtAdd/qtcolortriangle.cpp; sourceTree = "<absolute>"; };
-		9B8D28AC3CB6D1BF9B368F00 /* GLWidget.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GLWidget.h; path = src/GLWidget.h; sourceTree = "<absolute>"; };
-		9FAA78DDFB3509C58802587F /* PicsSet.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PicsSet.cpp; path = src/PicsSet.cpp; sourceTree = "<absolute>"; };
-		A0156CD38A12660D4045D4BE /* MyPolygon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MyPolygon.h; path = src/MyPolygon.h; sourceTree = "<absolute>"; };
-		A3AE3427DF3948A10FFEC0DB /* ui_GrpColor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ui_GrpColor.h; sourceTree = "<absolute>"; };
-		A5BB6B6A9CC15C35CDB795E9 /* project.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = project.cpp; path = src/sglu/project.cpp; sourceTree = "<absolute>"; };
-		AFEE9774261738E3F9F59F5B /* ActFocusComboBox.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ActFocusComboBox.h; path = src/ActFocusComboBox.h; sourceTree = "<absolute>"; };
-		B5071AFBC3619C701E717BE0 /* MyObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MyObject.h; path = src/MyObject.h; sourceTree = "<absolute>"; };
-		B884C71F45F6204B8995FAC3 /* ParamBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ParamBase.h; path = src/MyLib/ParamBase.h; sourceTree = "<absolute>"; };
-		BE77C3F293BBA20A89426AC4 /* build.frag.glsl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = build.frag.glsl.h; path = src/OpenGL/build.frag.glsl.h; sourceTree = "<absolute>"; };
-		BF66A4DA0D5DE7D0B471DDB9 /* BuildGLWidget.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BuildGLWidget.cpp; path = src/BuildGLWidget.cpp; sourceTree = "<absolute>"; };
-		BF85285BEDA3863C6F7040EF /* moc_MyDialog.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moc_MyDialog.cpp; sourceTree = "<absolute>"; };
-		C00E2D6F6C98757AED6F30C7 /* GrpColorDlg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GrpColorDlg.h; path = src/GrpColorDlg.h; sourceTree = "<absolute>"; };
-		C0FA5B1E26E9D8C22852506D /* moc_ModelHelpDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moc_ModelHelpDlg.cpp; sourceTree = "<absolute>"; };
-		C38BF4870725C44C47F6200E /* ModelHelpDlg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ModelHelpDlg.h; path = src/ModelHelpDlg.h; sourceTree = "<absolute>"; };
-		C6766F86E49E9C8701C8E637 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
-		C6BAC8972BBDAA972444727D /* MyInputDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MyInputDlg.cpp; path = src/MyLib/MyInputDlg.cpp; sourceTree = "<absolute>"; };
-		CD1319F9F7080B4952A9AD42 /* MyInputDlg.ui */ = {isa = PBXFileReference; lastKnownFileType = file; name = MyInputDlg.ui; path = src/MyLib/MyInputDlg.ui; sourceTree = "<absolute>"; };
-		CE126BF3A70AA438031F1218 /* GrpColor.ui */ = {isa = PBXFileReference; lastKnownFileType = file; name = GrpColor.ui; path = src/GrpColor.ui; sourceTree = "<absolute>"; };
-		CEB4C41A03E947D515B87C0C /* moc_ParamBase.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moc_ParamBase.cpp; sourceTree = "<absolute>"; };
-		D09C95B22193B94C83B906FA /* Texture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Texture.h; path = src/Texture.h; sourceTree = "<absolute>"; };
-		D387E7DE7C7851E1EFC27820 /* moc_BuildHelpDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moc_BuildHelpDlg.cpp; sourceTree = "<absolute>"; };
-		D5C8C3CF774268ACA87733EC /* BuildWorld.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BuildWorld.h; path = src/BuildWorld.h; sourceTree = "<absolute>"; };
-		D5D707D649247FDB4792C63C /* ui_MyColorPicker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ui_MyColorPicker.h; sourceTree = "<absolute>"; };
-		D7DA6145AB9539ECDE332D13 /* resources.qrc */ = {isa = PBXFileReference; lastKnownFileType = text; path = resources.qrc; sourceTree = "<absolute>"; };
-		D807F0DE3110F0AD45593FA7 /* MainWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MainWindow.h; path = src/MainWindow.h; sourceTree = "<absolute>"; };
-		DA18A6831232F53228631AD1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
-		DB5AC797B33B0E4A1105C8B7 /* happysolver.pro */ = {isa = PBXFileReference; lastKnownFileType = text; path = happysolver.pro; sourceTree = "<absolute>"; };
-		DC254B052D716BBDDAA1A16F /* CubeDoc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CubeDoc.h; path = src/CubeDoc.h; sourceTree = "<absolute>"; };
-		E1F65FB30504183D3D4D825E /* SIDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = SIDlg.cpp; path = src/SIDlg.cpp; sourceTree = "<absolute>"; };
-		E27D3660FEF40896B5BFBBCA /* cubesNoise.frag.glsl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = cubesNoise.frag.glsl.h; path = src/OpenGL/cubesNoise.frag.glsl.h; sourceTree = "<absolute>"; };
-		EB0BD83F3664DBE712AD680A /* GLTexture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GLTexture.h; path = src/OpenGL/GLTexture.h; sourceTree = "<absolute>"; };
-		EB7189CF1DA5A105A670FD84 /* CubeDoc.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = CubeDoc.cpp; path = src/CubeDoc.cpp; sourceTree = "<absolute>"; };
-		EBF8815A7CE6F88E0268F87C /* moc_OptionsDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moc_OptionsDlg.cpp; sourceTree = "<absolute>"; };
-		EC9E9DC99AD39E5C6950C541 /* sglu.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = sglu.h; path = src/sglu/sglu.h; sourceTree = "<absolute>"; };
-		EE1199DADDDE791DDC1FAB71 /* tinyxml2.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = tinyxml2.cpp; path = src/tinyxml/tinyxml2.cpp; sourceTree = "<absolute>"; };
-		F05E45E5137DD187BD98E7F7 /* DataWidgets.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = DataWidgets.cpp; path = src/DataWidgets.cpp; sourceTree = "<absolute>"; };
-		F1A89462469614E1777A97C5 /* AssembleStepDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = AssembleStepDlg.cpp; path = src/AssembleStepDlg.cpp; sourceTree = "<absolute>"; };
-		F562DBFC7DD4D9B3620DAB5E /* moc_GrpColorDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moc_GrpColorDlg.cpp; sourceTree = "<absolute>"; };
-		F647EEDCD44FF43E39B991D2 /* GLTexture.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = GLTexture.cpp; path = src/OpenGL/GLTexture.cpp; sourceTree = "<absolute>"; };
-		F6AD5476C1DFA06855DD557E /* SIDlg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SIDlg.h; path = src/SIDlg.h; sourceTree = "<absolute>"; };
-		FA257F15582CB0B4EA3BF6E4 /* moc_SolveThread.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moc_SolveThread.cpp; sourceTree = "<absolute>"; };
+		0277331854F30A69CA249763 /* MyPolygon.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MyPolygon.cpp; path = /Users/shooshx/code/happysolver/src/MyPolygon.cpp; sourceTree = "<absolute>"; };
+		056CDB3281AFF5B2C5CC71EC /* Pieces.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Pieces.h; path = /Users/shooshx/code/happysolver/src/Pieces.h; sourceTree = "<absolute>"; };
+		06994D0C2A972B440DA5F25B /* Mesh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Mesh.h; path = /Users/shooshx/code/happysolver/src/Mesh.h; sourceTree = "<absolute>"; };
+		08BA963320C84D1380C15D21 /* ModelHelpDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ModelHelpDlg.cpp; path = /Users/shooshx/code/happysolver/src/ModelHelpDlg.cpp; sourceTree = "<absolute>"; };
+		08E510CDD546F7DA1AE0A0FE /* ShaderProgram.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ShaderProgram.h; path = /Users/shooshx/code/happysolver/src/OpenGL/ShaderProgram.h; sourceTree = "<absolute>"; };
+		095FBDDCA14C20082A29CB8F /* Solutions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Solutions.h; path = /Users/shooshx/code/happysolver/src/Solutions.h; sourceTree = "<absolute>"; };
+		0A12CD9B87FD950EF2D27C65 /* SolveDlg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SolveDlg.h; path = /Users/shooshx/code/happysolver/src/SolveDlg.h; sourceTree = "<absolute>"; };
+		0AFE251897D43C2B37CCB643 /* moc_SIDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = moc_SIDlg.cpp; path = /Users/shooshx/code/happysolver/moc_SIDlg.cpp; sourceTree = "<absolute>"; };
+		1020108642D58493D6FC3EAD /* ObjExport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ObjExport.h; path = /Users/shooshx/code/happysolver/src/ObjExport.h; sourceTree = "<absolute>"; };
+		10D00D8FB21A7EDDCA1B236C /* SlvCube.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = SlvCube.cpp; path = /Users/shooshx/code/happysolver/src/SlvCube.cpp; sourceTree = "<absolute>"; };
+		1100848C012FC72B45D29EF0 /* GrpColor.ui */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = GrpColor.ui; path = /Users/shooshx/code/happysolver/src/GrpColor.ui; sourceTree = "<absolute>"; };
+		130E82AC8A39949D65ED9750 /* SIDlg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SIDlg.h; path = /Users/shooshx/code/happysolver/src/SIDlg.h; sourceTree = "<absolute>"; };
+		13189F95A88E638E2B9B118C /* MemoryMgmt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MemoryMgmt.h; path = /Users/shooshx/code/happysolver/src/MemoryMgmt.h; sourceTree = "<absolute>"; };
+		148A2DA7CBDA79A0F4BB395D /* BaseGLWidget.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BaseGLWidget.h; path = /Users/shooshx/code/happysolver/src/BaseGLWidget.h; sourceTree = "<absolute>"; };
+		1B5A3363C62689B1D7427E27 /* BaseGLWidget.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BaseGLWidget.cpp; path = /Users/shooshx/code/happysolver/src/BaseGLWidget.cpp; sourceTree = "<absolute>"; };
+		1BA5307F9622BE899B35D427 /* moc_ModelHelpDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = moc_ModelHelpDlg.cpp; path = /Users/shooshx/code/happysolver/moc_ModelHelpDlg.cpp; sourceTree = "<absolute>"; };
+		1F12520A09DB21832DB23181 /* Shape.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Shape.cpp; path = /Users/shooshx/code/happysolver/src/Shape.cpp; sourceTree = "<absolute>"; };
+		229780C7FF4A87E2F2482293 /* ImageBuf.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ImageBuf.cpp; path = /Users/shooshx/code/happysolver/src/ImageBuf.cpp; sourceTree = "<absolute>"; };
+		22E92D1236A5CB363CED810A /* general.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = general.cpp; path = /Users/shooshx/code/happysolver/src/general.cpp; sourceTree = "<absolute>"; };
+		2394A34B3DF28E544C9E410D /* Solutions.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Solutions.cpp; path = /Users/shooshx/code/happysolver/src/Solutions.cpp; sourceTree = "<absolute>"; };
+		23D307112A0D556D686A9DD2 /* NoiseGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = NoiseGenerator.h; path = /Users/shooshx/code/happysolver/src/NoiseGenerator.h; sourceTree = "<absolute>"; };
+		24EDBD4C854A09F62D427ADF /* Shaders.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Shaders.cpp; path = /Users/shooshx/code/happysolver/src/OpenGL/Shaders.cpp; sourceTree = "<absolute>"; };
+		2863DAFB0872ED85AEAB6C63 /* ShaderProgram.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ShaderProgram.cpp; path = /Users/shooshx/code/happysolver/src/OpenGL/ShaderProgram.cpp; sourceTree = "<absolute>"; };
+		297009335C352F97DC3C54E9 /* moc_DataWidgets.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = moc_DataWidgets.cpp; path = /Users/shooshx/code/happysolver/moc_DataWidgets.cpp; sourceTree = "<absolute>"; };
+		2B774D8E4178765CE52EAAF5 /* DiskArbitration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DiskArbitration.framework; path = /System/Library/Frameworks/DiskArbitration.framework; sourceTree = "<absolute>"; };
+		2E6DB65D538D0229145688A9 /* BuildHelpDlg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BuildHelpDlg.h; path = /Users/shooshx/code/happysolver/src/BuildHelpDlg.h; sourceTree = "<absolute>"; };
+		2FA88816795CA1F6EC6A7E85 /* OptionsDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OptionsDlg.cpp; path = /Users/shooshx/code/happysolver/src/OptionsDlg.cpp; sourceTree = "<absolute>"; };
+		303914966E7D0582250D0DB9 /* ModelControlBase.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ModelControlBase.cpp; path = /Users/shooshx/code/happysolver/src/ModelControlBase.cpp; sourceTree = "<absolute>"; };
+		32125DB39DFF65768A1AFD45 /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = /Users/shooshx/Qt5.5.1/5.5/clang_64/lib/QtCore.framework; sourceTree = "<absolute>"; };
+		3351ED9159B70B71E511CED1 /* Space3D.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Space3D.h; path = /Users/shooshx/code/happysolver/src/Space3D.h; sourceTree = "<absolute>"; };
+		34218772E7474A9B7CA81AEE /* OptionsDlg.ui */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = OptionsDlg.ui; path = /Users/shooshx/code/happysolver/src/OptionsDlg.ui; sourceTree = "<absolute>"; };
+		342924ECCEF5AF425B6193FF /* MyFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MyFile.h; path = /Users/shooshx/code/happysolver/src/MyFile.h; sourceTree = "<absolute>"; };
+		348AAD37440C2B2D1E4EA834 /* moc_ParamBase.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = moc_ParamBase.cpp; path = /Users/shooshx/code/happysolver/moc_ParamBase.cpp; sourceTree = "<absolute>"; };
+		34A799FAEF9F6FCE611B04B6 /* ActFocusComboBox.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ActFocusComboBox.h; path = /Users/shooshx/code/happysolver/src/ActFocusComboBox.h; sourceTree = "<absolute>"; };
+		35CDB347D789CB6A0E448BF9 /* moc_MyDialog.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = moc_MyDialog.cpp; path = /Users/shooshx/code/happysolver/moc_MyDialog.cpp; sourceTree = "<absolute>"; };
+		366CFE9E9A9F6B289975EC0C /* MyColorPicker.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MyColorPicker.cpp; path = /Users/shooshx/code/happysolver/src/MyLib/MyColorPicker.cpp; sourceTree = "<absolute>"; };
+		381CB340C79C0EB945F44475 /* BuildGLControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BuildGLControl.h; path = /Users/shooshx/code/happysolver/src/BuildGLControl.h; sourceTree = "<absolute>"; };
+		39191F482AA1E4B7E8D0026C /* GLTexture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GLTexture.h; path = /Users/shooshx/code/happysolver/src/OpenGL/GLTexture.h; sourceTree = "<absolute>"; };
+		3A6BF58FF990406FA03CCB1D /* MyPolygon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MyPolygon.h; path = /Users/shooshx/code/happysolver/src/MyPolygon.h; sourceTree = "<absolute>"; };
+		3A94FDF56E71EB9E85B1D077 /* ModelGLControl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ModelGLControl.cpp; path = /Users/shooshx/code/happysolver/src/ModelGLControl.cpp; sourceTree = "<absolute>"; };
+		3BAE4F242D5F992F236D4BA9 /* SolveThread.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SolveThread.h; path = /Users/shooshx/code/happysolver/src/SolveThread.h; sourceTree = "<absolute>"; };
+		3E7131C99D54E25D7515B8BF /* moc_MyColorPicker.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = moc_MyColorPicker.cpp; path = /Users/shooshx/code/happysolver/moc_MyColorPicker.cpp; sourceTree = "<absolute>"; };
+		3F38F8045E41F4DF6A5B0994 /* flat.frag.glsl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = flat.frag.glsl.h; path = /Users/shooshx/code/happysolver/src/OpenGL/flat.frag.glsl.h; sourceTree = "<absolute>"; };
+		40E4B3456182C4BFD5871414 /* AssembleStepDlg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AssembleStepDlg.h; path = /Users/shooshx/code/happysolver/src/AssembleStepDlg.h; sourceTree = "<absolute>"; };
+		40F09C785423A26962D9C79E /* QtWidgets.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtWidgets.framework; path = /Users/shooshx/Qt5.5.1/5.5/clang_64/lib/QtWidgets.framework; sourceTree = "<absolute>"; };
+		457143EE0643CDD4DBE7B68E /* MyFile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MyFile.cpp; path = /Users/shooshx/code/happysolver/src/MyFile.cpp; sourceTree = "<absolute>"; };
+		45929CD11E2D6F3450513CBC /* ui_MyColorPicker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ui_MyColorPicker.h; path = /Users/shooshx/code/happysolver/ui_MyColorPicker.h; sourceTree = "<absolute>"; };
+		45BDB810ACAF7B5FC88F7DFD /* ui_about.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ui_about.h; path = /Users/shooshx/code/happysolver/ui_about.h; sourceTree = "<absolute>"; };
+		46148F9ACC14F3353FC8E31B /* ui_GrpColor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ui_GrpColor.h; path = /Users/shooshx/code/happysolver/ui_GrpColor.h; sourceTree = "<absolute>"; };
+		469ABDEA9CFF658E20A704E8 /* Space3D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Space3D.cpp; path = /Users/shooshx/code/happysolver/src/Space3D.cpp; sourceTree = "<absolute>"; };
+		4A01C35A6C27EB827C06F653 /* qrc_resources.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = qrc_resources.cpp; path = /Users/shooshx/code/happysolver/qrc_resources.cpp; sourceTree = "<absolute>"; };
+		4D2E09F544B975E197F380AD /* PicsSet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PicsSet.h; path = /Users/shooshx/code/happysolver/src/PicsSet.h; sourceTree = "<absolute>"; };
+		4D37EDF6AF2DB423110FE6BD /* PicsSet.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PicsSet.cpp; path = /Users/shooshx/code/happysolver/src/PicsSet.cpp; sourceTree = "<absolute>"; };
+		509080CBA2C208BA04EC4990 /* qtcolortriangle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = qtcolortriangle.cpp; path = /Users/shooshx/code/happysolver/src/MyLib/QtAdd/qtcolortriangle.cpp; sourceTree = "<absolute>"; };
+		50EEE969C2843D19BC9610EB /* GrpColorDlg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GrpColorDlg.h; path = /Users/shooshx/code/happysolver/src/GrpColorDlg.h; sourceTree = "<absolute>"; };
+		548C6700D11B86F4A829DB9F /* tinyxml2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tinyxml2.h; path = /Users/shooshx/code/happysolver/src/tinyxml/tinyxml2.h; sourceTree = "<absolute>"; };
+		5758A868AF3AC5262B15BAE8 /* moc_ModelGLControl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = moc_ModelGLControl.cpp; path = /Users/shooshx/code/happysolver/moc_ModelGLControl.cpp; sourceTree = "<absolute>"; };
+		57606894AC2AAFD0ADBF7515 /* moc_OptionsDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = moc_OptionsDlg.cpp; path = /Users/shooshx/code/happysolver/moc_OptionsDlg.cpp; sourceTree = "<absolute>"; };
+		599386008E4C46A3CB4E9E7F /* MyDialog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MyDialog.h; path = /Users/shooshx/code/happysolver/src/MyLib/MyDialog.h; sourceTree = "<absolute>"; };
+		59E4B468B1D18F439F528415 /* sglu.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = sglu.h; path = /Users/shooshx/code/happysolver/src/sglu/sglu.h; sourceTree = "<absolute>"; };
+		5A1249A86CD37828F5018203 /* PicsSelectWidget.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PicsSelectWidget.cpp; path = /Users/shooshx/code/happysolver/src/PicsSelectWidget.cpp; sourceTree = "<absolute>"; };
+		5C4D03D6DF0C22428690F006 /* ModelControlBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ModelControlBase.h; path = /Users/shooshx/code/happysolver/src/ModelControlBase.h; sourceTree = "<absolute>"; };
+		5D9601E914A15ACC9BF4D5D5 /* cubesNoise.vtx.glsl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = cubesNoise.vtx.glsl.h; path = /Users/shooshx/code/happysolver/src/OpenGL/cubesNoise.vtx.glsl.h; sourceTree = "<absolute>"; };
+		610A2F46FC93D80C9E6042FF /* MyPoint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MyPoint.h; path = /Users/shooshx/code/happysolver/src/MyPoint.h; sourceTree = "<absolute>"; };
+		6117A1D221E8841B2A127658 /* ParamBase.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ParamBase.cpp; path = /Users/shooshx/code/happysolver/src/MyLib/ParamBase.cpp; sourceTree = "<absolute>"; };
+		629B5587E81A551EF5C193C1 /* SIDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = SIDlg.cpp; path = /Users/shooshx/code/happysolver/src/SIDlg.cpp; sourceTree = "<absolute>"; };
+		62F74A1899EB36B6481BB70D /* flat.vtx.glsl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = flat.vtx.glsl.h; path = /Users/shooshx/code/happysolver/src/OpenGL/flat.vtx.glsl.h; sourceTree = "<absolute>"; };
+		6649BAE18DCB2DC365AA7E79 /* BuildWorld.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BuildWorld.cpp; path = /Users/shooshx/code/happysolver/src/BuildWorld.cpp; sourceTree = "<absolute>"; };
+		67ED396C1C57870C57D47AAC /* MyColorPicker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MyColorPicker.h; path = /Users/shooshx/code/happysolver/src/MyLib/MyColorPicker.h; sourceTree = "<absolute>"; };
+		6A6D744ABF555D86C6ED7771 /* CubeDoc.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = CubeDoc.cpp; path = /Users/shooshx/code/happysolver/src/CubeDoc.cpp; sourceTree = "<absolute>"; };
+		6D392E6C53F196515A4C72DF /* SlvCube.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SlvCube.h; path = /Users/shooshx/code/happysolver/src/SlvCube.h; sourceTree = "<absolute>"; };
+		6FF75EE9593956EC5CA12CA5 /* cubesNoise.frag.glsl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = cubesNoise.frag.glsl.h; path = /Users/shooshx/code/happysolver/src/OpenGL/cubesNoise.frag.glsl.h; sourceTree = "<absolute>"; };
+		725DF8381D657B5526355813 /* Cube.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Cube.h; path = /Users/shooshx/code/happysolver/src/Cube.h; sourceTree = "<absolute>"; };
+		737949B5D12689519A603B19 /* .qmake.stash */ = {isa = PBXFileReference; lastKnownFileType = text; name = .qmake.stash; path = /Users/shooshx/code/happysolver/.qmake.stash; sourceTree = "<absolute>"; };
+		7489557FC166BCE246374B7E /* QtXml.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtXml.framework; path = /Users/shooshx/Qt5.5.1/5.5/clang_64/lib/QtXml.framework; sourceTree = "<absolute>"; };
+		74F541B5D13D5FE3D58A315D /* MyObject.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MyObject.cpp; path = /Users/shooshx/code/happysolver/src/MyObject.cpp; sourceTree = "<absolute>"; };
+		764DD77A09726542992671A6 /* MyInputDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MyInputDlg.cpp; path = /Users/shooshx/code/happysolver/src/MyLib/MyInputDlg.cpp; sourceTree = "<absolute>"; };
+		7653D14E2923EEB149C72BC4 /* MyInputDlg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MyInputDlg.h; path = /Users/shooshx/code/happysolver/src/MyLib/MyInputDlg.h; sourceTree = "<absolute>"; };
+		78323F11B6F14786D89EEFB3 /* PicArr.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PicArr.cpp; path = /Users/shooshx/code/happysolver/src/PicArr.cpp; sourceTree = "<absolute>"; };
+		7907BF0E1510488E192F310D /* CubeAcc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CubeAcc.h; path = /Users/shooshx/code/happysolver/src/CubeAcc.h; sourceTree = "<absolute>"; };
+		797BABCF37D73307756C8EEF /* ui_MyInputDlg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ui_MyInputDlg.h; path = /Users/shooshx/code/happysolver/ui_MyInputDlg.h; sourceTree = "<absolute>"; };
+		799FFA6175A8DCDD8F731B8D /* MainWindow.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MainWindow.cpp; path = /Users/shooshx/code/happysolver/src/MainWindow.cpp; sourceTree = "<absolute>"; };
+		7E74BE1DC10872C21D6E6340 /* CubeDoc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CubeDoc.h; path = /Users/shooshx/code/happysolver/src/CubeDoc.h; sourceTree = "<absolute>"; };
+		82516546DEE30EE76A6BB295 /* SolveDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = SolveDlg.cpp; path = /Users/shooshx/code/happysolver/src/SolveDlg.cpp; sourceTree = "<absolute>"; };
+		8279374DEEF53FC8EB977E93 /* moc_CubeDoc.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = moc_CubeDoc.cpp; path = /Users/shooshx/code/happysolver/moc_CubeDoc.cpp; sourceTree = "<absolute>"; };
+		82BE05EAE26632B007883219 /* happysolver.pro */ = {isa = PBXFileReference; lastKnownFileType = text; name = happysolver.pro; path = /Users/shooshx/code/happysolver/happysolver.pro; sourceTree = "<absolute>"; };
+		840CB7C50FCDFAF0A8B76752 /* Cube.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Cube.cpp; path = /Users/shooshx/code/happysolver/src/Cube.cpp; sourceTree = "<absolute>"; };
+		84BFCAEC92C8C727E8AFB53C /* OptionsDlg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OptionsDlg.h; path = /Users/shooshx/code/happysolver/src/OptionsDlg.h; sourceTree = "<absolute>"; };
+		8842719157F2BF81C21FF6AB /* moc_BuildGLControl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = moc_BuildGLControl.cpp; path = /Users/shooshx/code/happysolver/moc_BuildGLControl.cpp; sourceTree = "<absolute>"; };
+		8946577C6F7D022F18A08AE5 /* moc_BuildHelpDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = moc_BuildHelpDlg.cpp; path = /Users/shooshx/code/happysolver/moc_BuildHelpDlg.cpp; sourceTree = "<absolute>"; };
+		8A4B0123F0F90C26F9C09A3B /* qtcolortriangle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = qtcolortriangle.h; path = /Users/shooshx/code/happysolver/src/MyLib/QtAdd/qtcolortriangle.h; sourceTree = "<absolute>"; };
+		8AEEB020D25E02477FF93C92 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = /Users/shooshx/code/happysolver/src/main.cpp; sourceTree = "<absolute>"; };
+		8C31057BA8CE36BBFCCEE07E /* moc_MainWindow.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = moc_MainWindow.cpp; path = /Users/shooshx/code/happysolver/moc_MainWindow.cpp; sourceTree = "<absolute>"; };
+		8D2C92B8E651AEDFE0C6BF71 /* moc_ActFocusComboBox.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = moc_ActFocusComboBox.cpp; path = /Users/shooshx/code/happysolver/moc_ActFocusComboBox.cpp; sourceTree = "<absolute>"; };
+		8D8E47E1110968340ED158C0 /* PicArr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PicArr.h; path = /Users/shooshx/code/happysolver/src/PicArr.h; sourceTree = "<absolute>"; };
+		8D9815BDB5BD9F90D2BC05C5 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
+		93E91500FD0ED2F1071360E2 /* GLWidget.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GLWidget.h; path = /Users/shooshx/code/happysolver/src/GLWidget.h; sourceTree = "<absolute>"; };
+		954C458166D4A2D37E592FE2 /* GrpColorDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = GrpColorDlg.cpp; path = /Users/shooshx/code/happysolver/src/GrpColorDlg.cpp; sourceTree = "<absolute>"; };
+		96D9FF0526531A5B4868BE10 /* BuildWorld.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BuildWorld.h; path = /Users/shooshx/code/happysolver/src/BuildWorld.h; sourceTree = "<absolute>"; };
+		97396181D4F21C3FD0DA8629 /* AssembleStepDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = AssembleStepDlg.cpp; path = /Users/shooshx/code/happysolver/src/AssembleStepDlg.cpp; sourceTree = "<absolute>"; };
+		993A321501F249896AFBA0A0 /* moc_qtcolortriangle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = moc_qtcolortriangle.cpp; path = /Users/shooshx/code/happysolver/moc_qtcolortriangle.cpp; sourceTree = "<absolute>"; };
+		99A26EC2BE527936409F4821 /* resources.qrc */ = {isa = PBXFileReference; lastKnownFileType = text; name = resources.qrc; path = /Users/shooshx/code/happysolver/src/qt/resources.qrc; sourceTree = "<absolute>"; };
+		9B0F94F0E88B473D59A12F29 /* ModelHelpDlg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ModelHelpDlg.h; path = /Users/shooshx/code/happysolver/src/ModelHelpDlg.h; sourceTree = "<absolute>"; };
+		9C1DEC4E5304FD280E0207DD /* Mat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Mat.h; path = /Users/shooshx/code/happysolver/src/Mat.h; sourceTree = "<absolute>"; };
+		9C593738E0EB0601E166B5FD /* QtOpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtOpenGL.framework; path = /Users/shooshx/Qt5.5.1/5.5/clang_64/lib/QtOpenGL.framework; sourceTree = "<absolute>"; };
+		A1A67BEAA744704B29168D39 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = /System/Library/Frameworks/IOKit.framework; sourceTree = "<absolute>"; };
+		A3DB6152F89751BCB96FD05F /* build.vtx.glsl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = build.vtx.glsl.h; path = /Users/shooshx/code/happysolver/src/OpenGL/build.vtx.glsl.h; sourceTree = "<absolute>"; };
+		A5D29DC63E12A0DA52FAC5E3 /* MainWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MainWindow.h; path = /Users/shooshx/code/happysolver/src/MainWindow.h; sourceTree = "<absolute>"; };
+		A8C3467DA46BD608553D2F23 /* BuildHelpDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BuildHelpDlg.cpp; path = /Users/shooshx/code/happysolver/src/BuildHelpDlg.cpp; sourceTree = "<absolute>"; };
+		AA89956BE71D29A22071B69F /* PicsSelectWidget.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PicsSelectWidget.h; path = /Users/shooshx/code/happysolver/src/PicsSelectWidget.h; sourceTree = "<absolute>"; };
+		AB9BFA33BB7A4FC9E9FE2AB0 /* GlobDefs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GlobDefs.h; path = /Users/shooshx/code/happysolver/src/GlobDefs.h; sourceTree = "<absolute>"; };
+		AC49BDC47F64A8C135437637 /* moc_SolveDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = moc_SolveDlg.cpp; path = /Users/shooshx/code/happysolver/moc_SolveDlg.cpp; sourceTree = "<absolute>"; };
+		AC6343512C3295BDFC212CA4 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = /Users/shooshx/Qt5.5.1/5.5/clang_64/lib/QtGui.framework; sourceTree = "<absolute>"; };
+		ADCE5937EF40816129AA3537 /* build.frag.glsl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = build.frag.glsl.h; path = /Users/shooshx/code/happysolver/src/OpenGL/build.frag.glsl.h; sourceTree = "<absolute>"; };
+		AF58ADFA34ECA56F2ACC7399 /* ui_OptionsDlg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ui_OptionsDlg.h; path = /Users/shooshx/code/happysolver/ui_OptionsDlg.h; sourceTree = "<absolute>"; };
+		AF804AE29DC3004D8E222AF1 /* mac_icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = mac_icon.icns; path = /Users/shooshx/code/happysolver/images/mac_icon.icns; sourceTree = "<absolute>"; };
+		B09D1FBDAC74F0E3773428BD /* MyColorPicker.ui */ = {isa = PBXFileReference; lastKnownFileType = text; name = MyColorPicker.ui; path = /Users/shooshx/code/happysolver/src/MyLib/MyColorPicker.ui; sourceTree = "<absolute>"; };
+		B20AEB2EE8443884F15F9E2B /* SolveThread.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = SolveThread.cpp; path = /Users/shooshx/code/happysolver/src/SolveThread.cpp; sourceTree = "<absolute>"; };
+		B2311CCD25AFB9791207143F /* SolveDlg.ui */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = SolveDlg.ui; path = /Users/shooshx/code/happysolver/src/SolveDlg.ui; sourceTree = "<absolute>"; };
+		B2E7F2DF446D83F836832FA9 /* project.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = project.cpp; path = /Users/shooshx/code/happysolver/src/sglu/project.cpp; sourceTree = "<absolute>"; };
+		B8864FBE6311BE35B0BF35E2 /* GLTexture.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = GLTexture.cpp; path = /Users/shooshx/code/happysolver/src/OpenGL/GLTexture.cpp; sourceTree = "<absolute>"; };
+		B969265E776B1F4AC2BC8580 /* PicPainter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PicPainter.h; path = /Users/shooshx/code/happysolver/src/PicPainter.h; sourceTree = "<absolute>"; };
+		BA71AB090C2D4080CC1F67B8 /* Configuration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Configuration.h; path = /Users/shooshx/code/happysolver/src/Configuration.h; sourceTree = "<absolute>"; };
+		BB08CEC055A497D58A596F56 /* ObjExport.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ObjExport.cpp; path = /Users/shooshx/code/happysolver/src/ObjExport.cpp; sourceTree = "<absolute>"; };
+		BCE64F2BC75FE9497AE7BB4F /* BuildControlBase.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BuildControlBase.cpp; path = /Users/shooshx/code/happysolver/src/BuildControlBase.cpp; sourceTree = "<absolute>"; };
+		BDCA2FD29997169C466A0BEE /* ActFocusComboBox.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ActFocusComboBox.cpp; path = /Users/shooshx/code/happysolver/src/ActFocusComboBox.cpp; sourceTree = "<absolute>"; };
+		BE96B7AE19F3D9CA719A4B58 /* ModelGLControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ModelGLControl.h; path = /Users/shooshx/code/happysolver/src/ModelGLControl.h; sourceTree = "<absolute>"; };
+		BF0631935C62E4FF722DDB9A /* SlvPainter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = SlvPainter.cpp; path = /Users/shooshx/code/happysolver/src/SlvPainter.cpp; sourceTree = "<absolute>"; };
+		C3FA5340F09284EABE070800 /* MyInputDlg.ui */ = {isa = PBXFileReference; lastKnownFileType = text; name = MyInputDlg.ui; path = /Users/shooshx/code/happysolver/src/MyLib/MyInputDlg.ui; sourceTree = "<absolute>"; };
+		C478196BD01F993DF667CA88 /* mac_happysolver.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mac_happysolver.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C55E141E2E7819F03FF5E332 /* moc_GLWidget.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = moc_GLWidget.cpp; path = /Users/shooshx/code/happysolver/moc_GLWidget.cpp; sourceTree = "<absolute>"; };
+		C6008CA6655ABC505DA164E4 /* SlvPainter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SlvPainter.h; path = /Users/shooshx/code/happysolver/src/SlvPainter.h; sourceTree = "<absolute>"; };
+		C603A43C5B8EACD577B9E272 /* ui_SolveDlg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ui_SolveDlg.h; path = /Users/shooshx/code/happysolver/ui_SolveDlg.h; sourceTree = "<absolute>"; };
+		C6A6A6D2FC1FDC9A28629332 /* MyObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MyObject.h; path = /Users/shooshx/code/happysolver/src/MyObject.h; sourceTree = "<absolute>"; };
+		C8E674094B4F3CFE5D70DB3F /* tinyxml2.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = tinyxml2.cpp; path = /Users/shooshx/code/happysolver/src/tinyxml/tinyxml2.cpp; sourceTree = "<absolute>"; };
+		C9744D03F267EC714B90DACA /* moc_GrpColorDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = moc_GrpColorDlg.cpp; path = /Users/shooshx/code/happysolver/moc_GrpColorDlg.cpp; sourceTree = "<absolute>"; };
+		D04422EE3ED30356594B4A0A /* about.ui */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = about.ui; path = /Users/shooshx/code/happysolver/src/about.ui; sourceTree = "<absolute>"; };
+		D4B32C2222F82AC56BADEB21 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
+		D608641C2D71B4019CB05295 /* GLWidget.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = GLWidget.cpp; path = /Users/shooshx/code/happysolver/src/GLWidget.cpp; sourceTree = "<absolute>"; };
+		D7A3522905023206C7F502C8 /* Shape.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Shape.h; path = /Users/shooshx/code/happysolver/src/Shape.h; sourceTree = "<absolute>"; };
+		DAA8D8CB4EAAE9A79B8D03E3 /* PicPainter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PicPainter.cpp; path = /Users/shooshx/code/happysolver/src/PicPainter.cpp; sourceTree = "<absolute>"; };
+		DB569F6641D8E2FEBACA66CB /* moc_SolveThread.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = moc_SolveThread.cpp; path = /Users/shooshx/code/happysolver/moc_SolveThread.cpp; sourceTree = "<absolute>"; };
+		DBA529431F0B06896AC8F0F5 /* ParamBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ParamBase.h; path = /Users/shooshx/code/happysolver/src/MyLib/ParamBase.h; sourceTree = "<absolute>"; };
+		DD743EB501F1F58D30A3BA5F /* moc_PicsSelectWidget.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = moc_PicsSelectWidget.cpp; path = /Users/shooshx/code/happysolver/moc_PicsSelectWidget.cpp; sourceTree = "<absolute>"; };
+		E253CF81580A6B0444067F04 /* Mat.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Mat.cpp; path = /Users/shooshx/code/happysolver/src/Mat.cpp; sourceTree = "<absolute>"; };
+		E3476D3E4E4434EE1FCAFCFB /* moc_AssembleStepDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = moc_AssembleStepDlg.cpp; path = /Users/shooshx/code/happysolver/moc_AssembleStepDlg.cpp; sourceTree = "<absolute>"; };
+		E41216AA41DCA59F6234B937 /* Pieces.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Pieces.cpp; path = /Users/shooshx/code/happysolver/src/Pieces.cpp; sourceTree = "<absolute>"; };
+		E55F0606CCB493B3A3E2ABA4 /* BuildGLControl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BuildGLControl.cpp; path = /Users/shooshx/code/happysolver/src/BuildGLControl.cpp; sourceTree = "<absolute>"; };
+		E7CB2FC2F9274F03193B1A32 /* NoiseGenerator.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = NoiseGenerator.cpp; path = /Users/shooshx/code/happysolver/src/NoiseGenerator.cpp; sourceTree = "<absolute>"; };
+		EC0FE89C41ECA4F39D5AEDE0 /* BuildControlBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BuildControlBase.h; path = /Users/shooshx/code/happysolver/src/BuildControlBase.h; sourceTree = "<absolute>"; };
+		ED7002CA99DB08FC1CA02D6E /* Configuration.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Configuration.cpp; path = /Users/shooshx/code/happysolver/src/Configuration.cpp; sourceTree = "<absolute>"; };
+		EF855C760F0995EC09E7C07B /* DataWidgets.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = DataWidgets.cpp; path = /Users/shooshx/code/happysolver/src/DataWidgets.cpp; sourceTree = "<absolute>"; };
+		EFD5631C2B48E10E4453C420 /* Mesh.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Mesh.cpp; path = /Users/shooshx/code/happysolver/src/Mesh.cpp; sourceTree = "<absolute>"; };
+		F2C99DC6FDB9BC39509A8930 /* DataWidgets.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DataWidgets.h; path = /Users/shooshx/code/happysolver/src/DataWidgets.h; sourceTree = "<absolute>"; };
+		FAE01DD9BFCA344C6AC3C758 /* general.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = general.h; path = /Users/shooshx/code/happysolver/src/general.h; sourceTree = "<absolute>"; };
+		FC264DC1C0F2FC540A70788D /* Shaders.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Shaders.h; path = /Users/shooshx/code/happysolver/src/OpenGL/Shaders.h; sourceTree = "<absolute>"; };
+		FDCF1434ECE0C7FBB08535A8 /* moc_MyInputDlg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = moc_MyInputDlg.cpp; path = /Users/shooshx/code/happysolver/moc_MyInputDlg.cpp; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		B664F9C25C2502EDF1BB3505 /* Link Binary With Libraries */ = {
+		D1C883685E82D5676953459A /* Link Binary With Libraries */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				82A433E5F65863FAAF4BDC39 /* QtOpenGL.framework in Link Binary With Libraries */,
-				294633F308296305B3510995 /* QtWidgets.framework in Link Binary With Libraries */,
-				9FE76FE52CDA37B3F529F879 /* QtGui.framework in Link Binary With Libraries */,
-				244CED95A5CB24E1319D783E /* QtCore.framework in Link Binary With Libraries */,
-				DDB23D05F00310EFE948C659 /* QtXml.framework in Link Binary With Libraries */,
-				BCEF71E1EDFB18DA77DC750B /* OpenGL.framework in Link Binary With Libraries */,
-				0C6D4628EE0B0D1479A20551 /* AGL.framework in Link Binary With Libraries */,
+				F3384554BA6B3B0CD0182B11 /* QtOpenGL.framework in Link Binary With Libraries */,
+				5EE93FAD561075F3AC0CDBF9 /* QtWidgets.framework in Link Binary With Libraries */,
+				634100F86FB422D5C9BFAD8D /* QtGui.framework in Link Binary With Libraries */,
+				8B42D147F875EB2B64533DE3 /* QtCore.framework in Link Binary With Libraries */,
+				A99B2AA0F9CBBDD12BA126A4 /* DiskArbitration.framework in Link Binary With Libraries */,
+				8D267F2E4776F0ECA2F49DC8 /* IOKit.framework in Link Binary With Libraries */,
+				8504A1B1469CB69C01C8B76F /* QtXml.framework in Link Binary With Libraries */,
+				8771A8C96E9C391044035D99 /* OpenGL.framework in Link Binary With Libraries */,
+				E45E51A644D5FC9F942ECE55 /* AGL.framework in Link Binary With Libraries */,
 			);
 			name = "Link Binary With Libraries";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -254,344 +297,391 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		04FB5DF59766A9852E5DD2D0 /* Frameworks */ = {
+		12E908B8A1C3C07C115504F5 /* Sources [uic] */ = {
 			isa = PBXGroup;
 			children = (
-				49B35B64BE1795E447D9F01F /* QtOpenGL.framework */,
-				893B0E316971AD514C499B6B /* QtWidgets.framework */,
-				16CC7C7C5EB4BCCA8059142B /* QtGui.framework */,
-				625B639177FB5EE13A298F27 /* QtCore.framework */,
-				1AA1F26B27743C80B9545449 /* QtXml.framework */,
-				DA18A6831232F53228631AD1 /* OpenGL.framework */,
-				C6766F86E49E9C8701C8E637 /* AGL.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<Group>";
-		};
-		05596AB53D8D521C69802C27 /* mac_happysolver */ = {
-			isa = PBXGroup;
-			children = (
-				FB61758D0F0FDA4BA867C3D5 /* Sources */,
-				FA9127E605566CA2E2BF1EFD /* Generated Sources */,
-				59A98C78A220DE730049D57D /* Supporting Files */,
-				DDCF50C29294D4414F3F7C1B /* Resources */,
-				E5CB62C61293971C56F3BE8A /* Sources [uic] */,
-				04FB5DF59766A9852E5DD2D0 /* Frameworks */,
-				068F80C7519D0528FB08E821 /* Products */,
-			);
-			name = mac_happysolver;
-			sourceTree = "<Group>";
-		};
-		06674E1DE8D3EB6E763DFFDA /* src */ = {
-			isa = PBXGroup;
-			children = (
-				5781941D499A212639609EC5 /* ActFocusComboBox.cpp */,
-				F1A89462469614E1777A97C5 /* AssembleStepDlg.cpp */,
-				BF66A4DA0D5DE7D0B471DDB9 /* BuildGLWidget.cpp */,
-				5B55D91FC6BE9568579F6B87 /* BuildHelpDlg.cpp */,
-				2BD4C2C56498BBF65133593B /* BuildWorld.cpp */,
-				4C574E686807544C394ACDCB /* Configuration.cpp */,
-				1E5AD5998E302E7F4ADB466F /* Cube.cpp */,
-				EB7189CF1DA5A105A670FD84 /* CubeDoc.cpp */,
-				F05E45E5137DD187BD98E7F7 /* DataWidgets.cpp */,
-				51F526CCE9495E25732E59EB /* general.cpp */,
-				4853F391925B4262B0F08748 /* GLWidget.cpp */,
-				70FB13F0782AE7544B7F604F /* GrpColorDlg.cpp */,
-				7EC3C68A81EFFF79B6CA22AC /* main.cpp */,
-				1C0B64226A129D35F02DC004 /* MainWindow.cpp */,
-				792B06B7AADECB4BED259D2F /* ModelGLWidget.cpp */,
-				77A422C94EBC267F5921FB26 /* ModelHelpDlg.cpp */,
-				07A4D1B1CF3094AF0C1969D3 /* MyFile.cpp */,
-				81CC3D9F977FAFABAC3709A5 /* MyObject.cpp */,
-				2667976E2B02436274D3229F /* MyPolygon.cpp */,
-				15AF03C9FB24AB319D5C52A4 /* OptionsDlg.cpp */,
-				76F7EE759804A762F8F468CE /* PicPainter.cpp */,
-				36D95234C717B4BD3FB4777F /* PicsSelectWidget.cpp */,
-				743D993171BC89CF1EB19AC6 /* Pieces.cpp */,
-				58AC82F7B76D588E6B234F8C /* Shape.cpp */,
-				E1F65FB30504183D3D4D825E /* SIDlg.cpp */,
-				25B751BE915FC92E10CA94D9 /* Solutions.cpp */,
-				654B08162A754AFF568DD4F6 /* SolveDlg.cpp */,
-				4940C2C9005F9D976FCFF37B /* SlvPainter.cpp */,
-				0671E3B0032AC39873F68F45 /* SolveThread.cpp */,
-				6654AE3C54A2F79C186B1662 /* Space3D.cpp */,
-				5FAC1C4CB42900082CB7C0BC /* PicArr.cpp */,
-				5A3A4A7D14A36F987D06B472 /* SlvCube.cpp */,
-				9FAA78DDFB3509C58802587F /* PicsSet.cpp */,
-				225B3BF959C5C61289BD39BD /* NoiseGenerator.cpp */,
-				03E7140E2B9DEC3D8D860ABC /* Mat.cpp */,
-				92EC94FE3E6CC0E42CE85BCC /* ObjExport.cpp */,
-				0D8BDFAF2848D954AFA86F26 /* Mesh.cpp */,
-				1B95515F044ADFFFCC328F75 /* OpenGL */,
-				90F378ECAADC967C8F1389D1 /* MyLib */,
-				DC178C10127054F2D7B55657 /* tinyxml */,
-				2312C49A2282B92FAA5A8610 /* sglu */,
-				AFEE9774261738E3F9F59F5B /* ActFocusComboBox.h */,
-				85E23E7609FBCC106D75B139 /* AssembleStepDlg.h */,
-				774489C68F0AD96ADFF643AE /* BuildGLWidget.h */,
-				474594C49A3DAF15A0499EFC /* BuildHelpDlg.h */,
-				D5C8C3CF774268ACA87733EC /* BuildWorld.h */,
-				70896887E81B9111684946C2 /* Configuration.h */,
-				48E9AD780920776BA62B47A3 /* Cube.h */,
-				8760C1085F84A0C04EBFA65C /* CubeAcc.h */,
-				DC254B052D716BBDDAA1A16F /* CubeDoc.h */,
-				04222BC2EB1D1B8A05EA48F1 /* DataWidgets.h */,
-				858CD4DE2B5307F8FC61C3C9 /* general.h */,
-				640D63F38EF4B9E5E52DED4B /* GlobDefs.h */,
-				9B8D28AC3CB6D1BF9B368F00 /* GLWidget.h */,
-				C00E2D6F6C98757AED6F30C7 /* GrpColorDlg.h */,
-				D807F0DE3110F0AD45593FA7 /* MainWindow.h */,
-				1D9D60BEF8D00444FCB12951 /* MemoryMgmt.h */,
-				5D8F8893E055A509BEE0B094 /* ModelGLWidget.h */,
-				C38BF4870725C44C47F6200E /* ModelHelpDlg.h */,
-				50FAE8FF64355EF993312282 /* MyFile.h */,
-				B5071AFBC3619C701E717BE0 /* MyObject.h */,
-				95D3A04FFD2F3907BDD2951B /* MyPoint.h */,
-				A0156CD38A12660D4045D4BE /* MyPolygon.h */,
-				88A47EBCDBA972388DC5E6C6 /* OptionsDlg.h */,
-				168987697DA27BABDE358204 /* PicPainter.h */,
-				341441029BADB228FAF512DB /* PicsSelectWidget.h */,
-				71429B9C1571ACE4AF450B66 /* Pieces.h */,
-				821B08E0AF6C424D9176D180 /* Shape.h */,
-				F6AD5476C1DFA06855DD557E /* SIDlg.h */,
-				4BB24A18A0B6AE48CDCEFF9C /* Solutions.h */,
-				09F4E339D4D2712E4C5F83BD /* SolveDlg.h */,
-				853844A88B5A5B76F53DD02A /* SlvPainter.h */,
-				3A367D1D22C7C2F1303D92DA /* SolveThread.h */,
-				375BD86B94F45502FFB8C7FC /* Space3D.h */,
-				D09C95B22193B94C83B906FA /* Texture.h */,
-				5C23A40191C925C4964FBF32 /* PicArr.h */,
-				0629137BD31DF2E92137086B /* SlvCube.h */,
-				5BACE555D1876CA5553C5929 /* PicsSet.h */,
-				7197FF76783CC6F36EC622A4 /* NoiseGenerator.h */,
-				2223D1BDDA7F3213F8A12E54 /* Mat.h */,
-				0FFF730DEF7BB0B20E49AD69 /* ObjExport.h */,
-				45EC2ECC02A2E3965B5BD8C2 /* Mesh.h */,
-			);
-			name = src;
-			sourceTree = "<Group>";
-		};
-		068F80C7519D0528FB08E821 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				64FAC3FF14C2C9FF366DDABC /* mac_happysolver.app */,
-			);
-			name = Products;
-			sourceTree = "<Group>";
-		};
-		1B95515F044ADFFFCC328F75 /* OpenGL */ = {
-			isa = PBXGroup;
-			children = (
-				F647EEDCD44FF43E39B991D2 /* GLTexture.cpp */,
-				567F8B90108A52106E8CA167 /* ShaderProgram.cpp */,
-				18D6303E1DF2C0C946080733 /* Shaders.cpp */,
-				EB0BD83F3664DBE712AD680A /* GLTexture.h */,
-				8979754F7C00CC2CD4ABBAD4 /* ShaderProgram.h */,
-				1E65E72C17B2245C62C68706 /* Shaders.h */,
-				BE77C3F293BBA20A89426AC4 /* build.frag.glsl.h */,
-				20931F6C57CA8BC075176C04 /* build.vtx.glsl.h */,
-				E27D3660FEF40896B5BFBBCA /* cubesNoise.frag.glsl.h */,
-				7620142FE23E296F84D0555D /* cubesNoise.vtx.glsl.h */,
-				4E793C8CD42312BD38E61CBF /* flat.frag.glsl.h */,
-				77FCD284E68ACA47933C857D /* flat.vtx.glsl.h */,
-			);
-			name = OpenGL;
-			sourceTree = "<Group>";
-		};
-		1DDD228647F922E13FD1C581 /* images */ = {
-			isa = PBXGroup;
-			children = (
-				2560F28AC8216F382A5DED74 /* mac_icon.icns */,
-			);
-			name = images;
-			sourceTree = "<Group>";
-		};
-		2312C49A2282B92FAA5A8610 /* sglu */ = {
-			isa = PBXGroup;
-			children = (
-				A5BB6B6A9CC15C35CDB795E9 /* project.cpp */,
-				EC9E9DC99AD39E5C6950C541 /* sglu.h */,
-			);
-			name = sglu;
-			sourceTree = "<Group>";
-		};
-		57DA720B8D1B40740460DAC5 /* QtAdd */ = {
-			isa = PBXGroup;
-			children = (
-				995B0A03B8BB49151630143D /* qtcolortriangle.cpp */,
-				006286297F013F37150FD208 /* qtcolortriangle.h */,
-			);
-			name = QtAdd;
-			sourceTree = "<Group>";
-		};
-		59A98C78A220DE730049D57D /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				DB5AC797B33B0E4A1105C8B7 /* happysolver.pro */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<Group>";
-		};
-		7AAF2A76AC3A09FD3E9C0F99 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				67A551D7DA8C1E54B6794CA5 /* about.ui */,
-				CE126BF3A70AA438031F1218 /* GrpColor.ui */,
-				79E0EE126CC046F91AEC7F89 /* OptionsDlg.ui */,
-				1C961612317406BD548DB962 /* SolveDlg.ui */,
-				CF55FC0933B0E042757D029E /* MyLib */,
-			);
-			name = src;
-			sourceTree = "<Group>";
-		};
-		90F378ECAADC967C8F1389D1 /* MyLib */ = {
-			isa = PBXGroup;
-			children = (
-				86F26C0FD83511AA56AFED42 /* ParamBase.cpp */,
-				C6BAC8972BBDAA972444727D /* MyInputDlg.cpp */,
-				39889CE98CF66B10DEF9F4C8 /* MyColorPicker.cpp */,
-				57DA720B8D1B40740460DAC5 /* QtAdd */,
-				B884C71F45F6204B8995FAC3 /* ParamBase.h */,
-				404F2962897B55BB69302BAA /* MyInputDlg.h */,
-				79D612E664CF79E206F793EE /* MyColorPicker.h */,
-				0873ED10512EA0A1EEF07016 /* MyDialog.h */,
-			);
-			name = MyLib;
-			sourceTree = "<Group>";
-		};
-		CF55FC0933B0E042757D029E /* MyLib */ = {
-			isa = PBXGroup;
-			children = (
-				CD1319F9F7080B4952A9AD42 /* MyInputDlg.ui */,
-				30CB0C1B0E3C5081AEFC2B76 /* MyColorPicker.ui */,
-			);
-			name = MyLib;
-			sourceTree = "<Group>";
-		};
-		DC178C10127054F2D7B55657 /* tinyxml */ = {
-			isa = PBXGroup;
-			children = (
-				EE1199DADDDE791DDC1FAB71 /* tinyxml2.cpp */,
-				2E1FA4DCCFA0FD52F981D3BC /* tinyxml2.h */,
-			);
-			name = tinyxml;
-			sourceTree = "<Group>";
-		};
-		DDCF50C29294D4414F3F7C1B /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				D7DA6145AB9539ECDE332D13 /* resources.qrc */,
-			);
-			name = Resources;
-			sourceTree = "<Group>";
-		};
-		E5CB62C61293971C56F3BE8A /* Sources [uic] */ = {
-			isa = PBXGroup;
-			children = (
-				7AAF2A76AC3A09FD3E9C0F99 /* src */,
+				FB3C908FA6A710AAAE4CE3AA /* src */,
 			);
 			name = "Sources [uic]";
 			sourceTree = "<Group>";
 		};
-		FA9127E605566CA2E2BF1EFD /* Generated Sources */ = {
+		2412053E58A555CB9F8543F0 /* qt */ = {
 			isa = PBXGroup;
 			children = (
-				43657A1495917FFB693BCFFE /* qrc_resources.cpp */,
-				44486FACD36221F3363D15BA /* moc_ActFocusComboBox.cpp */,
-				3D57B6AD1CD01E216D2EA622 /* moc_AssembleStepDlg.cpp */,
-				3BCE58290C400B4B5F86E022 /* moc_BuildGLWidget.cpp */,
-				D387E7DE7C7851E1EFC27820 /* moc_BuildHelpDlg.cpp */,
-				3F0663AD809DDAD0A7ED7AB9 /* moc_CubeDoc.cpp */,
-				5AA2263CFF6F8F0D1E94C792 /* moc_DataWidgets.cpp */,
-				1B676BCE814D278338617BB7 /* moc_GLWidget.cpp */,
-				F562DBFC7DD4D9B3620DAB5E /* moc_GrpColorDlg.cpp */,
-				26827F2FC4DC4FBB23DE8287 /* moc_MainWindow.cpp */,
-				42CD1BE7551EDF343F972AEF /* moc_ModelGLWidget.cpp */,
-				C0FA5B1E26E9D8C22852506D /* moc_ModelHelpDlg.cpp */,
-				EBF8815A7CE6F88E0268F87C /* moc_OptionsDlg.cpp */,
-				469AB6D2DAAC32639E2AE0AC /* moc_PicsSelectWidget.cpp */,
-				926A7D54EF396871D73E4D1F /* moc_SIDlg.cpp */,
-				07EAAFD1DB768F5B06F76D81 /* moc_SolveDlg.cpp */,
-				FA257F15582CB0B4EA3BF6E4 /* moc_SolveThread.cpp */,
-				CEB4C41A03E947D515B87C0C /* moc_ParamBase.cpp */,
-				2EC5688DD9071A853848E1D8 /* moc_MyInputDlg.cpp */,
-				238D406C5D6499EDB6396C3E /* moc_MyColorPicker.cpp */,
-				0D73F3C5668AA643A78F8C45 /* moc_qtcolortriangle.cpp */,
-				BF85285BEDA3863C6F7040EF /* moc_MyDialog.cpp */,
-				3BC338EB54B5D323151DEF99 /* ui_about.h */,
-				A3AE3427DF3948A10FFEC0DB /* ui_GrpColor.h */,
-				3E1707CCAF689929763EB7C6 /* ui_OptionsDlg.h */,
-				52A630EEB009024336A07731 /* ui_SolveDlg.h */,
-				65F3EAB82631E85399BCC969 /* ui_MyInputDlg.h */,
-				D5D707D649247FDB4792C63C /* ui_MyColorPicker.h */,
+				99A26EC2BE527936409F4821 /* resources.qrc */,
+			);
+			name = qt;
+			sourceTree = "<Group>";
+		};
+		25B08E2869634E9BCBA333A2 /* Generated Sources */ = {
+			isa = PBXGroup;
+			children = (
+				4A01C35A6C27EB827C06F653 /* qrc_resources.cpp */,
+				8D2C92B8E651AEDFE0C6BF71 /* moc_ActFocusComboBox.cpp */,
+				E3476D3E4E4434EE1FCAFCFB /* moc_AssembleStepDlg.cpp */,
+				8842719157F2BF81C21FF6AB /* moc_BuildGLControl.cpp */,
+				8946577C6F7D022F18A08AE5 /* moc_BuildHelpDlg.cpp */,
+				8279374DEEF53FC8EB977E93 /* moc_CubeDoc.cpp */,
+				297009335C352F97DC3C54E9 /* moc_DataWidgets.cpp */,
+				C55E141E2E7819F03FF5E332 /* moc_GLWidget.cpp */,
+				C9744D03F267EC714B90DACA /* moc_GrpColorDlg.cpp */,
+				8C31057BA8CE36BBFCCEE07E /* moc_MainWindow.cpp */,
+				5758A868AF3AC5262B15BAE8 /* moc_ModelGLControl.cpp */,
+				1BA5307F9622BE899B35D427 /* moc_ModelHelpDlg.cpp */,
+				57606894AC2AAFD0ADBF7515 /* moc_OptionsDlg.cpp */,
+				DD743EB501F1F58D30A3BA5F /* moc_PicsSelectWidget.cpp */,
+				0AFE251897D43C2B37CCB643 /* moc_SIDlg.cpp */,
+				AC49BDC47F64A8C135437637 /* moc_SolveDlg.cpp */,
+				DB569F6641D8E2FEBACA66CB /* moc_SolveThread.cpp */,
+				348AAD37440C2B2D1E4EA834 /* moc_ParamBase.cpp */,
+				FDCF1434ECE0C7FBB08535A8 /* moc_MyInputDlg.cpp */,
+				3E7131C99D54E25D7515B8BF /* moc_MyColorPicker.cpp */,
+				993A321501F249896AFBA0A0 /* moc_qtcolortriangle.cpp */,
+				35CDB347D789CB6A0E448BF9 /* moc_MyDialog.cpp */,
+				45BDB810ACAF7B5FC88F7DFD /* ui_about.h */,
+				46148F9ACC14F3353FC8E31B /* ui_GrpColor.h */,
+				AF58ADFA34ECA56F2ACC7399 /* ui_OptionsDlg.h */,
+				C603A43C5B8EACD577B9E272 /* ui_SolveDlg.h */,
+				797BABCF37D73307756C8EEF /* ui_MyInputDlg.h */,
+				45929CD11E2D6F3450513CBC /* ui_MyColorPicker.h */,
 			);
 			name = "Generated Sources";
 			sourceTree = "<Group>";
 		};
-		FB61758D0F0FDA4BA867C3D5 /* Sources */ = {
+		2EB56BE3C2D93CDAB0C52E67 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				06674E1DE8D3EB6E763DFFDA /* src */,
-				1DDD228647F922E13FD1C581 /* images */,
+				921315FAA7F261D737F4F4C7 /* src */,
+				994CFA67844055A0579A5E73 /* images */,
 			);
 			name = Sources;
+			sourceTree = "<Group>";
+		};
+		33DD1506AB08B9DC2B8A2738 /* tinyxml */ = {
+			isa = PBXGroup;
+			children = (
+				C8E674094B4F3CFE5D70DB3F /* tinyxml2.cpp */,
+				548C6700D11B86F4A829DB9F /* tinyxml2.h */,
+			);
+			name = tinyxml;
+			sourceTree = "<Group>";
+		};
+		3A971A0629DC6FCCC39F91E6 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				2412053E58A555CB9F8543F0 /* qt */,
+			);
+			name = src;
+			sourceTree = "<Group>";
+		};
+		74B182DB50CB5611B5C1C297 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				82BE05EAE26632B007883219 /* happysolver.pro */,
+				737949B5D12689519A603B19 /* .qmake.stash */,
+				3A971A0629DC6FCCC39F91E6 /* src */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<Group>";
+		};
+		87DF60DE337FB58864343E39 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F380266849BE7CF802A85CCF /* src */,
+			);
+			name = Resources;
+			sourceTree = "<Group>";
+		};
+		921315FAA7F261D737F4F4C7 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				BDCA2FD29997169C466A0BEE /* ActFocusComboBox.cpp */,
+				97396181D4F21C3FD0DA8629 /* AssembleStepDlg.cpp */,
+				1B5A3363C62689B1D7427E27 /* BaseGLWidget.cpp */,
+				BCE64F2BC75FE9497AE7BB4F /* BuildControlBase.cpp */,
+				E55F0606CCB493B3A3E2ABA4 /* BuildGLControl.cpp */,
+				A8C3467DA46BD608553D2F23 /* BuildHelpDlg.cpp */,
+				6649BAE18DCB2DC365AA7E79 /* BuildWorld.cpp */,
+				ED7002CA99DB08FC1CA02D6E /* Configuration.cpp */,
+				840CB7C50FCDFAF0A8B76752 /* Cube.cpp */,
+				6A6D744ABF555D86C6ED7771 /* CubeDoc.cpp */,
+				EF855C760F0995EC09E7C07B /* DataWidgets.cpp */,
+				22E92D1236A5CB363CED810A /* general.cpp */,
+				D608641C2D71B4019CB05295 /* GLWidget.cpp */,
+				954C458166D4A2D37E592FE2 /* GrpColorDlg.cpp */,
+				229780C7FF4A87E2F2482293 /* ImageBuf.cpp */,
+				8AEEB020D25E02477FF93C92 /* main.cpp */,
+				799FFA6175A8DCDD8F731B8D /* MainWindow.cpp */,
+				E253CF81580A6B0444067F04 /* Mat.cpp */,
+				EFD5631C2B48E10E4453C420 /* Mesh.cpp */,
+				303914966E7D0582250D0DB9 /* ModelControlBase.cpp */,
+				3A94FDF56E71EB9E85B1D077 /* ModelGLControl.cpp */,
+				08BA963320C84D1380C15D21 /* ModelHelpDlg.cpp */,
+				457143EE0643CDD4DBE7B68E /* MyFile.cpp */,
+				74F541B5D13D5FE3D58A315D /* MyObject.cpp */,
+				0277331854F30A69CA249763 /* MyPolygon.cpp */,
+				E7CB2FC2F9274F03193B1A32 /* NoiseGenerator.cpp */,
+				BB08CEC055A497D58A596F56 /* ObjExport.cpp */,
+				2FA88816795CA1F6EC6A7E85 /* OptionsDlg.cpp */,
+				78323F11B6F14786D89EEFB3 /* PicArr.cpp */,
+				DAA8D8CB4EAAE9A79B8D03E3 /* PicPainter.cpp */,
+				5A1249A86CD37828F5018203 /* PicsSelectWidget.cpp */,
+				4D37EDF6AF2DB423110FE6BD /* PicsSet.cpp */,
+				E41216AA41DCA59F6234B937 /* Pieces.cpp */,
+				1F12520A09DB21832DB23181 /* Shape.cpp */,
+				629B5587E81A551EF5C193C1 /* SIDlg.cpp */,
+				10D00D8FB21A7EDDCA1B236C /* SlvCube.cpp */,
+				2394A34B3DF28E544C9E410D /* Solutions.cpp */,
+				BF0631935C62E4FF722DDB9A /* SlvPainter.cpp */,
+				82516546DEE30EE76A6BB295 /* SolveDlg.cpp */,
+				B20AEB2EE8443884F15F9E2B /* SolveThread.cpp */,
+				469ABDEA9CFF658E20A704E8 /* Space3D.cpp */,
+				A39EB4A4E7F6B9AD43E44148 /* OpenGL */,
+				AE86EBF57C839959AC5203BA /* MyLib */,
+				33DD1506AB08B9DC2B8A2738 /* tinyxml */,
+				FF0B6789A5293DB5AF7A9066 /* sglu */,
+				34A799FAEF9F6FCE611B04B6 /* ActFocusComboBox.h */,
+				40E4B3456182C4BFD5871414 /* AssembleStepDlg.h */,
+				EC0FE89C41ECA4F39D5AEDE0 /* BuildControlBase.h */,
+				381CB340C79C0EB945F44475 /* BuildGLControl.h */,
+				148A2DA7CBDA79A0F4BB395D /* BaseGLWidget.h */,
+				2E6DB65D538D0229145688A9 /* BuildHelpDlg.h */,
+				96D9FF0526531A5B4868BE10 /* BuildWorld.h */,
+				BA71AB090C2D4080CC1F67B8 /* Configuration.h */,
+				725DF8381D657B5526355813 /* Cube.h */,
+				7907BF0E1510488E192F310D /* CubeAcc.h */,
+				7E74BE1DC10872C21D6E6340 /* CubeDoc.h */,
+				F2C99DC6FDB9BC39509A8930 /* DataWidgets.h */,
+				FAE01DD9BFCA344C6AC3C758 /* general.h */,
+				AB9BFA33BB7A4FC9E9FE2AB0 /* GlobDefs.h */,
+				93E91500FD0ED2F1071360E2 /* GLWidget.h */,
+				50EEE969C2843D19BC9610EB /* GrpColorDlg.h */,
+				A5D29DC63E12A0DA52FAC5E3 /* MainWindow.h */,
+				13189F95A88E638E2B9B118C /* MemoryMgmt.h */,
+				BE96B7AE19F3D9CA719A4B58 /* ModelGLControl.h */,
+				5C4D03D6DF0C22428690F006 /* ModelControlBase.h */,
+				9B0F94F0E88B473D59A12F29 /* ModelHelpDlg.h */,
+				342924ECCEF5AF425B6193FF /* MyFile.h */,
+				C6A6A6D2FC1FDC9A28629332 /* MyObject.h */,
+				610A2F46FC93D80C9E6042FF /* MyPoint.h */,
+				3A6BF58FF990406FA03CCB1D /* MyPolygon.h */,
+				84BFCAEC92C8C727E8AFB53C /* OptionsDlg.h */,
+				B969265E776B1F4AC2BC8580 /* PicPainter.h */,
+				AA89956BE71D29A22071B69F /* PicsSelectWidget.h */,
+				056CDB3281AFF5B2C5CC71EC /* Pieces.h */,
+				D7A3522905023206C7F502C8 /* Shape.h */,
+				130E82AC8A39949D65ED9750 /* SIDlg.h */,
+				095FBDDCA14C20082A29CB8F /* Solutions.h */,
+				0A12CD9B87FD950EF2D27C65 /* SolveDlg.h */,
+				C6008CA6655ABC505DA164E4 /* SlvPainter.h */,
+				3BAE4F242D5F992F236D4BA9 /* SolveThread.h */,
+				3351ED9159B70B71E511CED1 /* Space3D.h */,
+				8D8E47E1110968340ED158C0 /* PicArr.h */,
+				6D392E6C53F196515A4C72DF /* SlvCube.h */,
+				4D2E09F544B975E197F380AD /* PicsSet.h */,
+				23D307112A0D556D686A9DD2 /* NoiseGenerator.h */,
+				9C1DEC4E5304FD280E0207DD /* Mat.h */,
+				1020108642D58493D6FC3EAD /* ObjExport.h */,
+				06994D0C2A972B440DA5F25B /* Mesh.h */,
+			);
+			name = src;
+			sourceTree = "<Group>";
+		};
+		994CFA67844055A0579A5E73 /* images */ = {
+			isa = PBXGroup;
+			children = (
+				AF804AE29DC3004D8E222AF1 /* mac_icon.icns */,
+			);
+			name = images;
+			sourceTree = "<Group>";
+		};
+		A39EB4A4E7F6B9AD43E44148 /* OpenGL */ = {
+			isa = PBXGroup;
+			children = (
+				B8864FBE6311BE35B0BF35E2 /* GLTexture.cpp */,
+				2863DAFB0872ED85AEAB6C63 /* ShaderProgram.cpp */,
+				24EDBD4C854A09F62D427ADF /* Shaders.cpp */,
+				39191F482AA1E4B7E8D0026C /* GLTexture.h */,
+				08E510CDD546F7DA1AE0A0FE /* ShaderProgram.h */,
+				FC264DC1C0F2FC540A70788D /* Shaders.h */,
+				ADCE5937EF40816129AA3537 /* build.frag.glsl.h */,
+				A3DB6152F89751BCB96FD05F /* build.vtx.glsl.h */,
+				6FF75EE9593956EC5CA12CA5 /* cubesNoise.frag.glsl.h */,
+				5D9601E914A15ACC9BF4D5D5 /* cubesNoise.vtx.glsl.h */,
+				3F38F8045E41F4DF6A5B0994 /* flat.frag.glsl.h */,
+				62F74A1899EB36B6481BB70D /* flat.vtx.glsl.h */,
+			);
+			name = OpenGL;
+			sourceTree = "<Group>";
+		};
+		AE86EBF57C839959AC5203BA /* MyLib */ = {
+			isa = PBXGroup;
+			children = (
+				6117A1D221E8841B2A127658 /* ParamBase.cpp */,
+				764DD77A09726542992671A6 /* MyInputDlg.cpp */,
+				366CFE9E9A9F6B289975EC0C /* MyColorPicker.cpp */,
+				B1527EF4610E13899595F88C /* QtAdd */,
+				DBA529431F0B06896AC8F0F5 /* ParamBase.h */,
+				7653D14E2923EEB149C72BC4 /* MyInputDlg.h */,
+				67ED396C1C57870C57D47AAC /* MyColorPicker.h */,
+				599386008E4C46A3CB4E9E7F /* MyDialog.h */,
+			);
+			name = MyLib;
+			sourceTree = "<Group>";
+		};
+		AF39DD055C3EF8226FBE929D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				9C593738E0EB0601E166B5FD /* QtOpenGL.framework */,
+				40F09C785423A26962D9C79E /* QtWidgets.framework */,
+				AC6343512C3295BDFC212CA4 /* QtGui.framework */,
+				32125DB39DFF65768A1AFD45 /* QtCore.framework */,
+				2B774D8E4178765CE52EAAF5 /* DiskArbitration.framework */,
+				A1A67BEAA744704B29168D39 /* IOKit.framework */,
+				7489557FC166BCE246374B7E /* QtXml.framework */,
+				D4B32C2222F82AC56BADEB21 /* OpenGL.framework */,
+				8D9815BDB5BD9F90D2BC05C5 /* AGL.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<Group>";
+		};
+		B1527EF4610E13899595F88C /* QtAdd */ = {
+			isa = PBXGroup;
+			children = (
+				509080CBA2C208BA04EC4990 /* qtcolortriangle.cpp */,
+				8A4B0123F0F90C26F9C09A3B /* qtcolortriangle.h */,
+			);
+			name = QtAdd;
+			sourceTree = "<Group>";
+		};
+		B409A0042B8C96BFA86F9E6D /* MyLib */ = {
+			isa = PBXGroup;
+			children = (
+				C3FA5340F09284EABE070800 /* MyInputDlg.ui */,
+				B09D1FBDAC74F0E3773428BD /* MyColorPicker.ui */,
+			);
+			name = MyLib;
+			sourceTree = "<Group>";
+		};
+		E60D056965FBA8A7305CF127 /* qt */ = {
+			isa = PBXGroup;
+			children = (
+				99A26EC2BE527936409F4821 /* resources.qrc */,
+			);
+			name = qt;
+			sourceTree = "<Group>";
+		};
+		E8C543AB96796ECAA2E65C57 /* mac_happysolver */ = {
+			isa = PBXGroup;
+			children = (
+				2EB56BE3C2D93CDAB0C52E67 /* Sources */,
+				25B08E2869634E9BCBA333A2 /* Generated Sources */,
+				74B182DB50CB5611B5C1C297 /* Supporting Files */,
+				87DF60DE337FB58864343E39 /* Resources */,
+				12E908B8A1C3C07C115504F5 /* Sources [uic] */,
+				AF39DD055C3EF8226FBE929D /* Frameworks */,
+				FE0A091FDBFB3E9C31B7A1BD /* Products */,
+			);
+			name = mac_happysolver;
+			sourceTree = "<Group>";
+		};
+		F380266849BE7CF802A85CCF /* src */ = {
+			isa = PBXGroup;
+			children = (
+				E60D056965FBA8A7305CF127 /* qt */,
+			);
+			name = src;
+			sourceTree = "<Group>";
+		};
+		FB3C908FA6A710AAAE4CE3AA /* src */ = {
+			isa = PBXGroup;
+			children = (
+				D04422EE3ED30356594B4A0A /* about.ui */,
+				1100848C012FC72B45D29EF0 /* GrpColor.ui */,
+				34218772E7474A9B7CA81AEE /* OptionsDlg.ui */,
+				B2311CCD25AFB9791207143F /* SolveDlg.ui */,
+				B409A0042B8C96BFA86F9E6D /* MyLib */,
+			);
+			name = src;
+			sourceTree = "<Group>";
+		};
+		FE0A091FDBFB3E9C31B7A1BD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C478196BD01F993DF667CA88 /* mac_happysolver.app */,
+			);
+			name = Products;
+			sourceTree = "<Group>";
+		};
+		FF0B6789A5293DB5AF7A9066 /* sglu */ = {
+			isa = PBXGroup;
+			children = (
+				B2E7F2DF446D83F836832FA9 /* project.cpp */,
+				59E4B468B1D18F439F528415 /* sglu.h */,
+			);
+			name = sglu;
 			sourceTree = "<Group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		3A55198775C29C58D7109B4C /* mac_happysolver */ = {
+		A5F5406CE6ADD38FC6714828 /* mac_happysolver */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 17B3380A4D6A7D415E7F2E1E /* Build configuration list for PBXNativeTarget "mac_happysolver" */;
+			buildConfigurationList = 6CC3B5D2136C7CD6A5CF5A59 /* Build configuration list for PBXNativeTarget "mac_happysolver" */;
 			buildPhases = (
-				D7BA7D76DAB5DD13389D6332 /* Qt Qmake */,
-				A0A52A2ADF7A1E2A99738674 /* Qt Preprocessors */,
-				7F2420B6E85D99F4A5391B9D /* Compile Sources */,
-				B664F9C25C2502EDF1BB3505 /* Link Binary With Libraries */,
+				F7E50F631C51CD5B5DC0BC43 /* Compile Sources */,
+				D1C883685E82D5676953459A /* Link Binary With Libraries */,
+				30414803F31797EB689AE508 /* Copy Bundle Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				56F0CB6D769EEDE3CFAE4F32 /* PBXTargetDependency */,
 			);
 			name = mac_happysolver;
 			productName = mac_happysolver;
-			productReference = 64FAC3FF14C2C9FF366DDABC /* mac_happysolver.app */;
+			productReference = C478196BD01F993DF667CA88 /* mac_happysolver.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		91B15E841AA80083484172DE /* Project object */ = {
+		6DB9C3763D02B1415CD9D565 /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = CC82A9286117DFED018F418F /* Build configuration list for PBXProject "mac_happysolver" */;
+			attributes = {
+			};
+			buildConfigurationList = DAC4C1AA5EDEA1C85E9CA5E6 /* Build configuration list for PBXProject "mac_happysolver" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				en,
 			);
-			mainGroup = 05596AB53D8D521C69802C27 /* mac_happysolver */;
-			productRefGroup = 068F80C7519D0528FB08E821 /* Products */;
+			mainGroup = E8C543AB96796ECAA2E65C57 /* mac_happysolver */;
+			productRefGroup = FE0A091FDBFB3E9C31B7A1BD /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				3A55198775C29C58D7109B4C /* mac_happysolver */,
+				A5F5406CE6ADD38FC6714828 /* mac_happysolver */,
+				F629A97743B830933952058D /* Qt Preprocess */,
 			);
 		};
 /* End PBXProject section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		A0A52A2ADF7A1E2A99738674 /* Qt Preprocessors */ = {
-			isa = PBXShellScriptBuildPhase;
+/* Begin PBXResourcesBuildPhase section */
+		30414803F31797EB689AE508 /* Copy Bundle Resources */ = {
+			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				27DE826F1C277A3B00675792 /* mac_icon.icns in Copy Bundle Resources */,
 			);
-			name = "Qt Preprocessors";
+			name = "Copy Bundle Resources";
 			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "make -C /Users/shooshx/code/happysolver -f mac_happysolver.xcodeproj/qt_preprocess.mak";
 		};
-		D7BA7D76DAB5DD13389D6332 /* Qt Qmake */ = {
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		5E618435888B9D49F8540165 /* Qt Qmake */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -599,130 +689,147 @@
 			name = "Qt Qmake";
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "make -C /Users/shooshx/code/happysolver -f mac_happysolver.xcodeproj/qt_makeqmake.mak";
+			shellScript = "make -C /Users/shooshx/code/happysolver/ -f mac_happysolver.xcodeproj/qt_makeqmake.mak";
+			showEnvVarsInLog = 0;
+		};
+		7EF0942E79C014DCEC8976BC /* Qt Preprocessors */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "Qt Preprocessors";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make -C /Users/shooshx/code/happysolver/ -f mac_happysolver.xcodeproj/qt_preprocess.mak";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		7F2420B6E85D99F4A5391B9D /* Compile Sources */ = {
+		F7E50F631C51CD5B5DC0BC43 /* Compile Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E81C55CE90A94386879C3E3F /* ActFocusComboBox.cpp in Compile Sources */,
-				939C1D430CDE200594FAFBBB /* AssembleStepDlg.cpp in Compile Sources */,
-				4FD0A6480B131F3592D31373 /* BuildGLWidget.cpp in Compile Sources */,
-				DAE08C7DA7F2049AD816E50C /* BuildHelpDlg.cpp in Compile Sources */,
-				765F8F9A369FC70EB13BC24C /* BuildWorld.cpp in Compile Sources */,
-				7939434C4B64F8B3CA141A74 /* Configuration.cpp in Compile Sources */,
-				EF11D12AE9A044D2DCCD5F97 /* Cube.cpp in Compile Sources */,
-				096DEDA3EF92772BBBAE18CB /* CubeDoc.cpp in Compile Sources */,
-				35EF3EE170245FDB9E5225FC /* DataWidgets.cpp in Compile Sources */,
-				480CBDC24A88007C95DE093C /* general.cpp in Compile Sources */,
-				5D1E3E8A76BEB9F97657076C /* GLWidget.cpp in Compile Sources */,
-				543E36727C54BE88767BAB0A /* GrpColorDlg.cpp in Compile Sources */,
-				FD1638E377D97C82BDB438FB /* main.cpp in Compile Sources */,
-				AAC1168526D0C37A3F415917 /* MainWindow.cpp in Compile Sources */,
-				EBCD2A9E322D2197EA03E035 /* ModelGLWidget.cpp in Compile Sources */,
-				86CCFB86488AD4DC85312AD1 /* ModelHelpDlg.cpp in Compile Sources */,
-				DFF69535BBCA46D0F570F19A /* MyFile.cpp in Compile Sources */,
-				D20F9666583B09CD3CBDD985 /* MyObject.cpp in Compile Sources */,
-				64C9FBE277ECF8F94F4BDDF8 /* MyPolygon.cpp in Compile Sources */,
-				0F97E9F90DE1EEB8871FD73B /* OptionsDlg.cpp in Compile Sources */,
-				939FE281492BAFC20C030819 /* PicPainter.cpp in Compile Sources */,
-				B557C9B411A46560C8864F3F /* PicsSelectWidget.cpp in Compile Sources */,
-				FC1A3BB34761774A41A4560A /* Pieces.cpp in Compile Sources */,
-				BA8AEADC1988F2D0833AA1FB /* Shape.cpp in Compile Sources */,
-				0E0C0757D2C86F86C45BCE84 /* SIDlg.cpp in Compile Sources */,
-				3E415DA51A8DB5C0376538F9 /* Solutions.cpp in Compile Sources */,
-				959E2EC9BF5173F35A4598C1 /* SolveDlg.cpp in Compile Sources */,
-				D303516168D59210B1EC31DE /* SlvPainter.cpp in Compile Sources */,
-				FFA01E53692EF9B717ED896A /* SolveThread.cpp in Compile Sources */,
-				1DD4092B25149B7493B2C800 /* Space3D.cpp in Compile Sources */,
-				411D6A66C1BE6D3723C868E8 /* PicArr.cpp in Compile Sources */,
-				1FADB1E8DDF40B35761C8454 /* SlvCube.cpp in Compile Sources */,
-				EE976BA8F1666436DCB9BCC2 /* PicsSet.cpp in Compile Sources */,
-				83F099913C247E1428184083 /* NoiseGenerator.cpp in Compile Sources */,
-				BCBAC2B2172143F920A6B692 /* Mat.cpp in Compile Sources */,
-				5DA20DDC4A2741EF12E7D72C /* ObjExport.cpp in Compile Sources */,
-				9A746CB8826245311213860D /* Mesh.cpp in Compile Sources */,
-				49E427E8B678B8EADA17BFA9 /* GLTexture.cpp in Compile Sources */,
-				7FD688DCA8992721CDC0FF45 /* ShaderProgram.cpp in Compile Sources */,
-				37781462E5DE91041B7F5799 /* Shaders.cpp in Compile Sources */,
-				A08C3D6A915DE383420B2508 /* ParamBase.cpp in Compile Sources */,
-				1F5377F9C8A3D23000C6B792 /* MyInputDlg.cpp in Compile Sources */,
-				723235EB75FF370972A428F1 /* MyColorPicker.cpp in Compile Sources */,
-				F5FE44A59BD446D0C767862E /* qtcolortriangle.cpp in Compile Sources */,
-				8BABCD30AED4AFE02B804323 /* tinyxml2.cpp in Compile Sources */,
-				CC2FDEDF42C5E23D36452611 /* project.cpp in Compile Sources */,
-				E6FE771C31BD888969BD1E79 /* qrc_resources.cpp in Compile Sources */,
-				20DF7278846E28C660A005C7 /* moc_ActFocusComboBox.cpp in Compile Sources */,
-				440774CDE1D673838C0113DB /* moc_AssembleStepDlg.cpp in Compile Sources */,
-				22734E26637A232FB64B50A2 /* moc_BuildGLWidget.cpp in Compile Sources */,
-				A6EFA23AACA1DF3E139F1B46 /* moc_BuildHelpDlg.cpp in Compile Sources */,
-				73479B785F7F5AE6342375CA /* moc_CubeDoc.cpp in Compile Sources */,
-				4673EF72D6A34BE8BA53B335 /* moc_DataWidgets.cpp in Compile Sources */,
-				46EC2FFE3CF896C7F01CC623 /* moc_GLWidget.cpp in Compile Sources */,
-				5AEE7B8EC6F50DB9EDC35AC3 /* moc_GrpColorDlg.cpp in Compile Sources */,
-				A4582233947FB7FB159573BB /* moc_MainWindow.cpp in Compile Sources */,
-				5DED32F71E2FE3330480EAB7 /* moc_ModelGLWidget.cpp in Compile Sources */,
-				FBABB8CCC8AF12FC8D11D99B /* moc_ModelHelpDlg.cpp in Compile Sources */,
-				A2A5E40AB56F90010F56737B /* moc_OptionsDlg.cpp in Compile Sources */,
-				AD92B8EBE687BCAD169B467A /* moc_PicsSelectWidget.cpp in Compile Sources */,
-				79DF4C7E2DA9E379C806CC63 /* moc_SIDlg.cpp in Compile Sources */,
-				1D875E9A37347168BC97011B /* moc_SolveDlg.cpp in Compile Sources */,
-				CEB4B82A75E7D55D16BE0E51 /* moc_SolveThread.cpp in Compile Sources */,
-				B508B6686EDCBDAB1359FDFF /* moc_ParamBase.cpp in Compile Sources */,
-				F7F567D56C0724D1D8F1BA9B /* moc_MyInputDlg.cpp in Compile Sources */,
-				7EA64FE941764E3B603E310B /* moc_MyColorPicker.cpp in Compile Sources */,
-				19801083DF3805006A3CB252 /* moc_qtcolortriangle.cpp in Compile Sources */,
-				B75CA489271036B1D7916AD6 /* moc_MyDialog.cpp in Compile Sources */,
+				A26EAF4ADF9808CD6A79F2C9 /* ActFocusComboBox.cpp in Compile Sources */,
+				7E80F7FA2F375D0B0A00398E /* AssembleStepDlg.cpp in Compile Sources */,
+				BE486F18271BB015EE5CE7C6 /* BaseGLWidget.cpp in Compile Sources */,
+				2B51E1FD4FDD70DE83C4A2BB /* BuildControlBase.cpp in Compile Sources */,
+				E87C132A0C79791CD1C52142 /* BuildGLControl.cpp in Compile Sources */,
+				76099ED545DFC1EA9AC01374 /* BuildHelpDlg.cpp in Compile Sources */,
+				FB51E0A486E458E5363A35F7 /* BuildWorld.cpp in Compile Sources */,
+				68600C4CD9B77C980E814344 /* Configuration.cpp in Compile Sources */,
+				DF20BEA79C2CDE7678B91869 /* Cube.cpp in Compile Sources */,
+				4564504EB4889A509123EA3E /* CubeDoc.cpp in Compile Sources */,
+				0A4382120F4AB38CEBDC3D7C /* DataWidgets.cpp in Compile Sources */,
+				0F63258AC05E78324626E108 /* general.cpp in Compile Sources */,
+				FB2EA7B8789F9FCEACECB849 /* GLWidget.cpp in Compile Sources */,
+				D11901A3EB467ECE73F5AE78 /* GrpColorDlg.cpp in Compile Sources */,
+				63E07A61241389FE4A75FCE8 /* ImageBuf.cpp in Compile Sources */,
+				D1D911D6E42F76FD5A180E67 /* main.cpp in Compile Sources */,
+				616B78BE66E731F5AAF19453 /* MainWindow.cpp in Compile Sources */,
+				AFC7A61CBE80DDCD410061F1 /* Mat.cpp in Compile Sources */,
+				F6F1CC6F285E9AF19095D395 /* Mesh.cpp in Compile Sources */,
+				B99D2698B508231FF49239E4 /* ModelControlBase.cpp in Compile Sources */,
+				137CB4B250CE070ABCB55571 /* ModelGLControl.cpp in Compile Sources */,
+				ADEED5EA5697404EB05BD239 /* ModelHelpDlg.cpp in Compile Sources */,
+				4E5ABC97B7AB5C54EAD98560 /* MyFile.cpp in Compile Sources */,
+				5DBDB56840C325D7E6C069A7 /* MyObject.cpp in Compile Sources */,
+				DC558FB0C94C92583BF18BBA /* MyPolygon.cpp in Compile Sources */,
+				932FBE4E3D6B3B580F108312 /* NoiseGenerator.cpp in Compile Sources */,
+				7F94941E59E3B94E9E47AC00 /* ObjExport.cpp in Compile Sources */,
+				38E085E504388AED05AC96A3 /* OptionsDlg.cpp in Compile Sources */,
+				8C7B0C23414F7B81EE8E23A5 /* PicArr.cpp in Compile Sources */,
+				F8B31900DA2D949F2E5DB83F /* PicPainter.cpp in Compile Sources */,
+				AC52E0EE08413F34AD86A5C4 /* PicsSelectWidget.cpp in Compile Sources */,
+				2A8EB4B0D7D5DBDA2C4BFB6B /* PicsSet.cpp in Compile Sources */,
+				9D4613BE01D414CD969A2616 /* Pieces.cpp in Compile Sources */,
+				F35A098F49A16E39C7B3B094 /* Shape.cpp in Compile Sources */,
+				3F89E3242FD429251D00E50F /* SIDlg.cpp in Compile Sources */,
+				24BDF14ADD519C4EC48840DF /* SlvCube.cpp in Compile Sources */,
+				8085BA6FF6AD5A99FAF1CC55 /* Solutions.cpp in Compile Sources */,
+				0140267446CBE44EE99BF73E /* SlvPainter.cpp in Compile Sources */,
+				8F115AEDF0F5887A4C3DB2B0 /* SolveDlg.cpp in Compile Sources */,
+				E378B5071E94580500513136 /* SolveThread.cpp in Compile Sources */,
+				BAF36A0EE76CBAA4E8528438 /* Space3D.cpp in Compile Sources */,
+				14813376175FD6B07D3099F3 /* GLTexture.cpp in Compile Sources */,
+				EA3649AF0E630E5F6534084B /* ShaderProgram.cpp in Compile Sources */,
+				73018F46DF7AAE1D2AEC8465 /* Shaders.cpp in Compile Sources */,
+				5A5A83D875DBCB31FFEB8F8E /* ParamBase.cpp in Compile Sources */,
+				591648E0C89D63C5A3CFA3FF /* MyInputDlg.cpp in Compile Sources */,
+				CCE63513293FF00E0D2AA61B /* MyColorPicker.cpp in Compile Sources */,
+				CFE56C37E9CA61B136CD0D38 /* qtcolortriangle.cpp in Compile Sources */,
+				E9E4FE41C2349BE5D293B004 /* tinyxml2.cpp in Compile Sources */,
+				8B0D5821F81C31A05FACA5CC /* project.cpp in Compile Sources */,
+				439E3A73471FDF787BF8276B /* qrc_resources.cpp in Compile Sources */,
+				6163DCEA81B1A63FEE746AE9 /* moc_ActFocusComboBox.cpp in Compile Sources */,
+				8D64D65D817A0D0B225DFEE2 /* moc_AssembleStepDlg.cpp in Compile Sources */,
+				D4456D88456422C671C36103 /* moc_BuildGLControl.cpp in Compile Sources */,
+				35C004C2619BC24AE64B3A99 /* moc_BuildHelpDlg.cpp in Compile Sources */,
+				98509BFDDC78FAA183A569FB /* moc_CubeDoc.cpp in Compile Sources */,
+				D9555649165B4214B9312B90 /* moc_DataWidgets.cpp in Compile Sources */,
+				17492934D1F1BCB0C2725FAA /* moc_GLWidget.cpp in Compile Sources */,
+				AE03AB0D1BF2531C6190AF02 /* moc_GrpColorDlg.cpp in Compile Sources */,
+				8FB3B7BD7729C8DF7710CCCB /* moc_MainWindow.cpp in Compile Sources */,
+				CF1B0F0828C2922FD4B17F1C /* moc_ModelGLControl.cpp in Compile Sources */,
+				76D0375F48F773173F91759D /* moc_ModelHelpDlg.cpp in Compile Sources */,
+				4677F9622A855808E11E438D /* moc_OptionsDlg.cpp in Compile Sources */,
+				8C43C8AAD9EFC216224B471F /* moc_PicsSelectWidget.cpp in Compile Sources */,
+				DCB604C4C3BF2BCC1AF70BD6 /* moc_SIDlg.cpp in Compile Sources */,
+				7006686F198281939B04D052 /* moc_SolveDlg.cpp in Compile Sources */,
+				732E05EDB0826B65537F0E9E /* moc_SolveThread.cpp in Compile Sources */,
+				B5E4E000C9159BBF35B9028E /* moc_ParamBase.cpp in Compile Sources */,
+				5E82309FC5EA37439D5B8B9D /* moc_MyInputDlg.cpp in Compile Sources */,
+				7660A8A8518009AC992FFA09 /* moc_MyColorPicker.cpp in Compile Sources */,
+				7BFC5C1FAE3732AF97D97FF9 /* moc_qtcolortriangle.cpp in Compile Sources */,
+				026EC9D6D2DC7D1860341426 /* moc_MyDialog.cpp in Compile Sources */,
 			);
 			name = "Compile Sources";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		56F0CB6D769EEDE3CFAE4F32 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F629A97743B830933952058D /* Qt Preprocess */;
+			targetProxy = 27DE826E1C27773500675792 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
-		4B72B24813252891014BCF61 /* Debug */ = {
+		339EE1B2CC4FC24589A0EA95 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = x86_64;
 				CC = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
-				COPY_PHASE_STRIP = NO;
+				COPY_PHASE_STRIP = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1.0;
 				DYLIB_CURRENT_VERSION = 1.0.0;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
-					/Users/shooshx/Qt5.1.1/5.1.1/clang_64/lib,
-					/Users/shooshx/Qt5.1.1/5.1.1/clang_64/lib,
+					/Users/shooshx/Qt5.5.1/5.5/clang_64/lib,
+					/Users/shooshx/Qt5.5.1/5.5/clang_64/lib,
 				);
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
 					.,
-					../../Qt5.1.1/5.1.1/clang_64/include,
-					../../Qt5.1.1/5.1.1/clang_64/include/QtOpenGL,
-					../../Qt5.1.1/5.1.1/clang_64/lib/QtOpenGL.framework/Versions/5/Headers,
-					../../Qt5.1.1/5.1.1/clang_64/include/QtWidgets,
-					../../Qt5.1.1/5.1.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers,
-					../../Qt5.1.1/5.1.1/clang_64/include/QtXml,
-					../../Qt5.1.1/5.1.1/clang_64/lib/QtXml.framework/Versions/5/Headers,
-					../../Qt5.1.1/5.1.1/clang_64/include/QtGui,
-					../../Qt5.1.1/5.1.1/clang_64/lib/QtGui.framework/Versions/5/Headers,
-					../../Qt5.1.1/5.1.1/clang_64/include/QtCore,
-					../../Qt5.1.1/5.1.1/clang_64/lib/QtCore.framework/Versions/5/Headers,
 					.,
-					/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers,
-					/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/AGL.framework/Headers,
+					../../Qt5.5.1/5.5/clang_64/lib/QtOpenGL.framework/Headers,
+					../../Qt5.5.1/5.5/clang_64/lib/QtWidgets.framework/Headers,
+					../../Qt5.5.1/5.5/clang_64/lib/QtGui.framework/Headers,
+					../../Qt5.5.1/5.5/clang_64/lib/QtXml.framework/Headers,
+					../../Qt5.5.1/5.5/clang_64/lib/QtCore.framework/Headers,
 					.,
-					"../../Qt5.1.1/5.1.1/clang_64/mkspecs/macx-xcode",
+					/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/OpenGL.framework/Headers,
+					/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/AGL.framework/Headers,
+					.,
+					"../../Qt5.5.1/5.5/clang_64/mkspecs/macx-clang",
 				);
 				INFOPLIST_FILE = Info.plist;
 				LDPLUSPLUS = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++";
 				LIBRARY_SEARCH_PATHS = (
-					/Users/shooshx/Qt5.1.1/5.1.1/clang_64/lib,
+					/Users/shooshx/Qt5.5.1/5.5/clang_64/lib,
 					/System/Library/Frameworks/,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
@@ -731,12 +838,12 @@
 					"-O2",
 					"-Wall",
 					"-W",
-					"-fPIE",
+					"-fPIC",
 					"-DQT_NO_DEBUG",
 					"-DQT_OPENGL_LIB",
 					"-DQT_WIDGETS_LIB",
-					"-DQT_XML_LIB",
 					"-DQT_GUI_LIB",
+					"-DQT_XML_LIB",
 					"-DQT_CORE_LIB",
 				);
 				OTHER_CPLUSPLUSFLAGS = (
@@ -744,84 +851,60 @@
 					"-O2",
 					"-Wall",
 					"-W",
-					"-fPIE",
+					"-fPIC",
 					"-DQT_NO_DEBUG",
 					"-DQT_OPENGL_LIB",
 					"-DQT_WIDGETS_LIB",
-					"-DQT_XML_LIB",
 					"-DQT_GUI_LIB",
+					"-DQT_XML_LIB",
 					"-DQT_CORE_LIB",
 				);
 				OTHER_LDFLAGS = (
 					"-headerpad_max_install_names",
-					"-F/Users/shooshx/Qt5.1.1/5.1.1/clang_64/lib",
+					"-Wl,-rpath,/Users/shooshx/Qt5.5.1/5.5/clang_64/lib",
+					"-F/Users/shooshx/Qt5.5.1/5.5/clang_64/lib",
 				);
 				PRODUCT_NAME = mac_happysolver;
+				QT_LIBRARY_SUFFIX = "";
 				SDKROOT = macosx;
-				SYMROOT = /Users/shooshx/code/happysolver;
-			};
-			name = Debug;
-		};
-		8C7174830A1E4DCBA0332EC1 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				PRODUCT_NAME = mac_happysolver;
-				SDKROOT = macosx;
+				SYMROOT = /Users/shooshx/code/happysolver/;
 			};
 			name = Release;
 		};
-		BEC09A62E69C3553534FF35E /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				PRODUCT_NAME = mac_happysolver;
-				SDKROOT = macosx;
-			};
-			name = Debug;
-		};
-		D70590BEB531B51029F711BB /* Release */ = {
+		3AA6C32AC930069E80220CF1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = x86_64;
 				CC = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
-				COPY_PHASE_STRIP = YES;
+				COPY_PHASE_STRIP = NO;
 				DYLIB_COMPATIBILITY_VERSION = 1.0;
 				DYLIB_CURRENT_VERSION = 1.0.0;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
-					/Users/shooshx/Qt5.1.1/5.1.1/clang_64/lib,
-					/Users/shooshx/Qt5.1.1/5.1.1/clang_64/lib,
+					/Users/shooshx/Qt5.5.1/5.5/clang_64/lib,
+					/Users/shooshx/Qt5.5.1/5.5/clang_64/lib,
 				);
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
 					.,
-					../../Qt5.1.1/5.1.1/clang_64/include,
-					../../Qt5.1.1/5.1.1/clang_64/include/QtOpenGL,
-					../../Qt5.1.1/5.1.1/clang_64/lib/QtOpenGL.framework/Versions/5/Headers,
-					../../Qt5.1.1/5.1.1/clang_64/include/QtWidgets,
-					../../Qt5.1.1/5.1.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers,
-					../../Qt5.1.1/5.1.1/clang_64/include/QtXml,
-					../../Qt5.1.1/5.1.1/clang_64/lib/QtXml.framework/Versions/5/Headers,
-					../../Qt5.1.1/5.1.1/clang_64/include/QtGui,
-					../../Qt5.1.1/5.1.1/clang_64/lib/QtGui.framework/Versions/5/Headers,
-					../../Qt5.1.1/5.1.1/clang_64/include/QtCore,
-					../../Qt5.1.1/5.1.1/clang_64/lib/QtCore.framework/Versions/5/Headers,
 					.,
-					/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers,
-					/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/AGL.framework/Headers,
+					../../Qt5.5.1/5.5/clang_64/lib/QtOpenGL.framework/Headers,
+					../../Qt5.5.1/5.5/clang_64/lib/QtWidgets.framework/Headers,
+					../../Qt5.5.1/5.5/clang_64/lib/QtGui.framework/Headers,
+					../../Qt5.5.1/5.5/clang_64/lib/QtXml.framework/Headers,
+					../../Qt5.5.1/5.5/clang_64/lib/QtCore.framework/Headers,
 					.,
-					"../../Qt5.1.1/5.1.1/clang_64/mkspecs/macx-xcode",
+					/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/OpenGL.framework/Headers,
+					/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/AGL.framework/Headers,
+					.,
+					"../../Qt5.5.1/5.5/clang_64/mkspecs/macx-clang",
 				);
 				INFOPLIST_FILE = Info.plist;
 				LDPLUSPLUS = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++";
 				LIBRARY_SEARCH_PATHS = (
-					/Users/shooshx/Qt5.1.1/5.1.1/clang_64/lib,
+					/Users/shooshx/Qt5.5.1/5.5/clang_64/lib,
 					/System/Library/Frameworks/,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
@@ -830,12 +913,12 @@
 					"-O2",
 					"-Wall",
 					"-W",
-					"-fPIE",
+					"-fPIC",
 					"-DQT_NO_DEBUG",
 					"-DQT_OPENGL_LIB",
 					"-DQT_WIDGETS_LIB",
-					"-DQT_XML_LIB",
 					"-DQT_GUI_LIB",
+					"-DQT_XML_LIB",
 					"-DQT_CORE_LIB",
 				);
 				OTHER_CPLUSPLUSFLAGS = (
@@ -843,46 +926,77 @@
 					"-O2",
 					"-Wall",
 					"-W",
-					"-fPIE",
+					"-fPIC",
 					"-DQT_NO_DEBUG",
 					"-DQT_OPENGL_LIB",
 					"-DQT_WIDGETS_LIB",
-					"-DQT_XML_LIB",
 					"-DQT_GUI_LIB",
+					"-DQT_XML_LIB",
 					"-DQT_CORE_LIB",
 				);
 				OTHER_LDFLAGS = (
 					"-headerpad_max_install_names",
-					"-F/Users/shooshx/Qt5.1.1/5.1.1/clang_64/lib",
+					"-Wl,-rpath,/Users/shooshx/Qt5.5.1/5.5/clang_64/lib",
+					"-F/Users/shooshx/Qt5.5.1/5.5/clang_64/lib",
 				);
 				PRODUCT_NAME = mac_happysolver;
+				QT_LIBRARY_SUFFIX = _debug;
 				SDKROOT = macosx;
-				SYMROOT = /Users/shooshx/code/happysolver;
+				SYMROOT = /Users/shooshx/code/happysolver/;
+			};
+			name = Debug;
+		};
+		6666AA5E688052234F6758D8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_BITCODE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				PRODUCT_NAME = mac_happysolver;
+				QT_LIBRARY_SUFFIX = "";
+				SDKROOT = macosx;
 			};
 			name = Release;
+		};
+		77418F46922677BB04ED38DD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_BITCODE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = mac_happysolver;
+				QT_LIBRARY_SUFFIX = _debug;
+				SDKROOT = macosx;
+			};
+			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		17B3380A4D6A7D415E7F2E1E /* Build configuration list for PBXNativeTarget "mac_happysolver" */ = {
+		6CC3B5D2136C7CD6A5CF5A59 /* Build configuration list for PBXNativeTarget "mac_happysolver" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				BEC09A62E69C3553534FF35E /* Debug */,
-				8C7174830A1E4DCBA0332EC1 /* Release */,
+				77418F46922677BB04ED38DD /* Debug */,
+				6666AA5E688052234F6758D8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		CC82A9286117DFED018F418F /* Build configuration list for PBXProject "mac_happysolver" */ = {
+		DAC4C1AA5EDEA1C85E9CA5E6 /* Build configuration list for PBXProject "mac_happysolver" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				4B72B24813252891014BCF61 /* Debug */,
-				D70590BEB531B51029F711BB /* Release */,
+				3AA6C32AC930069E80220CF1 /* Debug */,
+				339EE1B2CC4FC24589A0EA95 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 91B15E841AA80083484172DE /* Project object */;
+	rootObject = 6DB9C3763D02B1415CD9D565 /* Project object */;
 }

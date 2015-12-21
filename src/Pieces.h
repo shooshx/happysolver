@@ -23,9 +23,9 @@
 #include "PicArr.h"
 #include "ImgBuf.h"
 
-#ifdef _WINDOWS
+//#ifdef _WINDOWS
 #include <QPixmap>
-#endif
+//#endif
 
 #include <memory>
 using namespace std;
@@ -89,9 +89,9 @@ public:
     PicArr v;
     PicArr defRtns[8];
 
-#ifdef _WINDOWS
+//#ifdef _WINDOWS
     QPixmap pixmap;
-#endif
+//#endif
 
     ImgBuf *tex; // Pic specific texture or NULL
 
