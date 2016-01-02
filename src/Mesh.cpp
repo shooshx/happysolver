@@ -79,8 +79,8 @@ void Mesh::paint(bool names) const
     }
     else {
         if (m_hasColors) {
-            m_colBo.setData(&m_name[0], m_name.size());
-            bprog->colorAatt.setArr<Vec4b>(m_colBo);
+            m_colBo.setData(&m_color4[0], m_color4.size());
+            bprog->colorAatt.setArr<Vec4>(m_colBo);
         }
         else {
             bprog->colorAatt.disableArr();
@@ -112,12 +112,13 @@ void Mesh::paint(bool names) const
         if (m_idxBuf == 0) {
             glGenBuffers(1, const_cast<uint*>(&m_idxBuf));
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_idxBuf);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_idx.size() * sizeof(ushort), &m_idx[0], GL_STATIC_DRAW);
         }
         else {
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_idxBuf);
 
         }
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_idx.size() * sizeof(ushort), &m_idx[0], GL_STATIC_DRAW);
+
         glDrawElements(gltype, m_idx.size(), GL_UNSIGNED_SHORT, 0);
     }
     else {

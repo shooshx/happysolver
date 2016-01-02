@@ -109,10 +109,9 @@ int main(int argc, char *argv[])
 // // 	}
 // 
 // 	return 0;
-
+    console();
 
     QApplication app(argc, argv);
-    console();
 
     QIcon appicon(":/images/HappySolver64f.png");
     appicon.addFile(":/images/HappySolver32f.png");

@@ -385,6 +385,7 @@ void GlArrayBuffer::setData(const T* v, int count)
 }
 
 template void GlArrayBuffer::setData(const Vec3* v, int count);
+template void GlArrayBuffer::setData(const Vec4* v, int count);
 template void GlArrayBuffer::setData(const float* v, int count);
 template void GlArrayBuffer::setData(const Vec4b* v, int count);
 

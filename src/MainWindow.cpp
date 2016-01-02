@@ -73,6 +73,7 @@ MainWindow::MainWindow()
     :m_picsInitThread(nullptr), m_wasClosed(false), m_bChanged(false), m_lastViewIndex(-1), m_curView(-1)
 {
     setWindowTitle(APP_NAME);
+    
 
     // the general directive is that everything should be created as it is supposed to be
     // upon program startup. no additional updates should be necessary after this ctor is done.
@@ -143,6 +144,7 @@ MainWindow::MainWindow()
     setAcceptDrops(true);
 
     resizeFromReg();
+
     show();
 
     //m_slvdlg->show();

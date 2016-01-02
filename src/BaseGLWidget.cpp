@@ -29,7 +29,7 @@ BaseGLWidget::BaseGLWidget()
 
 void BaseGLWidget::init() 
 {
-    ShaderProgram::shadersInit();
+//    ShaderProgram::shadersInit();
 
     checkErrors("init start");
     // specify black as clear color
@@ -334,7 +334,7 @@ string mglCheckErrorsStr(const char* place)
         ss << "GLError: " << place << "\n";
     int count = 0;
     while ((code = glGetError()) != GL_NO_ERROR && count++ < 10)
-        ss << "0x" << hex << code << errorText(code);
+        ss << "0x" << hex << code << errorText(code) << endl;
     if (count != 0)
         return ss.str();
     return string();
