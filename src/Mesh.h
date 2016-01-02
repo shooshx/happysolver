@@ -19,8 +19,8 @@ class Mesh
 {
 public:
     Mesh() 
-        : m_type(NONE), m_hasNormals(false), m_hasColors(false) // m_hasTexCoord(false),
-        , m_hasNames(false), m_hasIdx(false), m_uniformColor(false), m_hasTag(false) {}
+    {}
+
     void clear() {
         m_common.reset();
         m_vtx.clear();
@@ -42,7 +42,7 @@ public:
     enum Type { NONE, LINES, TRIANGLES, QUADS, TRI_STRIP, TRI_FAN };
     struct IdxBuf {
         IdxBuf(Type t) :m_type(t), m_enabled(true) {}
-        vector<uint> m_idx;
+        vector<ushort> m_idx;
         Type m_type;
         bool m_enabled;
     };
@@ -68,21 +68,27 @@ public:
     //vector<Vec2> m_texCoord; // same size as vtx NOT USED, using vertex position instead
     vector<Vec4> m_color4;
     vector<Vec4b> m_name;
-    vector<float> m_tag; // general purpose data used by the shaders
-    vector<uint> m_idx;
+    vector<float> m_tag; // general purpose data used by the shaders - type of build tile
+    vector<ushort> m_idx;
     Vec4 m_uColor;
 
-    bool m_hasNormals;
+    bool m_hasNormals = false;
     //bool m_hasTexCoord;
-    bool m_hasColors;
-    bool m_hasNames;
-    bool m_hasIdx; // drawElements or drawArrays
-    bool m_uniformColor;
-    bool m_hasTag;
+    bool m_hasColors = false;
+    bool m_hasNames = false;
+    bool m_hasIdx = false; // drawElements or drawArrays
+    bool m_uniformColor = false;
+    bool m_hasTag = false;
 
-    Type m_type;
+    Type m_type = NONE;
 
     vector<IdxBuf> m_addIdx;
+
+    uint m_idxBuf = 0;
+    mutable GlArrayBuffer m_vtxBo; // buffer object
+    mutable GlArrayBuffer m_normBo;
+    mutable GlArrayBuffer m_colBo; 
+    mutable GlArrayBuffer m_tagBo;
 };
 
 

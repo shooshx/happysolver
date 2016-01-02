@@ -22,10 +22,16 @@ void ModelControlBase::switchIn() {
 
 void ModelControlBase::reCalcSlvMinMax()
 {
-    SlvPainter &pnt = m_doc->getCurrentSolve()->painter;
+    auto slv = m_doc->getCurrentSolve();
+    M_ASSERT(slv != nullptr);
+    SlvPainter &pnt = slv->painter;
 
     m_bgl->aqmin = pnt.qmin;
     m_bgl->aqmax = pnt.qmax;
+
+    m_bgl->aqmax = Vec3(5,5,5);
+    //cout << "RECALC " << m_bgl->aqmax.x << "," << m_bgl->aqmax.y << "," << m_bgl->aqmax.z << "\n";
+
 }
 
 
@@ -90,9 +96,9 @@ void ModelControlBase::paint(BaseGLWidget* context, CubeDocBase *doc, SlvCube *s
     }
     
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_POLYGON_OFFSET_FILL);
+ //   glEnable(GL_BLEND);
+ //   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ //   glEnable(GL_POLYGON_OFFSET_FILL);
 
     mglCheckErrorsC("x1");
     // call the SlvPainter to do its job.
@@ -104,7 +110,7 @@ void ModelControlBase::paint(BaseGLWidget* context, CubeDocBase *doc, SlvCube *s
 void ModelControlBase::drawTargets(bool inChoise)
 {
     SlvCube *slv = m_doc->getCurrentSolve();
-    if (slv == NULL)
+    if (slv == nullptr)
     {
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -116,13 +122,13 @@ void ModelControlBase::drawTargets(bool inChoise)
     }
 
     
-    ShaderProgram* sel = NULL;
+    ShaderProgram* sel = nullptr;
     if (inChoise) {
-        glDisable(GL_BLEND);
+  //      glDisable(GL_BLEND);
         sel = &m_progFlat;
     }
     else {
-        glEnable(GL_BLEND);
+  //      glEnable(GL_BLEND);
         sel = &m_progNoise;
     }
 
@@ -157,6 +163,7 @@ void ModelControlBase::scrRelease(bool rightButton)
 
 bool ModelControlBase::scrMove(bool rightButton, bool ctrlPressed, int x, int y)
 {
+#ifndef EMSCRIPTEN
     if (m_doc->solvesExist())
     {
         m_nLastHoveChs = m_nHoverChoise;
@@ -165,5 +172,6 @@ bool ModelControlBase::scrMove(bool rightButton, bool ctrlPressed, int x, int y)
         if (m_nHoverChoise != m_nLastHoveChs)
             emitHoverPiece(m_nHoverChoise);
     }
+#endif
     return false;
 }

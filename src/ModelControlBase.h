@@ -12,6 +12,9 @@ public:
     ModelControlBase(BaseGLWidget* gl, CubeDocBase *doc);
     void initTex();
 
+    void reCalcSlvMinMax();
+    virtual void switchIn();
+
 protected:
     CubeDocBase *m_doc;
 
@@ -25,8 +28,6 @@ protected:
     virtual void initialized();
     virtual void myPaintGL();
     virtual void drawTargets(bool inChoise);
-    virtual void switchIn();
-    void reCalcSlvMinMax();
 
     // events
     virtual void scrPress(bool rightButton, int x, int y);

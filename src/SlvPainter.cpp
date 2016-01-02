@@ -1,6 +1,6 @@
 #include "SlvPainter.h"
 #include "Pieces.h"
-#include "GLWidget.h"
+#include "BaseGLWidget.h"
 #include "Shape.h"
 #include "SlvCube.h"
 #include "OpenGL/glGlob.h"
@@ -17,6 +17,7 @@ void SlvPainter::paintPiece(int f, BaseGLWidget* context, bool fTargets) const
     int rtnindx = rotationSub(m_scube->dt[f].abs_rt, pdef->dispRot);
 
     MatStack& model = context->model;
+    //cout << "START-MODEL " << model.cur() << endl;
 
     model.push();
     if (false) {

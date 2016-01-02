@@ -532,7 +532,7 @@ bool CubeDoc::realSave(int unGenSlvAnswer)
 	wrfl.close();
 
 	emit fileSaved(retname);
-	emit updateViews(HINT_BLD_PAINT | HINT_PIC_nullptr); 
+	emit updateViews(HINT_BLD_PAINT | HINT_PIC_NULL); 
 	// should repaint the build view to get rid of the '*'
 	// this is only needed if we didn't generated the shape. we can't be sure.
 
@@ -545,7 +545,7 @@ void CubeDoc::setShowUpToStep(int step)
 	if (step == m_nUpToStep)
 		return;
 	m_nUpToStep = step; 
-	emit updateViews(HINT_BLD_PAINT | HINT_SLV_PAINT | HINT_PIC_nullptr); 
+	emit updateViews(HINT_BLD_PAINT | HINT_SLV_PAINT | HINT_PIC_NULL); 
 }
 
 

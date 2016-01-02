@@ -1,5 +1,7 @@
 #include "GLTexture.h"
 
+#define GL_TEXTURE_BASE_LEVEL             0x813C
+#define GL_TEXTURE_MAX_LEVEL              0x813D
 
 void GlTexture::init(GLenum target, const Vec2i& size, int depth, GLenum internal_format, 
                    GLenum format, GLenum type, const void* ptr, GLenum minFilter, GLenum magFilter, GLenum wrap)
@@ -67,7 +69,7 @@ GlTexture::~GlTexture()
 
 void GlTexture::destroy()
 {
-    //if (m_fromContext != NULL)
+    //if (m_fromContext != nullptr)
 //		m_fromContext->deleteTexture(m_obj);
     if (m_obj != -1)
         glDeleteTextures(1, &m_obj);

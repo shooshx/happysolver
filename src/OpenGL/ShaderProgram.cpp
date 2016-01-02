@@ -1,20 +1,19 @@
-
-#include <stdio.h>
-
 #include "ShaderProgram.h"
 #include "glGlob.h"
+#include <iostream>
 
+using namespace std;
 
 
 int ShaderProgram::g_users = 0;
-ShaderProgram *ShaderProgram::g_current = NULL;
+ShaderProgram *ShaderProgram::g_current = nullptr;
 
 
 ShaderParam::ShaderParam(const string& name, ShaderProgram* prog) :m_uid(-1), m_name(name) {
     prog->addParam(this);
 }
 
-void shadersInit() {
+void ShaderProgram::shadersInit() {
     static bool did = false;
     if (did) {
         return;
@@ -23,8 +22,8 @@ void shadersInit() {
 #ifdef _WINDOWS
     uint x = glewInit();
     if (x != GLEW_OK) {
-        printf("Error: %s\n", glewGetErrorString(x));
-        exit(1);
+        cout << "Error: " << glewGetErrorString(x) << endl;
+        throw HCException("glew init");
     }
 #endif
     did = true;
@@ -33,19 +32,19 @@ void shadersInit() {
 bool ShaderProgram::printShaderInfoLog(uint obj)
 {
     int infologLength = 0, charsWritten  = 0;
-    vector<char> infoLog;
+    string infoLog;
 
     glGetShaderiv(obj, GL_INFO_LOG_LENGTH, &infologLength);
     if (infologLength > 1)
     {
         infoLog.resize(infologLength);
-        glGetShaderInfoLog(obj, infologLength, &charsWritten, infoLog.data());
-        printf("Shader Info Log:\n%s\n", infoLog.data());
+        glGetShaderInfoLog(obj, infologLength, &charsWritten, (char*)infoLog.data());
+        cout << "Shader Info Log:\n" << infoLog << endl;
     }
     int ret;
     glGetShaderiv(obj, GL_COMPILE_STATUS, &ret);
     if (!ret)
-        printf("Shader compile failed\n");
+        cout << "Shader compile failed" << endl;
     return ret;
 }
 
@@ -59,12 +58,12 @@ bool ShaderProgram::printProgramInfoLog(uint obj)
     {
         infoLog.resize(infologLength);
         glGetProgramInfoLog(obj, infologLength, &charsWritten, (char*)infoLog.data());
-        printf("Program Info Log:\n%s\n", infoLog.c_str());
+        cout << "Program Info Log:\n" << infoLog << endl;
     }
     int ret;
     glGetProgramiv(obj, GL_LINK_STATUS, &ret);
     if (!ret)
-        printf("Program compile failed\n");
+        cout << "Program compile failed" << endl;
     return ret;
 }
 
@@ -72,8 +71,10 @@ void ShaderProgram::use() const
 {
     if (g_users++ != 0)
         return;
-    if (!isOk())
+    if (!isOk()) {
+
         return;
+    }
     mglCheckErrorsC("buse");
     glUseProgram(m_progId);
     mglCheckErrorsC("use");
@@ -84,7 +85,7 @@ void ShaderProgram::unuse() const
     if (--g_users != 0)
         return;
     glUseProgram(0);
-    g_current = NULL;
+    g_current = nullptr;
 }
 
 void ShaderProgram::clear() 
@@ -116,14 +117,14 @@ bool ShaderProgram::init(const ProgCompileConf& conf)
     getCodes(); // populate the lists, set m_type.
     m_isOk = false;
 
-
+#ifdef QT_CORE_LIB
     if (!m_geomprog.empty())
     { // has geometry shaders
         glProgramParameteriEXT(m_progId, GL_GEOMETRY_INPUT_TYPE_EXT, conf.geomInput);
         glProgramParameteriEXT(m_progId, GL_GEOMETRY_OUTPUT_TYPE_EXT, conf.geomOutput);
         glProgramParameteriEXT(m_progId, GL_GEOMETRY_VERTICES_OUT_EXT, conf.geomVtxCount);	
     }
-
+#endif
     mglCheckErrorsC(string("codes ") + name);
 
 
@@ -131,7 +132,7 @@ bool ShaderProgram::init(const ProgCompileConf& conf)
     {
         uint vso = glCreateShader(GL_VERTEX_SHADER);
         const char *srcs[2] = { defines.c_str(), m_vtxprog[i].c_str() };
-        glShaderSource(vso, 2, srcs, NULL);
+        glShaderSource(vso, 2, srcs, nullptr);
         glCompileShader(vso);
         glAttachShader(m_progId, vso);
         printShaderInfoLog(vso);
@@ -139,25 +140,25 @@ bool ShaderProgram::init(const ProgCompileConf& conf)
     }
     mglCheckErrorsC(string("vtx ") + name);
 
-
+#ifdef QT_CORE_LIB
     for (int i = 0; i < m_geomprog.size(); ++i)
     {
         uint gso = glCreateShader(GL_GEOMETRY_SHADER_EXT);
         const char *srcs[2] = { defines.c_str(), m_geomprog[i].c_str() };
-        glShaderSource(gso, 2, srcs, NULL);
+        glShaderSource(gso, 2, srcs, nullptr);
         glCompileShader(gso);
         glAttachShader(m_progId, gso);
         printShaderInfoLog(gso);
         m_createdShaders.push_back(gso);
     }
     mglCheckErrorsC(string("geom ") + name);
-
+#endif
 
     for (int i = 0; i < m_fragprog.size(); ++i)
     {
         uint fso = glCreateShader(GL_FRAGMENT_SHADER);
         const char *srcs[2] = { defines.c_str(), m_fragprog[i].data() };
-        glShaderSource(fso, 2, srcs, NULL);
+        glShaderSource(fso, 2, srcs, nullptr);
         glCompileShader(fso);
         glAttachShader(m_progId, fso);
         printShaderInfoLog(fso);
@@ -175,7 +176,7 @@ bool ShaderProgram::init(const ProgCompileConf& conf)
     m_isOk = printProgramInfoLog(m_progId);
     if (m_isOk)
     {
-        printf("Compiled OK %d\n", m_progId);
+        cout << "Compiled OK " << m_progId << endl;
     }
     mglCheckErrorsC(string("proginfo ") + name);
 
@@ -190,13 +191,13 @@ bool ShaderProgram::init(const ProgCompileConf& conf)
 void AttribParam::disableArr() {
     if (m_uid != -1) {
         glDisableVertexAttribArray(m_uid);
-        glVertexAttribPointer(m_uid, 1, GL_UNSIGNED_BYTE, GL_FALSE, 0, NULL);
+        glVertexAttribPointer(m_uid, 1, GL_UNSIGNED_BYTE, GL_FALSE, 0, nullptr);
     }
 }
 void AttribParam::enableArr() {
     if (m_uid != -1) {
         glEnableVertexAttribArray(m_uid);
-        glVertexAttribPointer(m_uid, 1, GL_UNSIGNED_BYTE, GL_FALSE, 0, NULL);
+        glVertexAttribPointer(m_uid, 1, GL_UNSIGNED_BYTE, GL_FALSE, 0, nullptr);
     }
 }
 
@@ -229,17 +230,22 @@ template<> uint shouldNorm<float>() { return GL_FALSE; }
 
 
 template<typename T> 
-void AttribParam::setArr(const T* v) const {
-    if (m_uid != -1) {
-        glEnableVertexAttribArray(m_uid);
-        glVertexAttribPointer(m_uid, getElemCount<T>(), glType<T>(), shouldNorm<T>(), 0, v);
-    }
+void AttribParam::setArr(GlArrayBuffer& bo) const {
+    if (m_uid == -1) 
+        return;
+
+    glBindBuffer(GL_ARRAY_BUFFER, bo.m_buf);
+
+    glEnableVertexAttribArray(m_uid);
+    glVertexAttribPointer(m_uid, getElemCount<T>(), glType<T>(), shouldNorm<T>(), 0, 0);
+
 }
 
-template void AttribParam::setArr(const Vec4* v) const;
-template void AttribParam::setArr(const Vec3b* v) const;
-template void AttribParam::setArr(const Vec4b* v) const;
-template void AttribParam::setArr(const float* v) const;
+template void AttribParam::setArr<Vec4>(GlArrayBuffer& bo) const;
+template void AttribParam::setArr<Vec3>(GlArrayBuffer& bo) const;
+template void AttribParam::setArr<Vec3b>(GlArrayBuffer& bo) const;
+template void AttribParam::setArr<Vec4b>(GlArrayBuffer& bo) const;
+template void AttribParam::setArr<float>(GlArrayBuffer& bo) const;
 
 template<> 
 void UniformParam::set(const float& v) const {
@@ -309,25 +315,18 @@ void AttribParam::set(const Vec4& v) const {
         glVertexAttrib4fv(m_uid, v.v);
 }
 
+#ifdef QT_CORE_LIB
 template<> 
 void AttribParam::set(const int& v) const {
     if (m_uid != -1)
         glVertexAttrib1s(m_uid, v); // EH?
 }
-
+#endif
 
 void FloatAttrib::set(float v) const {
     AttribParam::set(v);
 }
-void FloatAttrib::setArr(const float* v) const {
-    AttribParam::setArr(v);
-}
-void Vec3Attrib::setArr(const Vec3* v) const {
-    AttribParam::setArr(v);
-}
-void IntAttrib::setArr(const int* v) const {
-    AttribParam::setArr(v);
-}
+
 
 void Vec3Uniform::set(const Vec3& v) const {
     UniformParam::set(v);
@@ -356,7 +355,7 @@ void UniformParam::getLocation(uint progId)
         return;
     m_uid = glGetUniformLocation(progId, m_name.c_str());
     if (m_uid == -1)
-        printf("WARNING: uniform '%s' location is -1!\n", m_name.c_str());
+        cout << "WARNING: uniform '" << m_name << "' location is -1!" << endl;
 }
 
 
@@ -367,11 +366,25 @@ void AttribParam::getLocation(uint progId)
         return;
     m_uid = glGetAttribLocation(progId, m_name.c_str());
     if (m_uid == -1)
-        printf("WARNING: attribute '%s' location is -1!\n", m_name.c_str());
+        cout << "WARNING: attribute '" << m_name << "' location is -1!" << endl;
 }
 
 
 void mglActiveTexture(int i) {
     glActiveTexture(GL_TEXTURE0 + i);
 }
+
+template<typename T>
+void GlArrayBuffer::setData(const T* v, int count)
+{
+    if (m_buf == 0)
+        glGenBuffers(1, const_cast<uint*>(&m_buf));
+
+    glBindBuffer(GL_ARRAY_BUFFER, m_buf);
+    glBufferData(GL_ARRAY_BUFFER, count * sizeof(T), v, GL_STATIC_DRAW);
+}
+
+template void GlArrayBuffer::setData(const Vec3* v, int count);
+template void GlArrayBuffer::setData(const float* v, int count);
+template void GlArrayBuffer::setData(const Vec4b* v, int count);
 

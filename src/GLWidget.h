@@ -24,12 +24,13 @@
 
 
 
-
+/*
 #define GL_BEGIN_TEXT() {	glMatrixMode(GL_PROJECTION); glPushMatrix();glLoadIdentity(); \
                             glMatrixMode(GL_MODELVIEW); glPushMatrix(); glLoadIdentity(); \
                             glDisable(GL_DEPTH_TEST); glDisable(GL_TEXTURE_2D); }
 #define GL_END_TEXT() {	glEnable(GL_DEPTH_TEST); glPopMatrix(); glMatrixMode(GL_PROJECTION); \
                         glPopMatrix(); glMatrixMode(GL_MODELVIEW); }
+*/
 
 //#define ZOOM_MIN (10)
 //#define ZOOM_MAX (700)
@@ -65,10 +66,9 @@ public:
     /// the GLWidget constructor.
     /// alot of default values are set here. if a derived subclass wishes for a different 
     /// setting he may alter them in its constructor.
-    GLWidget(QWidget *parent = NULL, QGLWidget *sharefrom = NULL);
+    GLWidget(QWidget *parent = nullptr, QGLWidget *sharefrom = nullptr);
     virtual ~GLWidget() {}
 
-    enum EMouseAction { Rotate, Translate, Scale };
 
     void checkErrors(const char* place);
 
@@ -116,11 +116,13 @@ protected:
     virtual void wheelEvent(QWheelEvent *event);
 
 protected:
+
+    virtual void rotate(EAxis axis, int x, int y);
    
     bool m_bContinuous; // the Continuous option is on. this says nothing about the current state of the timer
 
-    QPoint m_lastPos;					// hold last mouse x,y coord
-    EMouseAction m_mouseAct;
+
+
 
 private:
     virtual void paintGL(); // (event) demote it to private from protected
@@ -130,9 +132,10 @@ private:
     void KillFont();	///< Delete The Font
 
 private:
-    int m_nXDelt, m_nYDelt; // used for continuous rotation, last mouse delta.
     bool m_bTimerMode; // used for continuous rotation. if true, timer is On and rotating.
     QTimer *m_timer;   // used for continuous rotation. the timer. every GLWidget has its own timer
+    int m_nXDelt, m_nYDelt; // used for continuous rotation, last mouse delta.
+
 
     int m_fontBase;
 

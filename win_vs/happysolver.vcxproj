@@ -147,16 +147,15 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <BrowseInformation>true</BrowseInformation>
       <PreprocessorDefinitions>QT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Xmld.lib;Qt5OpenGLd.lib;Qt5Widgetsd.lib;opengl32.lib;glu32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX64</TargetMachine>
       <AdditionalOptions> /SUBSYSTEM:WINDOWS</AdditionalOptions>
-      <MinimumRequiredVersion>
-      </MinimumRequiredVersion>
     </Link>
     <Bscmake />
   </ItemDefinitionGroup>
@@ -261,6 +260,7 @@
     <ClCompile Include="..\src\BaseGLWidget.cpp" />
     <ClCompile Include="..\src\BuildControlBase.cpp" />
     <ClCompile Include="..\src\BuildGLControl.cpp" />
+    <ClCompile Include="..\src\CubeDocBase.cpp" />
     <ClCompile Include="..\src\ModelControlBase.cpp" />
     <ClCompile Include="..\src\ModelGLControl.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_ActFocusComboBox.cpp">

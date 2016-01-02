@@ -57,7 +57,7 @@ public:
 
     bool exportToObj(ObjExport& oe) const;
 
-    bool isNull() const { return m_scube == NULL; }
+    bool isNull() const { return m_scube == nullptr; }
     void setSlvCube(const SlvCube *sc) { m_scube = sc; }
 
 public:

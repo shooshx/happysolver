@@ -18,6 +18,7 @@
 #include "general.h"
 #include "Solutions.h"
 #include "SlvCube.h"
+#include <iostream>
 
 
 void Solutions::clear(int solveSize)
@@ -44,7 +45,7 @@ void Solutions::addBackCommon(SlvCube *tmp)
 #define VAL_SLV_NUMD "s#%d"
 
 
-bool Solutions::saveTo(MyFile *wrfl, SlvCube *slv) // slv points to a specific solution to save or NULL
+bool Solutions::saveTo(MyFile *wrfl, SlvCube *slv) // slv points to a specific solution to save or nullptr
 {
 	if (wrfl->getState() != STATE_OPEN_WRITE)
 		return false;
@@ -56,7 +57,7 @@ bool Solutions::saveTo(MyFile *wrfl, SlvCube *slv) // slv points to a specific s
 
 	wrfl->writeValue(VAL_SLV_COUNT, false);
 
-	if (slv != NULL)
+	if (slv != nullptr)
 	{
 		wrfl->writeNums(1, true, 1);
 		wrfl->writeNums(0, true);
@@ -103,6 +104,7 @@ bool Solutions::readFrom(MyFile *rdfl, const Shape* withShape)
 			if (!slv->readFrom(rdfl, slvsz))
 			{
 				delete slv;
+                cout << "reading solution " << indx << " failed";
 				return false;
 			}
 			
@@ -110,6 +112,7 @@ bool Solutions::readFrom(MyFile *rdfl, const Shape* withShape)
 		}
 	}
 	resetChangedFromSave();
+    cout << "read " << count << " solutions" << endl;
 	return true;
 }
 

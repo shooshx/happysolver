@@ -45,7 +45,7 @@ class PicsSet;
 #define HINT_SLV_READY   0x00000004 // need to do something for a new solution
 #define HINT_SLV_PAINT   0x00000008 // need to only repaint
 
-#define HINT_PIC_nullptr         0x00003000
+#define HINT_PIC_NULL         0x00003000
 #define HINT_PIC_READSLVCHECK 0x00001000 // read the check data from the current solution
 #define HINT_PIC_UPDATECHECK  0x00002000  // just update the gui according the the bucket data
 

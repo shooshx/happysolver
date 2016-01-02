@@ -23,6 +23,7 @@
 #include <cmath>
 #include <vector>
 #include <exception>
+#include <iostream>
 
 using namespace std;
 
@@ -89,12 +90,6 @@ typedef vector<int> TTransformVec;
      className &operator=(const className &)
 
 
-#ifdef _DEBUG
-    #define M_ASSERT(cond) do { if (!(cond)) throw std::exception(#cond); } while(0)
-#else
-    #define M_ASSERT(cond)
-#endif
-
 
 template <typename T>
 inline const T &mMin(const T &a, const T &b) { if (a < b) return a; return b; }
@@ -103,7 +98,9 @@ inline const T &mMax(const T &a, const T &b) { if (a < b) return b; return a; }
 
 class HCException : public std::exception {
 public:
-    HCException(const char* msg) : m_msg(msg) {}
+    HCException(const char* msg) : m_msg(msg) {
+        //cout << "EXCEPTION: " << msg;
+    }
     virtual const char* what() const throw() {
         return m_msg;
     }
@@ -111,6 +108,11 @@ private:
     const char* m_msg;
 };
 
+#ifdef _DEBUG
+#define M_ASSERT(cond) do { if (!(cond)) throw HCException(#cond); } while(0)
+#else
+#define M_ASSERT(cond)
+#endif
 
 // profile command line VC6
 // /SF ?CubeEngineProc@@YAIPAX@Z

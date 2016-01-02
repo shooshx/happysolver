@@ -6,8 +6,10 @@
 #include "../general.h"
 #include "../Vec.h"
 #include "glGlob.h"
-#ifndef _WINDOWS
-#include <QtOpenGL>
+
+//#include <QtOpenGL>
+#ifdef EMSCRIPTEN
+#include <GLES2/gl2.h>
 #endif
 
 
@@ -35,8 +37,8 @@ public:
 
 	~GlTexture();
 
-	void init(uint target, const Vec2i& size, int depth, uint internal_format = GL_RGBA8, 
-		      uint format = GL_RGBA, uint type = GL_UNSIGNED_BYTE, const void* ptr = NULL,
+	void init(uint target, const Vec2i& size, int depth, uint internal_format = GL_RGBA, 
+		      uint format = GL_RGBA, uint type = GL_UNSIGNED_BYTE, const void* ptr = nullptr,
 			  uint minFilter = GL_NEAREST, uint magFilter = GL_NEAREST, uint wrap = GL_CLAMP_TO_EDGE);
 	void destroy();
 

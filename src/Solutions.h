@@ -62,12 +62,12 @@ class Solutions
 {
 
 public:
-	Solutions(int solveSize = -1) :slvsz(solveSize), m_bChangedFromSave(false), changedFromSave(NULL) {}
+	Solutions(int solveSize = -1) :slvsz(solveSize), m_bChangedFromSave(false), changedFromSave(nullptr) {}
 	~Solutions() {	clear(); }
 	void clear(int solveSize = -1);
 
 	bool readFrom(MyFile *rdfl, const Shape *withShape);
-	bool saveTo(MyFile *wrfl, SlvCube *slv); // slv == NULL -> save all
+	bool saveTo(MyFile *wrfl, SlvCube *slv); // slv == nullptr -> save all
 
 	void setChangedFromSave();
 	void resetChangedFromSave();

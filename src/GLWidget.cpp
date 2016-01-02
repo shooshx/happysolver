@@ -53,7 +53,7 @@ GLWidget::GLWidget(QWidget *parent, QGLWidget *sharefrom)
     // continous mode control
     m_bContinuous = false;
     m_bTimerMode = false;
-    m_timer = NULL;
+    m_timer = nullptr;
     m_nXDelt = 0;
     m_nYDelt = 0;
     setMouseTracking(true);
@@ -71,8 +71,9 @@ void GLWidget::doReset() {
 
 
 void GLWidget::initializeGL() {
+    makeCurrent();
     init();
-    BuildFont();
+    //BuildFont();
 }
 
 void GLWidget::paintGL() {
@@ -167,10 +168,7 @@ void GLWidget::externalZoom(int v)
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
-    if (m_handler)
-        m_handler->scrPress( event->button() == Qt::RightButton, event->x(), event->y() );
-
-    m_lastPos = event->pos();
+    BaseGLWidget::mousePress((int)event->button(), event->x(), event->y());
     
     if ((m_bTimerMode) && (m_mouseAct == Rotate))
     {
@@ -184,15 +182,15 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 
 }
 
+
 void GLWidget::mouseReleaseEvent(QMouseEvent *event)
 {
-    if (m_handler)
-        m_handler->scrRelease( event->button() == Qt::RightButton);
+    BaseGLWidget::mouseRelease((int)event->button());
 
     if (m_bContinuous && (m_mouseAct == Rotate) && (m_nXDelt != 0 || m_nYDelt != 0))
     {
         // create it on demand.
-        if (m_timer == NULL)
+        if (m_timer == nullptr)
         {
             m_timer = new QTimer(this);
             connect(m_timer, SIGNAL(timeout()), this, SLOT(rotateTimeout()));
@@ -206,41 +204,21 @@ void GLWidget::mouseReleaseEvent(QMouseEvent *event)
 
 }
 
+void GLWidget::rotate(EAxis axis, int x, int y) 
+{
+    m_nXDelt = x;
+    m_nYDelt = y;
+    BaseGLWidget::rotate(axis, x, y);
+    emit rotated(axis, x, y);
+}
+
+
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    makeCurrent();
-    bool needupdate = false;
-    if (m_handler)
-        needupdate = m_handler->scrMove( event->button() == Qt::RightButton, ((event->modifiers() & Qt::ControlModifier) != 0), event->x(), event->y());
-
-    if (event->buttons() == 0) {
-        if (needupdate)
-            updateGL();
-        return;
+    bool needpaint = BaseGLWidget::mouseMove((int)event->buttons(), ((event->modifiers() & Qt::ControlModifier) != 0), event->x(), event->y());
+    if (needpaint) {
+        updateGL();
     }
-
-    int dx = event->x() - m_lastPos.x();
-    int dy = event->y() - m_lastPos.y();
-
-    switch(m_mouseAct) 
-    {			// act based on the current action
-    case Rotate:    
-        m_nXDelt = dx;
-        m_nYDelt = dy;
-        rotate(m_axis, dx, dy); 
-        emit rotated(m_axis, dx, dy);
-        break;
-    case Translate: 
-        translate(dx, dy); 
-        break;
-    //case Scale:     
-        //scale(dx, dy); 
-    //    break;
-    }
-    m_lastPos = event->pos();
-
-    updateGL(); // redraw scene
-
 }
 
 void GLWidget::mouseDoubleClickEvent(QMouseEvent *event) {
@@ -275,7 +253,7 @@ void GLWidget::scale(int xValue, int yValue)
     model.mult(wmat);
 }
 */
-
+/*
 void GLWidget::BuildFont()								// Build Our Bitmap Font
 {
     QFont font("Courier New", 16, 75);										// Windows Font ID
@@ -290,9 +268,10 @@ void GLWidget::KillFont()	//TBD-call this?
     glDeleteLists(m_fontBase, 256);							// Delete All 256 Characters
 }
 
+
 void GLWidget::mglPrint(const QString &str)			// Custom GL "Print" Routine
 {
-    if (str == NULL)									// If There's No Text
+    if (str == nullptr)									// If There's No Text
         return;											// Do Nothing
 
     glPushAttrib(GL_LIST_BIT);							// Pushes The Display List Bits
@@ -300,7 +279,7 @@ void GLWidget::mglPrint(const QString &str)			// Custom GL "Print" Routine
     glCallLists(str.length(), GL_UNSIGNED_BYTE, str.toLatin1());	// Draws The Display List Text
     glPopAttrib();										// Pops The Display List Bits
 }
-
+*/
 
 
 void GLWidget::checkErrors(const char* place)

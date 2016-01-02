@@ -58,7 +58,7 @@ string humanCount(double n, int pers)
 void flushAllEvents()
 {
 	QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents); // process the hide event. otherwise the 3d view is moved and it doesn't look nice.
-	QCoreApplication::sendPostedEvents(NULL, 0);
+	QCoreApplication::sendPostedEvents(nullptr, 0);
 	QCoreApplication::flush();
 }
 

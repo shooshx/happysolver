@@ -15,6 +15,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+/*
 #define __msxml_h__ // msxml also defines XMLDocument
 #define __urlmon_h__
 #define _OBJBASE_H_
@@ -23,9 +24,10 @@
 #define __objidl_h__
 #define __oleidl_h__
 #define _OLE2_H_
-
+*/
 //#include "GlobDefs.h"
 
+#include <stdlib.h>
 
 #include "general.h"
 #include "Pieces.h"
@@ -35,13 +37,13 @@
 #include "tinyxml/tinyxml2.h"
 #include "OpenGL/GLTexture.h"
 
-#include <fstream>
+#include <iostream>
 
-//#ifdef _WINDOWS
+#ifdef QT_CORE_LIB
 #include <QPainter>
 #include <QFile>
 #include <QTextStream>
-//#endif
+#endif
 
 
 using namespace tinyxml2;
@@ -51,10 +53,10 @@ using namespace tinyxml2;
 #define TEX_BUF_SIZE (TEX_X * TEX_Y * 4) 
 
 // the singleton
-PicBucket *PicBucket::g_instance = NULL;
+PicBucket *PicBucket::g_instance = nullptr;
 void PicBucket::createSingleton() 
 { 
-    if (g_instance == NULL) // never gets erased...
+    if (g_instance == nullptr) // never gets erased...
         g_instance = new PicBucket; 
 }
 
@@ -125,7 +127,7 @@ void PicBucket::makeBitmapList()
     int gind, pind, i, x, y, tmp;
 
     unsigned char staticbuf[128 * 128 * 4];
-    unsigned char *origcbuf = NULL;
+    unsigned char *origcbuf = nullptr;
     Vec2i origsize(0, 0);
     int origfactor = 1;
 
@@ -226,7 +228,7 @@ void PicBucket::makeBitmapList()
 
             cpic.makeBoundingPath();
 
-//#ifdef _WINDOWS
+#ifdef QT_CORE_LIB
             // QImage wrapper around the buffer, does not copy of delete the buffer
             QImage qimg(img.bits(), img.width(), img.height(), QImage::Format_ARGB32);
             // this copies the image into the pixmap, avoid move c'tor by having qimg be named variable (r-value)
@@ -246,12 +248,10 @@ void PicBucket::makeBitmapList()
             painter.end();
 
             //cpic.pixmap.save(QString("c:/temp/cpic_%1_%2.png").arg(gind).arg(pind));
-//#endif
+#endif
 
         }
     }
-
-    getPic(0, 0).pixmap.save(QString("c:/temp/tst_%1_%2.png").arg(0).arg(0));
 
 }
 
@@ -264,11 +264,16 @@ ImgBuf* PicBucket::newTexture(ImgBuf* t, bool in3d)
     if (in3d) {
         //ImgBuf* b = im.rgbSwapped();
         GlTexture *gt = new GlTexture();
-        gt->init(GL_TEXTURE_2D, Vec2i(t->width(), t->width()), 1, GL_RGBA, GL_BGRA, GL_UNSIGNED_BYTE, t->bits(), GL_LINEAR, GL_LINEAR);
+#ifdef EMSCRIPTEN
+        int iformat = GL_RGBA;
+#else
+        int iformat = GL_BGRA;
+#endif
+        gt->init(GL_TEXTURE_2D, Vec2i(t->width(), t->width()), 1, GL_RGBA, iformat, GL_UNSIGNED_BYTE, t->bits(), GL_LINEAR, GL_LINEAR);
         gtexs.push_back(gt);
     }
     else {
-        gtexs.push_back(NULL);
+        gtexs.push_back(nullptr);
     }
     return t;
 
@@ -322,13 +327,13 @@ const PicGroupDef* PicDef::mygrp() const {
 
 
 
-bool PicBucket::loadXML(const string& data)
+bool PicBucket::loadXML(const char* data)
 {
     //QDomDocument doc;
     XMLDocument doc;
 
-    if (doc.Parse(data.c_str()) != XML_NO_ERROR) {
-        printf("error parsing XML file:\n");
+    if (doc.Parse(data) != XML_NO_ERROR) {
+        cout << "error parsing XML file:" << endl;
         return false;
     }
 
@@ -340,22 +345,24 @@ bool PicBucket::loadXML(const string& data)
 
     ////////////// texture files ////////////////////////
     XMLElement* t = texe->FirstChildElement("texture");
-    while (t != NULL)
+    while (t != nullptr)
     {
-        bool in3d = t->Attribute("in3d", "true") != NULL;
+        bool in3d = t->Attribute("in3d", "true") != nullptr;
         const char *txnamep = t->Attribute("filename");
-        if (txnamep != NULL)
+        if (txnamep != nullptr)
         {
             string txname(txnamep);
+#ifdef QT_CORE_LIB
             QImage img(txname.c_str(), "PNG");
             if (img.isNull())
             {
-                printf("Failed to load texture file: ");
+                cout << "Failed to load texture file: " << endl;
                 return false;
             }
             ImgBuf *imgbuf = new ImgBuf(img.width(), img.height(), img.bits());
             
             newTexture(imgbuf, in3d);
+#endif
         }
 
 
@@ -370,11 +377,12 @@ bool PicBucket::loadXML(const string& data)
     int grpCount = 0;
     // count the number of cubes (groups) we have
     XMLElement* xfam = xfams->FirstChildElement("family");
-    while (xfam != NULL)
+    while (xfam != nullptr)
     {
         int ind = xfam->IntAttribute("index"); // the index it should show at the main build helper menu
-        if (ind >= families.size())
+        if (ind >= families.size()) {
             families.resize(ind + 1);
+        }
         PicFamily &cfam = families[ind];
         cfam.startIndex = grpCount;
         cfam.name = xfam->Attribute("name");
@@ -383,7 +391,7 @@ bool PicBucket::loadXML(const string& data)
 
         cfam.numGroups = 0; // xfam->ElementsByTagName("group").size();
         XMLElement* xgrps = xfam->FirstChildElement("group");
-        while (xgrps != NULL) {
+        while (xgrps != nullptr) {
             ++cfam.numGroups;
             xgrps = xgrps->NextSiblingElement("group");
         }
@@ -402,10 +410,10 @@ bool PicBucket::loadXML(const string& data)
     int pdefi = 0;
 
     xfam = xfams->FirstChildElement("family");
-    while (xfam != NULL)
+    while (xfam != nullptr)
     {
         XMLElement* cube = xfam->FirstChildElement("group"); // a group of pieces is a cube
-        while (cube != NULL)
+        while (cube != nullptr)
         {
             PicGroupDef cgrp;
             cgrp.name = cube->Attribute("name");
@@ -415,14 +423,18 @@ bool PicBucket::loadXML(const string& data)
 
             cgrp.drawtype = getDrawType(fill->Attribute("type"));
 
-            ImgBuf* baseTex = NULL;
-            GlTexture* baseGTex = NULL;
-            if (fill->Attribute("texind") != NULL)
+            ImgBuf* baseTex = nullptr;
+            GlTexture* baseGTex = nullptr;
+            if (fill->Attribute("texind") != nullptr)
             {
                 int txind = fill->IntAttribute("texind");
-                M_ASSERT((txind >= 0) && (txind <= texs.size()));
-                baseTex = texs[txind];
-                baseGTex = gtexs[txind+1]; // gtex starts with the noise tex at 0
+                if (txind >= 0 && txind < texs.size()) {
+                    baseTex = texs[txind];
+                    baseGTex = gtexs[txind+1]; // gtex starts with the noise tex at 0
+                }
+                else {
+                    cout << "missing texture " << txind << endl;
+                }
             }
 
             cgrp.tex = baseTex;
@@ -435,45 +447,50 @@ bool PicBucket::loadXML(const string& data)
                                  float(fill->IntAttribute("exB")) / 255.0f);
             cgrp.blackness = (EBlackness)fill->IntAttribute("k");
     
-
-            if (cgrp.drawtype == DRAW_TEXTURE_BLEND || cgrp.drawtype == DRAW_TEXTURE_MARBLE)
+            if (baseTex != nullptr) 
             {
-                cgrp.tex = newTexture(cgrp.blendImage(baseTex), false);
-                cgrp.gtex = gtexs[0]; //the noise tex
-            }
-            else if (cgrp.isIndividual()) {
-                cgrp.gtex = baseGTex;
+                if (cgrp.drawtype == DRAW_TEXTURE_BLEND || cgrp.drawtype == DRAW_TEXTURE_MARBLE)
+                {
+                    cgrp.tex = newTexture(cgrp.blendImage(baseTex), false);
+                    cgrp.gtex = gtexs[0]; //the noise tex
+                }
+                else if (cgrp.isIndividual()) {
+                    cgrp.gtex = baseGTex;
+                }
             }
 
             //QDomNodeList xpics = cube->ElementsByTagName("piece");
             XMLElement* xpic = cube->FirstChildElement("piece");
-            if (xpic != NULL)
+            if (xpic != nullptr)
             {
                 //cgrp.pics.resize();
                 int pici = 0;
-                while (xpic != NULL)
+                while (xpic != nullptr)
                 {
                     PicDef& curdef = pdefs[pdefi];
                     curdef.mygrpi = grpi;
                     curdef.indexInGroup = pici;
 
                     //QDomElement ep = xpics.at(pici).toElement();
-                    QString text = xpic->GetText();
-                    text.remove(' ');
+                    //QString text = xpic->GetText();
+                    //text.remove(' ');
+                    string text = xpic->GetText();
+                    text.erase(std::remove(text.begin(), text.end(), ' '), text.end());
+                    int txti = 0;
                     for (int y = 0; y < 5; ++y)
                     {
                         for (int x = 0; x < 5; ++x)
                         {
                             // get the first number;
-                            if (text.at(0) == '0') 
+                            if (text.at(txti) == '0')
                                 curdef.v.set(x, y) = 0;
                             else 
-                                curdef.v.set(x,y) = 1;
-                            text.remove(0, 1);
+                                curdef.v.set(x, y) = 1;
+                            ++txti;
 
                         }
                     }
-                    if (cgrp.isIndividual())
+                    if (cgrp.isIndividual() && cgrp.tex != nullptr)
                     {
                         curdef.xOffs = xpic->IntAttribute("x1");
                         curdef.yOffs = xpic->IntAttribute("y1");
@@ -492,7 +509,7 @@ bool PicBucket::loadXML(const string& data)
                 string copyfrom = xpics->Attribute("copy");
                 if (grpnames.find(copyfrom) == grpnames.end())
                 {
-                    printf("can't copy piece from: %s\n", copyfrom.c_str());
+                    cout << "can't copy piece from: " << copyfrom << endl;
                     return false;
                 }
                 
@@ -564,7 +581,7 @@ void PicBucket::distinctMeshes()
     for(int i = 0; i < pdefs.size(); ++i) {
         ps.add(i, false);
     }
-    printf("%d distinct meshes out of %d pieces\n", (int)ps.comp.size(), (int)pdefs.size());
+    cout << ps.comp.size() << " distinct meshes out of " << pdefs.size() << " pieces\n" << endl;
 
     m_meshes.clear();
     for(int i = 0; i < ps.comp.size(); ++i) {
@@ -629,36 +646,70 @@ void PicBucket::buildMeshes(const DisplayConf& dpc, ProgressCallback* prog)
     PicDisp::getAllocator().checkMaxAlloc();
 }
 
-#define BUF_LEN 256
+class LineParser
+{
+public:
+    LineParser(const char* buf) : m_buf(buf), m_p(buf) {}
+    const char* readLine(uint *sz) {
+        const char* start = m_p;
+        while (*m_p != '\n' && *m_p != 0) {
+            ++m_p;
+            ++(*sz);
+        }
+        m_p += 1; //skip the \n
+        if (*m_p == 0)
+            m_p = nullptr;
+        return start;
+    }
+    bool atEnd() const {
+        return m_p == nullptr;
+    }
 
-bool PicBucket::loadUnified(const string& filename) 
+    const char* m_buf = nullptr;
+    const char* m_p = nullptr;
+
+};
+
+// in Qt, s is the filename
+// in emscripten s is the buffer
+bool PicBucket::loadUnified(const char* s) 
 {
     distinctMeshes();
 
-    //ifstream iff(filename);
-    //if (!iff.good())
-    //    return false;
-    QFile iff(filename.c_str());
+#ifdef XXX_QT_CORE_LIB
+    QFile iff(s);
     if (!iff.open(QIODevice::ReadOnly | QIODevice::Text))
         return false;
+    QTextStream in(&iff);
+#else
+    int len = strlen(s);
+    //cout << "LOADUNI " << len << " `" << s << "`" << endl;
+    cout << "UNI " << " " << (int)s[0] << " " << (int)s[1] << " " << (int)s[2] << " " << (int)s[3] << endl;
+    LineParser in{ s };
+#endif
     
     shared_ptr<Mesh::CommonData> cd(new Mesh::CommonData);
     double a,b,c;
-    char *pa;
-    Mesh *mesh = NULL;
+    char *pa = nullptr;
+    Mesh *mesh = nullptr;
+    int vtxCount = 0, meshCount = 0;
 
-    QTextStream in(&iff);
     while (!in.atEnd())
     {
+#ifdef XXX_QT_CORE_LIB
         QString line = in.readLine();
         QByteArray ba = line.toLatin1();
-        char* linebuf = ba.data();
-
+        const char* linebuf = ba.data();
         uint len = ba.size();
+#else
+        uint len = 0;
+        const char* linebuf = in.readLine(&len);
+#endif
+
         if (len < 3)
             continue;
         if (linebuf[0] == 'v') { // vertex
-            pa = linebuf + 2;
+            pa = (char*)linebuf + 2;
             a = strtod(pa, &pa);
             b = strtod(pa, &pa);
             c = strtod(pa, &pa);
@@ -667,32 +718,55 @@ bool PicBucket::loadUnified(const string& filename)
             b = strtod(pa, &pa);
             c = strtod(pa, &pa);
             cd->normals.push_back(Vec3(a, b, c));
+            ++vtxCount;
         }
         else if (linebuf[0] == '*') {// mesh header
-            ushort sig = strtoul(linebuf + 1, NULL, 16);
-            for (auto it = m_meshes.begin(), endit = m_meshes.end();  it != endit; ++it)
+            ushort sig = strtoul(linebuf + 1, nullptr, 16);
+            auto it = m_meshes.begin(), endit = m_meshes.end();
+            for (; it != endit; ++it)
+            {
                 if (sig == (*it)->bits()) {
                     // finishes prev mesh, calc normals
                     mesh = &(*it)->m_mesh;
-                    mesh->m_type = Mesh::QUADS;
+                    mesh->m_type = Mesh::TRIANGLES; //Mesh::QUADS;
                     mesh->m_hasIdx = mesh->m_hasNormals = true;
                     mesh->m_common = cd;
                     break;
                 }
+            }
+            if (it == endit)
+                throw HCException("did not find piece for sig");
+            ++meshCount;
         }
         else {
-            pa = linebuf;
+            pa = (char*)linebuf;
+            int vi[4];
             for(int fi = 0; fi < 4; ++fi) {
-                int i = strtoul(pa, &pa, 10);
-                mesh->m_idx.push_back(i);
+                vi[fi] = strtoul(pa, &pa, 10);
+                M_ASSERT(vi[fi] < 65536);
             }
+        /*  mesh->m_idx.push_back(vi[0]);
+            mesh->m_idx.push_back(vi[1]);
+            mesh->m_idx.push_back(vi[2]);
+            mesh->m_idx.push_back(vi[0]);
+            mesh->m_idx.push_back(vi[2]);
+            mesh->m_idx.push_back(vi[3]);
+            */
+            mesh->m_idx.push_back(vi[0]);
+            mesh->m_idx.push_back(vi[2]);
+            mesh->m_idx.push_back(vi[1]);
+            mesh->m_idx.push_back(vi[0]);
+            mesh->m_idx.push_back(vi[3]);
+            mesh->m_idx.push_back(vi[2]);
+
         }
     }
+    cout << "Unified Mesh read " << vtxCount << " vtx " << meshCount << " meshes" << endl;
     return true;
 }
 
 
-
+#if 0
 // load a single big file with all the meshes separated by ****XXXX where XXXX is the bits of the pic
 bool PicBucket::loadMeshes(const string& filename) 
 {
@@ -702,7 +776,7 @@ bool PicBucket::loadMeshes(const string& filename)
     if (!iff.good())
         return false;
     char linebuf[BUF_LEN] = {0};
-    Mesh *mesh = NULL;
+    Mesh *mesh = nullptr;
     double a,b,c;
     char *pa, *pb;
     vector<Vec2> texc;
@@ -715,12 +789,12 @@ bool PicBucket::loadMeshes(const string& filename)
             continue;
         if (linebuf[0] == '*') {// mesh header
             // calc normals
-            ushort sig = strtoul(linebuf + 4, NULL, 16);
+            ushort sig = strtoul(linebuf + 4, nullptr, 16);
             // find the next mesh
             for (auto it = m_meshes.begin(), endit = m_meshes.end();  it != endit; ++it)
                 if (sig == (*it)->bits()) {
                     // finishes prev mesh, calc normals
-                    if (mesh != NULL) {
+                    if (mesh != nullptr) {
                         mesh->calcTrianglesNormals();
                     }
                     mesh = &(*it)->m_mesh;
@@ -763,7 +837,7 @@ bool PicBucket::loadMeshes(const string& filename)
     mesh->calcTrianglesNormals(); // last mesh
     return true;
 }
-
+#endif
 
 int PicBucket::selectedCount() const
 {

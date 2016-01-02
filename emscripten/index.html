@@ -1,0 +1,79 @@
+<!doctype html>
+<html><head>
+
+<script id="stdpcs" src="j_stdpcs.xml"></script>  
+<script id="unimesh" src="j_unified_meshes_all.txt"></script>  
+
+<script id="one_cube" src="j_one_piece_cube.txt"></script>    
+
+
+<script type="text/javascript">
+    
+var gl = null, canvas = null
+var prog = null
+var model = { vtxBuf: null }
+
+var loadSolution, resize, mouseUp, mouseDown, mouseMove
+    
+function start() {
+
+    Module.ccall('cpp_start', null);
+    
+    var tmp = new Int8Array(unimesh_text.length)
+    
+    for(var i = 0; i < unimesh_text.length; ++i) {
+        tmp[i] = unimesh_text.charCodeAt(i)
+    }
+    var buf = Module._malloc(unimesh_text.length)
+    Module.HEAP8.set(tmp, buf)
+
+    Module.ccall('initCubeEngine', 'boolean', ['string', 'number'], [stdpcs_text, buf])
+    Module._free(buf)
+    delete tmp
+    
+    loadSolution = Module.cwrap('loadSolution', null, ['string'])
+    resize = Module.cwrap('resize', null, ['number', 'number'])
+    mouseDown = Module.cwrap('mouseDown', null, ['number', 'number', 'number'])
+    mouseUp = Module.cwrap('mouseUp', null, ['number'])
+    mouseMove = Module.cwrap('mouseMove', null, ['number', 'number', 'number', 'number'])
+    
+    loadSolution(one_piece_cube_text)
+    resize(mycanvas.width, mycanvas.height)
+    
+    mycanvas.onmousedown = handleMouseDown;
+    document.onmouseup = handleMouseUp;
+    document.onmousemove = handleMouseMove;
+
+    // start drawing
+    requestAnimationFrame(draw)
+
+}
+
+function handleMouseDown(event) {
+    mouseDown( (event.button == 2)?1:0, event.clientX, event.clientY)
+}
+function handleMouseUp(event) {
+    mouseUp( (event.button == 2)?1:0)
+}
+function handleMouseMove(event) {
+    mouseMove(event.buttons, 0, event.clientX, event.clientY)
+}
+
+function draw() {
+
+    var ok = Module.ccall('cpp_progress', 'boolean');
+    if (!ok)
+        return;
+    
+    // next frame
+    //requestAnimationFrame(draw)
+}
+
+</script>
+
+<script src="js_main.js"></script>
+</head>
+<body onload="start();">
+    <canvas id="mycanvas" width="800" height="700"></canvas>
+</body>
+</html>

@@ -7,7 +7,9 @@ static uint glType(Mesh::Type t) {
     switch (t){
     case Mesh::LINES: return GL_LINES;
     case Mesh::TRIANGLES: return GL_TRIANGLES;
+#ifdef QT_CORE_LIB
     case Mesh::QUADS: return GL_QUADS;
+#endif
     case Mesh::TRI_STRIP: return GL_TRIANGLE_STRIP;
     case Mesh::TRI_FAN: return GL_TRIANGLE_FAN;
     default: throw HCException("bad mesh type");
@@ -38,37 +40,47 @@ void Mesh::paint(bool names) const
         normals = &m_common->normals;
     //    texCoord = &m_common->texCoord;
     }
-    if (vtx->size() == 0)
+    if (vtx->size() == 0) {
+#ifdef EMSCRIPTEN
+        cout << "vtx->size()==0 " << m_common << endl;
+        throw HCException("mesh is empty");
+#endif
         return;
+    }
 
     BaseProgram* bprog = ShaderProgram::currentt<BaseProgram>();
     NoiseSlvProgram* nprog = ShaderProgram::currenttTry<NoiseSlvProgram>();
     BuildProgram* lprog = ShaderProgram::currenttTry<BuildProgram>(); 
 
-    bprog->vtx.setArr(&(*vtx)[0]);
+    mglCheckErrors("set-uni");
+    m_vtxBo.setData(&(*vtx)[0], vtx->size());
+    bprog->vtx.setArr(m_vtxBo);
 
-    if (nprog != NULL) {
-        if (m_hasNormals) 
-            nprog->normal.setArr(&(*normals)[0]);
+    if (nprog != nullptr) {
+        if (m_hasNormals) {
+            m_normBo.setData(&(*normals)[0], normals->size());
+            nprog->normal.setArr(m_normBo);
+        }
         else 
             nprog->normal.disableArr();
     }
     if (names) {
         if (m_hasNames) {
-            //printf(" names %d\n", m_name.size());
-            bprog->colorAatt.setArr(&m_name[0]);
+            m_colBo.setData(&m_name[0], m_name.size());
+            bprog->colorAatt.setArr<Vec4b>(m_colBo);
         }
         else {
             bprog->colorAatt.disableArr();
         }
-        if (lprog != NULL) {
+        if (lprog != nullptr) {
             lprog->tag.set(0);
             lprog->tag.disableArr();
         }
     }
     else {
         if (m_hasColors) {
-            bprog->colorAatt.setArr(&m_color4[0]);
+            m_colBo.setData(&m_name[0], m_name.size());
+            bprog->colorAatt.setArr<Vec4b>(m_colBo);
         }
         else {
             bprog->colorAatt.disableArr();
@@ -79,32 +91,47 @@ void Mesh::paint(bool names) const
                     bprog->colorAatt.set(m_uColor);
             }
         }
-        if (lprog != NULL) {
-            if (m_hasTag) 
-                lprog->tag.setArr(&m_tag[0]);
+
+        if (lprog != nullptr) {
+            if (m_hasTag) {
+                m_tagBo.setData(&m_tag[0], m_tag.size());
+                lprog->tag.setArr(m_tagBo);
+            }
             else {
                 lprog->tag.set(0);
                 lprog->tag.disableArr();
             }
         }
+
     }
 
     mglCheckErrors("bufs");
 
     uint gltype = glType(m_type);
     if (m_hasIdx) {
-        glDrawElements(gltype, m_idx.size(), GL_UNSIGNED_INT, &m_idx[0]);
+        if (m_idxBuf == 0) {
+            glGenBuffers(1, const_cast<uint*>(&m_idxBuf));
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_idxBuf);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_idx.size() * sizeof(ushort), &m_idx[0], GL_STATIC_DRAW);
+        }
+        else {
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_idxBuf);
+
+        }
+        glDrawElements(gltype, m_idx.size(), GL_UNSIGNED_SHORT, 0);
     }
     else {
         glDrawArrays(gltype, 0, vtx->size());
     }
 
+/*
     for(int i = 0; i < m_addIdx.size(); ++i) {
         const IdxBuf& idx = m_addIdx[i];
         if (!idx.m_enabled)
             continue;
-        glDrawElements(glType(idx.m_type), idx.m_idx.size(), GL_UNSIGNED_INT, &idx.m_idx[0]);
+        glDrawElements(glType(idx.m_type), idx.m_idx.size(), GL_UNSIGNED_SHORT, &idx.m_idx[0]);
     }
+    */
 
     mglCheckErrors("draw");
 

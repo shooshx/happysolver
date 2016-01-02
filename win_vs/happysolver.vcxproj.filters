@@ -359,6 +359,9 @@
     <ClCompile Include="GeneratedFiles\Release\moc_ModelGLControl.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\CubeDocBase.cpp">
+      <Filter>DocView</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\src\about.ui">

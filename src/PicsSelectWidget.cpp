@@ -571,7 +571,7 @@ void PicsSelectWidget::pressedGlobalNone()
 /// update the view according to the current state in the PicBucket.
 void PicsSelectWidget::updateView(int hint) // SLOT
 {
-	if (GET_PIC_HINT(hint) == HINT_PIC_nullptr)
+	if (GET_PIC_HINT(hint) == HINT_PIC_NULL)
 		return; // nothing to do here. move along
 	if (!m_bFinishedCreate)
 		return;

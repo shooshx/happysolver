@@ -23,9 +23,9 @@
 #include "PicArr.h"
 #include "ImgBuf.h"
 
-//#ifdef _WINDOWS
+#ifdef QT_CORE_LIB
 #include <QPixmap>
-//#endif
+#endif
 
 #include <memory>
 using namespace std;
@@ -67,8 +67,11 @@ class GlTexture;
 class PicDef
 {
 public:
-    PicDef() : mygrpi(-1), indexInGroup(-1), pixmap(1, 1), tex(nullptr),
-        xOffs(-1), yOffs(-1), painter(NULL), nUsed(0), lastnSelected(1), nSelected(0), pathlen(0), dispRot(-1)
+    PicDef() : mygrpi(-1), indexInGroup(-1), tex(nullptr)
+        ,xOffs(-1), yOffs(-1), painter(nullptr), nUsed(0), lastnSelected(1), nSelected(0), pathlen(0), dispRot(-1)
+#ifdef QT_CORE_LIB
+        ,pixmap(1, 1)
+#endif
     {} 
     void reset() {
         painter = PicPainter(this);
@@ -89,11 +92,11 @@ public:
     PicArr v;
     PicArr defRtns[8];
 
-//#ifdef _WINDOWS
+#ifdef QT_CORE_LIB
     QPixmap pixmap;
-//#endif
+#endif
 
-    ImgBuf *tex; // Pic specific texture or NULL
+    ImgBuf *tex; // Pic specific texture or nullptr
 
     int xOffs, yOffs; // in case of TEXTURE_INDIVIDUAL_***. the x,y offsets of the texture
     PicPainter painter;
@@ -171,7 +174,7 @@ class PicGroupDef
 public:
     PicGroupDef() 
     : drawtype(DRAW_UKNOWN), color(1.0f, 1.0f, 1.0f),   
-      exColor(0.0f, 0.0f, 0.0f), blackness(BLACK_NOT), gtex(NULL)
+      exColor(0.0f, 0.0f, 0.0f), blackness(BLACK_NOT), gtex(nullptr)
     {}
 
     ImgBuf* blendImage(ImgBuf* baseTex); // produce an image from the texture, and the colors in blend mode
@@ -191,7 +194,7 @@ public:
     ImgBuf* tex;  // the texture used
 
     string name;
-    EDrawType drawtype; // could be that according to the type there is a texture but tex is NULL
+    EDrawType drawtype; // could be that according to the type there is a texture but tex is nullptr
 
     Vec3 color;
     Vec3 exColor;
@@ -256,7 +259,7 @@ class PicBucket
 public:
     /// load the main configuration xml. this is one of the first things that
     /// ever happen in the application
-    bool loadXML(const string& xmlname);
+    bool loadXML(const char* xmlname);
     ImgBuf* newTexture(ImgBuf* img, bool in3d);
 
     static void createSingleton();
@@ -266,7 +269,7 @@ public:
     void makeBitmapList(); 
     void buildMeshes(const DisplayConf& dpc, ProgressCallback* prog);
     bool loadMeshes(const string& filename);
-    bool loadUnified(const string& filename) ;
+    bool loadUnified(const char* filename) ;
 
     int selectedCount() const;
 

@@ -60,7 +60,7 @@ class SolveThread :public QThread // TBD-ios
 {
 	Q_OBJECT
 public:
-	SolveThread() :m_pics(NULL), m_slvs(NULL), m_shp(NULL), m_conf(NULL)
+	SolveThread() :m_pics(nullptr), m_slvs(nullptr), m_shp(nullptr), m_conf(nullptr)
 		,fExitnow(0), fRunning(false)
 	{}
 

@@ -38,7 +38,7 @@ template<class T>
 class Space3D  
 {
 public:
-	Space3D() :szx(-1), szy(-1), szz(-1), szxTy(-1), data(NULL) {};
+	Space3D() :szx(-1), szy(-1), szz(-1), szxTy(-1), data(nullptr) {};
 	Space3D(int _szx, int _szy, int _szz)
 		:szx(_szx), szy(_szy), szz(_szz), szxTy(szx * szy), data(new T[szxTy * szz]) {}
 	~Space3D()

@@ -24,7 +24,7 @@
 #include <iostream>
 
 
-QWidget* g_main = NULL;
+QWidget* g_main = nullptr;
 
 
 #if (defined(Q_WS_MAC) || defined(Q_WS_X11)) // on mac OS the mng plugin is static
@@ -71,12 +71,12 @@ static int rotationSub(int x, int defRot)
 void console()
 {
     AllocConsole();
-    FILE *pFileCon = NULL;
+    FILE *pFileCon = nullptr;
     pFileCon = freopen("CONOUT$", "w", stdout);
     pFileCon = freopen("CONIN$", "r", stdin);
 
     COORD coordInfo;
-    coordInfo.X = 130;
+    coordInfo.X = 300;
     coordInfo.Y = 3000;
 
     SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), coordInfo);
@@ -110,8 +110,9 @@ int main(int argc, char *argv[])
 // 
 // 	return 0;
 
+
     QApplication app(argc, argv);
-   // console();
+    console();
 
     QIcon appicon(":/images/HappySolver64f.png");
     appicon.addFile(":/images/HappySolver32f.png");
@@ -120,6 +121,8 @@ int main(int argc, char *argv[])
 
     g_format.setSampleBuffers(true); // TBD - do better
     PicBucket::createSingleton();
+
+
 
     MainWindow window;
     window.setWindowIcon(appicon);

@@ -54,7 +54,7 @@
 
 
 /// select a specific QAction from a QActionGroup according to its data.
-/// the data needs to be an int. if no such QAction is found, returns NULL.
+/// the data needs to be an int. if no such QAction is found, returns nullptr.
 QAction *selectGroupAct(QActionGroup *group, int sel)
 {
     QList<QAction*> list = group->actions();
@@ -65,12 +65,12 @@ QAction *selectGroupAct(QActionGroup *group, int sel)
             return act;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 
 MainWindow::MainWindow()
-    :m_picsInitThread(NULL), m_wasClosed(false), m_bChanged(false), m_lastViewIndex(-1), m_curView(-1)
+    :m_picsInitThread(nullptr), m_wasClosed(false), m_bChanged(false), m_lastViewIndex(-1), m_curView(-1)
 {
     setWindowTitle(APP_NAME);
 
@@ -92,6 +92,8 @@ MainWindow::MainWindow()
     m_stack = new QStackedWidget(this);
     setCentralWidget(m_stack);
     m_glWidget = new GLWidget(m_stack);
+//    ShaderProgram::shadersInit();
+
     m_modelGLControl = new ModelGLControl(m_glWidget, m_doc); // views need to start with MainWindow as parent
     m_buildGLControl = new BuildGLControl(m_glWidget, m_doc);
     m_glWidget->m_handlers.push_back(m_modelGLControl);
@@ -190,7 +192,7 @@ public:
         m_dlg.setWindowTitle("Happy Cube Solver");
         m_dlg.setMinimumDuration(1500);
         if (!m_showStop)
-            m_dlg.setCancelButton(NULL);
+            m_dlg.setCancelButton(nullptr);
     }
     virtual bool setValue(int v) {
         m_dlg.setValue(v);
@@ -210,7 +212,7 @@ bool MainWindow::initialize()
 
     m_modelGLControl->initTex();
     // needs to be here because only here we have the glwidget
-    if (!PicBucket::mutableInstance().loadXML(readFile(":/stdpcs.xml")))
+    if (!PicBucket::mutableInstance().loadXML(readFile(":/stdpcs.xml").c_str()))
         return false;
 
     m_picsInitThread = new PicInitThread();
@@ -220,7 +222,7 @@ bool MainWindow::initialize()
     DlgProg dlgprog(false);
     //PicBucket::mutableInstance().buildMeshes(m_doc->m_conf.disp, &dlgprog);
     //PicBucket::mutableInstance().loadMeshes("C:/projects/cubeGL/happysolver/small_meshes_all.txt");
-    PicBucket::mutableInstance().loadUnified(":/unified_meshes_all.txt");
+    PicBucket::mutableInstance().loadUnified(readFile(":/unified_meshes_all.txt").c_str());
 
     return true;
 }

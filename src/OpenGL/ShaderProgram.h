@@ -31,6 +31,15 @@ public:
 
 class ShaderProgram;
 
+class GlArrayBuffer
+{
+public:
+    template<typename T>
+    void setData(const T* v, int count);
+    uint m_buf = 0;
+};
+
+
 class ShaderParam 
 {
 public:
@@ -62,16 +71,20 @@ public:
 class AttribParam : public ShaderParam
 {
 public:
-    AttribParam(const string& name, ShaderProgram* prog) : ShaderParam(name, prog) {}
+    AttribParam(const string& name, ShaderProgram* prog) : ShaderParam(name, prog) 
+    {
+       
+    }
     virtual void getLocation(uint progId);
 
     template<typename T>
     void set(const T& v) const;
 
     template<typename T> 
-    void setArr(const T* v) const;
+    void setArr(GlArrayBuffer& bo) const;
     void disableArr();
     void enableArr();
+
 };
 
 
@@ -92,15 +105,15 @@ public:
     //bool isCurrent() const { return g_current == this; }
     virtual int type() const { return m_type; }
 
-    static bool hasCurrent() { return g_current != NULL; }
+    static bool hasCurrent() { return g_current != nullptr; }
     static ShaderProgram* current() { return g_current; };
     template<typename T>
     static T* currentt() { 
-        if (g_current == NULL)
-            return NULL;
+        if (g_current == nullptr)
+            return nullptr;
         T* c = dynamic_cast<T*>(g_current);
-        if (c == NULL) {
-            printf("ERROR: Wrong program type!");
+        if (c == nullptr) {
+            cout << "ERROR: Wrong program type!" << endl;
             //DebugBreak();
             throw HCException("Wrong program type");
         }
@@ -108,14 +121,16 @@ public:
     };
     template<typename T>
     static T* currenttTry() { 
-        if (g_current == NULL)
-            return NULL;
+        if (g_current == nullptr)
+            return nullptr;
         T* c = dynamic_cast<T*>(g_current);
         return c; 
     };
 
     bool init(const ProgCompileConf& conf = ProgCompileConf());
-    bool isOk() const { return m_isOk; }
+    bool isOk() const { 
+        return m_isOk; 
+    }
 
     uint progId() const { return m_progId; }
     void addParam(ShaderParam* p) {
@@ -131,6 +146,8 @@ public:
         for (auto it = m_params.begin(); it != m_params.end(); ++it)
             (*it)->getLocation(progId());
     }
+
+    static void shadersInit();
 
 protected: 
     void use() const;
@@ -156,14 +173,14 @@ protected:
 class ProgramUser
 {
 public:
-    ProgramUser(const ShaderProgram *prog = NULL) : m_prog(prog) 
+    ProgramUser(const ShaderProgram *prog = nullptr) : m_prog(prog) 
     {
-        if (m_prog != NULL)
+        if (m_prog != nullptr)
             m_prog->use();
     }
     void use(const ShaderProgram *prog)
     {
-        if (prog == NULL)
+        if (prog == nullptr)
         {
             dispose();
             return;
@@ -174,14 +191,14 @@ public:
 
     ~ProgramUser()
     {
-        if (m_prog != NULL)
+        if (m_prog != nullptr)
             m_prog->unuse();
     }
     void dispose()
     {
-        if (m_prog != NULL)
+        if (m_prog != nullptr)
             m_prog->unuse();
-        m_prog = NULL;
+        m_prog = nullptr;
     }
 
 private:
@@ -209,18 +226,26 @@ class FloatAttrib : public AttribParam {
 public:
     FloatAttrib(const char* name, ShaderProgram* prog) : AttribParam(name, prog) {}
     void set(float v) const;
-    void setArr(const float* v) const;
+    void setArr(GlArrayBuffer& bo) const {
+        AttribParam::setArr<float>(bo);
+    }
 };
 class Vec3Attrib : public AttribParam {
 public:
     Vec3Attrib(const char* name, ShaderProgram* prog) : AttribParam(name, prog) {}
-    void setArr(const Vec3* v) const;
+    void setArr(GlArrayBuffer& bo) const {
+        AttribParam::setArr<Vec3>(bo);
+    }
 };
 class IntAttrib : public AttribParam {
 public:
     IntAttrib(const char* name, ShaderProgram* prog) : AttribParam(name, prog) {}
-    void setArr(const int* v) const;
+    void setArr(GlArrayBuffer& bo) const {
+        AttribParam::setArr<int>(bo);
+    }
 };
+
+
 
 class Vec3Uniform : public UniformParam {
 public:
