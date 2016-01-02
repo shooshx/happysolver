@@ -141,14 +141,14 @@ bool Shape::loadFrom(MyFile *rdfl)
 
 void Shape::deallocate()
 {
-    if (faces != NULL) delete[] faces;
-    faces = NULL;
-    if (sides != NULL) delete[] sides;
-    sides = NULL;
-    if (corners != NULL) delete[] corners;
-    corners = NULL;
-    if (errorSides != NULL) delete[] errorSides;
-    errorSides = NULL;
+    if (faces != nullptr) delete[] faces;
+    faces = nullptr;
+    if (sides != nullptr) delete[] sides;
+    sides = nullptr;
+    if (corners != nullptr) delete[] corners;
+    corners = nullptr;
+    if (errorSides != nullptr) delete[] errorSides;
+    errorSides = nullptr;
 
     fcn = 0; sdn = 0; cnn = 0;
     sdnError = 0;

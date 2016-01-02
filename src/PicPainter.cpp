@@ -18,7 +18,7 @@
 #include "PicPainter.h"
 #include "Pieces.h"
 
-#include "GLWidget.h"
+#include "BaseGLWidget.h"
 #include "Configuration.h" // DisplayConf
 #include "OpenGL/Shaders.h"
 #include "OpenGL/glGlob.h"
@@ -143,7 +143,7 @@ void PicDisp::placeSidePolygon(MyObject& obj, int b, bool is1, int x, int y) con
         }
     }
 */
-    Texture *tex = NULL; //m_pdef->tex;
+    Texture *tex = nullptr; //m_pdef->tex;
 
     ancs1[0] = baseancf[0]; ancs2[0] = baseancf[3]; 
     ancs1[1] = baseancf[1]; ancs2[1] = baseancf[2]; 
@@ -156,7 +156,7 @@ void PicDisp::placeSidePolygon(MyObject& obj, int b, bool is1, int x, int y) con
 
     if (is1)
     { // polys that make the flat surface.
-        obj.addPoly(pnti1, ancs1, NULL); //if its an out of place, it's textured
+        obj.addPoly(pnti1, ancs1, nullptr); //if its an out of place, it's textured
         obj.addPoly(pnti2, ancs2, tex);
     }
 
@@ -212,16 +212,16 @@ void PicDisp::placeSidePolygon(MyObject& obj, int b, bool is1, int x, int y) con
         polyf |= build[b].pold.in0;
     }
 
-    Texture* sideTex = NULL; // mygrp->sideTex
+    Texture* sideTex = nullptr; // mygrp->sideTex
 
     if (polyf & POLY_A) obj.addPoly(pntiA, ancsR1, sideTex); //if its an out of place, it's textured
     if (polyf & POLY_B) obj.addPoly(pntiB, ancsR2, sideTex);
     if (polyf & POLY_C) obj.addPoly(pntiC, ancsR3, sideTex); //if its an out of place, it's textured
     if (polyf & POLY_D) obj.addPoly(pntiD, ancsR4, sideTex);
-    qSwap(pntiA[1], pntiA[3]); qSwap(ancsR1[1], ancsR1[3]);
-    qSwap(pntiB[1], pntiB[3]); qSwap(ancsR2[1], ancsR2[3]);
-    qSwap(pntiC[1], pntiC[3]); qSwap(ancsR3[1], ancsR3[3]);
-    qSwap(pntiD[1], pntiD[3]); qSwap(ancsR4[1], ancsR4[3]);
+    std::swap(pntiA[1], pntiA[3]); std::swap(ancsR1[1], ancsR1[3]);
+    std::swap(pntiB[1], pntiB[3]); std::swap(ancsR2[1], ancsR2[3]);
+    std::swap(pntiC[1], pntiC[3]); std::swap(ancsR3[1], ancsR3[3]);
+    std::swap(pntiD[1], pntiD[3]); std::swap(ancsR4[1], ancsR4[3]);
     if (polyf & POLY_UA) obj.addPoly(pntiA, ancsR1, sideTex); //if its an out of place, it's textured
     if (polyf & POLY_UB) obj.addPoly(pntiB, ancsR2, sideTex);
     if (polyf & POLY_UC) obj.addPoly(pntiC, ancsR3, sideTex); //if its an out of place, it's textured
@@ -276,9 +276,9 @@ void PicDisp::init(const DisplayConf& dpc)
         stringstream ss;
         ss << "c:/temp/orig/piece_" << hex << m_arr.getBits() << "_" << rand() << ".sobj";
         ofstream f(ss.str().c_str());
-        //ObjExport oe(f, NULL);
+        //ObjExport oe(f, nullptr);
         //oe.asTriangles = true;
-        //oe.addMesh(NULL, m_mesh, Mat4::ident());
+        //oe.addMesh(nullptr, m_mesh, Mat4::ident());
 
         // short hand format for unification
         for(int i = 0; i < m_mesh.m_vtx.size(); ++i) {
@@ -309,7 +309,9 @@ void PicPainter::paint(bool fTargets, const Vec3& name, BaseGLWidget *context, b
     //bool hasTex = def->isTexExist();
 
     BaseProgram* bprog = ShaderProgram::currentt<BaseProgram>();
-    M_ASSERT(bprog != NULL);
+    M_ASSERT(bprog != nullptr);
+
+    auto tm = context->transformMat();
 
     bprog->trans.set(context->transformMat());
 
@@ -318,12 +320,12 @@ void PicPainter::paint(bool fTargets, const Vec3& name, BaseGLWidget *context, b
     {
 
         NoiseSlvProgram* prog = ShaderProgram::currentt<NoiseSlvProgram>();
-        if (prog != NULL) {
+        if (prog != nullptr) {
             prog->drawtype.set(def->drawtype);
             prog->colorAu.set(def->color);
             prog->colorB.set(def->exColor);
 
-            if (def->gtex != NULL) {
+            if (def->gtex != nullptr) {
                 mglActiveTexture(0);
                 glBindTexture(GL_TEXTURE_2D, def->gtex->handle());
                 prog->noisef.set(0);

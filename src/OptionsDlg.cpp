@@ -28,7 +28,7 @@
 
 OptionsDlg::OptionsDlg(QWidget *parent, Configuration *conf)
 	:QDialog(parent), m_conf(conf), m_wasPers(-1)
-	, m_bkColor(NULL, "bkColor", "bkColor", QColor(0,0,0))
+	, m_bkColor(nullptr, "bkColor", "bkColor", QColor(0,0,0))
 {
 	int i;
 	ui.setupUi(this);

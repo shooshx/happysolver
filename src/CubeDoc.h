@@ -45,7 +45,7 @@ class PicsSet;
 #define HINT_SLV_READY   0x00000004 // need to do something for a new solution
 #define HINT_SLV_PAINT   0x00000008 // need to only repaint
 
-#define HINT_PIC_NULL         0x00003000
+#define HINT_PIC_nullptr         0x00003000
 #define HINT_PIC_READSLVCHECK 0x00001000 // read the check data from the current solution
 #define HINT_PIC_UPDATECHECK  0x00002000  // just update the gui according the the bucket data
 
@@ -57,15 +57,7 @@ class PicsSet;
 #define GET_PIC_HINT(hint) (hint & 0x00FFF000)
 #define GET_BLD_HINT(hint) (hint & 0xFF000000)
 
-// hints for the SolveDlg
-#define SHINT_SOLUTIONS	1000 // data is the number of solutions
-#define SHINT_PARTCHN	1001 // data is the value tms (times part was changed
-#define SHINT_STATUS	1002 // data is 0
-#define SHINT_ALL		1003 // data is 0
-#define SHINT_JUSTGEN	1004 // exactly like IDS_ALL and in addition informs that a gen was just succesful
-#define SHINT_START		1005 // like STATUS, when the thread starts
-#define SHINT_STOP		1006 // like STATUS, when the thread stops
-#define SHINT_WARNING	1007 // warning changed
+
 
 
 class SolveThread;
@@ -107,7 +99,9 @@ public:
     void waitInitFinish();
 
 
-    bool isSlvEngineRunning() { return (m_sthread != NULL) && (m_sthread->fRunning); }
+    bool isSlvEngineRunning() { 
+        return (m_sthread != nullptr) && (m_sthread->fRunning); 
+    }
     const RunStats* getRunningStats();
 
 
@@ -143,7 +137,8 @@ private:
 
     bool generalSaveFile(const char *defext, const char* selfilter, const char *filter, const char *title, QString &retname);
 
-    void realOpen(QString name);
+    void openAndHandle(QString name);
+
 
     // parameter is the possible answer to the question of what to do in the ungenned slv situation
     // can be either -1(show messagebox),Solutions or Shape

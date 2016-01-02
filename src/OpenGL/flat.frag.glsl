@@ -1,3 +1,5 @@
+precision highp float;
+
 varying vec3 color;
 
 void main (void)

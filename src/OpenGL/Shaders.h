@@ -94,11 +94,11 @@ class SLNotifiable;
 class AllShader : public ShaderProgram
 {
 public:
-	AllShader(ShadersManager* mgr = NULL) :
+	AllShader(ShadersManager* mgr = nullptr) :
 		m_mats("cubeRot"),
 		m_psize("psize"),
 		m_polyData(mgr, "polyData", "polySize"),
-		m_sphPolyData(mgr, "sphPolyData", NULL),
+		m_sphPolyData(mgr, "sphPolyData", nullptr),
 		m_externP("external_p"),
 		m_externS("external_s"),
 		m_coneOrig("coneOrigin"),

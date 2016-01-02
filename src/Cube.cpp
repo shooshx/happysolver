@@ -20,12 +20,14 @@
 #include "Shape.h"
 #include "Solutions.h"
 #include "Cube.h"
-#include "CubeDoc.h" // needed for SHINT_*
+#include "CubeDocBase.h" // needed for SHINT_*
 #include "PicsSet.h"
 #include "SlvCube.h"
 
 #include "MyObject.h"
+#ifdef QT_CORE_LIB
 #include "SolveThread.h"
+#endif
 
 #include <time.h>
 #include <iostream>
@@ -88,7 +90,7 @@ Cube::Cube(const Shape* shapeset, const PicsSet* picset, const EngineConf* conf)
      xsz(shape->size.x), ysz(shape->size.y), zsz(shape->size.z), 
      xTysz(xsz * ysz), use(pics)
 {
-    if (conf != NULL)
+    if (conf != nullptr)
         lconf = *conf; // copy it to local copy
 
     cub_ = new CubeCell[xsz * ysz * zsz];
@@ -113,8 +115,8 @@ Cube::~Cube()
 
 const int Cube::whichKJ[3][2][3] = { {{0,0,1},{0,1,0}}, {{1,0,0},{0,0,1}}, {{1,0,0},{0,1,0}} };
 
-const int frameX[] = {0, 1, 2, 3, 4, 4, 4, 4, 4, 3, 2, 1, 0, 0, 0, 0 };
-const int frameY[] = {0, 0, 0, 0, 0, 1, 2, 3, 4, 4, 4, 4, 4, 3, 2, 1 };
+//const int frameX[] = {0, 1, 2, 3, 4, 4, 4, 4, 4, 3, 2, 1, 0, 0, 0, 0 };
+//const int frameY[] = {0, 0, 0, 0, 0, 1, 2, 3, 4, 4, 4, 4, 4, 3, 2, 1 };
 
 
 void Cube::putPic(const int n, const int r, const int fc)
@@ -349,7 +351,7 @@ bool Cube::maskAssemble(int fc)
 }
   
 
-
+#ifdef QT_CORE_LIB // TBD thread
 
 void Cube::puttgr(Solutions *slvs, SolveThread *thread)
 {
@@ -371,7 +373,7 @@ void Cube::puttgr(Solutions *slvs, SolveThread *thread)
     //QTime lastRestart = QTime::currentTime();
 
     clear();
-    SillyRand::silly_rand_init(time(NULL));
+    SillyRand::silly_rand_init(time(nullptr));
 
     int p = 0;		// p - the place we fill now (index to plc)
     while (!((p == 0) && (plc[0].mtryd.tryedAll())) && (!thread->fExitnow) && (!selfExit))
@@ -397,7 +399,7 @@ void Cube::puttgr(Solutions *slvs, SolveThread *thread)
             slvs->addBackCommon(curslv);
             ++goSlvNum;
 
-            if (thread != NULL)
+            if (thread != nullptr)
             {
                 if (goSlvNum == 1)
                     emit thread->solvePopUp(slvs->size() - 1); // go to the last entered
@@ -455,6 +457,8 @@ void Cube::puttgr(Solutions *slvs, SolveThread *thread)
         emit thread->fullEnumNoSlv();
 
 }
+
+#endif
 
 //////////////////////////////////////////////////////////////////////////
 

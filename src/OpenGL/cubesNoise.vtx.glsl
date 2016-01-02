@@ -1,3 +1,5 @@
+precision highp float;
+
 varying float LightIntensity;
 varying vec3  MCposition;
 

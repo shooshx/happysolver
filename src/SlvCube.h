@@ -26,7 +26,7 @@ public:
 	struct SlvPiece
 	{
 		SlvPiece(int _abs_sc = -1, int _abs_rt = -1) 
-			: abs_sc(_abs_sc), abs_rt(_abs_rt), sdef(NULL)
+			: abs_sc(_abs_sc), abs_rt(_abs_rt), sdef(nullptr)
 		{}
 		// loaded data
 

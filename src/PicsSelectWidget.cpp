@@ -153,7 +153,7 @@ void PicsSelectWidget::continueCreate()
 	{
 		const PicFamily &fam = bucket.families[f];
 
-		SizedWidget *tab = new SizedWidget(QSize(6 * BOT_TOTAL_X + BOT_OFFS_X + FRAME_OFFS_SPACE_RIGHT - 5, NUM_DEFS * BOT_TOTAL_Y + FRAME_OFFS_Y), NULL);
+		SizedWidget *tab = new SizedWidget(QSize(6 * BOT_TOTAL_X + BOT_OFFS_X + FRAME_OFFS_SPACE_RIGHT - 5, NUM_DEFS * BOT_TOTAL_Y + FRAME_OFFS_Y), nullptr);
 		//QWidget *tab = new QWidget();
 		//tab->resize(QSize(6 * BOT_TOTAL_X + BOT_OFFS_X + FRAME_OFFS_SPACE_RIGHT, NUM_DEFS * BOT_TOTAL_Y + FRAME_OFFS_Y));
 
@@ -571,7 +571,7 @@ void PicsSelectWidget::pressedGlobalNone()
 /// update the view according to the current state in the PicBucket.
 void PicsSelectWidget::updateView(int hint) // SLOT
 {
-	if (GET_PIC_HINT(hint) == HINT_PIC_NULL)
+	if (GET_PIC_HINT(hint) == HINT_PIC_nullptr)
 		return; // nothing to do here. move along
 	if (!m_bFinishedCreate)
 		return;
@@ -579,7 +579,7 @@ void PicsSelectWidget::updateView(int hint) // SLOT
 	const SlvCube* curslv = m_doc->getCurrentSolve();
 	const PicBucket& bucket = PicBucket::instance();
 	int pichint = GET_PIC_HINT(hint);
-	bool doReadCheckFromSlv = ( (curslv != NULL) && ((pichint & HINT_PIC_READSLVCHECK) != 0) );
+	bool doReadCheckFromSlv = ( (curslv != nullptr) && ((pichint & HINT_PIC_READSLVCHECK) != 0) );
 	bool doUpdateCheck = (pichint & HINT_PIC_UPDATECHECK) != 0;
 
 	int g, p;
@@ -593,7 +593,7 @@ void PicsSelectWidget::updateView(int hint) // SLOT
 			def.setSelected(0);
 		}
 	}
-	if (curslv != NULL)
+	if (curslv != nullptr)
 	{ // make everybody in the solution light up
 		for (int plci = 0; plci < curslv->dt.size(); ++plci)
 		{
@@ -628,7 +628,7 @@ void PicsSelectWidget::updateView(int hint) // SLOT
 		}
 	}	
 
-	if (curslv == NULL)
+	if (curslv == nullptr)
 		updateSolveText(-1, -1);
 	else
 		updateSolveText(m_doc->getCurrentSolveIndex() + 1, m_doc->getSolvesNumber());

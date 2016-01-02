@@ -53,7 +53,7 @@ class MyPolygon
 public:
 
 	MyPolygon(MyPoint* inVtx[], TexAnchor *inAncs)
-	 : he(NULL), f(NULL)
+	 : he(nullptr), f(nullptr)
 	{	// point are shallow and anchors are deep copied
 		init(inVtx, inAncs);
 		++g_ctorCount;
@@ -93,7 +93,7 @@ public:
 	TexAnchor texAncs[4]; ///< Texture anchors by the order of 0,0 - 1,0 - 1,1 - 0,1
 	//Texture *tex; 
 	// relevant only to half-textured pieces per-polygon texture, use sort for this to be efficient
-	// NULL to disable texturing
+	// nullptr to disable texturing
 
 	// TBD- move away from here?
 	HalfEdge *he;	

@@ -1,6 +1,8 @@
 //generated code from C:\projects\cubeGL\happysolver\src\OpenGL\flat.frag.glsl
 
 const char *code_flat_frag_glsl = " \
+  precision highp float; \n\
+   \n\
   varying vec3 color; \n\
    \n\
   void main (void) \n\

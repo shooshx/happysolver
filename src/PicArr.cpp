@@ -61,8 +61,7 @@ void PicArr::copyTo(PicArr &dest) const
 	dest.rtnindx = rtnindx;
 }
 
-const int frameX[] = {0, 1, 2, 3, 4, 4, 4, 4, 4, 3, 2, 1, 0, 0, 0, 0 };
-const int frameY[] = {0, 0, 0, 0, 0, 1, 2, 3, 4, 4, 4, 4, 4, 3, 2, 1 };
+
 
 
 

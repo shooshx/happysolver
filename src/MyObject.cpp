@@ -27,7 +27,7 @@ int MyPolygon::g_ctorCount = 0, MyPolygon::g_dtorCount = 0;
 void MyObject::MyPointWrapper::detach(MyAllocator *m_alloc) const
 { 
     MyPoint *old = ptr;
-    if (m_alloc != NULL)
+    if (m_alloc != nullptr)
         ptr = m_alloc->m_pointsPool.allocate();
     else
         ptr = new MyPoint; // TBD - happens with lines. remove when lines go display list.
@@ -48,7 +48,7 @@ MyPoint* MyObject::CopyCheckPoint(Vec3 *c)
 
 void MyObject::addLine(Vec3 *inp1, Vec3 *inp2, double inR, double inG, double inB, ELineType type)
 {	
-    MyLine pln(NULL, NULL, inR, inG, inB, type);
+    MyLine pln(nullptr, nullptr, inR, inG, inB, type);
 
     pln.p1 = CopyCheckPoint(inp1);
     pln.p2 = CopyCheckPoint(inp2);
@@ -94,7 +94,7 @@ void MyObject::vectorify()
     // points
     nPoints = m_tmppoints.size() + pntlst.size();
     
-    if (points != NULL)
+    if (points != nullptr)
         delete[] points; //don't delete the points themselves.
     points = new MyPoint*[nPoints];
 
@@ -108,14 +108,14 @@ void MyObject::vectorify()
     }
     pntlst.clear();
 
-    if (poly != NULL)
+    if (poly != nullptr)
         delete[] poly;
     nPolys = plylst.size();
     poly = new MyPolygon*[nPolys];
 
-    // add the polygons sorted according to their texture, NULL first
+    // add the polygons sorted according to their texture, nullptr first
     /*
-    Texture *availTexs[4] = { NULL }; // no more the 4 textues in an object.. actually, no more then 3 in reality.
+    Texture *availTexs[4] = { nullptr }; // no more the 4 textues in an object.. actually, no more then 3 in reality.
     int availTexAdd = 1, availTexGet = 0;
     while (insPoly < nPolys) // until we got all the polygons in
     {
@@ -124,7 +124,7 @@ void MyObject::vectorify()
         {
             if ((*lit)->tex == availTexs[availTexGet])
                 poly[insPoly++] = *lit;
-            else if (((*lit)->tex != NULL) && ((*lit)->tex != availTexs[1]) && ((*lit)->tex != availTexs[2]) && ((*lit)->tex != availTexs[3]))
+            else if (((*lit)->tex != nullptr) && ((*lit)->tex != availTexs[1]) && ((*lit)->tex != availTexs[2]) && ((*lit)->tex != availTexs[3]))
                 availTexs[availTexAdd++] = (*lit)->tex;
         }
         ++availTexGet;
@@ -132,7 +132,7 @@ void MyObject::vectorify()
     */
     plylst.clear();
 
-    if (lines != NULL)
+    if (lines != nullptr)
         delete[] lines;
     nLines = lnlst.size();
     lines = new MyLine[nLines];
@@ -213,7 +213,7 @@ bool MyObject::buildHalfEdges(THalfEdgeList& lst)
     {
         MyPolygon *pol = poly[pli];
 
-        HalfEdge *he = NULL, *lasthe = NULL;
+        HalfEdge *he = nullptr, *lasthe = nullptr;
         for(i = 3; i >= 0; --i)
         {
             //he = new HalfEdge(pol, pol->vtx[i], he);
@@ -221,10 +221,10 @@ bool MyObject::buildHalfEdges(THalfEdgeList& lst)
             he = m_alloc->m_hePool.allocate();
             he->init(pol, pol->vtx[i], prevhe);
             lst.push_back(he);
-            if (lasthe == NULL)
+            if (lasthe == nullptr)
                 lasthe = he;
 
-            if (pol->vtx[i]->he == NULL)
+            if (pol->vtx[i]->he == nullptr)
                 pol->vtx[i]->he = he;
 
         }
@@ -284,7 +284,7 @@ void MyObject::subdivide(bool smooth)
     for(i = 0; i < helst.size(); ++i)
     {
         HalfEdge *he = helst[i];
-        if (he->edgePoint != NULL) 
+        if (he->edgePoint != nullptr) 
             continue;
 
         he->edgePoint = m_alloc->m_pointsPool.allocate();
@@ -347,7 +347,7 @@ void MyObject::subdivide(bool smooth)
                 double nsqr = n*n;
                 pol.vtx[i]->n = (((n - 2.0)/n)*(pol.vtx[i]->p)) + (F/(nsqr)) + (E/(nsqr));
 
-                pol.vtx[i]->he = NULL; // reset the half edge for the next time (and for the halfedge impending death)
+                pol.vtx[i]->he = nullptr; // reset the half edge for the next time (and for the halfedge impending death)
                 pol.vtx[i]->touched = true;
                 basicAddPoint(pol.vtx[i]); // add it again becuse the array is going to be deleted
             }
@@ -356,13 +356,13 @@ void MyObject::subdivide(bool smooth)
         {
             for(i = 0; i < 4; ++i)
             {
-                pol.vtx[i]->he = NULL; // reset the half edge for the next time (and for the halfedge impending death)
+                pol.vtx[i]->he = nullptr; // reset the half edge for the next time (and for the halfedge impending death)
                 pol.vtx[i]->touched = true;
                 basicAddPoint(pol.vtx[i]); // add it again becuse the array is going to be deleted
             }
         }
 
-        pol.he = NULL;		
+        pol.he = nullptr;		
 
         MyPoint *pl1[] = { pol.vtx[0], e[0], pol.f, e[3] };
         MyPoint *pl2[] = { e[0], pol.vtx[1], e[1], pol.f };

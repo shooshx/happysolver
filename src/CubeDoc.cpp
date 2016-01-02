@@ -26,11 +26,12 @@
 #include "Pieces.h"
 #include "Solutions.h"
 #include "MainWindow.h"
-#include "SolveThread.h"
-#include "SIDlg.h"
 #include "PicsSet.h"
 #include "SlvCube.h"
 #include "ObjExport.h"
+
+#include "SolveThread.h"
+#include "SIDlg.h"
 
 #include <QMessageBox>
 #include <QEventLoop>
@@ -64,7 +65,7 @@ CubeDoc::CubeDoc(QWidget *parent)
 
 	//connect(m_slvs, SIGNAL(changedFromSave(bool)), this, SIGNAL(changedFromSave(bool)));
 
-	m_sthread = NULL;
+	m_sthread = nullptr;
 
 	m_nCurSlv = -1;
 	m_bGoEnabled = false;
@@ -165,7 +166,49 @@ void CubeDoc::OnFileOpen() // SLOT
 	if (name.isNull())
 		return;
 
-	realOpen(name);
+    openAndHandle(name);
+}
+string readFile(const QString filename);
+
+void CubeDoc::openAndHandle(QString name)
+{
+    bool hasSolutions = false;
+    if (!realOpen(readFile(name).c_str(), &hasSolutions)) {
+        QMessageBox::critical(g_main, APP_NAME, m_lastMsg.c_str(), QMessageBox::Ok, 0);
+        return;
+    }
+
+    if (hasSolutions) 
+    {
+        // announce there is a new solution(s)
+        // tell the main frame to switch to the model view... (this will happen becuase there were no solutions before)
+
+        m_slvs->changedFromSave = &m_slvDone;
+
+        g_main->setUpdatesEnabled(false); // TBD: should use proper signal
+        // updates need to be disabled to avoid the flicker caused by the DoReset that comes with
+        // the Model view reset in updateView
+
+        emit solvePopUp();
+        // needs to be first since it causes a move to modelview
+        // without it the text doesn't work for some reason.
+
+        emit updateViews(HINT_SLV_READY | HINT_PIC_READSLVCHECK | HINT_BLD_NEW);
+        g_main->setUpdatesEnabled(true);
+
+        emit solveIndexChanged(m_nCurSlv);
+
+        // update solves dialog
+        emit slvProgUpdated(SHINT_SOLUTIONS, -1);
+        // add to recent files
+        emit newSolutionsLoaded(name);
+    }
+    else // just shape
+    {
+        OnSolveNone(HINT_BLD_NEW);
+        emit slvProgUpdated(SHINT_ALL, 0);
+        emit newShapeLoaded(name);
+    }
 }
 
 
@@ -185,7 +228,7 @@ void CubeDoc::OnOpenDocument(QString name) //SLOT called for recent files
 	if (!checkUnsaved())
 		return;
 
-	realOpen(name);	
+    openAndHandle(name);
 }
 
 
@@ -203,7 +246,7 @@ bool CubeDoc::checkUnsaved(int types)
 		}
 	}
 	
-	if ( ((types & DTShape) != 0) && (m_build != NULL) && (m_build->getChangedFromSave()))
+	if ( ((types & DTShape) != 0) && (m_build != nullptr) && (m_build->getChangedFromSave()))
 	{
 		int ret = QMessageBox::question(g_main, APP_NAME, tr("The shape was not saved\n\nDo you wish to save it?"), 
 			QMessageBox::Yes |  QMessageBox::Default, QMessageBox::No, QMessageBox::Cancel | QMessageBox::Escape);
@@ -253,7 +296,7 @@ bool CubeDoc::OnGenShape() // not called by GUI
 	if (!checkWhileRunning("Cannot process shape while running"))
 		return false;
 
-	if (m_shp.get() != NULL)
+	if (m_shp.get() != nullptr)
 	{
 		if (!checkUnsaved(DTSolutions))
 			return false;
@@ -354,7 +397,7 @@ void CubeDoc::OnFileExport()
 	matFileName = mfi.fileName();
 
 	const SlvCube* pSolution = getCurrentSolve();
-	if (pSolution == NULL)
+	if (pSolution == nullptr)
 	{
 		QMessageBox::critical(g_main, APP_NAME, tr("Error exporting current solution\nThere's no current solution"), QMessageBox::Ok, 0);
 		return;
@@ -453,17 +496,17 @@ bool CubeDoc::realSave(int unGenSlvAnswer)
 
 	if (saveCurShape)
 	{
-		if ((!hasSolves) && ((m_shp.get() == NULL) || (m_build->getChangedFromGen())))
+		if ((!hasSolves) && ((m_shp.get() == nullptr) || (m_build->getChangedFromGen())))
 		{ // no solves - not the unGenerate case. if we have solves, don't generate and erase them.
 			Shape tmpshp;
 			if (callGenerate(&tmpshp, true)) // ok to try a generate
 			{
 				OnGenShape(); // TBD: use return value?
-				Q_ASSERT(m_shp.get() != NULL); // we just checked it earlyer.
+				Q_ASSERT(m_shp.get() != nullptr); // we just checked it earlyer.
 			}
 		}
 
-		if (m_shp.get() != NULL) // the shape has something.
+		if (m_shp.get() != nullptr) // the shape has something.
 		{
 			if (!m_shp->saveTo(&wrfl))
 			{
@@ -475,7 +518,7 @@ bool CubeDoc::realSave(int unGenSlvAnswer)
 
 			if (hasSolves)
 			{
-				if (!m_slvs->saveTo(&wrfl, NULL)) //bla! FIXME
+				if (!m_slvs->saveTo(&wrfl, nullptr)) //bla! FIXME
 				{
 					QMessageBox::critical(g_main, APP_NAME, tr("Error saving solutions."), QMessageBox::Ok, 0);
 					wrfl.close();
@@ -489,7 +532,7 @@ bool CubeDoc::realSave(int unGenSlvAnswer)
 	wrfl.close();
 
 	emit fileSaved(retname);
-	emit updateViews(HINT_BLD_PAINT | HINT_PIC_NULL); 
+	emit updateViews(HINT_BLD_PAINT | HINT_PIC_nullptr); 
 	// should repaint the build view to get rid of the '*'
 	// this is only needed if we didn't generated the shape. we can't be sure.
 
@@ -502,140 +545,10 @@ void CubeDoc::setShowUpToStep(int step)
 	if (step == m_nUpToStep)
 		return;
 	m_nUpToStep = step; 
-	emit updateViews(HINT_BLD_PAINT | HINT_SLV_PAINT | HINT_PIC_NULL); 
+	emit updateViews(HINT_BLD_PAINT | HINT_SLV_PAINT | HINT_PIC_nullptr); 
 }
 
 
-// TBD - check messages.
-void CubeDoc::realOpen(QString name)
-{
-	MyFile rdfl;
-	rdfl.openRead(name.toLatin1());
-	bool hasSolutions = false;
-	
-	BuildWorld *newbuild = new BuildWorld;
-	
-	if (!newbuild->loadFrom(&rdfl))
-	{ // no build, we can't do nothing.
-		delete newbuild; newbuild = NULL;
-		rdfl.close();
-		QString msg = QString("Error opening solution file.\nfile: %1\n\nUnable to read shape information").arg(name);
-		QMessageBox::critical(g_main, APP_NAME, msg, QMessageBox::Ok, 0);
-		return;
-	}
-
-	// generate the shape from the build. this is the shape we're going to use in the end
-	auto_ptr<Shape> gendshape(new Shape);
-	gendshape->generate(newbuild); // get the return value? no real need to.
-
-	Solutions *newslvs = NULL;	
-	auto_ptr<Shape> loadedshp(new Shape);
-
-	if (!loadedshp->loadFrom(&rdfl))
-	{ // no shape (hence no solutions) but there is a build
-		loadedshp.reset(); // get rid of it, its no good.
-		// newbuild - no call to justGen (stay with ctor values)
-
-	}
-	else // there is a shape loaded (you can't have solutions without a shape in the file.)
-	{	
-		// don't use the shape just loaded, instead, generate the build, and draw a transform
-		// from the loaded shape for the genereted one.
-		// TBD MOVE THIS. only needed if there are solutions.
-		TTransformVec movedTo(loadedshp->fcn);
-		bool trivialTransform = false;
-		if (!loadedshp->createTrasformTo(gendshape.get(), movedTo, &trivialTransform))
-		{
-			QMessageBox::critical(g_main, APP_NAME, "failed shape transform, bug.", QMessageBox::Ok, 0);
-			return;
-		}
-
-		loadedshp.reset(); // we're done with it.
-
-		newbuild->justGen(); // shouldn't gen it next time.
-
-		newslvs = new Solutions(gendshape->fcn);
-		if (!newslvs->readFrom(&rdfl, gendshape.get()))
-		{
-			delete newslvs; newslvs = NULL;
-		}
-		else
-		{ // has solutions
-			if (newslvs->slvsz != gendshape->fcn)
-			{ // solutions has errors
-				QString msg = QString("Error opening solution file.\nfile: %1\n\nFile contains shape faces inconsistency\nSolutions not loaded").arg(name);
-				QMessageBox::critical(g_main, APP_NAME, msg, QMessageBox::Ok, 0);
-				delete newslvs; newslvs = NULL;
-			}
-			else
-			{
-				if (!trivialTransform)
-					newslvs->transform(movedTo);
-				hasSolutions = true;
-			}
-		}
-	}
-
-	// don't do anything before all the gui is done (messageboxes etc')
-	// because a paint to the build would reveal something half baked.
-
-	delete m_build;	
-	m_build = newbuild;
-
-	m_shp.reset(gendshape.release());
-
-	// directly initialize the step indicator now.
-	m_nUpToStep = m_shp->fcn;
-
-	// what to do with solutions?
-	if (hasSolutions)
-	{
-		delete m_slvs;
-
-		m_slvs = newslvs;
-		m_slvs->changedFromSave = &m_slvDone;
-		//connect(m_slvs, SIGNAL(changedFromSave(bool)), this, SIGNAL(changedFromSave(bool))); // reconnect
- 
-		// announce there is a new solution(s)
-		// tell the main frame to switch to the model view... (this will happen becuase there were no solutions before)
-		m_nCurSlv = 0; // re-set it from -1
-
-		g_main->setUpdatesEnabled(false); // TBD: should use proper signal
-		// updates need to be disabled to avoid the flicker caused by the DoReset that comes with
-		// the Model view reset in updateView
-
-		emit solvePopUp(); 
-		// needs to be first since it causes a move to modelview
-		// without it the text doesn't work for some reason.
-		
-		emit updateViews(HINT_SLV_READY | HINT_PIC_READSLVCHECK | HINT_BLD_NEW);
-		g_main->setUpdatesEnabled(true);
-
-		emit solveIndexChanged(m_nCurSlv);
-
-		// update solves dialog
-		emit slvProgUpdated(SHINT_SOLUTIONS, -1);
-		// add to recent files
-		emit newSolutionsLoaded(name);
-	}
-	else // an open without solutions
-	{
-		if (m_shp.get() != NULL)
-			m_slvs->clear(m_shp->fcn);
-		else
-			m_slvs->clear(); // size will get set when generated
-
-		m_nCurSlv = 0;
-
-		OnSolveNone(HINT_BLD_NEW);
-		emit slvProgUpdated(SHINT_ALL, 0);
-		emit newShapeLoaded(name);
-
-	}
-
-
-	rdfl.close();
-}
 
 
 
@@ -718,7 +631,7 @@ void CubeDoc::easter()
 const RunStats* CubeDoc::getRunningStats()
 { 
 	static RunStats dummy;
-	if (m_sthread == NULL)
+	if (m_sthread == nullptr)
 		return &dummy;
 	return &m_sthread->m_stats; 
 }
@@ -731,8 +644,8 @@ void CubeDoc::solveGo()
 		return;
 	}
 
-	printf("solveGo!\n");
-	if ((m_shp.get() == NULL) || (m_build->getChangedFromGen()))
+	cout << "solveGo!" << endl;
+	if ((m_shp.get() == nullptr) || (m_build->getChangedFromGen()))
 	{
 		if (!OnGenShape())
 			return;
@@ -756,13 +669,15 @@ void CubeDoc::solveGo()
 
 	// we're all good to go!
 		
-	if (m_sthread == NULL)
+	if (m_sthread == nullptr)
 	{
+#ifdef QT_CORE_LIB
 		m_sthread = new SolveThread;
 			
 		connect(m_sthread, SIGNAL(slvProgUpdated(int, int)), this, SIGNAL(slvProgUpdated(int, int)));
 		connect(m_sthread, SIGNAL(solvePopUp(int)), this, SLOT(OnSolveReadyS(int)));
 		connect(m_sthread, SIGNAL(fullEnumNoSlv()), this, SLOT(OnFullEnumNoSlv()));
+#endif
 	}
 	m_sthread->fExitnow = 0;
 	m_sthread->setRuntime(m_slvs, m_shp.get(), pics, &m_conf.engine);

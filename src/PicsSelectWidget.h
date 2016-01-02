@@ -101,7 +101,7 @@ private:
 	/// PicCtrl holds the widgets relevant for a \link PicDef single piece \endlink in PicsSelectWidget.
 	struct PicCtrl
 	{
-		PicCtrl() :num(NULL), bot(NULL), snum(NULL), settledNum(-1) {}
+		PicCtrl() :num(nullptr), bot(nullptr), snum(nullptr), settledNum(-1) {}
 
 		DataSpinBox *num;
 		DataPushButton *bot;

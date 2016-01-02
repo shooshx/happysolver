@@ -1,6 +1,8 @@
 //generated code from C:\projects\cubeGL\happysolver\src\OpenGL\cubesNoise.vtx.glsl
 
 const char *code_cubesNoise_vtx_glsl = " \
+  precision highp float; \n\
+   \n\
   varying float LightIntensity; \n\
   varying vec3  MCposition; \n\
    \n\

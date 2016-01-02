@@ -18,6 +18,7 @@
 #include "MyFile.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdarg.h>
 
 //////////////////////////////////////////////////////////////////////
@@ -28,7 +29,7 @@
 bool MyFile::openRead(const char *filename)
 {
 	fl =  fopen(filename, "r");
-	if (fl == NULL) 
+	if (fl == nullptr) 
 		return false;
 
 	name = filename;
@@ -36,10 +37,62 @@ bool MyFile::openRead(const char *filename)
 	return true;
 }
 
+bool MyFile::openBuf(const char* _buf)
+{
+    buf = _buf;
+    bufptr = buf;
+    state = STATE_OPEN_READ;
+    return true;
+}
+char MyFile::getChar() 
+{
+    if (fl != nullptr) {
+        char tmp[2];
+        fread(tmp, 1, 1, fl);
+        return tmp[0];
+    }
+    else if (bufptr != nullptr) {
+        char c = *(bufptr++);
+        reachedEnd = (c == 0);
+        return c;
+    }
+    return 0;
+}
+
+bool MyFile::atEof() {
+    if (fl != nullptr) {
+        return feof(fl);
+    }
+    else if (bufptr != nullptr) {
+        return reachedEnd;
+    }
+    return true;
+}
+
+void MyFile::setPos(int p) {
+    if (fl != nullptr) {
+        fseek(fl, 0, SEEK_SET);
+    }
+    else if (bufptr != nullptr) {
+        bufptr = buf + p;
+        reachedEnd = false;
+    }
+}
+
+int MyFile::getPos() {
+    if (fl != nullptr) {
+        return ftell(fl);
+    }
+    else if (bufptr != nullptr) {
+        return bufptr - buf;
+    }
+    return 0;
+}
+
 bool MyFile::openWrite(const char *filename)
 {
 	fl = fopen(filename, "w");
-	if (fl == NULL)
+	if (fl == nullptr)
 		return false;
 
 	name = filename;
@@ -49,45 +102,46 @@ bool MyFile::openWrite(const char *filename)
 
 void MyFile::close()
 {
-	if (fl != NULL)
+	if (fl != nullptr)
 	{
 		fclose(fl);
-		fl = NULL;
+		fl = nullptr;
 	}
 }
 
 
-
+// if we detect anything from stopAt, stop the search
 int MyFile::seekString(const char *str, const char *stopat)
 {
-	if (strlen(str) == 0) 
+    int slen = strlen(str);
+    if (slen == 0)
 		return 0;
 
 	unsigned int mi = 0;
 	int offs = -1;
-	int stpn = (stopat == NULL)?0:strlen(stopat);
+	int stpn = (stopat == nullptr)?0:strlen(stopat);
 
-	while (!feof(fl))
+	while (!atEof())
 	{
-		char tmp[2];
-		fread(tmp, 1, 1, fl);
+		char tmp = getChar();
+		
 		++offs;
 
-		if ((mi < strlen(str)) && (tmp[0] == str[mi]))
+        if ((mi < slen) && (tmp == str[mi]))
 		{
 			++mi;
-			if (mi == strlen(str))
+            if (mi == slen)
 				return offs+1;
 		}
 		else
 		{
 			for(int st = 0; st < stpn; ++st)
 			{
-				if (tmp[0] == stopat[st])
+				if (tmp == stopat[st])
 					return -1;
 			}
 			mi = 0;
-			if (tmp[0] == str[mi]) ++mi;
+			if (tmp == str[mi]) ++mi;
 		}
 
 	}
@@ -99,13 +153,13 @@ bool MyFile::seekHeader(const char *hName) // through the entire file
 {
 	if (state != STATE_OPEN_READ) 
 		return false;
-	fseek(fl, 0, SEEK_SET);
+    setPos(0);
 
 	string sstr = string("<") + hName + ">";
-	int ret = seekString(sstr.c_str(), NULL);
+	int ret = seekString(sstr.c_str(), nullptr);
 
 	if (ret != -1) 
-		curHeader = ftell(fl); // plus the '>'
+		curHeader = getPos(); // plus the '>'
 	else 
 		return false;
 
@@ -118,7 +172,7 @@ bool MyFile::seekValue(const char *vName, int level, bool bFromStart)  // from c
 		return false;
 	
 	if (bFromStart)
-		fseek(fl, curHeader, SEEK_SET);
+        setPos(curHeader);
 
 	if (strlen(vName) > 255) 
 		return false;
@@ -136,6 +190,22 @@ bool MyFile::seekValue(const char *vName, int level, bool bFromStart)  // from c
 	return true;
 }
 
+bool MyFile::mscanint(int* to)
+{
+    if (fl != nullptr) {
+        if (fscanf(fl, "%d", to) < 1)
+            return false;
+    }
+    else if (bufptr != nullptr) {
+        char* endp = nullptr;
+        *to = strtoul(bufptr, &endp, 10);
+        if (endp == bufptr) // nothing read
+            return false;
+        bufptr = endp;
+    }
+    return true;
+}
+
 int MyFile::readNumsBuf(int cnt, int *buffer) // returns the number of numbers read
 {
 	if (state != STATE_OPEN_READ) 
@@ -145,8 +215,8 @@ int MyFile::readNumsBuf(int cnt, int *buffer) // returns the number of numbers r
 	for(i = 0; i < cnt; ++i)
 	{
 		int tmp;
-		if (fscanf(fl, "%d", &tmp) < 1)
-			return i;
+        if (!mscanint(&tmp))
+            return i;
 		buffer[i] = tmp;
 	}
 	return i+1;
@@ -166,9 +236,8 @@ int MyFile::readNums(int cnt, ...)
 	for(i = 0; i < cnt; ++i)
 	{
 		tmp = va_arg(marker, int*);
-		if (fscanf(fl, "%d", tmp) < 1)
-			return i;
-
+        if (!mscanint(tmp))
+            return i;
 	}
 	va_end(marker);
 	return i;

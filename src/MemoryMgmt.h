@@ -41,16 +41,20 @@ template<typename T>
 class Pool
 {
 public:
-	Pool<T>(int size = 0) :m_buffers(NULL), m_size(size), m_next(0), m_allocated(0), m_maxAllocated(0)
+	Pool<T>(int size = 0) :m_buffers(nullptr), m_size(size), m_next(0), m_allocated(0), m_maxAllocated(0)
 	{
 		if (m_size > 0)
 			m_buffers = new T[m_size];
 	}
-	bool isNull() const { return m_buffers == NULL; }
-	int size() const { return m_size; }
+	bool isNull() const { 
+        return m_buffers == nullptr; 
+    }
+	int size() const { 
+        return m_size; 
+    }
 	void init(int size)
 	{
-		if (m_buffers != NULL)
+		if (m_buffers != nullptr)
 			delete[] m_buffers;
 		m_size = size;
 		if (m_size > 0)

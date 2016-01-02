@@ -36,11 +36,11 @@ class MyPolygon;
 class HalfEdge
 {
 public:
-	HalfEdge() :point(NULL), pair(NULL), poly(NULL), next(NULL), edgePoint(NULL) {}
+	HalfEdge() :point(nullptr), pair(nullptr), poly(nullptr), next(nullptr), edgePoint(nullptr) {}
 	HalfEdge(MyPolygon *_poly, MyPoint *_pnt, HalfEdge *_next)
-		:point(_pnt), pair(NULL), poly(_poly), next(_next), edgePoint(NULL) {}
+		:point(_pnt), pair(nullptr), poly(_poly), next(_next), edgePoint(nullptr) {}
 	void init(MyPolygon *_poly, MyPoint *_pnt, HalfEdge *_next)
-	{ point = _pnt; pair = NULL; poly = _poly; next = _next; edgePoint = NULL; }
+	{ point = _pnt; pair = nullptr; poly = _poly; next = _next; edgePoint = nullptr; }
 
 	MyPoint* point; ///< point of origin of the half edge.
 	HalfEdge* pair; ///< matchin half-edge sibling
@@ -63,14 +63,14 @@ class MyPoint
 {
 public:
 	MyPoint(float inX = 0.0, float inY = 0.0, float inZ = 0.0)
-		:p(inX, inY, inZ), he(NULL), touched(false) { ++g_ctorCount; }
+		:p(inX, inY, inZ), he(nullptr), touched(false) { ++g_ctorCount; }
 	MyPoint(const MyPoint& a)
-		:p(a.p), he(NULL), touched(false) { ++g_ctorCount; }
+		:p(a.p), he(nullptr), touched(false) { ++g_ctorCount; }
 
 	/// explicit conversion from Coord3df. we don't want to convert it to MyPoint 
 	/// by accident
 	explicit MyPoint(const Vec3& c) 
-		:p(c), he(NULL), touched(false) { ++g_ctorCount; }
+		:p(c), he(nullptr), touched(false) { ++g_ctorCount; }
 
 	~MyPoint() { ++g_dtorCount; }
 	

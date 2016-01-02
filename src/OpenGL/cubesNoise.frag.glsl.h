@@ -1,6 +1,8 @@
 //generated code from C:\projects\cubeGL\happysolver\src\OpenGL\cubesNoise.frag.glsl
 
 const char *code_cubesNoise_frag_glsl = " \
+  precision highp float; \n\
+   \n\
   varying float LightIntensity; \n\
   varying vec3 MCposition; \n\
    \n\
@@ -9,8 +11,8 @@ const char *code_cubesNoise_frag_glsl = " \
   uniform sampler2D noisef; \n\
   uniform int drawtype; \n\
    \n\
-  const float offset= 4.72; \n\
-  const float offset2 = 0.5; \n\
+  float offset= 4.72; \n\
+  float offset2 = 0.5; \n\
   uniform vec3 texOffset; // z non-zero means we need to invert x \n\
    \n\
   float mod(int x, float y){ \n\
@@ -46,6 +48,9 @@ const char *code_cubesNoise_frag_glsl = " \
    \n\
   void main (void) \n\
   { \n\
+     // gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); \n\
+     // return; \n\
+   \n\
       if (drawtype == 0) { // DRAW_COLOR \n\
           vec3 color = colorA * LightIntensity; \n\
           gl_FragColor = vec4(color, 1.0); \n\
@@ -68,8 +73,8 @@ const char *code_cubesNoise_frag_glsl = " \
           return; \n\
       } \n\
       if (drawtype == 0x14) {  // DRAW_TEXTURE_INDIVIDUAL_HALF  \n\
-          const float T_HIGH = 0.525; \n\
-          const float T_LOW = 0.475; \n\
+          float T_HIGH = 0.525; \n\
+          float T_LOW = 0.475; \n\
    \n\
           float tx = MCposition.x; \n\
           if (texOffset.z != 0.0) \n\

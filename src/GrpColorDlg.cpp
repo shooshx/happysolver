@@ -25,8 +25,8 @@
 
 GrpColorDlg::GrpColorDlg(QWidget *parent, CubeDoc *doc) 
 	:QDialog(parent), m_doc(doc)
-	, m_colA(NULL, "colA", "colA", QColor())
-	, m_colB(NULL, "colB", "colB", QColor())
+	, m_colA(nullptr, "colA", "colA", QColor())
+	, m_colB(nullptr, "colB", "colB", QColor())
 {
 	ui.setupUi(this);
 
@@ -43,7 +43,7 @@ GrpColorDlg::GrpColorDlg(QWidget *parent, CubeDoc *doc)
 void GrpColorDlg::update()
 {
 	if (!m_doc->solvesExist()) {
-		m_grp = NULL;
+		m_grp = nullptr;
 		return;
 	}
 
@@ -64,14 +64,14 @@ void GrpColorDlg::update()
 }
 
 void GrpColorDlg::colA_changed() {
-	if (m_grp == NULL)
+	if (m_grp == nullptr)
 		return;
 	m_grp->color = toVec(m_colA);
 	ui.newA->setText(colToText(m_colA));
 	emit changed(HINT_SLV_PAINT);
 }
 void GrpColorDlg::colB_changed() {
-	if (m_grp == NULL)
+	if (m_grp == nullptr)
 		return;
 	m_grp->exColor = toVec(m_colB);
 	ui.newB->setText(colToText(m_colB));

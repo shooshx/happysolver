@@ -45,7 +45,7 @@ PieceGLWidget::PieceGLWidget(QWidget *parent, CubeDoc *doc, QGLWidget *shareFrom
 void PieceGLWidget::setSelectedPiece(int p) 
 { 
 	SlvCube *slv = m_doc->getCurrentSolve();
-	if (slv == NULL)
+	if (slv == nullptr)
 		return;
 
 	if (m_bSelectAll)
@@ -88,7 +88,7 @@ void PieceGLWidget::setSelectAll(int piece)
 void PieceGLWidget::myPaintGL()
 {
 	/*SlvCube *slv = m_doc->getCurrentSolve();
-	if ((slv == NULL) || ((m_selectedPiece == -1) && (!m_bSelectAll)))
+	if ((slv == nullptr) || ((m_selectedPiece == -1) && (!m_bSelectAll)))
 	{ // clean the view from older things
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -147,7 +147,7 @@ ModelHelpDlg::ModelHelpDlg(QWidget *parent, MainWindow* main, CubeDoc *doc, QGLW
 	setLayout(toplayout);
 	toplayout->addWidget(m_splitter);
 
-	QWidget *glwin = new QWidget(NULL);
+	QWidget *glwin = new QWidget(nullptr);
 	/*QHBoxLayout *gllayout = new QHBoxLayout;
 	gllayout->setMargin(3);
 	gllayout->setSpacing(0);
@@ -162,7 +162,7 @@ ModelHelpDlg::ModelHelpDlg(QWidget *parent, MainWindow* main, CubeDoc *doc, QGLW
 	//gllayout->addSpacing(4);
 	//m_splitter->addWidget(glwin);
 
-	QWidget *topwin = new QWidget(NULL); // additional widget needed for free resizing
+	QWidget *topwin = new QWidget(nullptr); // additional widget needed for free resizing
 	m_splitter->addWidget(topwin);
 
 	QVBoxLayout *layout = new QVBoxLayout;

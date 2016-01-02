@@ -182,7 +182,7 @@ public:
 
 	virtual void residualUpdate() 
 	{
-		if (numl != NULL)
+		if (numl != nullptr)
 			numl->setText(toString(w->value() / mult));
 	}
 	virtual void widgetUpdate()
@@ -236,7 +236,7 @@ template<class T>
 struct ComboBoxIn : public WidgetIn
 {
 public:
-	ComboBoxIn(TypeProp<T>* _v, QComboBox *_w, bool autoup = true, QObject* altContainer = NULL) 
+	ComboBoxIn(TypeProp<T>* _v, QComboBox *_w, bool autoup = true, QObject* altContainer = nullptr) 
 		:WidgetIn(_v, _w), v(_v), w(_w)
 	{
 		me = getMetaEnum<T>(altContainer?altContainer:v->container); 

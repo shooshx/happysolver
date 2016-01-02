@@ -65,12 +65,12 @@ void MyPolygon::calcNorm() //use the regular point and not the temp one
 					}
 					else
 					{
-						Q_ASSERT(false);
+                        M_ASSERT(false);
 					}
 				}
 			}
 		}
-		Q_ASSERT((pntB < 4) && (pntC < 4));
+        M_ASSERT((pntB < 4) && (pntC < 4));
 		
 	}
 	double lng = sqrt(nx*nx + ny*ny + nz*nz);

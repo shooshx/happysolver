@@ -73,7 +73,7 @@ private:
 	/// SD_Pass holds the widgets of a single subdivision pass in the display tab of OptionsDlg.
 	struct SD_Pass
 	{
-		SD_Pass() :p(NULL), bs(NULL), br(NULL) {}
+		SD_Pass() :p(nullptr), bs(nullptr), br(nullptr) {}
 		SD_Pass(QCheckBox *_p, QRadioButton *_bs, QRadioButton *_br) :p(_p), bs(_bs), br(_br) {}
 		QCheckBox *p;
 		QRadioButton *bs, *br;

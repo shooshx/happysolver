@@ -1,3 +1,5 @@
+precision highp float;
+
 varying float LightIntensity;
 varying vec3 MCposition;
 
@@ -6,8 +8,8 @@ uniform vec3 colorB;
 uniform sampler2D noisef;
 uniform int drawtype;
 
-const float offset= 4.72;
-const float offset2 = 0.5;
+float offset= 4.72;
+float offset2 = 0.5;
 uniform vec3 texOffset; // z non-zero means we need to invert x
 
 float mod(int x, float y){
@@ -43,6 +45,9 @@ vec4 flat_texture3D(vec3 p)
 
 void main (void)
 {
+   // gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+   // return;
+
     if (drawtype == 0) { // DRAW_COLOR
         vec3 color = colorA * LightIntensity;
         gl_FragColor = vec4(color, 1.0);
@@ -65,8 +70,8 @@ void main (void)
         return;
     }
     if (drawtype == 0x14) {  // DRAW_TEXTURE_INDIVIDUAL_HALF 
-        const float T_HIGH = 0.525;
-        const float T_LOW = 0.475;
+        float T_HIGH = 0.525;
+        float T_LOW = 0.475;
 
         float tx = MCposition.x;
         if (texOffset.z != 0.0)

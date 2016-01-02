@@ -146,3 +146,16 @@ public:
 
     float m[16];
 };
+
+
+inline ostream& operator<<(ostream& st, const Mat4& m) {
+    for(int i = 0; i < 16; ++i) {
+        if ((i % 4) == 0 && i != 0)
+            st << "\n";
+        st << m.m[i] << " ";
+    }
+    st << "\n";
+    return st;
+}
+
+

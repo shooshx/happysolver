@@ -340,10 +340,10 @@ GlTexture* NoiseGenerator::make3Dnoise(int size, float ampStart, float ampDiv, i
     double minn = 100.0, maxn = -100.0;
 
 // 	uint bufsize = noise3DTexSize * noise3DTexSize * noise3DTexSize * 4;
-// 	if ((noise3DTexPtr = (GLubyte *) malloc(bufsize)) == NULL)
+// 	if ((noise3DTexPtr = (GLubyte *) malloc(bufsize)) == nullptr)
 // 	{
 // 		printf("ERROR: Could not allocate 3D noise texture - %d bytes\n", bufsize);
-// 		return NULL;
+// 		return nullptr;
 // 	}
     Space3D<Vec4b> noise3DTexPtr(size, size, size);
 

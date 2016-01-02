@@ -10,7 +10,7 @@ class MatStack
 {
 private:
     struct MatEntry {
-        MatEntry() : msg(NULL) {}
+        MatEntry() : msg(nullptr) {}
         MatEntry(const Mat4 _m, const char* _msg) : m(_m), msg(_msg) {}
         Mat4 m;
         const char* msg;
@@ -22,7 +22,7 @@ public:
         return m_cur.m;
     }
 
-    void push(const char* msg = NULL) {
+    void push(const char* msg = nullptr) {
 #ifdef MAX_MATSTACK
         if (m_s.size() > MAX_MATSTACK)
             throw HCException("matrix stack overflow");

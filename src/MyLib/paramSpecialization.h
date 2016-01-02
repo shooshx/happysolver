@@ -18,7 +18,7 @@ template void TypeProp<QString>::addInnerWidget(WidgetLine& wl);
 template<class T>
 void TypeProp<T>::addInnerWidget(WidgetLine& wl) 
 {
-	if (container != NULL)
+	if (container != nullptr)
 	{
 		const QMetaObject* mo = container->metaObject();
 		const std::type_info& ti = typeid(T);

@@ -106,7 +106,9 @@ public:
 		:d(defv), mn(minv), mx(maxv), wtype(WIDGET_SLIDER), disp(dispName) {}
 
 	operator const T&() { return d; }
-	bool hasDispName() const { return !disp.isNull(); }
+	bool hasDispName() const { 
+        return !disp.isNull(); 
+    }
 
 	const T& d, mn, mx;
 	bool hasMnMx;
@@ -125,7 +127,9 @@ public:
 	Initor(const QString& defv) :d(defv), wtype(WIDGET_EDIT) {}
 
 	operator const QString&() { return d; }
-	bool hasDispName() const { return !disp.isNull(); }
+	bool hasDispName() const { 
+        return !disp.isNull(); 
+    }
 
 	QString d, mn, mx;
 	QString disp;
@@ -224,9 +228,9 @@ public:
 
 	void init(IPropGather* _container)
 	{
-		if (_container != NULL)
+		if (_container != nullptr)
 			_container->addProperty(this);
-		else // initialized with NULL, set the default value because you are not going to get called anymore.
+		else // initialized with nullptr, set the default value because you are not going to get called anymore.
 			value = defaultVal;
 	}
 
@@ -358,7 +362,7 @@ template<typename T>
 bool Prop::tryAssignTypeVal(const T& v)
 {
 	TypeProp<T> *cprop = dynamic_cast<TypeProp<T> *>(this);
-	if (cprop != NULL)
+	if (cprop != nullptr)
 	{
 		*cprop = v; 
 		return true;
@@ -454,18 +458,18 @@ class TypeProp1_1##T1##_##NAME1 : public TypePropN \
 public:\
 	TypeProp1_1##T1##_##NAME1(ParamBase* _container, const QString& memberName, const QString& dispName, Initor<T1> deft1)\
 		:TypePropN(memberName, dispName),\
-		 NAME1 (_container?this:NULL, _container, memberName + "_" + #NAME1, dispName, deft1)\
+		 NAME1 (_container?this:nullptr, _container, memberName + "_" + #NAME1, dispName, deft1)\
 	{\
 		initConnect();\
-		if (_container != NULL)\
+		if (_container != nullptr)\
 			_container->addProperty(this);\
 	}\
 	TypeProp1_1##T1##_##NAME1(ParamBase* _container, const QString& memberName, Initor<T1> deft1)\
 		:TypePropN(memberName, memberName),\
-		 NAME1 (_container?this:NULL, _container, memberName + "_" + #NAME1, deft1)\
+		 NAME1 (_container?this:nullptr, _container, memberName + "_" + #NAME1, deft1)\
 	{\
 		initConnect();\
-		if (_container != NULL)\
+		if (_container != nullptr)\
 			_container->addProperty(this);\
 	}\
 	TypeProp<T1> NAME1 ;\
@@ -479,20 +483,20 @@ class TypeProp2_1##T1##_##NAME1##_2##T2##_##NAME2 : public TypePropN \
 public:\
 	TypeProp2_1##T1##_##NAME1##_2##T2##_##NAME2(ParamBase* _container, const QString& memberName, const QString& dispName, Initor<T1> deft1, Initor<T2> deft2)\
 		:TypePropN(memberName, dispName),\
-		 NAME1 (_container?this:NULL, _container, memberName + "_" + #NAME1, dispName, deft1),\
-		 NAME2 (_container?this:NULL, _container, memberName + "_" + #NAME2, deft2)\
+		 NAME1 (_container?this:nullptr, _container, memberName + "_" + #NAME1, dispName, deft1),\
+		 NAME2 (_container?this:nullptr, _container, memberName + "_" + #NAME2, deft2)\
 	{\
 		initConnect();\
-		if (_container != NULL)\
+		if (_container != nullptr)\
 			_container->addProperty(this);\
 	}\
 	TypeProp2_1##T1##_##NAME1##_2##T2##_##NAME2(ParamBase* _container, const QString& memberName, Initor<T1> deft1, Initor<T2> deft2)\
 		:TypePropN(memberName, memberName),\
-		 NAME1 (_container?this:NULL, _container, memberName + "_" + #NAME1, deft1),\
-		 NAME2 (_container?this:NULL, _container, memberName + "_" + #NAME2, deft2)\
+		 NAME1 (_container?this:nullptr, _container, memberName + "_" + #NAME1, deft1),\
+		 NAME2 (_container?this:nullptr, _container, memberName + "_" + #NAME2, deft2)\
 	{\
 		initConnect();\
-		if (_container != NULL)\
+		if (_container != nullptr)\
 			_container->addProperty(this);\
 	}\
 	TypeProp<T1> NAME1 ;\
@@ -506,12 +510,12 @@ class TypeProp3_1##T1##_##NAME1##_2##T2##_##NAME2##_3##T3##_##NAME3 : public Typ
 public:\
 	TypeProp3_1##T1##_##NAME1##_2##T2##_##NAME2##_3##T3##_##NAME3(ParamBase* _container, const QString& memberName, const QString& dispName, Initor<T1> deft1, Initor<T2> deft2, Initor<T3> deft3)\
 		:TypePropN(memberName, dispName),\
-		 NAME1 (_container?this:NULL, _container, memberName + "_" + #NAME1, dispName, deft1),\
-		 NAME2 (_container?this:NULL, _container, memberName + "_" + #NAME2, deft2),\
-		 NAME3 (_container?this:NULL, _container, memberName + "_" + #NAME3, deft3)\
+		 NAME1 (_container?this:nullptr, _container, memberName + "_" + #NAME1, dispName, deft1),\
+		 NAME2 (_container?this:nullptr, _container, memberName + "_" + #NAME2, deft2),\
+		 NAME3 (_container?this:nullptr, _container, memberName + "_" + #NAME3, deft3)\
 	{\
 		initConnect();\
-		if (_container != NULL)\
+		if (_container != nullptr)\
 			_container->addProperty(this);\
 	}\
 	TypeProp<T1> NAME1 ;\
@@ -526,13 +530,13 @@ public:\
 	TypeProp4_1##T1##_##NAME1##_2##T2##_##NAME2##_3##T3##_##NAME3##_4##T4##_##NAME4(ParamBase* _container, const QString& memberName, const QString& dispName, \
 		Initor<T1> deft1, Initor<T2> deft2, Initor<T3> deft3, Initor<T4> deft4)\
 		:TypePropN(memberName, dispName),\
-		 NAME1 (_container?this:NULL, _container, memberName + "_" + #NAME1, dispName, deft1),\
-		 NAME2 (_container?this:NULL, _container, memberName + "_" + #NAME2, deft2),\
-		 NAME3 (_container?this:NULL, _container, memberName + "_" + #NAME3, deft3),\
-		 NAME4 (_container?this:NULL, _container, memberName + "_" + #NAME4, deft4)\
+		 NAME1 (_container?this:nullptr, _container, memberName + "_" + #NAME1, dispName, deft1),\
+		 NAME2 (_container?this:nullptr, _container, memberName + "_" + #NAME2, deft2),\
+		 NAME3 (_container?this:nullptr, _container, memberName + "_" + #NAME3, deft3),\
+		 NAME4 (_container?this:nullptr, _container, memberName + "_" + #NAME4, deft4)\
 	{\
 		initConnect();\
-		if (_container != NULL)\
+		if (_container != nullptr)\
 			_container->addProperty(this);\
 	}\
 	TypeProp<T1> NAME1 ;\
@@ -548,14 +552,14 @@ public:\
 	TypeProp5_1##T1##_##NAME1##_2##T2##_##NAME2##_3##T3##_##NAME3##_4##T4##_##NAME4##_5##T5##_##NAME5(ParamBase* _container, const QString& memberName, const QString& dispName, \
 		Initor<T1> deft1, Initor<T2> deft2, Initor<T3> deft3, Initor<T4> deft4, Initor<T5> deft5)\
 		:TypePropN(memberName, dispName),\
-		 NAME1 (_container?this:NULL, _container, memberName + "_" + #NAME1, dispName, deft1),\
-		 NAME2 (_container?this:NULL, _container, memberName + "_" + #NAME2, deft2),\
-		 NAME3 (_container?this:NULL, _container, memberName + "_" + #NAME3, deft3),\
-		 NAME4 (_container?this:NULL, _container, memberName + "_" + #NAME4, deft4),\
-		 NAME5 (_container?this:NULL, _container, memberName + "_" + #NAME5, deft5)\
+		 NAME1 (_container?this:nullptr, _container, memberName + "_" + #NAME1, dispName, deft1),\
+		 NAME2 (_container?this:nullptr, _container, memberName + "_" + #NAME2, deft2),\
+		 NAME3 (_container?this:nullptr, _container, memberName + "_" + #NAME3, deft3),\
+		 NAME4 (_container?this:nullptr, _container, memberName + "_" + #NAME4, deft4),\
+		 NAME5 (_container?this:nullptr, _container, memberName + "_" + #NAME5, deft5)\
 	{\
 		initConnect();\
-		if (_container != NULL)\
+		if (_container != nullptr)\
 			_container->addProperty(this);\
 	}\
 	TypeProp<T1> NAME1 ;\
@@ -572,15 +576,15 @@ public:\
 	TypeProp6_1##T1##_##NAME1##_2##T2##_##NAME2##_3##T3##_##NAME3##_4##T4##_##NAME4##_5##T5##_##NAME5##_6##T6##_##NAME6(ParamBase* _container, const QString& memberName, const QString& dispName, \
 		Initor<T1> deft1, Initor<T2> deft2, Initor<T3> deft3, Initor<T4> deft4, Initor<T5> deft5, Initor<T6> deft6)\
 		:TypePropN(memberName, dispName),\
-		 NAME1 (_container?this:NULL, _container, memberName + "_" + #NAME1, dispName, deft1),\
-		 NAME2 (_container?this:NULL, _container, memberName + "_" + #NAME2, deft2),\
-		 NAME3 (_container?this:NULL, _container, memberName + "_" + #NAME3, deft3),\
-		 NAME4 (_container?this:NULL, _container, memberName + "_" + #NAME4, deft4),\
-		 NAME5 (_container?this:NULL, _container, memberName + "_" + #NAME5, deft5),\
-		 NAME6 (_container?this:NULL, _container, memberName + "_" + #NAME5, deft6)\
+		 NAME1 (_container?this:nullptr, _container, memberName + "_" + #NAME1, dispName, deft1),\
+		 NAME2 (_container?this:nullptr, _container, memberName + "_" + #NAME2, deft2),\
+		 NAME3 (_container?this:nullptr, _container, memberName + "_" + #NAME3, deft3),\
+		 NAME4 (_container?this:nullptr, _container, memberName + "_" + #NAME4, deft4),\
+		 NAME5 (_container?this:nullptr, _container, memberName + "_" + #NAME5, deft5),\
+		 NAME6 (_container?this:nullptr, _container, memberName + "_" + #NAME5, deft6)\
 	{\
 		initConnect();\
-		if (_container != NULL)\
+		if (_container != nullptr)\
 			_container->addProperty(this);\
 	}\
 	TypeProp<T1> NAME1 ;\
@@ -599,16 +603,16 @@ public:\
 	TypeProp7_1##T1##_##NAME1##_2##T2##_##NAME2##_3##T3##_##NAME3##_4##T4##_##NAME4##_5##T5##_##NAME5##_6##T6##_##NAME6##_7##T7##_##NAME7(ParamBase* _container, const QString& memberName, const QString& dispName, \
 		Initor<T1> deft1, Initor<T2> deft2, Initor<T3> deft3, Initor<T4> deft4, Initor<T5> deft5, Initor<T6> deft6, Initor<T7> deft7)\
 		:TypePropN(memberName, dispName),\
-		 NAME1 (_container?this:NULL, _container, memberName + "_" + #NAME1, dispName, deft1),\
-		 NAME2 (_container?this:NULL, _container, memberName + "_" + #NAME2, deft2),\
-		 NAME3 (_container?this:NULL, _container, memberName + "_" + #NAME3, deft3),\
-		 NAME4 (_container?this:NULL, _container, memberName + "_" + #NAME4, deft4),\
-		 NAME5 (_container?this:NULL, _container, memberName + "_" + #NAME5, deft5),\
-		 NAME6 (_container?this:NULL, _container, memberName + "_" + #NAME6, deft6),\
-		 NAME7 (_container?this:NULL, _container, memberName + "_" + #NAME7, deft7)\
+		 NAME1 (_container?this:nullptr, _container, memberName + "_" + #NAME1, dispName, deft1),\
+		 NAME2 (_container?this:nullptr, _container, memberName + "_" + #NAME2, deft2),\
+		 NAME3 (_container?this:nullptr, _container, memberName + "_" + #NAME3, deft3),\
+		 NAME4 (_container?this:nullptr, _container, memberName + "_" + #NAME4, deft4),\
+		 NAME5 (_container?this:nullptr, _container, memberName + "_" + #NAME5, deft5),\
+		 NAME6 (_container?this:nullptr, _container, memberName + "_" + #NAME6, deft6),\
+		 NAME7 (_container?this:nullptr, _container, memberName + "_" + #NAME7, deft7)\
 	{\
 		initConnect();\
-		if (_container != NULL)\
+		if (_container != nullptr)\
 			_container->addProperty(this);\
 	}\
 	TypeProp<T1> NAME1 ;\
@@ -627,17 +631,17 @@ public:\
 	TypeProp8_1##T1##_##NAME1##_2##T2##_##NAME2##_3##T3##_##NAME3##_4##T4##_##NAME4##_5##T5##_##NAME5##_6##T6##_##NAME6##_7##T7##_##NAME7##_8##T8##_##NAME8(ParamBase* _container, const QString& memberName, const QString& dispName, \
 		Initor<T1> deft1, Initor<T2> deft2, Initor<T3> deft3, Initor<T4> deft4, Initor<T5> deft5, Initor<T6> deft6, Initor<T7> deft7, Initor<T8> deft8)\
 		:TypePropN(memberName, dispName),\
-		 NAME1 (_container?this:NULL, _container, memberName + "_" + #NAME1, dispName, deft1),\
-		 NAME2 (_container?this:NULL, _container, memberName + "_" + #NAME2, deft2),\
-		 NAME3 (_container?this:NULL, _container, memberName + "_" + #NAME3, deft3),\
-		 NAME4 (_container?this:NULL, _container, memberName + "_" + #NAME4, deft4),\
-		 NAME5 (_container?this:NULL, _container, memberName + "_" + #NAME5, deft5),\
-		 NAME6 (_container?this:NULL, _container, memberName + "_" + #NAME6, deft6),\
-		 NAME7 (_container?this:NULL, _container, memberName + "_" + #NAME7, deft7),\
-		 NAME8 (_container?this:NULL, _container, memberName + "_" + #NAME8, deft8)\
+		 NAME1 (_container?this:nullptr, _container, memberName + "_" + #NAME1, dispName, deft1),\
+		 NAME2 (_container?this:nullptr, _container, memberName + "_" + #NAME2, deft2),\
+		 NAME3 (_container?this:nullptr, _container, memberName + "_" + #NAME3, deft3),\
+		 NAME4 (_container?this:nullptr, _container, memberName + "_" + #NAME4, deft4),\
+		 NAME5 (_container?this:nullptr, _container, memberName + "_" + #NAME5, deft5),\
+		 NAME6 (_container?this:nullptr, _container, memberName + "_" + #NAME6, deft6),\
+		 NAME7 (_container?this:nullptr, _container, memberName + "_" + #NAME7, deft7),\
+		 NAME8 (_container?this:nullptr, _container, memberName + "_" + #NAME8, deft8)\
 	{\
 		initConnect();\
-		if (_container != NULL)\
+		if (_container != nullptr)\
 			_container->addProperty(this);\
 	}\
 	TypeProp<T1> NAME1 ;\
@@ -675,7 +679,7 @@ public:
 	{
 		TByNameMap::iterator it = m_byname.find(name);
 		if (it == m_byname.end())
-			return NULL;
+			return nullptr;
 		return *it;
 	}
 	const Prop* propByName(const QString& name) const
@@ -793,9 +797,9 @@ Q_DECLARE_METATYPE(StringSelect);
 class PushButtomProp : public Prop
 {
 public:
-	PushButtomProp(IPropGather* _container, const QString text) : Prop("_push", text), m_but(NULL) 
+	PushButtomProp(IPropGather* _container, const QString text) : Prop("_push", text), m_but(nullptr) 
 	{
-		if (_container != NULL)
+		if (_container != nullptr)
 			_container->addProperty(this);
 	}
 	virtual void addInnerWidget(WidgetLine& wl);
@@ -821,9 +825,9 @@ class ResultProp : public Prop
 public:
 	ResultProp(ParamBase* _container, const QString text) 
 		: Prop("_result", text),
-		m_text(NULL, "_result", text, T())
+		m_text(nullptr, "_result", text, T())
 	{
-		if (_container != NULL)
+		if (_container != nullptr)
 			_container->addProperty(this);
 	}
 

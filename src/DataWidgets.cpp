@@ -182,7 +182,7 @@ void ActionPushButton::setDefaultAction(QAction *action)
 // activate the action
 void ActionPushButton::nextCheckState()
 {
-    if (m_defaultAction == NULL)
+    if (m_defaultAction == nullptr)
         QAbstractButton::nextCheckState();
     else
         m_defaultAction->trigger();

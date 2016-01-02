@@ -39,8 +39,7 @@ using namespace std;
 class MyFile  
 {
 public:
-	
-	MyFile() :state(STATE_CLOSED), curHeader(-1), fl(NULL)
+	MyFile()
 	{}
 
 	~MyFile()
@@ -50,6 +49,7 @@ public:
 
 	bool openRead(const char *filename);
 	bool openWrite(const char *filename);
+    bool openBuf(const char* buf);
 	void close();
 
 	// header and value strings should not contain ":" or "<" or ">"!
@@ -69,13 +69,23 @@ public:
 	int getState() { return state; }
 	
 private:
+    char getChar();
+    bool atEof();
+    void setPos(int p);
+    int getPos();
+    bool mscanint(int* to);
+
+private:
 
 	string name;
-	int state;
-	int curHeader;
+    int state = STATE_CLOSED;
+    int curHeader = -1;
 
-	FILE *fl;
+	FILE *fl = nullptr;
 	
+    const char* buf = nullptr;
+    const char* bufptr = nullptr;
+    bool reachedEnd = false;
 };
 
 #endif // __MYFILE_H__INCLUDED__

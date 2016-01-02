@@ -83,7 +83,7 @@ public:
 	void set(int i, bool val);
 
 	//void multset(const int* rep, const int rpsz);
-	inline void clear();
+	void clear();
 
 	bool tryedAll() const { return cnt == m_dt.size(); }
 

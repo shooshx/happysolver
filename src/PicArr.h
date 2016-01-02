@@ -31,3 +31,5 @@ public:
 	int rtnindx;	 // original rotation index, always [0,7]
 };
 
+const int frameX[] = { 0, 1, 2, 3, 4, 4, 4, 4, 4, 3, 2, 1, 0, 0, 0, 0 };
+const int frameY[] = { 0, 0, 0, 0, 0, 1, 2, 3, 4, 4, 4, 4, 4, 3, 2, 1 };

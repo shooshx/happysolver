@@ -62,7 +62,7 @@ class Shape
 public:
     
     Shape()	:size(-1, -1, -1), fcn(0), sdn(0), cnn(0), sdnError(0),
-        rotfirst(false), faces(NULL), sides(NULL), corners(NULL), errorSides(NULL), volume(-1)
+        rotfirst(false), faces(nullptr), sides(nullptr), corners(nullptr), errorSides(nullptr), volume(-1)
     {}
     
     ~Shape()
@@ -133,6 +133,7 @@ public:
             case XY_PLANE: return Vec3i(5, 5, 1);
             case XZ_PLANE: return Vec3i(5, 1, 5);
             case YZ_PLANE: return Vec3i(1, 5, 5);
+            default: break;
             }
             return Vec3i(-1, -1, -1); // shouldn't happen.
         }

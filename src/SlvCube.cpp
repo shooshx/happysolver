@@ -6,7 +6,7 @@
 
 
 SlvCube::SlvCube(const vector<ShapePlace>& plc, const vector<ShapePlace>& abs_plc, const PicsSet *picset, const Shape *_shape) 
-	: painter(NULL), shape(_shape)
+	: painter(nullptr), shape(_shape)
 {
 	for(int j = 0; j < plc.size(); ++j)
 	{
@@ -25,7 +25,7 @@ SlvCube::SlvCube(const vector<ShapePlace>& plc, const vector<ShapePlace>& abs_pl
 }
 
 SlvCube::SlvCube(const Shape* _shape) 
-	: painter(NULL), shape(_shape)
+	: painter(nullptr), shape(_shape)
 {
 }
 
@@ -38,7 +38,7 @@ const PicGroupDef* SlvCube::getPieceGrpDef(int n) const
 
 /*void SlvCube::genIFS(Shape *shp)
 {
-	if (ifs != NULL)
+	if (ifs != nullptr)
 		return;
 	// building this PicsSet and Cube here is the best choise for complete non-statefullness of Solutions
 	PicsSet pics(picdt, picssz, bConsidersSym);  // this ctor takes from the bucket only the data, not the selection
@@ -56,7 +56,7 @@ void SlvCube::genPainter()
 	if (!painter.isNull())
 		return;
 
-	painter.setSlvCube(this); // make it not null only now.
+	painter.setSlvCube(this); // make it not nullptr only now.
 	PicsSet pics(this);  // this ctor takes from the bucket only the data, not the selection
 	// no need to consider symmetry, even if it was considered when this solution was built since we only take things
 	// from added, which is not affected by symmetry
@@ -76,7 +76,7 @@ void SlvCube::genPainter()
 	}
 
 	// lines
-	Cube tmpcube(shape, &pics, NULL);
+	Cube tmpcube(shape, &pics, nullptr);
 	tmpcube.genLinesIFS(this, painter.m_linesIFS);
 }
 

@@ -49,8 +49,8 @@ class ActFocusComboBox :public QComboBox
 {
 	Q_OBJECT
 public:
-	ActFocusComboBox(QAction* act, QWidget *parent = NULL)
-		:QComboBox(parent), m_defaultAction(NULL) 
+	ActFocusComboBox(QAction* act, QWidget *parent = nullptr)
+		:QComboBox(parent), m_defaultAction(nullptr) 
 	{
 		setFocusPolicy(Qt::ClickFocus);
 		setDefaultAction(act);

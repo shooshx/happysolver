@@ -109,9 +109,9 @@ void MyColorPicker::on_oldBut_clicked()
 void MyColorPicker::on_htmlColEdit_textEdited(const QString &)
 {
 	QString text = ui.htmlColEdit->text();
-	m_col.setRed(text.mid(0, 2).toInt(NULL, 16));
-	m_col.setGreen(text.mid(2, 2).toInt(NULL, 16));
-	m_col.setBlue(text.mid(4, 2).toInt(NULL, 16));
+	m_col.setRed(text.mid(0, 2).toInt(nullptr, 16));
+	m_col.setGreen(text.mid(2, 2).toInt(nullptr, 16));
+	m_col.setBlue(text.mid(4, 2).toInt(nullptr, 16));
 
 	setTextC();
 	setLabelC();

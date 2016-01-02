@@ -15,7 +15,7 @@ void ObjExport::addMesh(const PicGroupDef *def, Mesh& mesh, const Mat4& fMatrix)
 {
     bool didMtl = false;
     ++numObjs;
-    if (def != NULL && mtl != NULL) {
+    if (def != nullptr && mtl != nullptr) {
         //if (def->drawtype == DRAW_COLOR)
         {
             (*mtl) << "newmtl material" << numObjs << "\n";

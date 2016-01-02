@@ -224,12 +224,12 @@ void MyInputDlg::on_applyBot_clicked()
 
 
 ColorSelIn::ColorSelIn(TypeProp<QColor> *_v, QAbstractButton *_bw, bool _withAlpha, EFlags flags, bool _autoup)
- :WidgetIn(_v, _bw), v(_v), bw(_bw), sw(NULL), autoup(_autoup), withAlpha(_withAlpha)
- ,modellessDlg(NULL)
+ :WidgetIn(_v, _bw), v(_v), bw(_bw), sw(nullptr), autoup(_autoup), withAlpha(_withAlpha)
+ ,modellessDlg(nullptr)
  ,doModal(flags == DoModal)
 {
 	connect(bw, SIGNAL(clicked(bool)), this, SLOT(residualUpdate()));
-	if (sw != NULL)
+	if (sw != nullptr)
 	{
  		sw->setAutoFillBackground(true);
  		sw->setLineWidth(1);
@@ -252,7 +252,7 @@ void ColorSelIn::residualUpdate()
 {
 	if (doModal)
 	{
-		if (modellessDlg == NULL)
+		if (modellessDlg == nullptr)
 		{
 			modellessDlg = new MyColorPicker((QWidget*)bw->parent(), selected);
 			modellessDlg->setWindowTitle(v->displayName());

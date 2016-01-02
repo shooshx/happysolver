@@ -44,8 +44,8 @@ class Mesh;
 class MyObject // should be called MyMesh
 {
 public:
-    MyObject(MyAllocator* alloc = NULL) 
-        :poly(NULL), lines(NULL), points(NULL), nPolys(0), nLines(0), nPoints(0), 
+    MyObject(MyAllocator* alloc = nullptr) 
+        :poly(nullptr), lines(nullptr), points(nullptr), nPolys(0), nLines(0), nPoints(0), 
          nakedLinesColor(0.0),  verterxNormals(false), m_alloc(alloc)
     {}
 
@@ -65,7 +65,7 @@ public:
     float nakedLinesColor; // color of the lines when the object is on its own (not in grpdef)
     bool verterxNormals; // use normals for every vertex (belongs more in the ifs.. but object is the drawing unit)
 
-    void addPoly(Vec3 *inplst, TexAnchor *ancs = NULL, Texture *tex = NULL); //copy needed vertices, add poly
+    void addPoly(Vec3 *inplst, TexAnchor *ancs = nullptr, Texture *tex = nullptr); //copy needed vertices, add poly
     void addLine(Vec3 *inp1, Vec3 *inp2, double inR, double inG, double inB, ELineType type);
     void setNakedLineColor(float color) { nakedLinesColor = color; }
     void vectorify();
@@ -116,7 +116,7 @@ private:
     // add a point directly to the points repository, without duplicacy check.
     inline void basicAddPoint(MyPoint *pnt);
     // add a polygon made of points in the repository, without duplicacy checks.
-    inline void basicAddPoly(MyPoint *inparr[], TexAnchor *ancs = NULL);
+    inline void basicAddPoly(MyPoint *inparr[], TexAnchor *ancs = nullptr);
 
     typedef vector<HalfEdge*> THalfEdgeList;
     bool buildHalfEdges(THalfEdgeList& lst);

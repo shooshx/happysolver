@@ -71,7 +71,7 @@ class DataSpinBox :public QSpinBox
 {
 	Q_OBJECT
 public:
-	DataSpinBox(int d, QWidget* parent = NULL);
+	DataSpinBox(int d, QWidget* parent = nullptr);
 	virtual ~DataSpinBox() {}
 
 	int getData() { return m_data; }
@@ -108,7 +108,7 @@ class ActionPushButton : public QPushButton
 {
 	Q_OBJECT
 public:
-	ActionPushButton(QAction *action, QWidget *parent = NULL) : QPushButton(parent), m_defaultAction(NULL), m_showText(false)
+	ActionPushButton(QAction *action, QWidget *parent = nullptr) : QPushButton(parent), m_defaultAction(nullptr), m_showText(false)
 	{ setDefaultAction(action); }
 
 	virtual ~ActionPushButton() {}
