@@ -9,6 +9,7 @@
 #include "../src/CubeDocBase.h"
 #include "../src/BaseGLWidget.h"
 #include "../src/ModelControlBase.h"
+#include "../src/SlvCube.h"
 
 using namespace std;
 
@@ -54,6 +55,12 @@ public:
             cout << "GOT-EXCEPTION " << e.what() << endl;
         }    
     }
+    
+    void slvReady()
+    {
+        m_doc.getCurrentSolve()->genPainter();
+        m_modelGl.reCalcSlvMinMax();
+    }
 };
 
 MainCtrl g_ctrl;
@@ -70,8 +77,9 @@ void loadSolution(const char* buf) {
             cout << "error: " << g_ctrl.m_doc.m_lastMsg << endl;
             cout << "doc realOpen failed" << endl;
         }
+        g_ctrl.slvReady();
         
-        g_ctrl.m_modelGl.switchIn();
+        g_ctrl.m_gl.switchHandler(&g_ctrl.m_modelGl);
         g_ctrl.m_gl.reset();
     }
     catch(const std::exception& e) {
@@ -83,10 +91,13 @@ bool initCubeEngine(const char* stdpcs, const char* unimesh)
 {
     try {
         PicBucket::createSingleton();
+        
+        g_ctrl.m_modelGl.initTex();
+        
         if (!PicBucket::mutableInstance().loadXML(stdpcs))
             return false;
             
-        PicBucket::mutableInstance().loadUnified(unimesh);    
+        PicBucket::mutableInstance().loadUnifiedJs();    
         return true;
     }
     catch(const std::exception& e) {
@@ -123,7 +134,7 @@ void cpp_start()
     
     try {
         g_ctrl.m_gl.init();
-        g_ctrl.m_gl.switchHandler(&g_ctrl.m_modelGl);
+        
     }
     catch(const std::exception& e) {
         cout << "START_GOT-EXCEPTION " << e.what() << endl;

@@ -24,7 +24,8 @@
 #include "PicsSet.h"
 #include "SlvCube.h"
 
-#include "MyObject.h"
+//#include "MyObject.h"
+
 #ifdef QT_CORE_LIB
 #include "SolveThread.h"
 #endif

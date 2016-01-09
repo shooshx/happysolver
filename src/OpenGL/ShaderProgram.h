@@ -31,13 +31,31 @@ public:
 
 class ShaderProgram;
 
-class GlArrayBuffer
+class GlBuffer
 {
 public:
+    GlBuffer(int type) : m_type(type) {}
+    void bind();
     template<typename T>
-    void setData(const T* v, int count);
+    bool setData(const vector<T>& v);
+
     uint m_buf = 0;
+    uint m_type;
+    uint m_size = 0; // number of elements of type T in the buffer
+
 };
+
+class GlArrayBuffer : public GlBuffer
+{
+public:
+    GlArrayBuffer() : GlBuffer(GL_ARRAY_BUFFER) {}
+};
+class GlElementArrayBuffer : public GlBuffer
+{
+public:
+    GlElementArrayBuffer() : GlBuffer(GL_ELEMENT_ARRAY_BUFFER) {}
+};
+
 
 
 class ShaderParam 
@@ -81,7 +99,7 @@ public:
     void set(const T& v) const;
 
     template<typename T> 
-    void setArr(GlArrayBuffer& bo) const;
+    void setArr(const GlArrayBuffer& bo) const;
     void disableArr();
     void enableArr();
 
@@ -226,21 +244,21 @@ class FloatAttrib : public AttribParam {
 public:
     FloatAttrib(const char* name, ShaderProgram* prog) : AttribParam(name, prog) {}
     void set(float v) const;
-    void setArr(GlArrayBuffer& bo) const {
+    void setArr(const GlArrayBuffer& bo) const {
         AttribParam::setArr<float>(bo);
     }
 };
 class Vec3Attrib : public AttribParam {
 public:
     Vec3Attrib(const char* name, ShaderProgram* prog) : AttribParam(name, prog) {}
-    void setArr(GlArrayBuffer& bo) const {
+    void setArr(const GlArrayBuffer& bo) const {
         AttribParam::setArr<Vec3>(bo);
     }
 };
 class IntAttrib : public AttribParam {
 public:
     IntAttrib(const char* name, ShaderProgram* prog) : AttribParam(name, prog) {}
-    void setArr(GlArrayBuffer& bo) const {
+    void setArr(const GlArrayBuffer& bo) const {
         AttribParam::setArr<int>(bo);
     }
 };

@@ -2,7 +2,7 @@
 
 #include "Configuration.h"
 #include "general.h"
-#include "MyObject.h"
+//#include "MyObject.h"
 #include "Mesh.h"
 
 class SlvCube;

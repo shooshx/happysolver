@@ -4,7 +4,7 @@
 #include "Space3D.h"
 
 #include <cmath>
-
+#include <QImage>
 
 
 #define MAXB 0x100
@@ -299,7 +299,8 @@ uchar* saveto2D(const Space3D<Vec4b>& data, int n, int depth, int inArow, Vec2i*
 
                 ni[di] = d;
                 ni[di+1] = d2;
-                ni[di+2] = 0xff;
+               // ni[di+2] = d; 
+                ni[di+2] = 0xff; 
                 ni[di+3] = 0xff;
 
                 if (d < dmin)
@@ -383,8 +384,8 @@ GlTexture* NoiseGenerator::make3Dnoise(int size, float ampStart, float ampDiv, i
     uchar* buf2d = saveto2D(noise3DTexPtr, size, size/4, 8, &sz2d);
 
     GlTexture *tex = new GlTexture();
-    tex->init(GL_TEXTURE_2D, Vec2i(sz2d.x, sz2d.y), 1, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, 
-              buf2d, GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE); 
+
+    tex->init(GL_TEXTURE_2D, Vec2i(sz2d.x, sz2d.y), 1, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, buf2d, GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE);
     
 /*	
     QImage img(buf2d, sz2d.x, sz2d.y, QImage::Format_ARGB32);

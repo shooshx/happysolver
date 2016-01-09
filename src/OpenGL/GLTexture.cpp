@@ -16,11 +16,15 @@ void GlTexture::init(GLenum target, const Vec2i& size, int depth, GLenum interna
     mglCheckErrorsC("bind");
     if (target == GL_TEXTURE_2D)
     {
+#ifdef QT_CORE_LIB
         // see http://www.opengl.org/wiki/Common_Mistakes        
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
-        glTexImage2D(target, 0, internal_format, size.width, size.height, 0, format, type, ptr);
-        mglCheckErrorsC("tex2d");
+#endif
+        if (ptr != nullptr) {
+            glTexImage2D(target, 0, internal_format, size.width, size.height, 0, format, type, ptr);
+            mglCheckErrorsC("tex2d");
+        }
     }
     else {
         throw HCException("texture not supported");

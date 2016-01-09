@@ -55,6 +55,7 @@ public:
 
 private:
 	DISALLOW_COPY(GlTexture);
+protected:
 	uint m_obj;
 	Vec3i m_size;
 	uint m_target;

@@ -15,16 +15,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-/*
-#define __msxml_h__ // msxml also defines XMLDocument
-#define __urlmon_h__
-#define _OBJBASE_H_
-#define __oaidl_h__
-#define _OLEAUTO_H_
-#define __objidl_h__
-#define __oleidl_h__
-#define _OLE2_H_
-*/
+
 //#include "GlobDefs.h"
 
 #include <stdlib.h>
@@ -44,7 +35,9 @@
 #include <QFile>
 #include <QTextStream>
 #endif
-
+#ifdef EMSCRIPTEN
+#include <emscripten.h>
+#endif
 
 using namespace tinyxml2;
 
@@ -351,8 +344,8 @@ bool PicBucket::loadXML(const char* data)
         const char *txnamep = t->Attribute("filename");
         if (txnamep != nullptr)
         {
-            string txname(txnamep);
 #ifdef QT_CORE_LIB
+            string txname(txnamep);
             QImage img(txname.c_str(), "PNG");
             if (img.isNull())
             {
@@ -598,7 +591,7 @@ void PicBucket::distinctMeshes()
 
 }
 
-
+#ifdef QT_CORE_LIB
 /** PoolStats is the datum of the poolStats list which holds the optimal sizes of MyAllcator pools.
     Sizes for the MyPoint, MyPolygon and HalfEdge pools, measured as a function of the number of
     subdivision passe using MyObject::subdivide().
@@ -628,8 +621,8 @@ void PicBucket::buildMeshes(const DisplayConf& dpc, ProgressCallback* prog)
 
     // grows if needed, never shrinks.
     PoolStats& ps = poolStats[dpc.numberOfPasses];
-    PicDisp::getAllocator().init(ps.points, ps.poly, ps.he);
-    PicDisp::getAllocator().clearMaxAlloc();
+    PicDisp::g_smoothAllocator.init(ps.points, ps.poly, ps.he);
+    PicDisp::g_smoothAllocator.clearMaxAlloc();
 
     int cnt = 0;
     bool cancel = false;
@@ -643,32 +636,8 @@ void PicBucket::buildMeshes(const DisplayConf& dpc, ProgressCallback* prog)
 
     if (prog)
         prog->setValue(m_meshes.size());
-    PicDisp::getAllocator().checkMaxAlloc();
+    PicDisp::g_smoothAllocator.checkMaxAlloc();
 }
-
-class LineParser
-{
-public:
-    LineParser(const char* buf) : m_buf(buf), m_p(buf) {}
-    const char* readLine(uint *sz) {
-        const char* start = m_p;
-        while (*m_p != '\n' && *m_p != 0) {
-            ++m_p;
-            ++(*sz);
-        }
-        m_p += 1; //skip the \n
-        if (*m_p == 0)
-            m_p = nullptr;
-        return start;
-    }
-    bool atEnd() const {
-        return m_p == nullptr;
-    }
-
-    const char* m_buf = nullptr;
-    const char* m_p = nullptr;
-
-};
 
 // in Qt, s is the filename
 // in emscripten s is the buffer
@@ -676,18 +645,14 @@ bool PicBucket::loadUnified(const char* s)
 {
     distinctMeshes();
 
-#ifdef XXX_QT_CORE_LIB
+
     QFile iff(s);
-    if (!iff.open(QIODevice::ReadOnly | QIODevice::Text))
+    if (!iff.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        cout << "ERROR: failed opening " << s << endl;
         return false;
+    }
     QTextStream in(&iff);
-#else
-    int len = strlen(s);
-    //cout << "LOADUNI " << len << " `" << s << "`" << endl;
-    cout << "UNI " << " " << (int)s[0] << " " << (int)s[1] << " " << (int)s[2] << " " << (int)s[3] << endl;
-    LineParser in{ s };
-#endif
-    
+
     shared_ptr<Mesh::CommonData> cd(new Mesh::CommonData);
     double a,b,c;
     char *pa = nullptr;
@@ -696,15 +661,10 @@ bool PicBucket::loadUnified(const char* s)
 
     while (!in.atEnd())
     {
-#ifdef XXX_QT_CORE_LIB
         QString line = in.readLine();
         QByteArray ba = line.toLatin1();
         const char* linebuf = ba.data();
         uint len = ba.size();
-#else
-        uint len = 0;
-        const char* linebuf = in.readLine(&len);
-#endif
 
         if (len < 3)
             continue;
@@ -745,13 +705,6 @@ bool PicBucket::loadUnified(const char* s)
                 vi[fi] = strtoul(pa, &pa, 10);
                 M_ASSERT(vi[fi] < 65536);
             }
-        /*  mesh->m_idx.push_back(vi[0]);
-            mesh->m_idx.push_back(vi[1]);
-            mesh->m_idx.push_back(vi[2]);
-            mesh->m_idx.push_back(vi[0]);
-            mesh->m_idx.push_back(vi[2]);
-            mesh->m_idx.push_back(vi[3]);
-            */
             mesh->m_idx.push_back(vi[0]);
             mesh->m_idx.push_back(vi[2]);
             mesh->m_idx.push_back(vi[1]);
@@ -761,9 +714,50 @@ bool PicBucket::loadUnified(const char* s)
 
         }
     }
+
+    cd->m_vtxBo.setData(cd->vtx);
+    cd->vtx.clear();
+    cd->m_normBo.setData(cd->normals);
+    cd->normals.clear();
+    for(auto d: m_meshes) {
+        d->m_mesh.m_idxBo.setData(d->m_mesh.m_idx);
+        d->m_mesh.m_idx.clear();
+    }
+
+
     cout << "Unified Mesh read " << vtxCount << " vtx " << meshCount << " meshes" << endl;
     return true;
 }
+
+#endif
+
+#ifdef EMSCRIPTEN
+
+bool PicBucket::loadUnifiedJs()
+{
+    distinctMeshes();
+    shared_ptr<Mesh::CommonData> cd(new Mesh::CommonData);
+
+    cd->m_vtxBo.bind();
+    EM_ASM(GLctx.bufferData(GLctx.ARRAY_BUFFER, unimesh.vtx, GLctx.STATIC_DRAW));
+    cd->m_vtxBo.m_size = EM_ASM_INT_V(return unimesh.vtx.length);
+
+    cd->m_normBo.bind();
+    EM_ASM(GLctx.bufferData(GLctx.ARRAY_BUFFER, unimesh.norm, GLctx.STATIC_DRAW));
+    cd->m_normBo.m_size = EM_ASM_INT_V(return unimesh.norm.length);
+
+    for (auto d : m_meshes) {
+        d->m_mesh.m_idxBo.bind();
+        EM_ASM_(GLctx.bufferData(GLctx.ELEMENT_ARRAY_BUFFER, unimesh[$0], GLctx.STATIC_DRAW), d->bits());
+        d->m_mesh.m_idxBo.m_size = EM_ASM_INT(return unimesh[$0].length, d->bits());
+        d->m_mesh.m_type = Mesh::TRIANGLES;
+        d->m_mesh.m_hasIdx = d->m_mesh.m_hasNormals = true;
+        d->m_mesh.m_common = cd;
+    }
+    return true;
+}
+
+#endif
 
 
 #if 0

@@ -29,7 +29,9 @@
 #include <fstream>
 using namespace std;
  
+#ifdef QT_CORE_LIB
 MyAllocator PicDisp::g_smoothAllocator;
+#endif
 
 #define POLY_A 0x0001
 #define POLY_B 0x0002
@@ -102,6 +104,7 @@ void PicDisp::PlaceInto(int pntn, Vec3 *shpp, Vec3 *pnti1, Vec3 *pnti2, EPlaceTy
 //static const BuildFrame build[17];
 
 
+#ifdef QT_CORE_LIB
 
 void PicDisp::placeSidePolygon(MyObject& obj, int b, bool is1, int x, int y) const
 {
@@ -276,6 +279,7 @@ void PicDisp::init(const DisplayConf& dpc)
         stringstream ss;
         ss << "c:/temp/orig/piece_" << hex << m_arr.getBits() << "_" << rand() << ".sobj";
         ofstream f(ss.str().c_str());
+
         //ObjExport oe(f, nullptr);
         //oe.asTriangles = true;
         //oe.addMesh(nullptr, m_mesh, Mat4::ident());
@@ -296,7 +300,7 @@ void PicDisp::init(const DisplayConf& dpc)
 
     g_smoothAllocator.clear();
 }
-
+#endif // QT_CORE_LIB
 
 
 /// do the actual painting of a single piece in the actual OpenGL view.
@@ -348,18 +352,19 @@ void PicPainter::paint(bool fTargets, const Vec3& name, BaseGLWidget *context, b
     m_pdef->disp->m_mesh.paint();
 }
 
+#ifdef QT_CORE_LIB
 bool PicPainter::exportToObj(ObjExport& oe, const Mat4& fMatrix) const
 {
-    MyObject obj(&PicDisp::getAllocator());
+    MyObject obj(&PicDisp::g_smoothAllocator);
     m_pdef->disp->generateStraightShape(m_displayConf, obj);
-    PicDisp::getAllocator().clear();
+    PicDisp::g_smoothAllocator.clear();
 
     Mesh mesh;
     obj.toMesh(mesh);
     oe.addMesh(m_pdef->mygrp(), mesh, fMatrix);
     return true;
 }
-
+#endif
 
 
 

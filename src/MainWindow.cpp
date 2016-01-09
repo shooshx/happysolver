@@ -224,8 +224,7 @@ bool MainWindow::initialize()
     DlgProg dlgprog(false);
     //PicBucket::mutableInstance().buildMeshes(m_doc->m_conf.disp, &dlgprog);
     //PicBucket::mutableInstance().loadMeshes("C:/projects/cubeGL/happysolver/small_meshes_all.txt");
-    PicBucket::mutableInstance().loadUnified(readFile(":/unified_meshes_all.txt").c_str());
-
+    PicBucket::mutableInstance().loadUnified(":/unified_meshes_all.txt");
     return true;
 }
 

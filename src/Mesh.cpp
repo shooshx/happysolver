@@ -30,17 +30,37 @@ void Mesh::calcTrianglesNormals() {
         m_normals[i].unitize();
 }
 
+void Mesh::makeSelfBos() {
+    if (!m_vtxBo.setData(m_vtx))
+        return;
+
+    if (m_hasNormals)
+        m_normBo.setData(m_normals);
+    if (m_hasNames)
+        m_namesBo.setData(m_name);
+    if (m_hasColors) 
+        m_colBo.setData(m_color4);
+    if (m_hasTag) 
+        m_tagBo.setData(m_tag);
+    if (m_hasIdx)
+        m_idxBo.setData(m_idx);
+}
+
 
 void Mesh::paint(bool names) const
 {
     const vector<Vec3> *vtx = &m_vtx, *normals = &m_normals;
+    const GlArrayBuffer* vbo = &m_vtxBo;
+    const GlArrayBuffer* nbo = &m_normBo;
     //const vector<Vec2> *texCoord = &m_texCoord;
     if (m_common) {
         vtx = &m_common->vtx;   
         normals = &m_common->normals;
+        vbo = &m_common->m_vtxBo;
+        nbo = &m_common->m_normBo;
     //    texCoord = &m_common->texCoord;
     }
-    if (vtx->size() == 0) {
+    if (vbo->m_size == 0) {
 #ifdef EMSCRIPTEN
         cout << "vtx->size()==0 " << m_common << endl;
         throw HCException("mesh is empty");
@@ -53,21 +73,18 @@ void Mesh::paint(bool names) const
     BuildProgram* lprog = ShaderProgram::currenttTry<BuildProgram>(); 
 
     mglCheckErrors("set-uni");
-    m_vtxBo.setData(&(*vtx)[0], vtx->size());
-    bprog->vtx.setArr(m_vtxBo);
+    bprog->vtx.setArr(*vbo);
 
     if (nprog != nullptr) {
         if (m_hasNormals) {
-            m_normBo.setData(&(*normals)[0], normals->size());
-            nprog->normal.setArr(m_normBo);
+            nprog->normal.setArr(*nbo);
         }
         else 
             nprog->normal.disableArr();
     }
     if (names) {
         if (m_hasNames) {
-            m_colBo.setData(&m_name[0], m_name.size());
-            bprog->colorAatt.setArr<Vec4b>(m_colBo);
+            bprog->colorAatt.setArr<Vec4b>(m_namesBo);
         }
         else {
             bprog->colorAatt.disableArr();
@@ -79,7 +96,6 @@ void Mesh::paint(bool names) const
     }
     else {
         if (m_hasColors) {
-            m_colBo.setData(&m_color4[0], m_color4.size());
             bprog->colorAatt.setArr<Vec4>(m_colBo);
         }
         else {
@@ -94,7 +110,6 @@ void Mesh::paint(bool names) const
 
         if (lprog != nullptr) {
             if (m_hasTag) {
-                m_tagBo.setData(&m_tag[0], m_tag.size());
                 lprog->tag.setArr(m_tagBo);
             }
             else {
@@ -109,20 +124,12 @@ void Mesh::paint(bool names) const
 
     uint gltype = glType(m_type);
     if (m_hasIdx) {
-        if (m_idxBuf == 0) {
-            glGenBuffers(1, const_cast<uint*>(&m_idxBuf));
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_idxBuf);
-        }
-        else {
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_idxBuf);
 
-        }
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_idx.size() * sizeof(ushort), &m_idx[0], GL_STATIC_DRAW);
-
-        glDrawElements(gltype, m_idx.size(), GL_UNSIGNED_SHORT, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_idxBo.m_buf);
+        glDrawElements(gltype, m_idxBo.m_size, GL_UNSIGNED_SHORT, 0);
     }
     else {
-        glDrawArrays(gltype, 0, vtx->size());
+        glDrawArrays(gltype, 0, vbo->m_size);
     }
 
 /*

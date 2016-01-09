@@ -47,6 +47,12 @@ enum EAxis
     Z_AXIS = 3
 };
 
+enum ELineType
+{
+    LINE_ALWAYS, // line which is always shown
+    LINE_ONLY_WHOLE, // line which appears only when the whole thing is shown (unconnected edges?)
+    LINE_ONLY_LONE // line which appears only when the lone piece is shown
+};
 
 typedef unsigned int uint;
 typedef unsigned char byte;

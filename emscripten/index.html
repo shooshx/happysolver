@@ -2,12 +2,16 @@
 <html><head>
 
 <script id="stdpcs" src="j_stdpcs.xml"></script>  
-<script id="unimesh" src="j_unified_meshes_all.txt"></script>  
+
+<script id="unimesh2" src="unified_mesh.js"></script>  
 
 <script id="one_cube" src="j_one_piece_cube.txt"></script>    
-
+<script id="one_cube" src="j_one_marble_cube.txt"></script>    
 
 <script type="text/javascript">
+
+// unified_mesh.js
+// j_unified_meshes_all.txt
     
 var gl = null, canvas = null
 var prog = null
@@ -19,17 +23,8 @@ function start() {
 
     Module.ccall('cpp_start', null);
     
-    var tmp = new Int8Array(unimesh_text.length)
-    
-    for(var i = 0; i < unimesh_text.length; ++i) {
-        tmp[i] = unimesh_text.charCodeAt(i)
-    }
-    var buf = Module._malloc(unimesh_text.length)
-    Module.HEAP8.set(tmp, buf)
+    Module.ccall('initCubeEngine', 'boolean', ['string', 'number'], [stdpcs_text, 0])
 
-    Module.ccall('initCubeEngine', 'boolean', ['string', 'number'], [stdpcs_text, buf])
-    Module._free(buf)
-    delete tmp
     
     loadSolution = Module.cwrap('loadSolution', null, ['string'])
     resize = Module.cwrap('resize', null, ['number', 'number'])
@@ -37,7 +32,8 @@ function start() {
     mouseUp = Module.cwrap('mouseUp', null, ['number'])
     mouseMove = Module.cwrap('mouseMove', null, ['number', 'number', 'number', 'number'])
     
-    loadSolution(one_piece_cube_text)
+    //loadSolution(one_piece_cube_text)
+    loadSolution(one_marble_cube_text)
     resize(mycanvas.width, mycanvas.height)
     
     mycanvas.onmousedown = handleMouseDown;
@@ -59,6 +55,16 @@ function handleMouseMove(event) {
     mouseMove(event.buttons, 0, event.clientX, event.clientY)
 }
 
+function registerTexBind(imgname, obj) {
+    console.log("reg-tex " + imgname)
+    //var img = new Image()
+    //img.onload = function() {
+        _glBindTexture(GLctx.TEXTURE_2D, obj)
+        GLctx.texImage2D(GLctx.TEXTURE_2D, 0, GLctx.RGBA, GLctx.RGBA, GLctx.UNSIGNED_BYTE, noisetex)
+    //}
+    //img.src = 'cubeTex.jpg'
+}
+
 function draw() {
 
     var ok = Module.ccall('cpp_progress', 'boolean');
@@ -75,5 +81,6 @@ function draw() {
 </head>
 <body onload="start();">
     <canvas id="mycanvas" width="800" height="700"></canvas>
+    <img id="noisetex" src='cubeTex.png'/>
 </body>
 </html>

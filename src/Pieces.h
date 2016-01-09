@@ -269,7 +269,9 @@ public:
     void makeBitmapList(); 
     void buildMeshes(const DisplayConf& dpc, ProgressCallback* prog);
     bool loadMeshes(const string& filename);
-    bool loadUnified(const char* filename) ;
+    bool loadUnified(const char* filename);
+    bool loadUnifiedJs();
+
 
     int selectedCount() const;
 

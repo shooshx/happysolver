@@ -18,18 +18,20 @@
 #ifndef __PICPAINTER_H_INCLUDED__
 #define __PICPAINTER_H_INCLUDED__
 
-#include "MyObject.h"
 #include "MyFile.h"
 #include "Configuration.h"
 #include "Mat.h"
 #include "Mesh.h"
 #include "PicArr.h"
+#ifdef QT_CORE_LIB
+#include "MyObject.h"
+#endif
+
 
 /** \file
     Declares the PicPainter class used for configuration editing.
 */
 
-class MyObject;
 class PicDef;
 class BaseGLWidget;
 class DisplayConf;
@@ -43,10 +45,10 @@ public:
     /// create the polygon mesh and the display list.
     void init(const DisplayConf &dpc);
 
-    static MyAllocator& getAllocator() { return g_smoothAllocator; }
-
+#ifdef QT_CORE_LIB
     void generateStraightShape(const DisplayConf& dpc, MyObject& obj) const;
     void placeSidePolygon(MyObject& obj, int b, bool is1, int x, int y) const;
+#endif
 
     bool uncub(int x, int y) const;
 
@@ -75,8 +77,9 @@ public:
     Mesh m_mesh;
     PicArr m_arr;
 
-private:
+#ifdef QT_CORE_LIB
     static MyAllocator g_smoothAllocator;
+#endif
 };
 
 

@@ -230,7 +230,7 @@ template<> uint shouldNorm<float>() { return GL_FALSE; }
 
 
 template<typename T> 
-void AttribParam::setArr(GlArrayBuffer& bo) const {
+void AttribParam::setArr(const GlArrayBuffer& bo) const {
     if (m_uid == -1) 
         return;
 
@@ -241,11 +241,11 @@ void AttribParam::setArr(GlArrayBuffer& bo) const {
 
 }
 
-template void AttribParam::setArr<Vec4>(GlArrayBuffer& bo) const;
-template void AttribParam::setArr<Vec3>(GlArrayBuffer& bo) const;
-template void AttribParam::setArr<Vec3b>(GlArrayBuffer& bo) const;
-template void AttribParam::setArr<Vec4b>(GlArrayBuffer& bo) const;
-template void AttribParam::setArr<float>(GlArrayBuffer& bo) const;
+template void AttribParam::setArr<Vec4>(const GlArrayBuffer& bo) const;
+template void AttribParam::setArr<Vec3>(const GlArrayBuffer& bo) const;
+template void AttribParam::setArr<Vec3b>(const GlArrayBuffer& bo) const;
+template void AttribParam::setArr<Vec4b>(const GlArrayBuffer& bo) const;
+template void AttribParam::setArr<float>(const GlArrayBuffer& bo) const;
 
 template<> 
 void UniformParam::set(const float& v) const {
@@ -374,18 +374,32 @@ void mglActiveTexture(int i) {
     glActiveTexture(GL_TEXTURE0 + i);
 }
 
-template<typename T>
-void GlArrayBuffer::setData(const T* v, int count)
+void GlBuffer::bind()
 {
     if (m_buf == 0)
         glGenBuffers(1, const_cast<uint*>(&m_buf));
 
-    glBindBuffer(GL_ARRAY_BUFFER, m_buf);
-    glBufferData(GL_ARRAY_BUFFER, count * sizeof(T), v, GL_STATIC_DRAW);
+    glBindBuffer(m_type, m_buf);
 }
 
-template void GlArrayBuffer::setData(const Vec3* v, int count);
-template void GlArrayBuffer::setData(const Vec4* v, int count);
-template void GlArrayBuffer::setData(const float* v, int count);
-template void GlArrayBuffer::setData(const Vec4b* v, int count);
+template<typename T>
+bool GlBuffer::setData(const vector<T>& v)
+{
+    m_size = v.size();
+    if (v.size() == 0) {
+        return false;
+    }
+    if (m_buf == 0)
+        glGenBuffers(1, const_cast<uint*>(&m_buf));
+
+    glBindBuffer(m_type, m_buf);
+    glBufferData(m_type, v.size() * sizeof(T), &v[0], GL_STATIC_DRAW);
+    return true;
+}
+
+template bool GlBuffer::setData(const vector<Vec3>& v);
+template bool GlBuffer::setData(const vector<Vec4>& v);
+template bool GlBuffer::setData(const vector<float>& v);
+template bool GlBuffer::setData(const vector<Vec4b>& v);
+template bool GlBuffer::setData(const vector<ushort>& v);
 

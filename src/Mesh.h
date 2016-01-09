@@ -56,9 +56,12 @@ public:
     struct CommonData {
         vector<Vec3> vtx;
         vector<Vec3> normals;
+        mutable GlArrayBuffer m_vtxBo; // buffer object
+        mutable GlArrayBuffer m_normBo;
        // vector<Vec2> texCoord;
     };
 
+    void makeSelfBos();
 
 public:
     shared_ptr<CommonData> m_common;
@@ -84,11 +87,12 @@ public:
 
     vector<IdxBuf> m_addIdx;
 
-    uint m_idxBuf = 0;
-    mutable GlArrayBuffer m_vtxBo; // buffer object
-    mutable GlArrayBuffer m_normBo;
-    mutable GlArrayBuffer m_colBo; 
-    mutable GlArrayBuffer m_tagBo;
+    GlArrayBuffer m_vtxBo; // buffer object
+    GlArrayBuffer m_normBo;
+    GlArrayBuffer m_colBo; 
+    GlArrayBuffer m_namesBo;
+    GlArrayBuffer m_tagBo;
+    GlElementArrayBuffer m_idxBo;
 };
 
 

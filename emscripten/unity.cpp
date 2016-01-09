@@ -2,8 +2,6 @@
 #include "../src/OpenGL/ShaderProgram.cpp"
 #include "../src/Mat.cpp"
 #include "../src/Mesh.cpp"
-#include "../src/MyObject.cpp"
-#include "../src/MyPolygon.cpp"
 #include "../src/PicPainter.cpp"
 #include "../src/ModelControlBase.cpp"
 #include "../src/CubeDocBase.cpp"
@@ -22,3 +20,4 @@
 #include "../src/OpenGL/GLTexture.cpp"
 #include "../src/OpenGL/Shaders.cpp"
 #include "../src/tinyxml/tinyxml2.cpp"
+#include "../src/NoiseGenerator.cpp"

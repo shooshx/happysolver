@@ -3,6 +3,9 @@
 #include "SlvCube.h"
 #include "NoiseGenerator.h"
 
+#ifdef EMSCRIPTEN
+#include <emscripten.h>
+#endif
 
 ModelControlBase::ModelControlBase(BaseGLWidget* gl, CubeDocBase *doc)
   : GLHandler(gl), m_doc(doc)
@@ -28,10 +31,6 @@ void ModelControlBase::reCalcSlvMinMax()
 
     m_bgl->aqmin = pnt.qmin;
     m_bgl->aqmax = pnt.qmax;
-
-    m_bgl->aqmax = Vec3(5,5,5);
-    //cout << "RECALC " << m_bgl->aqmax.x << "," << m_bgl->aqmax.y << "," << m_bgl->aqmax.z << "\n";
-
 }
 
 
@@ -42,9 +41,27 @@ void ModelControlBase::initialized()
     mglCheckErrorsC("progs");
 }
 
+#ifdef EMSCRIPTEN
+class JsGlTexture : public GlTexture
+{
+public:
+    void registerBind(const char* imgname) {
+        EM_ASM_( registerTexBind(Pointer_stringify($0), $1), imgname, m_obj);
+    }
+};
+#endif
+
 void ModelControlBase::initTex()
 {
+#ifdef QT_CORE_LIB
     PicBucket::mutableInstance().gtexs.push_back(NoiseGenerator::make3Dnoise());
+#else
+    auto tex = new JsGlTexture;
+    tex->init(GL_TEXTURE_2D, Vec2i(1024, 512), 1, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, nullptr, GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE);
+    tex->registerBind("noise3dimg");
+
+    PicBucket::mutableInstance().gtexs.push_back(tex);
+#endif
 }
 
 

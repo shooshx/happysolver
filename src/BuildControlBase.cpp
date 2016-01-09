@@ -52,13 +52,14 @@ BuildControlBase::BuildControlBase(BaseGLWidget* gl, CubeDocBase* doc)
     reCalcBldMinMax();
     checkSides(); // build the initial test shape.
 
-    makeBuffers();
-    makeCylinder(m_cylinder, 20, 0.1f, 1.2f);
 }
 
 void BuildControlBase::initialized()
 {
     m_prog.init();
+    makeBuffers();
+    makeCylinder(m_cylinder, 20, 0.1f, 1.2f);
+
 }
 
 void BuildControlBase::switchIn()
@@ -342,6 +343,11 @@ void BuildControlBase::makeBuffers()
             }
         }
     }
+
+    m_realTiles.makeSelfBos();
+    m_transTiles.makeSelfBos();
+    m_realLines.makeSelfBos();
+    m_transLines.makeSelfBos();
 }
             
 
