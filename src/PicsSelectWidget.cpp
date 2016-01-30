@@ -598,6 +598,8 @@ void PicsSelectWidget::updateView(int hint) // SLOT
 		for (int plci = 0; plci < curslv->dt.size(); ++plci)
 		{
 			int abs_sc = curslv->dt[plci].abs_sc;
+            if (abs_sc == -1)
+                continue;
 			++(bucket.getPic(curslv->picdt[abs_sc].gind, curslv->picdt[abs_sc].pind).nUsed);
 		}
 

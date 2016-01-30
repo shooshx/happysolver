@@ -19,6 +19,8 @@
 
 #include <QString>
 #include <QCoreApplication>
+#include <QMessageBox>
+#include "GlobDefs.h"
 
 string humanCount(mint64 n)
 {
@@ -62,3 +64,9 @@ void flushAllEvents()
 	QCoreApplication::flush();
 }
 
+extern QWidget* g_main;
+
+void complain(const char* msg)
+{
+    QMessageBox::critical(g_main, APP_NAME, msg, QMessageBox::Ok, 0);
+}

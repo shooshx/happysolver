@@ -5,6 +5,12 @@
 #include "OpenGL/Shaders.h" // BuildProgram
 #include "Vec.h"
 
+#define MAKE_NAME(dim, page, x, y)  (((dim) & 0x3) | (((x) & 0x7F)<<2) | (((y) & 0x7F)<<9) | (((page) & 0xFF)<<16))
+#define GET_DIM(name) ((name) & 0x3)
+#define GET_X(name) (((name) >> 2) & 0x7F)
+#define GET_Y(name) (((name) >> 9) & 0x7F)
+#define GET_PAGE(name) (((name) >> 16) & 0xFF)
+
 class CubeDocBase;
 
 class BuildControlBase : public GLHandler
@@ -21,18 +27,18 @@ public:
         EDIT_DISABLE ///< a double click would do nothing because edits are disable which solution engine is running.
     };
 
-protected: 
     virtual void initialized();
     virtual void drawTargets(bool inChoise);
-    virtual void myPaintGL();
+    virtual void myPaintGL(bool inChoise);
     virtual void switchIn();
     virtual void switchOut();
 
     virtual bool scrDblClick(int x, int y);
+    bool choiseDblClick(int choise);
     virtual bool scrMove(bool rightButton, bool ctrlPressed, int x, int y);
 
     // implemeted by inheriting
-    virtual void emitTilesCount(int n) = 0;
+    virtual void emitTilesCount(int n) {}
     virtual void emitTileHover(int tile, EActStatus act) {}
 
     bool doMouseMove(int x, int y, bool makeBufs = true);
@@ -57,9 +63,7 @@ protected:
 
     bool m_bEditEnabled;
     bool m_fSetStrtMode;
-    bool m_fUnSetBlueMode;
 
-    bool m_bBoxedMode;
 
     bool m_bInternalBoxRemove; // internal, from ctrl
     bool m_bBoxRemove; // from the GUI button. this represents the external status, not including Ctrl button
@@ -69,11 +73,8 @@ protected:
     Vec3i m_lastCubeChoise; ///< used in mouseMoveEvent()
 
     /// number of valid tiles in m_curMarkedTiles
-    int m_nMarkedTiles;
     bool m_inFade;
     float m_fadeFactor;
-    /// the tiles marked with blue or red under the mouse pointer
-    CoordBuild m_curMarkedTiles[6];
 
     /// when a D2 error occur the offending sides are marked by blinking cylinders
     /// to make the blinking effect we need to remember theie current alpha and
@@ -92,6 +93,9 @@ protected:
     Mesh m_cylinder;
 
     BuildProgram m_prog;
+
+public:
     Vec3 m_buildmin, m_buildmax;
+    float m_preZoomFactor = 1.0;
 
 };

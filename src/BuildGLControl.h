@@ -100,9 +100,7 @@ public slots:
         makeBuffers();
         m_gl->updateGL(); 
     }
-    void setUnSetBlueMode(bool v) { 
-        m_fUnSetBlueMode = v; 
-    }
+
     //void showAllBlue();
     void fadeTimeout();
     void enableEdit(bool v) { 

@@ -51,7 +51,7 @@ void BuildWorld::initializeNew(bool boxed)
     { // boxed mode
         m_space.clear(BoundedBlock(0));
 
-        setBox(Vec3i(24, 24, 24));
+        setBox(BUILD_START_CUBE);
         //setBox(Vec3i(24, 24, 25));
 
         nFaces = 6;
@@ -106,6 +106,7 @@ int BuildWorld::getTestShapeFcInd(CoordBuild s) const
     // need to do it the hard way and not the optimized way because the
     // optimization data was not transformed
 }
+
 
 
 void BuildWorld::clean(ECleanMethod meth) //, WorldLimits& withlim, bool na)
@@ -270,6 +271,30 @@ static const BuildWorld::TransSqr transp[3][4][3] =
     { { XY_PLANE, { {0, 0}, {1, 0},  {2, -1} } }, { XZ_PLANE, { {2, 0},  {1, 0},  {0, 0} } }, { XZ_PLANE, { {2, 0},  {1, 0},  {0, -1} } } },
     { { XY_PLANE, { {0, 0}, {1, 0},  {2, +1} } }, { XZ_PLANE, { {2, +1}, {1, 0},  {0, 0} } }, { XZ_PLANE, { {2, +1}, {1, 0},  {0, -1} } } }}};
 
+
+void BuildWorld::getAllNei(const CoordBuild& in, CoordBuild out[12])
+{
+    int outi = 0;
+    for (int side = 0; side < 4; ++side)
+    { // all neibours
+        for (int sqr = 0; sqr < 3; ++sqr)
+        { // 3 sides of the neibour
+            CoordBuild& oc = out[outi++];
+
+            oc.dim = transp[in.dim][side][sqr].plotDim;
+
+            int fchs = transp[in.dim][side][sqr].prm[0][0];
+            oc.page = (fchs == 0) * in.page + (fchs == 1) * in.x + (fchs == 2) * in.y + transp[in.dim][side][sqr].prm[0][1];
+
+            fchs = transp[in.dim][side][sqr].prm[1][0];
+            oc.x = (fchs == 0) * in.page + (fchs == 1) * in.x + (fchs == 2) * in.y + transp[in.dim][side][sqr].prm[1][1];
+
+            fchs = transp[in.dim][side][sqr].prm[2][0];
+            oc.y = (fchs == 0) * in.page + (fchs == 1) * in.x + (fchs == 2) * in.y + transp[in.dim][side][sqr].prm[2][1];
+
+        }
+    }
+}
 
 /// this is a fragment left from the days of tile editing. it serves
 /// the purpose of finding which tiles are legal to be new tiles.

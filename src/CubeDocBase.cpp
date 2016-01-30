@@ -1,5 +1,5 @@
 #include "CubeDocBase.h"
-
+#include "general.h"
 
 
 // TBD - check messages.
@@ -113,4 +113,70 @@ bool CubeDocBase::realOpen(const string& name, bool* gotSolutions)
 
     rdfl.close();
     return true;
+}
+
+
+bool CubeDocBase::callGenerate(Shape *shape, bool bSilent)
+{
+    EGenResult ret = shape->generate(m_build);
+    if (ret == GEN_RESULT_OK)
+        return true;
+    else if (!bSilent)
+    {
+        switch (ret)
+        {
+        case GEN_RESULT_NO_START:
+            complain("Generation of shape failed.\nMake sure your shape has a yellow starting piece.");
+            break;
+        case GEN_RESULT_NOT_CONNECT:
+            complain("Generation of shape failed.\nShape is made of several disconnected parts.\nThe shape must be a single volume or surface.");
+            break;
+        case GEN_RESULT_ILLEGAL_SIDE:
+            complain("Generation of shape failed.\nIllegal side discovered.");
+            break;
+        case GEN_RESULT_UNKNOWN:
+            complain("Generation of shape failed.\nUnknown error, this is a bug!!!");
+            break;
+        case GEN_RESULT_OK: // shut gcc up.
+            break;
+        }
+    }
+    return false;
+}
+
+bool CubeDocBase::onGenShape(bool resetSlv, GenTemplate* temp)
+{
+    unique_ptr<Shape> newshp(new Shape);
+    newshp->m_genTemplate = temp;
+    bool ret = callGenerate(newshp.get(), false);
+    newshp->m_genTemplate = nullptr;
+
+    if (ret)
+    {
+        m_build->justGen();
+        m_shp.reset(newshp.release());
+        if (resetSlv)
+        {
+            m_slvs->clear(m_shp->fcn);
+            m_nCurSlv = 0;
+        }
+    }
+    return ret;
+}
+
+
+void CubeDocBase::transferShape()
+{
+    shared_ptr<Shape> oldshp = m_shp; // save it so it won't be deleted yet
+    GenTemplate temp;
+    for (int i = 0; i < m_shp->fcn; ++i) {
+        const auto& face = m_shp->faces[i];
+        // ex is can change but ex+bound-min is always the same place
+        temp.add(face.ex + m_shp->buildBounds.getMin(), face.dr, face.facing);
+    }
+
+    if (!onGenShape(false, &temp))
+        return;
+
+    m_slvs->toNewShape(m_shp.get());
 }

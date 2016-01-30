@@ -120,6 +120,8 @@ private:
 #define M_ASSERT(cond)
 #endif
 
+void complain(const char* msg);
+
 // profile command line VC6
 // /SF ?CubeEngineProc@@YAIPAX@Z
 

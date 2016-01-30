@@ -219,6 +219,7 @@ public:
     //QActionGroup *m_actionsActs;
     //QActionGroup *m_spaceActs;
     QAction *m_showSlvDlgAct, *m_showGrpColorAct, *m_showAsmDlgAct;
+    QAction *m_transferShapeAct;
     QAction *m_editOptionsAct;
 
     QAction *m_aboutAct, *m_aboutQtAct, *m_helpUsage, *m_helpHomepage;

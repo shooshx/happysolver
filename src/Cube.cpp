@@ -264,6 +264,7 @@ inline void TriedPieces::clear() {
 
 typedef unsigned int uint;
 
+
 bool Cube::makePossibilities2(int fc, ShapePlace &plcfc)
 {
     // the current circumference state of the piece we're dealing with
@@ -284,15 +285,18 @@ bool Cube::makePossibilities2(int fc, ShapePlace &plcfc)
         {
             uint rtn = pt.bits[rti];
             // check if there are teeth that appear in both
-            if ((circ & rtn) != 0)
+            if ((circ & rtn) != 0) {
                 continue;
+            }
             // if the piece was to be in this place this is what it would cover
             uint cover = circ | rtn;
             // check that it matchs fmask
-            if ((cover & fmask) != fmask)
+            if ((cover & fmask) != fmask) { // does it cover everything?
                 continue;
-            if (pics->considerSymetric && !isGoodSym(pt, rti, fc)) 
+            }
+            if (pics->considerSymetric && !isGoodSym(pt, rti, fc)) {
                 continue;
+            }
             plcfc.possible.push_back(TypeRef(ci, rti));
         }
     }
@@ -354,7 +358,7 @@ bool Cube::maskAssemble(int fc)
 
 #ifdef QT_CORE_LIB // TBD thread
 
-void Cube::puttgr(Solutions *slvs, SolveThread *thread)
+void Cube::puttgr(Solutions *slvs, SolveThread *thread, SlvCube* starter)
 {
     bool sessionDone = false, selfExit = false;
     int sessionSlvNum = 0; // session is a series of consequtive solves that are related
@@ -377,10 +381,47 @@ void Cube::puttgr(Solutions *slvs, SolveThread *thread)
     SillyRand::silly_rand_init(time(nullptr));
 
     int p = 0;		// p - the place we fill now (index to plc)
+    if (starter != nullptr)
+    { // set tiles from pervious solution
+        while(true)
+        {
+            int compsc = starter->dt[p].comp_sc;
+            if (compsc == -1)
+                break;
+            int comprt = starter->dt[p].comp_rt;
+
+            ShapePlace &plcfc = plc[p];
+
+            bool okposs = makePossibilities2(p, plcfc);
+            M_ASSERT(okposs);
+            // check that the comp from starter is in the possibilities
+            int selPoss = 0;
+            for (; selPoss < plcfc.possible.size(); ++selPoss) {
+                const auto& ps = plcfc.possible[selPoss];
+                if (ps.typeInd == compsc && ps.rtnInd == comprt)
+                    break;
+            }
+            M_ASSERT(selPoss < plcfc.possible.size());
+
+            TypeRef sel = plcfc.possible[selPoss];
+            plcfc.mtryd.set(selPoss, true);
+            plcfc.sc = sel.typeInd;
+            plcfc.rt = sel.rtnInd;
+            use.addOne(plcfc.sc);
+
+            putPic(plcfc.sc, plcfc.rt, p);
+
+            ++p;
+            if (p == shape->fcn)
+                break; // shouldn't really happen
+        };
+    }
+    cout << "p= " << p << endl;
+
     while (!((p == 0) && (plc[0].mtryd.tryedAll())) && (!thread->fExitnow) && (!selfExit))
     {
 /////////// actual work ///////////////////////////////////////////////////////
-        if ((p != shape->fcn) && (maskAssemble(p)))
+        if ((p != shape->fcn) && maskAssemble(p))
             p++;
         else 
             p--;	// if reached last piece backtrack
@@ -396,7 +437,7 @@ void Cube::puttgr(Solutions *slvs, SolveThread *thread)
             
         if (p >= shape->fcn) //solution found
         {
-            SlvCube *curslv = generateConcreteSlv();
+            SlvCube *curslv = generateConcreteSlv(starter);
             slvs->addBackCommon(curslv);
             ++goSlvNum;
 
@@ -415,7 +456,8 @@ void Cube::puttgr(Solutions *slvs, SolveThread *thread)
             case PERSIST_ONLY_FIRST: sessionDone = true; break;
             case PERSIST_UPTO:
                 sessionSlvNum++;
-                if (sessionSlvNum >= lconf.nUpto) sessionDone = true;
+                if (sessionSlvNum >= lconf.nUpto) 
+                    sessionDone = true;
                 break;
             } 
 
@@ -465,7 +507,7 @@ void Cube::puttgr(Solutions *slvs, SolveThread *thread)
 
 
 // take the data in the plc and deceminate it to real Pieces from the PicTypes
-SlvCube* Cube::generateConcreteSlv() 
+SlvCube* Cube::generateConcreteSlv(SlvCube* starter)
 {
     // don't use vector<bool> since it is evil
     vector<vector<int> > used(pics->comp.size()); // how much of each PicType we used
@@ -473,15 +515,44 @@ SlvCube* Cube::generateConcreteSlv()
         used[i].resize(pics->comp[i].addedInds.size());
         std::fill(used[i].begin(), used[i].end(), 0);
     }
-
+    
     vector<ShapePlace> abs_plc(plc.size());
-    for(int i = 0; i < plc.size(); ++i) 
+    int i = 0;
+    if (starter != nullptr) 
+    { // set tiles from previous solution
+        for (; i < plc.size(); ++i)
+        {
+            // if we decided on something other than the piece in the starter slv
+            if (plc[i].sc != starter->dt[i].comp_sc || plc[i].rt != starter->dt[i].comp_rt)
+                break;
+            int asc = starter->dt[i].abs_sc;
+            if (asc == -1)
+                break;
+
+            // mark used
+            int ti = plc[i].sc;
+            const PicType& pt = pics->comp[ti];
+            auto &ut = used[ti];
+            int select = 0;
+            while (pt.addedInds[select].addedInd != asc)
+                ++select;
+            ut[select] = 1;
+
+            abs_plc[i].sc = asc;
+            abs_plc[i].rt = starter->dt[i].abs_rt;
+        }
+    }
+    cout << "ci=" << i << endl;
+
+    for(; i < plc.size(); ++i) 
     {
         int ti = plc[i].sc;
         const PicType& pt = pics->comp[ti];
 
         auto &ut = used[ti];
-        int select = SillyRand::silly_rand() % ut.size();
+        int select = 0;
+        if (lconf.fRand) 
+            select = SillyRand::silly_rand() % ut.size();
         while (ut[select] != 0)
             select = (select + 1) % ut.size(); // must end since we placed a part
         ut[select] = 1;

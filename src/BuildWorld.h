@@ -32,9 +32,7 @@
     such as GET_TYPE() and GET_VAL() that are used to make sense of these values.
 */
 
-/// the size of a single dimention of the build.
-/// should be under 255 for MAKE_NAME
-#define BUILD_SIZE 50 
+
 
 #define FACE_NORM		0x00000201  ///< normal white
 #define FACE_STRT		0x00000202  ///< starting, yellow
@@ -64,6 +62,8 @@
 #define GET_INTENSITY(face) (((face) >> 24) & 0xFF)
 #define SET_INTENSITY(face, in) ((face & 0x00FFFFFF) | ((in) << 24))
 
+#define BUILD_START_CUBE Vec3i(24, 24, 24)
+
 class MyFile;
 
 /** BuildDimension contains the raw data of a single dimention of tiles in BuildWorld.
@@ -87,36 +87,8 @@ public:
     BuildPage pages[BUILD_SIZE];
 };
 
-/** SqrLimits contains limits of single dimention. These limits usually define the
-    active area of a dimention so that operations can be performed only within those
-    boundaries and not over the whole span of the dimention.
-*/
-struct SqrLimits
-{
-    SqrLimits() { Init(); }
-    void MaxMinInc(int page, int x, int y);
-    void MaxMin(int page, int x, int y);
-    void Inverse(int size = BUILD_SIZE);
-    void Init(int size = BUILD_SIZE);
-    
-    int minpage, maxpage;
-    int minx, maxx;
-    int miny, maxy;
-};
 
-/** CoordBuild is a full coordniate designator for a tile in BuildWorld.
-    It specifies the dimention, the page and the x,y coordinate within the page matrix.
-    It is used for various location and transformation purposes related to BuildWorld.
-    \see BuildWorld
-*/
-struct CoordBuild
-{
-public:
-    CoordBuild(int _dim, int _page, int _x, int _y) :dim(_dim), page(_page), x(_x), y(_y) {}
-    CoordBuild(const CoordBuild& s) :dim(s.dim), page(s.page), x(s.x), y(s.y) {}
-    CoordBuild() :dim(-1), page(-1), x(-1), y(-1) {}
-    int dim, page, x, y;
-};
+
 
 
 /** BuildWorld holds the raw data from the design editor. The data is represented in
@@ -210,8 +182,9 @@ public:
     };
 
     void clean(ECleanMethod meth); 
+    void getAllNei(const CoordBuild& in, CoordBuild out[12]); // need to be a pointer to an array of 12 places
 
-
+public:
     Vec3i size; //in faces, so far, should be x=y=z, so far should be constant == BUILD_SIZE;
     BoundedBlockSpace3D m_space;
     int nFaces;

@@ -52,7 +52,7 @@ void ModelGLControl::updateView(int lHint)
         m_gl->setUpdatesEnabled(true);
 
         reCalcSlvMinMax();
-        m_gl->doReset(); // TBD: check if we really need to do a reset, check if its the first solution.
+   //     m_gl->doReset(); // SINGLE-VIEW // TBD: check if we really need to do a reset, check if its the first solution.
 
     case HINT_SLV_NXPR:
     case HINT_SLV_NONE:

@@ -170,38 +170,40 @@ void BaseGLWidget::setNewMinMax(const Vec3& min, const Vec3& max, bool scale)
 
 }
 
-static double zoomFactor(double perc)
+double BaseGLWidget::zoomFactor()
 {
+    double perc = m_zoomVal / 100.0;
     if (perc <= 1)
         return perc*perc;
     else
         return pow(3, perc) - 2;
 }
 
-void BaseGLWidget::paint()
+void BaseGLWidget::modelMinMax(const Vec3& mqmin, const Vec3& mqmax)
+{
+    model.translate(-(mqmax[0] + mqmin[0])/2, -(mqmax[1] + mqmin[1])/2, -(mqmax[2] + mqmin[2])/2);
+}
+
+void BaseGLWidget::paint(bool inChoise)
 {
     checkErrors("cur");
-    model.push();
-    double zv = zoomFactor(m_zoomVal / 100.0);
-    //double zv = m_zoomVal / 100.0;
-
-    //cout << "Zoom=" << zv << " AQ=" << aqmin.x << "," << aqmin.y << "," << aqmin.z << " -- " << aqmax.x << "," << aqmax.y << "," << aqmax.z << endl;
-    model.scale(zv, zv, zv);
-
-    model.translate(-(aqmax[0] + aqmin[0])/2, -(aqmax[1] + aqmin[1])/2, -(aqmax[2] + aqmin[2])/2);
+//    model.push();
+//    double zv = zoomFactor();
+//    model.scale(zv, zv, zv);
+//    model.translate(-(aqmax[0] + aqmin[0])/2, -(aqmax[1] + aqmin[1])/2, -(aqmax[2] + aqmin[2])/2);
     // a change here needs also a change in callDrawTargets!!
     if (m_handler)
-        m_handler->myPaintGL();
-    model.pop();
+        m_handler->myPaintGL(inChoise);
+//    model.pop();
     checkErrors("paint");
 }
 
 
-
+/*
 void BaseGLWidget::callDrawTargets()
 {
     model.push();
-    double zv = zoomFactor(m_zoomVal / 100.0);
+    double zv = zoomFactor();
     //double zv = 2.1, m_zoomVal / 100.0;
     model.scale(zv, zv, zv);
 
@@ -212,7 +214,7 @@ void BaseGLWidget::callDrawTargets()
 
     model.pop();
 }
-
+*/
 
 
 static void sgluPickMatrix(double x, double y, double deltax, double deltay, int viewport[4], MatStack& mat)
@@ -242,7 +244,8 @@ int BaseGLWidget::doChoise(int chX, int chY)
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    callDrawTargets();
+   // callDrawTargets();
+    paint(true);
         
     proj.pop();
 

@@ -8,11 +8,12 @@
 SlvCube::SlvCube(const vector<ShapePlace>& plc, const vector<ShapePlace>& abs_plc, const PicsSet *picset, const Shape *_shape) 
 	: painter(nullptr), shape(_shape)
 {
+    dt.reserve(plc.size());
 	for(int j = 0; j < plc.size(); ++j)
 	{
 		// sc is the index in the added array of the set
 		// rt is the absolute [0,7] rotation index
-		dt.push_back(SlvPiece(abs_plc[j].sc, abs_plc[j].rt));
+		dt.push_back(SlvPiece(abs_plc[j].sc, abs_plc[j].rt, plc[j].sc, plc[j].rt));
 	}
 	
 	for(int j = 0; j < picset->added.size(); ++j)

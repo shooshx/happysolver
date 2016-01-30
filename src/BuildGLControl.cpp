@@ -11,11 +11,8 @@ using namespace std;
 BuildGLControl::BuildGLControl(GLWidget *gl, CubeDoc *doc)
     :BuildControlBase(gl, doc), m_gl(gl)
 {
-    if (m_bBoxedMode)
-    {
-        m_fadeTimer = new QTimer(this);
-        connect(m_fadeTimer, SIGNAL(timeout()), this, SLOT(fadeTimeout()));
-    }
+    m_fadeTimer = new QTimer(this);
+    connect(m_fadeTimer, SIGNAL(timeout()), this, SLOT(fadeTimeout()));
 }
 
 
@@ -106,6 +103,8 @@ void BuildGLControl::updateView(int hint)
     }
 }
  
+
+// why here? strange!
 extern int g_testAngle[];
 extern bool doPrint;
 

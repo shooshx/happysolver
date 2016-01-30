@@ -285,7 +285,8 @@ int Shape::checkCorner(int x, int y, int z, list<CornerDef> &clst)
 
     for(i = 0; i < 12; ++i)
     {
-        if ((fcl = locateFace(lpln[i], lex[i])) != -1) nei[nec++] = fcl;
+        if ((fcl = locateFace(lpln[i], lex[i])) != -1) 
+            nei[nec++] = fcl;
     }
     // limiting conditions to when it can be 3, 4, 5, 6	
     if ((nec >= 3) && (nec <= 6))
@@ -306,6 +307,27 @@ int Shape::checkCorner(int x, int y, int z, list<CornerDef> &clst)
 
 
 /////////////////////////////// GENERATOR /////////////////////////////////////
+
+CoordBuild Shape::fcToBuildCoord(int fc) const
+{
+    M_ASSERT(fc < fcn);
+    return scdrToBuildCoord(faces[fc].ex, faces[fc].dr);
+}
+
+// se unGenerate
+CoordBuild Shape::scdrToBuildCoord(const Vec3i sc, int dr) const
+{
+    Vec3i v = (sc + Vec3i(buildBounds.minx, buildBounds.miny, buildBounds.minpage)) / 4;
+    CoordBuild r;
+    r.dim = dr;
+    switch (dr)
+    {
+    case YZ_PLANE: r.page = v.x; r.x = v.y; r.y = v.z; break;
+    case XZ_PLANE: r.x = v.x; r.page = v.y; r.y = v.z; break;
+    case XY_PLANE: r.x = v.x; r.y = v.y; r.page = v.z; break;
+    }
+    return r;
+}
 
 
 void Shape::readAxis(const BuildWorld *build, int iss, int jss, int pgss, EPlane planedr, list<FaceDef> &flst, int *reqfirst, SqrLimits &bound)
@@ -352,16 +374,24 @@ int Shape::faceNeiFirst(int whos, TransType trans[])
 */
 
 // create a translation of face neighbors according to the order of their importance.
+// neighbors which have more neighbors themselves have higher priority
 int Shape::faceNeiFirstOpt(int whos, TransType trans[])
 {
-    int win = -1, wrank = 0, cand, rank; // winner, candidate
+    int win = -1, wrank = 0;
+    bool wInTemp = false; // winner
     int i, j;
     for(i = 0; i < 4; ++i)
     {
-        cand = faces[whos].nei[i];
+        int cand = faces[whos].nei[i]; // candidte
+        if (m_genTemplate) {
+            bool inTemp = m_genTemplate->contains(faces[cand].ex + buildBounds.getMin(), faces[cand].dr, faces[cand].facing);
+            if (!inTemp)
+                continue;
+        }
+
         if (trans[cand].to == -1)
         {
-            rank = 0;
+            int rank = 0;
             for(j = 0; j < 4; ++j)
             {
                 if (trans[faces[cand].nei[j]].to != -1) // occupied
@@ -382,6 +412,7 @@ EGenResult Shape::reArrangeFacesDFS(FaceDef faces[], FaceDef revis[], TransType 
 {
     int revi = 0;
     int addi = 0;
+  startDfs:
     do
     {	// assume the whole shape is coonected... or not
         int next = faceNeiFirstOpt(trans[revi].who, trans);
@@ -399,9 +430,13 @@ EGenResult Shape::reArrangeFacesDFS(FaceDef faces[], FaceDef revis[], TransType 
     }
     while (revi > 0);
 
-    if (addi + 1 <  fcn) // addi points to the last index added, this is 1 less the the size
+    if (addi + 1 < fcn) // addi points to the last index added, this is 1 less the the size
     {
-        return GEN_RESULT_NOT_CONNECT;
+        if (m_genTemplate == nullptr)
+            return GEN_RESULT_NOT_CONNECT;
+        m_genTemplate = nullptr;
+        revi = addi;
+        goto startDfs; // restart the DFS, now without the template
     }
     return GEN_RESULT_OK;
 }
@@ -444,6 +479,8 @@ EGenResult Shape::generate(const BuildWorld *build)
     readAxis(build, fcSize.x, fcSize.z, fcSize.y, XZ_PLANE, flst, &reqf, bounds);
     readAxis(build, fcSize.x, fcSize.y, fcSize.z, XY_PLANE, flst, &reqf, bounds);
     build->m_gen_bounds = bounds; // save the bounds of the last generate
+    buildBounds = bounds;
+    cout << "BOUNDS=" << bounds.minx << "," << bounds.miny << "," << bounds.minpage << endl;
 
 //	t2 = GetTickCount();
     // fix it all according to the discovered bounds
@@ -536,6 +573,7 @@ EGenResult Shape::generate(const BuildWorld *build)
     }
 
 //	t4 = GetTickCount();
+    makeVolumeAndFacing(); // need this now because the template is indexed with EFacing
     
 ///////////////////////////////////////////////////////////
 // transform faces order for a building sequence
@@ -591,7 +629,7 @@ EGenResult Shape::generate(const BuildWorld *build)
 // some additional tasks
 
     makeReverseNei();
-    makeVolumeAndFacing();
+
     makePieceCheckBits();
     makeNeiTransforms();
 
@@ -611,6 +649,7 @@ void Shape::makePieceCheckBits()
         FaceDef& f = faces[i];
         TPicBits fmask = 0;
         // does each neighbor face exist when we put this piece?
+        // low - neighbors with index lower than me
         bool neiLow[] = { false, false, false, false };
         
         // check sides
@@ -625,11 +664,27 @@ void Shape::makePieceCheckBits()
 
         // check corners
         faceNeiMasker = 0x0001;
+        //int oldmask = fmask;
         for (int j = 0; j < 4; ++j) {
-            if (neiLow[(j-1+4)%4] && neiLow[j])
+            if (f.corners[j] == -1)
+                continue;
+            const CornerDef& corner = corners[f.corners[j]];
+            int countLow = 0;
+            for(int cni = 0; cni < 6; ++cni) {
+                int neiInd = corner.nei[cni];
+                bool isLow = (neiInd != -1 && faces[neiInd].index <= f.index);
+                if (isLow)
+                    ++countLow;
+            }
+            if (countLow ==  corner.numnei)
                 fmask |= faceNeiMasker;
+
+            //if (neiLow[(j-1+4)%4] && neiLow[j])
+            //    oldmask |= faceNeiMasker;
+
             faceNeiMasker <<= 4;
         }
+
 
         f.fmask = fmask;
 
@@ -1218,7 +1273,9 @@ void Shape::startNeiTransform(MatStack& m) const {
     int start = 0;
     m.identity();
     FaceDef& face = faces[start];    	
-    m.translate(face.ex.x, face.ex.y, face.ex.z);
+    // transformation to the center of the build
+    Vec3i startEx = face.ex + buildBounds.getMin() - (BUILD_START_CUBE * 4); // this is where the build start its first cube
+    m.translate(startEx.x, startEx.y, startEx.z);
     m.scale(1,1,-1); // opengl Z axis is inside out
 
     if (face.dr == YZ_PLANE) {

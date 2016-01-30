@@ -131,7 +131,7 @@ public:
 private:
     void OnNewDocument();
 
-    bool callGenerate(Shape *shape, bool bSilent);
+  //  bool callGenerate(Shape *shape, bool bSilent);
     bool checkWhileRunning(const char* msg);
     void easter();
 
@@ -153,7 +153,7 @@ public slots:
 
     void OnFileResetsolves();
     void OnFileOpen();
-    bool OnGenShape(); 
+    virtual bool onGenShape(bool resetSlv = true, GenTemplate* temp = nullptr) override;
     void OnFileSave(); 
     void OnFileExport(); 
 
@@ -167,7 +167,9 @@ public slots:
 
     void OnFullEnumNoSlv();
     void evaluateBstatus(); // evaluate build status, generate warnings and determine if Go is enabled
-    void setShowUpToStep(int step) ;
+    void setShowUpToStep(int step);
+
+    virtual void transferShape() override; // transfer the shape from the build view to the existing solutions
 
 signals:
     void updateViews(int hint); //emitted when the attached views need to update their graphics
@@ -184,6 +186,7 @@ signals:
     void slvProgUpdated(int hint, int data); // Solve Progress Updates. directed to the SolveDlg
     void changedFromSave(bool state); // sets the asterist in the title
 
+    void newShapeSize(int fcn);
 
 private:
 

@@ -25,6 +25,8 @@
 #include "Mat.h"
 
 #include <list>
+#include <set>
+#include <tuple>
 
 class BuildWorld;
 struct SqrLimits;
@@ -33,9 +35,50 @@ class MatStack;
 struct BNode;
 template<class T> class Space3D;
 
+using namespace std;
+
 /** \file
     Declares the Shape class.
 */
+
+/// the size of a single dimention of the build.
+/// should be under 255 for MAKE_NAME
+#define BUILD_SIZE 50 
+
+/** CoordBuild is a full coordniate designator for a tile in BuildWorld.
+It specifies the dimention, the page and the x,y coordinate within the page matrix.
+It is used for various location and transformation purposes related to BuildWorld.
+\see BuildWorld
+*/
+struct CoordBuild
+{
+public:
+    CoordBuild(int _dim, int _page, int _x, int _y) :dim(_dim), page(_page), x(_x), y(_y) {}
+    CoordBuild(const CoordBuild& s) :dim(s.dim), page(s.page), x(s.x), y(s.y) {}
+    CoordBuild() :dim(-1), page(-1), x(-1), y(-1) {}
+    int dim, page, x, y;
+};
+
+/** SqrLimits contains limits of single dimention. These limits usually define the
+active area of a dimention so that operations can be performed only within those
+boundaries and not over the whole span of the dimention.
+*/
+struct SqrLimits
+{
+    SqrLimits() { Init(); }
+    void MaxMinInc(int page, int x, int y);
+    void MaxMin(int page, int x, int y);
+    void Inverse(int size = BUILD_SIZE);
+    void Init(int size = BUILD_SIZE);
+    Vec3i getMin() const {
+        return Vec3i(minx, miny, minpage);
+    }
+
+    int minpage, maxpage;
+    int minx, maxx;
+    int miny, maxy;
+};
+
 
 /// return result of Shape::generate()
 enum EGenResult
@@ -46,6 +89,8 @@ enum EGenResult
     GEN_RESULT_ILLEGAL_SIDE, ///< there is a side with more the two faces agaist it
     GEN_RESULT_UNKNOWN = 0xFF  ///< should not occur...
 };
+
+class GenTemplate;
 
 /** Shape holds the definition of a structure design which can be built using happy cube pieces.
     The basic foundations of the design are the faces it is made of
@@ -109,8 +154,8 @@ public:
         Vec3i ex;		///< start point of the face
 
         EFacing facing;
-        int index; // in the shape faces array
-        TPicBits fmask;
+        int index; // of this face in the shape faces array
+        TPicBits fmask; // what bits to check when placing this piece, depending on what pieces came before it
 
         // corners and sides of this face, reverse neibours
         int corners[4]; 
@@ -175,7 +220,7 @@ public:
         }		
         Vec3i ex;		///< start point
         int numnei;
-        int nei[6];		///< can have any number of 1,2,3,4,5,6 neibours. (empty is -1)
+        int nei[6];		///< neighboring faces to this corner. can have any number of 1,2,3,4,5,6 neibours. (empty is -1)
     };
 
     vector<Vec3> testQuads;
@@ -225,7 +270,9 @@ private:
 public:
     void makeTransformsMatrics(float angle, vector<Mat4>& mats) const;
 
-    
+    CoordBuild fcToBuildCoord(int fc) const;
+    CoordBuild scdrToBuildCoord(const Vec3i sc, int dr) const;
+
 public:
     Vec3i size;	///< size in basic units
 
@@ -240,6 +287,8 @@ public:
     SideDef *sides;		///< array of sides
     CornerDef *corners; ///< array of corners
     SideDef *errorSides; ///< array of error sides.
+
+    SqrLimits buildBounds; ///< original bounds of the build space so we could recreate the build coordinates from the face coordinates
 
 private:
     int volume; ///< volume == 0 means it's an open shape. volume == -1 means it was not calculated
@@ -259,6 +308,24 @@ public:
         int x,y,z;
     };
 
+    GenTemplate* m_genTemplate = nullptr; // for use when generating according to a previous shape 
+
+};
+
+
+// used for generating the shape according to a previous shape
+class GenTemplate
+{
+public:
+    bool contains(const Vec3i ex, EPlane dr, Shape::EFacing facing) {
+        return faces.find(make_tuple(ex.x, ex.y, ex.z, dr, facing)) != faces.end();
+    }
+    void add(const Vec3i ex, EPlane dr, Shape::EFacing facing) {
+        faces.insert(make_tuple(ex.x, ex.y, ex.z, dr, facing));
+    }
+
+    // x,y,z of ex, dr, facing
+    set< tuple<int, int, int, EPlane, Shape::EFacing> > faces;
 };
 
 

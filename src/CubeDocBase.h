@@ -27,6 +27,8 @@ public:
         m_build = new BuildWorld;
         m_slvs = new Solutions;
     }
+    virtual ~CubeDocBase()
+    {}
 
   	const Shape* getCurrentShape() { 
         return m_shp.get(); 
@@ -61,6 +63,10 @@ public:
 
     // returns false with m_lastMsg set on error
     bool realOpen(const string& name, bool* gotSolutions);
+
+    virtual void transferShape();
+    virtual bool onGenShape(bool resetSlv, GenTemplate* temp);
+    bool callGenerate(Shape *shape, bool bSilent);
 
 public:
     Configuration m_conf;

@@ -18,6 +18,7 @@
 #include "general.h"
 #include "Solutions.h"
 #include "SlvCube.h"
+#include "Shape.h"
 #include <iostream>
 
 
@@ -137,7 +138,43 @@ void Solutions::resetChangedFromSave()
 
 void Solutions::transform(const TTransformVec &moveTo)
 {
-	for(auto it = sv.begin(); it != sv.end(); ++it) {
-		(*it)->transform(moveTo);
+    for (auto& s : sv) {
+		s->transform(moveTo);
 	}
+}
+
+void Solutions::toNewShape(const Shape* newShp)
+{
+    if (sv.size() == 0)
+        return;
+    const Shape* oldShp = sv[0]->shape;
+    vector<int> oldToNew(oldShp->fcn); // map faces index
+    fill(oldToNew.begin(), oldToNew.end(), -1);
+    Vec3i boundsDelta = newShp->buildBounds.getMin() - oldShp->buildBounds.getMin();
+    cout << "Bound-Delta=" << boundsDelta.x << "," << boundsDelta.y << "," << boundsDelta.z << endl;
+
+    for(int oi = 0; oi < oldShp->fcn; ++oi)
+    {
+        // search for it in the new shape
+        const auto& oface = oldShp->faces[oi];
+        for(int ni = 0; ni < newShp->fcn; ++ni) 
+        {
+            const auto& nface = newShp->faces[ni];
+            if (oface.ex - boundsDelta == nface.ex && oface.dr == nface.dr && oface.facing == nface.facing) {
+                oldToNew[oi] = ni;
+                break;
+            }
+        }
+    }
+
+    for(auto& s: sv) 
+    {
+        vector<SlvCube::SlvPiece> newdt(newShp->fcn);
+        for (int i = 0; i < oldShp->fcn; ++i) {
+            if (oldToNew[i] != -1)
+                newdt[oldToNew[i]] = s->dt[i];
+        }
+        s->dt = newdt;
+        s->shape = newShp;
+    }
 }

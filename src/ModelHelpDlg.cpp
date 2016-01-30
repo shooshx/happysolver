@@ -194,15 +194,23 @@ ModelHelpDlg::ModelHelpDlg(QWidget *parent, MainWindow* main, CubeDoc *doc, QGLW
 	m_goBot->showText(true);
 	m_goBot->setMinimumSize(50, 37);
 	vlay->addWidget(m_goBot);
-	m_goBot->hide();
+	//m_goBot->hide();
 
-	QHBoxLayout *sblayout = new QHBoxLayout;
-	sblayout->addStretch();
 	ActionPushButton *stepbot = new ActionPushButton(m_main->m_showAsmDlgAct);
 	stepbot->setMinimumSize(60, MIN_BOT_HEIGHT);
 	stepbot->setAltText("Steps");
 	stepbot->showText(true);
-	sblayout->addWidget(stepbot);
+
+    ActionPushButton *transbot = new ActionPushButton(m_main->m_transferShapeAct);
+    transbot->setMinimumSize(60, MIN_BOT_HEIGHT);
+    transbot->showText(true);
+
+
+    QHBoxLayout *sblayout = new QHBoxLayout;
+    sblayout->addStretch();
+    sblayout->addWidget(transbot);
+    sblayout->addWidget(stepbot);
+
 	vlay->addLayout(sblayout);
 
     QHBoxLayout *alayout = new QHBoxLayout;
@@ -308,10 +316,15 @@ void ModelHelpDlg::updateZoom(int v)
 
 void ModelHelpDlg::updatePixmapLabel(int piece)
 {
-	if (piece < 0)
+    if (piece < 0) 
 		return;
 	SlvCube *slv = m_doc->getCurrentSolve();
-	const SlvCube::SlvPic &sps = slv->picdt[slv->dt[piece].abs_sc];
+    if (piece >= slv->dt.size()) // can happen if its a choise from the build control
+        return;
+    int abs_sc = slv->dt[piece].abs_sc;
+    if (abs_sc == -1)
+        return;
+    const SlvCube::SlvPic &sps = slv->picdt[abs_sc];
     auto& pc = PicBucket::instance().getPic(sps.gind, sps.pind);
     auto& px = pc.pixmap;
 	m_picImage->setPixmap(px);
@@ -368,14 +381,14 @@ void ModelHelpDlg::statsUpdate(int hint, int data)
 		if (!m_doc->isSlvEngineRunning())
 		{
 			m_animLabel->hide();
-			m_goBot->hide();
+			//m_goBot->hide();
 			if (m_cubeAnim->state() == QMovie::Running)
 				m_cubeAnim->stop();
 		}
 		else
 		{
 			m_animLabel->show();
-			m_goBot->show();
+			//m_goBot->show();
 			if (m_cubeAnim->state() != QMovie::Running)
 				m_cubeAnim->start();
 

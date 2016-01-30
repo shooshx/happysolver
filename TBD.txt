@@ -1,3 +1,8 @@
+SINGLE-VIEW - todo
+-------------
+changing pic selection in the middle
+
+
 NEW DEAL - things that don't work
 -------------
 

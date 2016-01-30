@@ -3,6 +3,7 @@
 #include "BaseGLWidget.h"
 #include "CubeDocBase.h"
 #include "OpenGL/Shaders.h"
+#include "BuildControlBase.h"
 
 class SlvCube;
 
@@ -23,16 +24,20 @@ protected:
 
     NoiseSlvProgram m_progNoise;
     FlatProgram m_progFlat; // for choice selection
+    Vec3 m_modelmin, m_modelmax;
+
+    BuildControlBase m_buildCtrl;
 
 protected:
     virtual void initialized();
-    virtual void myPaintGL();
+    virtual void myPaintGL(bool inChoise);
     virtual void drawTargets(bool inChoise);
 
     // events
     virtual void scrPress(bool rightButton, int x, int y);
     virtual void scrRelease(bool rightButton);
     virtual bool scrMove(bool rightButton, bool ctrlPressed, int x, int y);
+    virtual bool scrDblClick(int x, int y);
 
     // implemented by child
     virtual void emitChosenPiece(int p) {}

@@ -16,7 +16,6 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "BuildControlBase.h"
-#include "GlobDefs.h"
 #include "Shape.h"
 #include "Mesh.h"
 #include "BuildWorld.h"
@@ -26,11 +25,7 @@
 #include <set>
 
 
-#define MAKE_NAME(dim, page, x, y)  (((dim) & 0x3) | (((x) & 0x7F)<<2) | (((y) & 0x7F)<<9) | (((page) & 0xFF)<<16))
-#define GET_DIM(name) ((name) & 0x3)
-#define GET_X(name) (((name) >> 2) & 0x7F)
-#define GET_Y(name) (((name) >> 9) & 0x7F)
-#define GET_PAGE(name) (((name) >> 16) & 0xFF)
+
 
 static void makeCylinder(Mesh& mesh, int slices, float radius, float length);
 
@@ -38,12 +33,11 @@ static void makeCylinder(Mesh& mesh, int slices, float radius, float length);
 BuildControlBase::BuildControlBase(BaseGLWidget* gl, CubeDocBase* doc)
     :GLHandler(gl), m_doc(doc),
      m_bEditEnabled(true),
-     m_fSetStrtMode(false), m_fUnSetBlueMode(false), 
-     m_bBoxedMode(true), // TBD-hardcoded
+     m_fSetStrtMode(false),
      m_bInternalBoxRemove(false), m_bBoxRemove(false), 
      m_bLastBoxRemove(false),
      m_lastChoise(-1), 
-     m_nMarkedTiles(0),
+
      m_errCylindrAlpha(0.0), m_errCylindrAlphaDt(0.0),
      //m_bDoneUpdate(false),
      m_inFade(false),
@@ -113,12 +107,20 @@ static void makeCylinder(Mesh& mesh, int slices, float radius, float length)
 }
 
 
-void BuildControlBase::myPaintGL()
+void BuildControlBase::myPaintGL(bool inChoise)
 {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    drawTargets(false);
+    m_bgl->model.push();
+    double zv = m_bgl->zoomFactor() * m_preZoomFactor;
+    m_bgl->model.scale(zv, zv, zv);
+    m_bgl->modelMinMax(m_buildmin, m_buildmax);
+
+
+    drawTargets(inChoise);
+
+    m_bgl->model.pop();
 
 #if 0
     QString str1("%1tiles: %2");
@@ -443,13 +445,25 @@ bool BuildControlBase::boxedDblClick(int choise, int x, int y)
         return false; // out of bounds, do nothing
 
     bool hasStrt = false;
-    int strtOrigDim = -1; // the original dimention of the strt tile
+    CoordBuild strtOrig; // the original dimention of the strt tile, if it's there
     for (int j = 0; j < 6; ++j) {// check if we're going to step on a start tile
         if (GET_VAL(build.get(bb[j])) == FACE_STRT)
         { 
             hasStrt = true; 
-            strtOrigDim = bb[j].dim;
+            strtOrig = bb[j];
             break; 
+        }
+    }
+
+    // new way of replacing the start tile, search for a neighbor of the old start that is not in the new box.
+    // This way, the start tile is always in the previoud solution
+    CoordBuild startOptions[12];
+    if (hasStrt)
+    {
+        build.getAllNei(strtOrig, startOptions);
+        for(int i = 0; i < 12; ++i) {
+            if (GET_TYPE(build.get(startOptions[i])) != TYPE_REAL)
+                startOptions[i].dim = -1; // make it not viable
         }
     }
         
@@ -463,31 +477,49 @@ bool BuildControlBase::boxedDblClick(int choise, int x, int y)
         }
         else
         {
-            facePut = FACE_NORM; 
-            // search for a face with the orginal dimention
-            if (hasStrt && (bb[j].dim == strtOrigDim)) { 
-                facePut = FACE_STRT; 
-                hasStrt = false; 
-            }
-            build.set(bb[j], facePut);
+            build.set(bb[j], FACE_NORM);
             ++build.nFaces;
         }
     }
     
     if (hasStrt) // take care of strt tile if it hasn't been taken care of yet
     {
-        if (facePut != -1) // there are faces, but not ones in the original dimention
+        int i = 0;
+        for (i = 0; i < 12; ++i) {
+            if (startOptions[i].dim != -1 && GET_TYPE(build.get(startOptions[i])) == TYPE_REAL) {
+                build.set(startOptions[i], FACE_STRT);
+                break; // TBD choose the oldest one
+            }
+        }
+        if (i == 12) { // not found. can happen if we removed the last cube of a separate part and it had the start tile
+            build.search(FACE_NORM, FACE_STRT, false, true);
+        }
+        
+#if 0 // old way of searching for a start tile - always puts it on the new box. that's bad for incremental building        
+        if (facePut != -1) // there are faces, 
         {
-            for (int j = 0; j < 6; ++j) // choose a face we put NORM in and change it to STRT
-                if (build.get(bb[j]) == FACE_NORM) { 
-                    build.set(bb[j], FACE_STRT); 
-                    break; 
+            int j;
+            // search for a face with the orginal dimention
+            for (j = 0; j < 6; ++j) {
+                if (build.get(bb[j]) == FACE_NORM && bb[j].dim == strtOrig.dim) {
+                    build.set(bb[j], FACE_STRT);
+                    break;
                 }
+            }
+            if (j == 6) { // did not find same dim
+                for (j = 0; j < 6; ++j) { // choose a face we put NORM in and change it to STRT
+                    if (build.get(bb[j]) == FACE_NORM) { 
+                        build.set(bb[j], FACE_STRT); 
+                        break; 
+                    }
+                }
+            }
         }
         else // there are no faces to transfer the STRT to... settle for anything
         {
             build.search(FACE_NORM, FACE_STRT, false, true);
         }
+#endif
     }
 
     build.m_space.axx(g).fill = remove?0:1;
@@ -525,7 +557,7 @@ bool BuildControlBase::getChoiseTiles(int choise, bool remove, CoordBuild bb[6],
         return false;
 
     //int xxx = build.m_space.axx(g).fill;
-    Q_ASSERT(build.m_space.axx(g).fill == (remove?1:0)); // XXXa really nasty bug.
+    M_ASSERT(build.m_space.axx(g).fill == (remove ? 1 : 0)); // XXXa really nasty bug.
 
     BuildWorld::getBuildCoords(g, bb);
     return true;
@@ -540,7 +572,8 @@ bool BuildControlBase::isInRemove() {
 // returns true if an updateGL is needed, false if not
 bool BuildControlBase::doMouseMove(int x, int y, bool makeBufs)
 {
-    if ((!m_bBoxedMode) || (m_fSetStrtMode))
+    return false;
+    if (m_fSetStrtMode)
         return false;
     bool remove = isInRemove();
 
@@ -577,7 +610,6 @@ bool BuildControlBase::doMouseMove(int x, int y, bool makeBufs)
             if (m_bEditEnabled)
             {
                 build.clean(BuildWorld::CLEAN_TRANS_SHOW);
-                //m_nMarkedTiles = 0;
 
                 if (!remove)
                 {
@@ -647,10 +679,18 @@ bool BuildControlBase::scrMove(bool rigthBot, bool ctrlPressed, int x, int y)
 bool BuildControlBase::scrDblClick(int x, int y)
 {
     int choise = m_bgl->doChoise(x, y);
-    if (m_bBoxedMode && !m_fSetStrtMode)
-        return boxedDblClick(choise, x, y);
-    else
+    //cout << "DblClick: " << hex << choise << endl;
+    return choiseDblClick(choise);
+}
+
+bool BuildControlBase::choiseDblClick(int choise)
+{
+    //cout << "CHOISE " << GET_DIM(choise) << "," << GET_X(choise) << "," << GET_Y(choise) << "," << GET_PAGE(choise) << endl;
+    if (!m_fSetStrtMode)
+        return boxedDblClick(choise, -1, -1);
+    else {
         return tiledDblClick(choise);
+    }
 }
 
 
@@ -694,17 +734,10 @@ bool BuildControlBase::tiledDblClick(int choise)
 
     if (GET_VAL(theget) == FACE_TRANS)
     {
-        if (!m_fUnSetBlueMode)
-        {
-            build.set(c, FACE_NORM);
-            build.nFaces++;
-            build.justChanged();
-            build.doTransparent();
-        }
-        else
-        {
-            build.set(c, FACE_TRANS_NONE);
-        }
+        build.set(c, FACE_NORM);
+        build.nFaces++;
+        build.justChanged();
+        build.doTransparent();
     }
     else
     {	

@@ -16,8 +16,8 @@ public:
     ///	GLWidget always calls this method with inChoise == true.
     ///	if the user calls this function on his own he may want to do so with inChoise == false
     /// and do slightly differnt things, such us use more color and textures.
-    virtual void drawTargets(bool inChoise) { } 
-    virtual void myPaintGL() = 0;
+
+    virtual void myPaintGL(bool inChoise) = 0;
     virtual void initialized() {} // called after the initialization is done for further gl-related init
     virtual void switchIn() {} // called when this handler becomes visible
     virtual void switchOut() {}
@@ -70,7 +70,7 @@ public:
     void reCalcProj(bool fFromScratch = true);
 
     void init();    
-    void paint();
+    void paint(bool inChoise);
     void resize(int width, int height);
     /// perform actual selection of target.
     void callDrawTargets();
@@ -81,6 +81,9 @@ public:
     void zoom(int v); // v between 0 and 100
     void translate(int xValue, int yValue);
     void scale(int xValue, int yValue);
+
+    double zoomFactor();
+    void modelMinMax(const Vec3& mqmin, const Vec3& mqmax);
 
 protected:
  

@@ -78,7 +78,7 @@ void GLWidget::initializeGL() {
 
 void GLWidget::paintGL() {
     makeCurrent();
-    paint();
+    paint(false);
 }
 
 void GLWidget::resizeGL(int width, int height) {

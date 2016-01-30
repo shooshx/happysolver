@@ -262,67 +262,34 @@ bool CubeDoc::checkUnsaved(int types)
 }
 
 
-bool CubeDoc::callGenerate(Shape *shape, bool bSilent)
-{
-	EGenResult ret = shape->generate(m_build);
-	if (ret == GEN_RESULT_OK)
-		return true;
-	else if (!bSilent)
-	{
-		switch (ret)
-		{
-		case GEN_RESULT_NO_START:
-			QMessageBox::critical(g_main, APP_NAME, tr("Generation of shape failed.\nMake sure your shape has a yellow starting piece."), QMessageBox::Ok, 0); 
-			break;
-		case GEN_RESULT_NOT_CONNECT:
-			QMessageBox::critical(g_main, APP_NAME, tr("Generation of shape failed.\nShape is made of several disconnected parts.\nThe shape must be a single volume or surface."), QMessageBox::Ok, 0); 
-			break;
-		case GEN_RESULT_ILLEGAL_SIDE:
-			QMessageBox::critical(g_main, APP_NAME, tr("Generation of shape failed.\nIllegal side discovered."), QMessageBox::Ok, 0); 
-			break;
-		case GEN_RESULT_UNKNOWN:
-			QMessageBox::critical(g_main, APP_NAME, tr("Generation of shape failed.\nUnknown error, this is a bug!!!"), QMessageBox::Ok, 0); 
-			break;
-		case GEN_RESULT_OK: // shut gcc up.
-			break;
-		}
-	}
-	return false;
-}
 
 
-bool CubeDoc::OnGenShape() // not called by GUI
+
+
+bool CubeDoc::onGenShape(bool resetSlv, GenTemplate* temp) // not called by GUI
 {
 	if (!checkWhileRunning("Cannot process shape while running"))
 		return false;
 
-	if (m_shp.get() != nullptr)
+ /*   if (resetSlv && m_shp.get() != nullptr)
 	{
 		if (!checkUnsaved(DTSolutions))
 			return false;
-	}
+	}*/
 
-	auto_ptr<Shape> newshp(new Shape);
-	bool ret = callGenerate(newshp.get(), false);
+    bool ret = CubeDocBase::onGenShape(resetSlv, temp);
 
 	if (ret) 
 	{
-		m_build->justGen();
-
-		m_shp.reset(newshp.release());
-
-		m_slvs->clear(m_shp->fcn);
-		m_nCurSlv = 0;
-
-		OnSolveNone(HINT_BLD_PAINT);
-		emit slvProgUpdated(SHINT_SOLUTIONS, 0);
-
-		emit solveReset(); // resets the title of the main window
-
-		return true;
+        if (resetSlv)
+        {
+		    OnSolveNone(HINT_BLD_PAINT);
+		    emit slvProgUpdated(SHINT_SOLUTIONS, 0);
+		    emit solveReset(); // resets the title of the main window
+        }
+        emit newShapeSize(m_shp->fcn);
 	}
-
-	return false;
+	return ret;
 
 }
 
@@ -501,7 +468,7 @@ bool CubeDoc::realSave(int unGenSlvAnswer)
 			Shape tmpshp;
 			if (callGenerate(&tmpshp, true)) // ok to try a generate
 			{
-				OnGenShape(); // TBD: use return value?
+                onGenShape(); // TBD: use return value?
 				Q_ASSERT(m_shp.get() != nullptr); // we just checked it earlyer.
 			}
 		}
@@ -647,7 +614,7 @@ void CubeDoc::solveGo()
 	cout << "solveGo!" << endl;
 	if ((m_shp.get() == nullptr) || (m_build->getChangedFromGen()))
 	{
-		if (!OnGenShape())
+        if (!onGenShape())
 			return;
 	}
 
@@ -680,7 +647,7 @@ void CubeDoc::solveGo()
 #endif
 	}
 	m_sthread->fExitnow = 0;
-	m_sthread->setRuntime(m_slvs, m_shp.get(), pics, &m_conf.engine);
+    m_sthread->setRuntime(m_slvs, m_shp.get(), pics, &m_conf.engine, getCurrentSolve());
 	m_sthread->start();
 
 }
@@ -745,4 +712,11 @@ void CubeDoc::evaluateBstatus()
 	
 
 	emit slvProgUpdated(SHINT_WARNING, -1);
+}
+
+
+void CubeDoc::transferShape()
+{
+    CubeDocBase::transferShape();
+    emit updateViews(HINT_SLV_NXPR | HINT_PIC_READSLVCHECK);
 }

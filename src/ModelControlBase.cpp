@@ -8,29 +8,34 @@
 #endif
 
 ModelControlBase::ModelControlBase(BaseGLWidget* gl, CubeDocBase *doc)
-  : GLHandler(gl), m_doc(doc)
+    : GLHandler(gl), m_doc(doc), m_buildCtrl(gl, doc)
 {
 
     m_nSingleChoise = -1;
     m_nHoverChoise = -1;
     m_nLastHoveChs = -1;
 
+ //   m_buildCtrl.m_preZoomFactor = 4.0; // factor to fit the scale the the solutions
 }
 
 void ModelControlBase::switchIn() {
     m_bgl->m_minScaleReset = 10;
 
-    reCalcSlvMinMax();
+    reCalcSlvMinMax(); 
 }
 
 void ModelControlBase::reCalcSlvMinMax()
 {
+    static bool did = false;
+    if (did)
+        return; // HACK, don't want to recenter each time so that the build and model would be in sync
+    did = true;  // don't recenter every time TBD hack
     auto slv = m_doc->getCurrentSolve();
     M_ASSERT(slv != nullptr);
     SlvPainter &pnt = slv->painter;
 
-    m_bgl->aqmin = pnt.qmin;
-    m_bgl->aqmax = pnt.qmax;
+    m_bgl->aqmin = m_modelmin = pnt.qmin;
+    m_bgl->aqmax = m_modelmax = pnt.qmax;
 }
 
 
@@ -39,6 +44,9 @@ void ModelControlBase::initialized()
     m_progFlat.init();
     m_progNoise.init();
     mglCheckErrorsC("progs");
+
+    m_buildCtrl.initialized();
+
 }
 
 #ifdef EMSCRIPTEN
@@ -66,10 +74,25 @@ void ModelControlBase::initTex()
 
 
 
-void ModelControlBase::myPaintGL()
+void ModelControlBase::myPaintGL(bool inChoise)
 {
     // draw the object
-    drawTargets(false);
+//    double zv = zoomFactor();
+    double zv = m_bgl->zoomFactor();
+
+    m_bgl->model.push();
+    m_bgl->model.scale(zv, zv, zv);
+    m_bgl->modelMinMax(m_modelmin, m_modelmax);
+    drawTargets(inChoise);
+    m_bgl->model.pop();
+
+    m_bgl->model.push();
+    m_bgl->model.scale(zv * 4, zv * 4, zv * 4); // in build, every unit is a cube. in model every unit is a tooth
+    m_bgl->modelMinMax(m_buildCtrl.m_buildmin, m_buildCtrl.m_buildmax);
+    m_buildCtrl.drawTargets(inChoise);
+
+    m_bgl->model.pop();
+
 
     // draw the text in the bottom left corner which indicates which solution this is, out fo how many.
     // this can't be done with lighting since it will change the text color.
@@ -126,11 +149,13 @@ void ModelControlBase::paint(BaseGLWidget* context, CubeDocBase *doc, SlvCube *s
 
 void ModelControlBase::drawTargets(bool inChoise)
 {
+
     SlvCube *slv = m_doc->getCurrentSolve();
     if (slv == nullptr)
     {
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // just do nothing, don't change the frame
+      //  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+      //  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         return;
     }
 
@@ -190,5 +215,25 @@ bool ModelControlBase::scrMove(bool rightButton, bool ctrlPressed, int x, int y)
             emitHoverPiece(m_nHoverChoise);
     }
 #endif
-    return false;
+    return m_buildCtrl.scrMove(rightButton, ctrlPressed, x, y);
+    //return false;
+}
+
+bool ModelControlBase::scrDblClick(int x, int y) 
+{ 
+    int choise = m_bgl->doChoise(x, y);
+    const Shape* shp = m_doc->getCurrentShape();
+    if (choise - 1 < shp->fcn) {
+        CoordBuild cb = shp->fcToBuildCoord(choise - 1);
+        if (!m_buildCtrl.choiseDblClick(MAKE_NAME(cb.dim, cb.page, cb.x, cb.y)))
+            return false;
+    }
+    else {
+        if (!m_buildCtrl.scrDblClick(x, y))
+            return false;
+    }
+
+    m_doc->transferShape(); // does generate
+
+    return true;
 }

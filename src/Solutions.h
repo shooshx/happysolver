@@ -74,6 +74,7 @@ public:
 	bool getChangedFromSaved() { return m_bChangedFromSave; }
 
 	void transform(const TTransformVec &moveTo);
+    void toNewShape(const Shape* newshp);
 
 	
 	int size() const { return sv.size(); }

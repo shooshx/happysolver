@@ -166,7 +166,7 @@ public:
 	}
 
 
-	int sc;		///< which part is now in this place
+	int sc;		///< which part is now in this place, from comp
 	int rt;		///< what is it's rotation, index in rotation array
 	TriedPieces tryd;  ///< which pieces were already tried in this place in the current iteration.
 	TriedPieces mtryd; // should be the maximum size of 'possible' which is the total count or rtns in comp

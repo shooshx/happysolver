@@ -53,10 +53,11 @@ public:
 class AddedPic
 {
 public:
-	AddedPic(int _defInd = -1) : defInd(_defInd) {}
+    AddedPic(int _defInd = -1, int _compInd = -1) : defInd(_defInd), compInd(_compInd) {}
 
-	int defInd;
+	int defInd; // index in the bucket
 	// possibly add the rtns of the added pic? good for lines.
+    int compInd; // index of the the unified pic in comp (not used currently)
 };
 
 class SlvCube;

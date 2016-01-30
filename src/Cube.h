@@ -49,7 +49,7 @@ public:
 	Cube(const Shape* shapeset, const PicsSet* picset, const EngineConf* conf); 
 	~Cube();
 
-	void puttgr(Solutions *slvs, SolveThread *thread); // main function
+    void puttgr(Solutions *slvs, SolveThread *thread, SlvCube* starter); // main function
 	void prnSolves(Solutions *solve);
 
 	// getSolveIFS has to run on a different cube then the solutions running cube since it's on another thread
@@ -93,7 +93,7 @@ private:
 	bool makePossibilities2(int fc, ShapePlace &plcfc);
 	bool maskAssemble(int fc);
 
-	SlvCube* generateConcreteSlv();
+	SlvCube* generateConcreteSlv(SlvCube* starter);
 
 	bool isGoodSym(const PicType &pt, int rti, int fc);
 

@@ -111,6 +111,14 @@ inline Vec3i operator-(const Vec3i &a, const Vec3i &b)
 {
     return Vec3i(a.x - b.x, a.y - b.y, a.z - b.z);
 }
+inline Vec3i operator/(const Vec3i &a, int v)
+{
+    return Vec3i(a.x / v, a.y / v, a.z / v);
+}
+inline Vec3i operator*(const Vec3i &a, int v)
+{
+    return Vec3i(a.x * v, a.y * v, a.z * v);
+}
 
 inline ostream& operator<<(ostream& o, const Vec3i& v) {
     o << v.x << "," << v.y << "," << v.z;

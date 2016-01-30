@@ -14,7 +14,7 @@ class MyFile;
 	about the structure of the Shape it based on and hence depends completly on living in the
 	context of the Shape it was created upon. Essentially SlvCube is just a series of pieces
 	layed out in the order of the faces of the Shape.
-	An SlvCube \b Does contain complete information of the pieces it is made of an can live
+	An SlvCube \b Does contain complete information of the pieces set it is made of an can live
 	independantly from the PicsSet which lead to its creation.
 */
 class SlvCube
@@ -25,16 +25,20 @@ public:
 	/// make up a single solution to the shape.
 	struct SlvPiece
 	{
-		SlvPiece(int _abs_sc = -1, int _abs_rt = -1) 
-			: abs_sc(_abs_sc), abs_rt(_abs_rt), sdef(nullptr)
+        SlvPiece() {}
+		SlvPiece(int _abs_sc, int _abs_rt, int _comp_sc, int _comp_rt) 
+			: abs_sc(_abs_sc), abs_rt(_abs_rt), sdef(nullptr), comp_sc(_comp_sc), comp_rt(_comp_rt)
 		{}
 		// loaded data
 
-		int abs_sc; ///< the piece, from the 'added' pics set
-		int abs_rt; ///< absolute rotation [0,7]
+		int abs_sc = -1; ///< the piece, from the 'added' pics set
+		int abs_rt = -1; ///< absolute rotation [0,7]
 
-		// inferred data, using PicsSet
-		const PicDef *sdef;
+		// inferred data, using PicsSet, set in genPainter
+		const PicDef *sdef = nullptr;
+
+        int comp_sc = -1; ///< the piece fromt he 'comp' pics set
+        int comp_rt = -1; ///< rotation of the comp piece
 	};
 
 	/// SlvPic holds the data of a single piece that was selected when the solution was generated.

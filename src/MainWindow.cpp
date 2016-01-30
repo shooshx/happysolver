@@ -433,6 +433,8 @@ void MainWindow::createActions()
     m_editOptionsAct->setToolTip(tr("Edit Options..."));
     
     m_slvNumAct = new QAction(this);
+
+    m_transferShapeAct = new QAction("Transfer", this);
 }
 
 /// create the filler place for the menu bar to be filled later
@@ -661,7 +663,8 @@ void MainWindow::connectActions()
     connect(m_doc, SIGNAL(solveIndexChanged(int)), this, SLOT(setActSlvIndex(int)));
     connect(m_doc, SIGNAL(solveIndexChanged(int)), this, SLOT(updateSolveBrowseEnable()));
     connect(m_doc, SIGNAL(solveIndexChanged(int)), m_grpColDlg, SLOT(update()));
-    connect(m_doc, SIGNAL(solveNone()), this, SLOT(switchToBuildOrPics_NoLast())); // can come from go or save as well
+
+ //   connect(m_doc, SIGNAL(solveNone()), this, SLOT(switchToBuildOrPics_NoLast())); // can come from go or save as well
     connect(m_doc, SIGNAL(solveNone()), this, SLOT(updateSolveBrowseEnable()));
     connect(m_doc, SIGNAL(solveNone()), this, SLOT(updateFileEnables()));
 
@@ -683,7 +686,7 @@ void MainWindow::connectActions()
     // TBD-changedTilesCount, should pass via CubeDoc (updateView and from BuildWorld)
     connect(m_buildGLControl, SIGNAL(changedTilesCount(int)), m_buildDlg, SLOT(setTilesCount(int)));
     connect(m_buildGLControl, SIGNAL(changedTilesCount(int)), m_picsWidget, SLOT(setBuildTilesCount(int)));
-    connect(m_buildGLControl, SIGNAL(changedTilesCount(int)), m_asmStepDlg, SLOT(setTilesCount(int)));
+    connect(m_doc, SIGNAL(newShapeSize(int)), m_asmStepDlg, SLOT(setTilesCount(int)));
     connect(m_picsWidget, SIGNAL(changedPieceCount(int)), m_buildDlg, SLOT(setPieceCount(int)));
     connect(this, SIGNAL(picsLoadComplete()), m_buildDlg, SLOT(completePicsWidgets()));
     connect(m_buildDlg, SIGNAL(changedFamBox(int, int)), m_picsWidget, SLOT(changeFamBox(int, int)));
@@ -718,9 +721,11 @@ void MainWindow::connectActions()
     connect(m_showAsmDlgAct, SIGNAL(triggered(bool)), m_asmStepDlg, SLOT(setVisible(bool)));
     connect(m_asmStepDlg, SIGNAL(visibilityChanged(bool)), m_showAsmDlgAct, SLOT(setChecked(bool)));
 
-
     // status bar
     connect(m_buildGLControl, SIGNAL(changedTileHover(int, BuildGLControl::EActStatus)), this, SLOT(setStatusTextBuild(int, BuildGLControl::EActStatus)));
+
+    connect(m_transferShapeAct, SIGNAL(triggered(bool)), m_doc, SLOT(transferShape()));
+
 }
 
 void MainWindow::setActSlvIndex(int n)
@@ -943,7 +948,7 @@ void MainWindow::updateFileEnables()
             m_docktab->setTabToolTip(1, "No solutions to view\nPress \"Solve It!\" to find solutions");
         else
             m_docktab->setTabToolTip(1, "No solutions to view\nResolve the error and press \"Solve It!\"");
-        m_docktab->setTabEnabled(1, false);
+   //     m_docktab->setTabEnabled(1, false); SINGLE-VIEW
     }
     
 }

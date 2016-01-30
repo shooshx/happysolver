@@ -49,8 +49,8 @@ void PicsSet::add(int defInd, bool cSym)
 	bool checkSym = cSym && thedef.mygrp()->isIndividual();
 	// search if we already know a piece that looks like this
 	int ri = -1;
-	bool found = false;
-	for (int pi = 0; pi < comp.size() && !found; ++pi) 
+    int compind = -1;
+	for (int pi = 0; pi < comp.size(); ++pi) 
 	{
 		PicType& pt = comp[pi];
 		if (checkSym && !pt.isSym)
@@ -63,25 +63,27 @@ void PicsSet::add(int defInd, bool cSym)
 		if (ri < pt.rtnnum) 
 		{
 			pt.addedInds.push_back(PicType::AddedRef(added.size(), pt.rtns[ri].rtnindx));
-			found = true;
+            compind = pi // not used for anything currently;;
+            break;
 		}
 	}
 
 	// not found in set, a piece we haven't seen yet
-	if (!found) 
+    if (compind == -1)
 	{
 		// add it as a new type of pieces
 		PicType pt;
 
 		pt.load(thedef, checkSym); // create its rtns (possible rotations)
 		pt.addedInds.push_back(PicType::AddedRef(added.size(), 0));
+        compind = comp.size();
 		comp.push_back(pt);
 
 		totalRtnCount += pt.rtnnum;
 
 	}
 
-	added.push_back( AddedPic(defInd) );
+    added.push_back( AddedPic(defInd, compind) );
 
 }
 

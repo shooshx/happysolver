@@ -71,6 +71,9 @@ void SlvPainter::paintPiece(int f, BaseGLWidget* context, bool fTargets) const
 
 void SlvPainter::paintLines(int f, bool singleChoise, BaseGLWidget *context, ELinesDraw cfgLines) const
 {
+    if (f >= m_linesIFS.m_bufs.size())
+        return; // happens in a transferred solution. fix?
+
     NoiseSlvProgram* prog = ShaderProgram::currentt<NoiseSlvProgram>();
     prog->trans.set(context->transformMat());
     prog->drawtype.set(DRAW_FLAT);
@@ -91,8 +94,10 @@ void SlvPainter::paint(BaseGLWidget* context, bool fTargets, int singleChoise, i
     {
         for (int f = 0; f < m_scube->dt.size(); ++f)
         {
-            if ((upToStep >= 0) && (f >= upToStep)) // step by step support
+            if (upToStep >= 0 && f >= upToStep) // step by step support
                 break;
+            if (m_scube->dt[f].abs_sc == -1) // piece not there (solution transformed)
+                continue;
             mglCheckErrorsC("x3");
             paintPiece(f, context, fTargets);
             mglCheckErrorsC("x4");

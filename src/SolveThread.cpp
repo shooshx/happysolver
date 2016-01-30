@@ -29,7 +29,7 @@ void SolveThread::run()
 
 	emit slvProgUpdated(SHINT_START, 0);
 
-	rlcube.puttgr(m_slvs, this);
+	rlcube.puttgr(m_slvs, this, m_starterSlv);
 	fRunning = false; // needed here because the Stop button change depends on it
 
 	emit slvProgUpdated(SHINT_STOP, 0);

@@ -29,6 +29,7 @@ class PicsSet;
 class EngineConf;
 class Solutions;
 class Shape;
+class SlvCube;
 
 /** RunStats holds basic statistics and state for the solution engine.
 	Currently the only statistic is the number of piece chages the engine 
@@ -60,29 +61,29 @@ class SolveThread :public QThread // TBD-ios
 {
 	Q_OBJECT
 public:
-	SolveThread() :m_pics(nullptr), m_slvs(nullptr), m_shp(nullptr), m_conf(nullptr)
-		,fExitnow(0), fRunning(false)
-	{}
+	SolveThread() {}
 
-	void setRuntime(Solutions *slvs, Shape *shp, PicsSet *pics, EngineConf* conf) 
+	void setRuntime(Solutions *slvs, Shape *shp, PicsSet *pics, EngineConf* conf, SlvCube* starterSlv) 
 	{ 
 		m_pics = pics; 
 		m_conf = conf; 
 		m_slvs = slvs;
 		m_shp = shp;
+        m_starterSlv = starterSlv;
 	}
 
 	virtual void run();
 
 private:
-	PicsSet *m_pics;
-	Solutions *m_slvs;
-	Shape *m_shp;
-	EngineConf *m_conf; // pointer to the m_conf in the document. copied on run()
+	PicsSet *m_pics = nullptr;
+	Solutions *m_slvs = nullptr;
+	Shape *m_shp = nullptr;
+	EngineConf *m_conf = nullptr; // pointer to the m_conf in the document. copied on run()
+    SlvCube* m_starterSlv = nullptr;
 
 public:
-	volatile int fExitnow; // should be 1 or 0
-	volatile bool fRunning;
+	volatile int fExitnow = 0; // should be 1 or 0
+	volatile bool fRunning = false;
 	RunStats m_stats;
 
 signals:
