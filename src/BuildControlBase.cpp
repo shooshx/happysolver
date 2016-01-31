@@ -457,6 +457,7 @@ bool BuildControlBase::boxedDblClick(int choise, int x, int y)
 
     // new way of replacing the start tile, search for a neighbor of the old start that is not in the new box.
     // This way, the start tile is always in the previoud solution
+    // TBD - do this better with the current solution so that yellow is always on the previous solution
     CoordBuild startOptions[12];
     if (hasStrt)
     {
@@ -485,7 +486,8 @@ bool BuildControlBase::boxedDblClick(int choise, int x, int y)
     if (hasStrt) // take care of strt tile if it hasn't been taken care of yet
     {
         int i = 0;
-        for (i = 0; i < 12; ++i) {
+        for (i = 0; i < 12; ++i) 
+        {
             if (startOptions[i].dim != -1 && GET_TYPE(build.get(startOptions[i])) == TYPE_REAL) {
                 build.set(startOptions[i], FACE_STRT);
                 break; // TBD choose the oldest one

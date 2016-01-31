@@ -718,5 +718,5 @@ void CubeDoc::evaluateBstatus()
 void CubeDoc::transferShape()
 {
     CubeDocBase::transferShape();
-    emit updateViews(HINT_SLV_NXPR | HINT_PIC_READSLVCHECK);
+    emit updateViews(HINT_SLV_NXPR);
 }

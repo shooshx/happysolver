@@ -63,7 +63,7 @@ void PicsSet::add(int defInd, bool cSym)
 		if (ri < pt.rtnnum) 
 		{
 			pt.addedInds.push_back(PicType::AddedRef(added.size(), pt.rtns[ri].rtnindx));
-            compind = pi // not used for anything currently;;
+            compind = pi; // not used for anything currently
             break;
 		}
 	}

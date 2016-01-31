@@ -79,9 +79,15 @@ public:
 
     void makeBoundingPath();
 
-    void setSelected(int n) const { nSelected = n; }
-    void addSelected(int n) const { nSelected += n; }
-    int getSelected() const { return nSelected; }
+    void setSelected(int n) const { 
+        nSelected = n; 
+    }
+    void addSelected(int n) const {
+        nSelected += n; 
+    }
+    int getSelected() const { 
+        return nSelected; 
+    }
 
     // to which group do I belong
     const PicGroupDef *mygrp() const; 
