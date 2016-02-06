@@ -21,3 +21,4 @@
 #include "../src/OpenGL/Shaders.cpp"
 #include "../src/tinyxml/tinyxml2.cpp"
 #include "../src/NoiseGenerator.cpp"
+#include "../src/BuildControlBase.cpp"

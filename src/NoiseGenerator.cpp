@@ -4,7 +4,7 @@
 #include "Space3D.h"
 
 #include <cmath>
-#include <QImage>
+//#include <QImage> // for generating the texture offline
 
 
 #define MAXB 0x100

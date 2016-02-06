@@ -1,3 +1,4 @@
+precision highp float;
 varying vec4 color;
 
 uniform mat4 trans;

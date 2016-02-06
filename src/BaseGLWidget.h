@@ -4,6 +4,11 @@
 #include "MatStack.h"
 #include <list>
 
+
+#define ZOOM_MIN (50)
+#define ZOOM_MAX (200)
+#define ZOOM_WHEEL_FACTOR (13)
+
 class BaseGLWidget;
 
 class GLHandler {
@@ -27,7 +32,8 @@ public:
     virtual void scrRelease(bool rightButton) {  }
     // returns true if need update
     virtual bool scrMove(bool rightButton, bool ctrlPressed, int x, int y) { return false; }
-    virtual bool scrDblClick(int x, int y) { return false; }
+    virtual bool scrDblClick(bool ctrlPressed, int x, int y) { return false; }
+
 protected:
     BaseGLWidget *m_bgl;
 };
@@ -54,6 +60,8 @@ public:
     void mousePress(int button, int x, int y);
     void mouseRelease(int button);
     bool mouseMove(int buttons, int hasCtrl, int x, int y);
+    bool mouseDoubleClick(bool hasCtrl, int x, int y);
+    void mouseWheelEvent(int delta);
 
 public: 
     // this needs to be public for the PicPainter to be able to access it.

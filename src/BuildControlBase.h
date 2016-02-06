@@ -33,7 +33,7 @@ public:
     virtual void switchIn();
     virtual void switchOut();
 
-    virtual bool scrDblClick(int x, int y);
+    virtual bool scrDblClick(bool hasCtrl, int x, int y);
     bool choiseDblClick(int choise);
     virtual bool scrMove(bool rightButton, bool ctrlPressed, int x, int y);
 

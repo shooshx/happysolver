@@ -1,6 +1,6 @@
 #include "CubeDocBase.h"
 #include "general.h"
-
+#include "Cube.h"
 
 // TBD - check messages.
 bool CubeDocBase::realOpen(const string& name, bool* gotSolutions)
@@ -163,6 +163,69 @@ bool CubeDocBase::onGenShape(bool resetSlv, GenTemplate* temp)
     }
     return ret;
 }
+
+
+void CubeDocBase::solveGo()
+{
+    if (isSlvEngineRunning())	
+    {
+        m_sthread->fExitnow = 1;
+        return;
+    }
+
+    cout << "solveGo!" << endl;
+    if ((m_shp.get() == nullptr) || (m_build->getChangedFromGen()))
+    {
+        if (!onGenShape())
+            return;
+    }
+
+    // now build the Pics. it's important that the PicsSet will be built in this thread
+    // since it involves the bucket.
+    // here, the snapshot of the bucket piece selection
+    // for any solutions to be produced in this run
+    // the snapshot of the EngineConf is captured in Cube::Cube()
+    // in the thread itself. (is that too late?)
+    PicsSet *pics = new PicsSet(m_conf.engine.nAsym != ASYM_REGULAR);
+    if (pics->added.size() < m_shp->fcn)
+    {
+        complain("Unable to complay, too few pieces for this shape");
+        return;
+    }
+
+  //  if (pics->added.size() == m_shp->fcn + 42 + 1) // 42 is too easy to come by.
+  //      easter();
+
+    // we're all good to go!
+
+
+    m_sthread->fExitnow = 0;
+    m_sthread->setRuntime(m_slvs, m_shp.get(), pics, &m_conf.engine, getCurrentSolve());
+    m_sthread->doStart();
+
+}
+
+void CubeDocBase::solveStop()
+{
+    if (!isSlvEngineRunning())
+        return;
+
+    m_sthread->fExitnow = 1;
+    m_sthread->doWait();
+}
+
+bool CubeDocBase::isSlvEngineRunning() {
+    return (m_sthread != nullptr) && (m_sthread->fRunning);
+}
+
+const RunStats* CubeDocBase::getRunningStats()
+{
+    static RunStats dummy;
+    if (m_sthread == nullptr)
+        return &dummy;
+    return &m_sthread->m_stats;
+}
+
 
 
 void CubeDocBase::transferShape()

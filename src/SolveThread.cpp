@@ -23,17 +23,24 @@
 void SolveThread::run()
 {
 	setPriority(QThread::LowPriority);
-	m_stats.reset();
-	Cube rlcube(m_shp, m_pics, m_conf);
-	fRunning = true;	
+    init();
 
 	emit slvProgUpdated(SHINT_START, 0);
 
-	rlcube.puttgr(m_slvs, this, m_starterSlv);
-	fRunning = false; // needed here because the Stop button change depends on it
+    doRun();
 
 	emit slvProgUpdated(SHINT_STOP, 0);
 
+}
+
+
+void SolveThread::notifyLastSolution(bool firstInGo)
+{
+    if (firstInGo)
+        emit solvePopUp(m_slvs->size() - 1); // go to the last entered
+
+    emit slvProgUpdated(SHINT_SOLUTIONS, m_slvs->size());
+    msleep(50); // to avoid starvation on the gui from outside input
 }
 
 // when the thread stops the following signals are queued in this order:

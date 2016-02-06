@@ -14,7 +14,7 @@ public:
     void initTex();
 
     void reCalcSlvMinMax();
-    virtual void switchIn();
+    virtual void switchIn() override;
 
 protected:
     CubeDocBase *m_doc;
@@ -29,15 +29,15 @@ protected:
     BuildControlBase m_buildCtrl;
 
 protected:
-    virtual void initialized();
-    virtual void myPaintGL(bool inChoise);
+    virtual void initialized() override;
+    virtual void myPaintGL(bool inChoise) override;
     virtual void drawTargets(bool inChoise);
 
     // events
-    virtual void scrPress(bool rightButton, int x, int y);
-    virtual void scrRelease(bool rightButton);
-    virtual bool scrMove(bool rightButton, bool ctrlPressed, int x, int y);
-    virtual bool scrDblClick(int x, int y);
+    virtual void scrPress(bool rightButton, int x, int y) override;
+    virtual void scrRelease(bool rightButton) override;
+    virtual bool scrMove(bool rightButton, bool ctrlPressed, int x, int y) override;
+    virtual bool scrDblClick(bool ctrlPressed, int x, int y) override;
 
     // implemented by child
     virtual void emitChosenPiece(int p) {}

@@ -219,9 +219,10 @@ bool ModelControlBase::scrMove(bool rightButton, bool ctrlPressed, int x, int y)
     //return false;
 }
 
-bool ModelControlBase::scrDblClick(int x, int y) 
+bool ModelControlBase::scrDblClick(bool hasCtrl, int x, int y) 
 { 
     int choise = m_bgl->doChoise(x, y);
+    cout << "CHS " << choise << endl;
     const Shape* shp = m_doc->getCurrentShape();
     if (choise - 1 < shp->fcn) {
         CoordBuild cb = shp->fcToBuildCoord(choise - 1);
@@ -229,11 +230,16 @@ bool ModelControlBase::scrDblClick(int x, int y)
             return false;
     }
     else {
-        if (!m_buildCtrl.scrDblClick(x, y))
+        if (!m_buildCtrl.scrDblClick(hasCtrl, x, y))
             return false;
     }
 
+    if (m_doc->isSlvEngineRunning()) {
+        m_doc->solveStop();
+    }
+
     m_doc->transferShape(); // does generate
+    m_doc->solveGo();
 
     return true;
 }

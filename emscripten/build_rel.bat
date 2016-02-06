@@ -1,1 +1,1 @@
-%EMSCRIPTEN%\em++ -O3 -std=c++11 --memory-init-file 0 js_main.cpp unity.cpp -I../src -Wno-switch -o js_main.html -s EXPORTED_FUNCTIONS="['_cpp_start',  '_cpp_progress', '_loadSolution', '_initCubeEngine', '_resize', '_mouseDown', '_mouseUp', '_mouseMove']"
+%EMSCRIPTEN%\em++ -O3 -std=c++11 --memory-init-file 0 js_main.cpp unity.cpp -I../src -Wno-switch -o js_main.html -s EXPORTED_FUNCTIONS="['_cpp_start',  '_cpp_progress', '_loadSolution', '_initCubeEngine', '_resize', '_mouseDown', '_mouseUp', '_mouseMove', '_mouseDblClick', '_mouseWheel']"

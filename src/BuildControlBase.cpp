@@ -173,7 +173,7 @@ class QuadAdder
 {
 public:
     QuadAdder(Mesh& mesh) : m_mesh(mesh) {
-        m_mesh.m_type = Mesh::QUADS;
+        m_mesh.m_type = Mesh::TRIANGLES;
         m_mesh.m_hasColors = true;
         m_mesh.m_hasNames = true;
         m_mesh.m_hasIdx = false;
@@ -183,12 +183,22 @@ public:
 
     void add(const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d, const Vec4& color, uint name, uint tag)
     {
-        m_mesh.m_vtx.push_back(a);   m_mesh.m_vtx.push_back(b);   m_mesh.m_vtx.push_back(c);   m_mesh.m_vtx.push_back(d);
+        m_mesh.m_vtx.push_back(a);   
+        m_mesh.m_vtx.push_back(b);   
+        m_mesh.m_vtx.push_back(c);   
+
+        m_mesh.m_vtx.push_back(a);
+        m_mesh.m_vtx.push_back(c);
+        m_mesh.m_vtx.push_back(d);
+
         Vec4b nv = Vec4b::fromName(name);
-        m_mesh.m_name.push_back(nv); m_mesh.m_name.push_back(nv); m_mesh.m_name.push_back(nv); m_mesh.m_name.push_back(nv);
         float ftag = (float)tag;
-        m_mesh.m_tag.push_back(ftag); m_mesh.m_tag.push_back(ftag); m_mesh.m_tag.push_back(ftag); m_mesh.m_tag.push_back(ftag);
-        m_mesh.m_color4.push_back(color); m_mesh.m_color4.push_back(color);  m_mesh.m_color4.push_back(color); m_mesh.m_color4.push_back(color);
+        for(int i = 0; i < 6; ++i)
+        {
+            m_mesh.m_name.push_back(nv); 
+            m_mesh.m_tag.push_back(ftag); 
+            m_mesh.m_color4.push_back(color);
+        }
     }
 
 private:
@@ -678,8 +688,9 @@ bool BuildControlBase::scrMove(bool rigthBot, bool ctrlPressed, int x, int y)
     return needupdate;
 }
 
-bool BuildControlBase::scrDblClick(int x, int y)
+bool BuildControlBase::scrDblClick(bool ctrlPressed, int x, int y)
 {
+    m_bInternalBoxRemove = ctrlPressed;
     int choise = m_bgl->doChoise(x, y);
     //cout << "DblClick: " << hex << choise << endl;
     return choiseDblClick(choise);

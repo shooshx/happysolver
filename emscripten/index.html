@@ -17,7 +17,7 @@ var gl = null, canvas = null
 var prog = null
 var model = { vtxBuf: null }
 
-var loadSolution, resize, mouseUp, mouseDown, mouseMove
+var loadSolution, resize, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseWheel
     
 function start() {
 
@@ -31,6 +31,8 @@ function start() {
     mouseDown = Module.cwrap('mouseDown', null, ['number', 'number', 'number'])
     mouseUp = Module.cwrap('mouseUp', null, ['number'])
     mouseMove = Module.cwrap('mouseMove', null, ['number', 'number', 'number', 'number'])
+    mouseDblClick = Module.cwrap('mouseDblClick', null, ['number', 'number', 'number'])
+    mouseWheel = Module.cwrap('mouseWheel', null, ['number'])
     
     //loadSolution(one_piece_cube_text)
     loadSolution(one_marble_cube_text)
@@ -39,9 +41,11 @@ function start() {
     mycanvas.onmousedown = handleMouseDown;
     document.onmouseup = handleMouseUp;
     document.onmousemove = handleMouseMove;
+    mycanvas.ondblclick = handleMouseDblClick;
+    mycanvas.onwheel = handleMouseWheel
 
     // start drawing
-    requestAnimationFrame(draw)
+    requestAnimationFrame(progress)
 
 }
 
@@ -54,6 +58,12 @@ function handleMouseUp(event) {
 function handleMouseMove(event) {
     mouseMove(event.buttons, 0, event.clientX, event.clientY)
 }
+function handleMouseDblClick(event) {
+    mouseDblClick(0, event.clientX, event.clientY);
+}
+function handleMouseWheel(event) {
+    mouseWheel(-event.deltaY / 16)
+}
 
 function registerTexBind(imgname, obj) {
     console.log("reg-tex " + imgname)
@@ -65,14 +75,19 @@ function registerTexBind(imgname, obj) {
     //img.src = 'cubeTex.jpg'
 }
 
-function draw() {
+function requestProgress() {
+    requestAnimationFrame(progress)
+}
+
+function progress() {
 
     var ok = Module.ccall('cpp_progress', 'boolean');
     if (!ok)
         return;
     
     // next frame
-    //requestAnimationFrame(draw)
+    //requestAnimationFrame(progress)
+    //setTimeout(progress, 0)
 }
 
 </script>
@@ -81,6 +96,6 @@ function draw() {
 </head>
 <body onload="start();">
     <canvas id="mycanvas" width="800" height="700"></canvas>
-    <img id="noisetex" src='cubeTex.png'/>
+    <img id="noisetex" src='cubeTex.png' style="display:none;"/>
 </body>
 </html>

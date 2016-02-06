@@ -1,6 +1,7 @@
 //generated code from C:\projects\cubeGL\happysolver\src\OpenGL\build.vtx.glsl
 
 const char *code_build_vtx_glsl = " \
+  precision highp float; \n\
   varying vec4 color; \n\
    \n\
   uniform mat4 trans; \n\

@@ -65,13 +65,19 @@ CubeDoc::CubeDoc(QWidget *parent)
 
 	//connect(m_slvs, SIGNAL(changedFromSave(bool)), this, SIGNAL(changedFromSave(bool)));
 
-	m_sthread = nullptr;
-
 	m_nCurSlv = -1;
 	m_bGoEnabled = false;
 	m_nUpToStep = -1;
 
 	m_conf.fromRegistry();
+
+
+    auto sthread = new SolveThread;
+    m_sthread = sthread;
+    connect(sthread, SIGNAL(slvProgUpdated(int, int)), this, SIGNAL(slvProgUpdated(int, int)));
+    connect(sthread, SIGNAL(solvePopUp(int)), this, SLOT(OnSolveReadyS(int)));
+    connect(sthread, SIGNAL(fullEnumNoSlv()), this, SLOT(OnFullEnumNoSlv()));
+
 }
 
 
@@ -82,6 +88,7 @@ CubeDoc::CubeDoc(QWidget *parent)
 
 void CubeDoc::OnSolveReadyS(int slvind)
 {
+
 	Q_ASSERT(m_slvs->size() > slvind);
 	m_nCurSlv = slvind; // re-set it from -1
 	
@@ -595,71 +602,7 @@ void CubeDoc::easter()
 
 /////////////////// solution running ///////////////////
 
-const RunStats* CubeDoc::getRunningStats()
-{ 
-	static RunStats dummy;
-	if (m_sthread == nullptr)
-		return &dummy;
-	return &m_sthread->m_stats; 
-}
 
-
-void CubeDoc::solveGo()
-{
-	if (isSlvEngineRunning())	{
-		m_sthread->fExitnow = 1;
-		return;
-	}
-
-	cout << "solveGo!" << endl;
-	if ((m_shp.get() == nullptr) || (m_build->getChangedFromGen()))
-	{
-        if (!onGenShape())
-			return;
-	}
-
-	// now build the Pics. it's important that the PicsSet will be built in this thread
-	// since it involves the bucket.
-	// here, the snapshot of the bucket piece selection
-	// for any solutions to be produced in this run
-	// the snapshot of the EngineConf is captured in Cube::Cube()
-	// in the thread itself. (is that too late?)
-	PicsSet *pics = new PicsSet(m_conf.engine.nAsym != ASYM_REGULAR);
-	if (pics->added.size() < m_shp->fcn)
-	{
-		QMessageBox::critical(g_main, APP_NAME, tr("Unable to complay, too few pieces for this shape"), QMessageBox::Ok, 0);
-		return;
-	}
-
-	if (pics->added.size() == m_shp->fcn + 42 + 1) // 42 is too easy to come by.
-		easter();
-
-	// we're all good to go!
-		
-	if (m_sthread == nullptr)
-	{
-#ifdef QT_CORE_LIB
-		m_sthread = new SolveThread;
-			
-		connect(m_sthread, SIGNAL(slvProgUpdated(int, int)), this, SIGNAL(slvProgUpdated(int, int)));
-		connect(m_sthread, SIGNAL(solvePopUp(int)), this, SLOT(OnSolveReadyS(int)));
-		connect(m_sthread, SIGNAL(fullEnumNoSlv()), this, SLOT(OnFullEnumNoSlv()));
-#endif
-	}
-	m_sthread->fExitnow = 0;
-    m_sthread->setRuntime(m_slvs, m_shp.get(), pics, &m_conf.engine, getCurrentSolve());
-	m_sthread->start();
-
-}
-
-void CubeDoc::solveStop()
-{
-	if (!isSlvEngineRunning())
-		return;
-
-	m_sthread->fExitnow = 1;
-	m_sthread->wait();
-}
 
 void CubeDoc::OnFullEnumNoSlv()
 {

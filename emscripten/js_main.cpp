@@ -10,6 +10,7 @@
 #include "../src/BaseGLWidget.h"
 #include "../src/ModelControlBase.h"
 #include "../src/SlvCube.h"
+#include "../src/Cube.h"
 
 using namespace std;
 
@@ -32,6 +33,25 @@ int makeShader(int type, const char* text)
     return s;
 }
 
+void complain(const char* msg) {
+    cout << "ERROR: " << msg << endl;
+}
+
+class RunContext : public SolveContext
+{
+public:
+    virtual void notifyLastSolution(bool firstInGo) override;
+    virtual void notifyFullEnum() override
+    { 
+    }
+
+    virtual void doStart() override {
+        init();
+        doRun();
+    }
+    virtual void doWait() override {
+    }
+};
 
 class MainCtrl
 {
@@ -40,16 +60,28 @@ public:
     {
         m_gl.m_handlers.push_back(&m_modelGl);
         m_handler = &m_modelGl;
+        m_doc.m_sthread = &m_runctx;
     }
     CubeDocBase m_doc;
     BaseGLWidget m_gl;
     ModelControlBase m_modelGl;
+    RunContext m_runctx;
     
     GLHandler *m_handler;
     
+    bool m_requested = false;
+    void requestDraw()
+    {
+        if (m_requested)
+            return;
+        m_requested = true;
+        EM_ASM(requestProgress());
+    }
+    
     void draw() {
+        m_requested = false;
         try {
-            m_gl.paint();
+            m_gl.paint(false);
         }
         catch(const std::exception& e) {
             cout << "GOT-EXCEPTION " << e.what() << endl;
@@ -65,7 +97,13 @@ public:
 
 MainCtrl g_ctrl;
 
-extern "C" {
+void RunContext::notifyLastSolution(bool firstInGo)
+{
+    g_ctrl.m_doc.setCurSlvToLast();
+    g_ctrl.requestDraw();
+}
+
+extern "C" { // ----------------------- interface to js -------------------------
 
 unsigned int vtxBuf = 0;
 int attrVtx = 0;
@@ -94,6 +132,7 @@ bool initCubeEngine(const char* stdpcs, const char* unimesh)
         
         g_ctrl.m_modelGl.initTex();
         
+        
         if (!PicBucket::mutableInstance().loadXML(stdpcs))
             return false;
             
@@ -113,16 +152,25 @@ void resize(int width, int height)
 
 void mouseDown(int rightButton, int x, int y) {
     g_ctrl.m_gl.mousePress(rightButton, x, y);
-    g_ctrl.draw();
+    g_ctrl.requestDraw();
 }
 void mouseUp(int rightButton) {
     g_ctrl.m_gl.mouseRelease(rightButton);
-    g_ctrl.draw();
+    g_ctrl.requestDraw();
 }
 void mouseMove(int buttons, int ctrlPressed, int x, int y) {
     bool needUpdate = g_ctrl.m_gl.mouseMove(buttons, ctrlPressed, x, y);
     if (needUpdate)
-        g_ctrl.draw();
+        g_ctrl.requestDraw();
+}
+void mouseDblClick(int ctrlPressed, int x, int y) {
+    bool needUpdate = g_ctrl.m_gl.mouseDoubleClick(ctrlPressed, x, y);
+    if (needUpdate)
+        g_ctrl.requestDraw();
+}
+void mouseWheel(int delta) {
+    g_ctrl.m_gl.mouseWheelEvent(delta);
+    g_ctrl.requestDraw();
 }
 
 void cpp_start()
@@ -133,6 +181,7 @@ void cpp_start()
     auto ret = emscripten_webgl_make_context_current(ctx);
     
     try {
+        g_ctrl.m_gl.m_cullFace = false;
         g_ctrl.m_gl.init();
         
     }

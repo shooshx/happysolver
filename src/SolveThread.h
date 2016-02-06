@@ -19,6 +19,7 @@
 #define __SOLVETHREAD_H__INCLUDED__
 
 #include "general.h"
+#include "Cube.h"
 #include <QThread>
 
 /** \file
@@ -31,25 +32,6 @@ class Solutions;
 class Shape;
 class SlvCube;
 
-/** RunStats holds basic statistics and state for the solution engine.
-	Currently the only statistic is the number of piece chages the engine 
-	has performed and whether the engine is in 'lucky' state.
-*/
-struct RunStats
-{
-public:
-	RunStats() : tms(0), lucky(false), maxp(0) {}
-	void reset() 
-	{
-		tms = 0;
-		lucky = false;
-		maxp = 0;
-	}
-
-	volatile mint64 tms; ///< number of piece changes
-	volatile bool lucky; ///< luck state of the engine.
-	volatile int maxp;  ///< the maximal place reached on the shape
-};
 
 
 /** SolveThread is the thread dedicated for the solution generation engine.
@@ -57,34 +39,26 @@ public:
 	the main method, run() is the thread's entry point.
 	\see Configuration
 */
-class SolveThread :public QThread // TBD-ios
+class SolveThread : public QThread, public SolveContext// TBD-ios
 {
 	Q_OBJECT
 public:
 	SolveThread() {}
 
-	void setRuntime(Solutions *slvs, Shape *shp, PicsSet *pics, EngineConf* conf, SlvCube* starterSlv) 
-	{ 
-		m_pics = pics; 
-		m_conf = conf; 
-		m_slvs = slvs;
-		m_shp = shp;
-        m_starterSlv = starterSlv;
-	}
-
 	virtual void run();
 
-private:
-	PicsSet *m_pics = nullptr;
-	Solutions *m_slvs = nullptr;
-	Shape *m_shp = nullptr;
-	EngineConf *m_conf = nullptr; // pointer to the m_conf in the document. copied on run()
-    SlvCube* m_starterSlv = nullptr;
+    virtual void notifyLastSolution(bool firstInGo) override;
+    virtual void notifyFullEnum() override
+    {
+        emit fullEnumNoSlv();
+    }
 
-public:
-	volatile int fExitnow = 0; // should be 1 or 0
-	volatile bool fRunning = false;
-	RunStats m_stats;
+    virtual void doStart() {
+        start();
+    }
+    virtual void doWait() {
+        wait();
+    }
 
 signals:
 	void slvProgUpdated(int hint, int data); // Solve Progress Updates. directed to the SolveDlg

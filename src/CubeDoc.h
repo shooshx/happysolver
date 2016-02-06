@@ -99,11 +99,6 @@ public:
     void waitInitFinish();
 
 
-    bool isSlvEngineRunning() { 
-        return (m_sthread != nullptr) && (m_sthread->fRunning); 
-    }
-    const RunStats* getRunningStats();
-
 
     /// used by the close event in the main window
     /// \return true if we can move on. false if we need to stop what we're doing
@@ -160,10 +155,12 @@ public slots:
     void slvTrigger(QAction* act);
     void slvSetIndex(int ind);
 
-    /// starts and stops the solution engine thread.
-    void solveGo();
-    /// stops the solve thread if its running. return only after it is stopped.
-    void solveStop();
+    virtual void solveGo() override {
+        CubeDocBase::solveGo();
+    }
+    virtual void solveStop() override {
+        CubeDocBase::solveStop();
+    }
 
     void OnFullEnumNoSlv();
     void evaluateBstatus(); // evaluate build status, generate warnings and determine if Go is enabled
@@ -201,7 +198,7 @@ private:
 
 
 
-    SolveThread *m_sthread;
+    
 
 
     /// used in checkUnsaved()

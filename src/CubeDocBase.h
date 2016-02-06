@@ -9,6 +9,8 @@ class Shape;
 class Solutions;
 class BuildWorld;
 class SlvCube;
+class RunStats;
+class SolveContext;
 
 // hints for the SolveDlg
 #define SHINT_SOLUTIONS	1000 // data is the number of solutions
@@ -19,6 +21,8 @@ class SlvCube;
 #define SHINT_START		1005 // like STATUS, when the thread starts
 #define SHINT_STOP		1006 // like STATUS, when the thread stops
 #define SHINT_WARNING	1007 // warning changed
+
+
 
 class CubeDocBase 
 {
@@ -65,12 +69,27 @@ public:
     bool realOpen(const string& name, bool* gotSolutions);
 
     virtual void transferShape();
-    virtual bool onGenShape(bool resetSlv, GenTemplate* temp);
+    virtual bool onGenShape(bool resetSlv = true, GenTemplate* temp = nullptr);
     bool callGenerate(Shape *shape, bool bSilent);
+
+    bool isSlvEngineRunning();
+    const RunStats* getRunningStats();
+
+    /// starts and stops the solution engine thread.
+    virtual void solveGo();
+    /// stops the solve thread if its running. return only after it is stopped.
+    virtual void solveStop();
+
+    void setCurSlvToLast() {
+        m_nCurSlv = m_slvs->size() - 1;
+        m_nUpToStep = m_shp->fcn;
+    }
 
 public:
     Configuration m_conf;
     string m_lastMsg;
+
+    SolveContext *m_sthread;
 
 protected:
 
@@ -79,15 +98,13 @@ protected:
 
     /// the current design
     BuildWorld *m_build; 
-
+    
     /// the index of the current solution. -1 means there are none.
-    int m_nCurSlv; 
+    int m_nCurSlv;
 
     /// show solution and design up to this step. -1 mean show all.
     /// up to step, not including. the m_nUpToStep piece is not shown.
     /// to show all, m_nUpToStep should be the number of faces in the shape
     int m_nUpToStep; 
-
-
 
 };

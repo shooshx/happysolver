@@ -1,6 +1,7 @@
 SINGLE-VIEW - todo
 -------------
 changing pic selection in the middle
+better start tile - only tiles that were in the last solution
 
 
 NEW DEAL - things that don't work

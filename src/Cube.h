@@ -31,7 +31,7 @@
 
 class MyObject;
 class LinesCollection;
-class SolveThread;
+class SolveContext;
 
 /** Cube holds the solution engine which integrates Shape and PicsSet to produce instances of SlvCube.
 	Cube is constructed on demand when the user presses the "Solve It!" button. it is
@@ -49,7 +49,7 @@ public:
 	Cube(const Shape* shapeset, const PicsSet* picset, const EngineConf* conf); 
 	~Cube();
 
-    void puttgr(Solutions *slvs, SolveThread *thread, SlvCube* starter); // main function
+    void puttgr(Solutions *slvs, SolveContext *thread, SlvCube* starter); // main function
 	void prnSolves(Solutions *solve);
 
 	// getSolveIFS has to run on a different cube then the solutions running cube since it's on another thread
@@ -119,6 +119,69 @@ private:
 
 	static const int whichKJ[3][2][3]; // optimization of add/remove
 
+};
+
+
+/** RunStats holds basic statistics and state for the solution engine.
+	Currently the only statistic is the number of piece chages the engine 
+	has performed and whether the engine is in 'lucky' state.
+*/
+struct RunStats
+{
+public:
+	RunStats() : tms(0), lucky(false), maxp(0) {}
+	void reset() 
+	{
+		tms = 0;
+		lucky = false;
+		maxp = 0;
+	}
+
+	volatile mint64 tms; ///< number of piece changes
+	volatile bool lucky; ///< luck state of the engine.
+	volatile int maxp;  ///< the maximal place reached on the shape
+};
+
+// this is a reentrant context in which we can just run a few iterations of the solve engine and exit
+class SolveContext
+{
+public:
+    void setRuntime(Solutions *slvs, Shape *shp, PicsSet *pics, EngineConf* conf, SlvCube* starterSlv)
+    {
+        m_pics = pics;
+        m_conf = conf;
+        m_slvs = slvs;
+        m_shp = shp;
+        m_starterSlv = starterSlv;
+    }
+
+    void init();
+    void doRun();
+    virtual void notifyLastSolution(bool firstInGo)
+    {}
+    virtual void notifyFullEnum() 
+    {}
+
+    virtual void doStart()
+    {}
+    virtual void doWait()
+    {}
+
+public:
+    // runtime environment
+    PicsSet *m_pics = nullptr;
+    Solutions *m_slvs = nullptr;
+    Shape *m_shp = nullptr;
+    EngineConf *m_conf = nullptr; // pointer to the m_conf in the document. copied on run()
+    SlvCube* m_starterSlv = nullptr;
+
+    // state management
+    volatile int fExitnow = 0; // should be 1 or 0
+    volatile bool fRunning = false;
+    RunStats m_stats;
+
+    // running state
+    std::unique_ptr<Cube> m_rlcube;
 };
 
 

@@ -120,9 +120,10 @@ class EngineConf
 public:
 	/// real defaults are in fromDefaults()
 	EngineConf()
-	: fRand(false), fRestart(false), fLuck(false), nRestart(0), nLuck(0), nPersist(PERSIST_ONLY_FIRST),  
-	  nUpto(0), fAfter(false), nAfter(0), nAsym(ASYM_REGULAR)
-	{} 
+	: fRand(true), fRestart(true), fLuck(true), nRestart(2000), nLuck(8), nPersist(PERSIST_ONLY_FIRST)
+    , nUpto(1), fAfter(true), nAfter(1), nAsym(ASYM_OUTSIDE)
+	{
+    } 
 
 	void toRegistry(QSettings &reg);
 	void fromRegistry(QSettings &reg);

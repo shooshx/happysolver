@@ -26,9 +26,6 @@
 
 //#include "MyObject.h"
 
-#ifdef QT_CORE_LIB
-#include "SolveThread.h"
-#endif
 
 #include <time.h>
 #include <iostream>
@@ -356,18 +353,30 @@ bool Cube::maskAssemble(int fc)
 }
   
 
-#ifdef QT_CORE_LIB // TBD thread
+void SolveContext::init()
+{
+    m_stats.reset();
+    m_rlcube.reset(new Cube(m_shp, m_pics, m_conf));
+    fRunning = true;
+}
 
-void Cube::puttgr(Solutions *slvs, SolveThread *thread, SlvCube* starter)
+void SolveContext::doRun()
+{
+    m_rlcube->puttgr(m_slvs, this, m_starterSlv);
+    fRunning = false; // needed here because the Stop button change depends on it
+}
+
+
+void Cube::puttgr(Solutions *slvs, SolveContext *thread, SlvCube* starter)
 {
     bool sessionDone = false, selfExit = false;
     int sessionSlvNum = 0; // session is a series of consequtive solves that are related
     int goSlvNum = 0; // go is the super session, is the entire thread
-    int luckOffset = qRound((lconf.nLuck * shape->fcn) / 100.0);
+    int luckOffset = mRound((lconf.nLuck * shape->fcn) / 100.0);
     // make sure its larger the 1 (if its there, we want it to be effective) and smaller the the maximum (just to be safe)
     luckOffset = mMin(shape->fcn, luckOffset);
     if (lconf.nLuck > 0)
-        luckOffset = qMax(1, luckOffset);
+        luckOffset = mMax(1, luckOffset);
     cout << "luck offset=" << luckOffset << endl;
 
 
@@ -435,20 +444,13 @@ void Cube::puttgr(Solutions *slvs, SolveThread *thread, SlvCube* starter)
         if ((lconf.fLuck) && (p >= shape->fcn - luckOffset))
             thread->m_stats.lucky = true; // luck parameter. TBD-maybe not to right now.. last session?
             
-        if (p >= shape->fcn) //solution found
+        if (p == shape->fcn) //solution found
         {
             SlvCube *curslv = generateConcreteSlv(starter);
             slvs->addBackCommon(curslv);
             ++goSlvNum;
 
-            if (thread != nullptr)
-            {
-                if (goSlvNum == 1)
-                    emit thread->solvePopUp(slvs->size() - 1); // go to the last entered
-
-                emit thread->slvProgUpdated(SHINT_SOLUTIONS, slvs->size());
-                thread->msleep(50); // to avoid starvation on the gui from outside input
-            }
+            thread->notifyLastSolution(goSlvNum == 1);
 
             switch (lconf.nPersist)
             {
@@ -468,8 +470,8 @@ void Cube::puttgr(Solutions *slvs, SolveThread *thread, SlvCube* starter)
                 p = 0;
                 sessionSlvNum = 0;
             }
-
-            if ((lconf.fAfter) && (goSlvNum >= lconf.nAfter))
+            cout << "done " << lconf.fAfter << " " << goSlvNum << "/" << lconf.nAfter << endl;
+            if (lconf.fAfter && goSlvNum >= lconf.nAfter)
             {
                 selfExit = true;
             }
@@ -496,12 +498,13 @@ void Cube::puttgr(Solutions *slvs, SolveThread *thread, SlvCube* starter)
         }
     }
 
-    if ((p == 0) && (plc[0].mtryd.tryedAll()) && (goSlvNum == 0))
-        emit thread->fullEnumNoSlv();
+    if ((p == 0) && (plc[0].mtryd.tryedAll()) && (goSlvNum == 0)) {
+        thread->notifyFullEnum();
+    }
 
 }
 
-#endif
+
 
 //////////////////////////////////////////////////////////////////////////
 

@@ -982,9 +982,6 @@ bool itemIn(T v, T (&arr)[N]) {
 }
 
 #define SQRT_2_INV (0.70710678118654752440084436210485)
-float mRound(float x) {
-    return floor(x + 0.5);
-}
 
 // transform m from face fi[0-fcn) to neighbour ni[0-3] of fi
 void Shape::transformFromFaceToNei(MatStack& m, int fi, int ni, float baseAng) const

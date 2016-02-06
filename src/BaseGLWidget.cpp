@@ -253,7 +253,7 @@ int BaseGLWidget::doChoise(int chX, int chY)
     uint buf[10] = {0};
 
     //glReadPixels(viewport[2] / 2, viewport[3] / 2, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, buf);
-    glReadPixels(0, 0, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, buf);
+    glReadPixels(0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, buf);
     //printf("%X\n", buf[0]);
     choose = buf[0] & 0xffffff;
     if (choose == 0)
@@ -329,6 +329,7 @@ const char* errorText(uint code)
 
 string mglCheckErrorsStr(const char* place)
 {
+#ifdef CHECK_GL_ERR // slows down WebGL signifIcantly
     stringstream ss;
     GLenum code;
 
@@ -340,6 +341,7 @@ string mglCheckErrorsStr(const char* place)
         ss << "0x" << hex << code << errorText(code) << endl;
     if (count != 0)
         return ss.str();
+#endif
     return string();
 }
 
@@ -390,6 +392,19 @@ void BaseGLWidget::mouseRelease(int button)
 {
     if (m_handler)
         m_handler->scrRelease(button);
+}
+
+bool BaseGLWidget::mouseDoubleClick(bool hasCtrl, int x, int y)
+{
+    if (m_handler) {
+        return m_handler->scrDblClick(hasCtrl, x, y);
+    }
+    return false;
+}
+
+void BaseGLWidget::mouseWheelEvent(int delta)
+{
+    m_zoomVal = mMin(mMax(m_zoomVal + delta, ZOOM_MIN), ZOOM_MAX);
 }
 
 bool BaseGLWidget::mouseMove(int buttons, int hasCtrl, int x, int y)

@@ -7,9 +7,9 @@ static uint glType(Mesh::Type t) {
     switch (t){
     case Mesh::LINES: return GL_LINES;
     case Mesh::TRIANGLES: return GL_TRIANGLES;
-#ifdef QT_CORE_LIB
-    case Mesh::QUADS: return GL_QUADS;
-#endif
+//#ifdef QT_CORE_LIB
+//    case Mesh::QUADS: return GL_QUADS;
+//#endif
     case Mesh::TRI_STRIP: return GL_TRIANGLE_STRIP;
     case Mesh::TRI_FAN: return GL_TRIANGLE_FAN;
     default: throw HCException("bad mesh type");
@@ -62,8 +62,8 @@ void Mesh::paint(bool names) const
     }
     if (vbo->m_size == 0) {
 #ifdef EMSCRIPTEN
-        cout << "vtx->size()==0 " << m_common << endl;
-        throw HCException("mesh is empty");
+      //  cout << "vtx->size()==0 " << m_common << endl;
+      //  throw HCException("mesh is empty");
 #endif
         return;
     }

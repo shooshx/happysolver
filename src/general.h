@@ -102,6 +102,11 @@ inline const T &mMin(const T &a, const T &b) { if (a < b) return a; return b; }
 template <typename T>
 inline const T &mMax(const T &a, const T &b) { if (a < b) return b; return a; }
 
+inline float mRound(float x) {
+    return floor(x + 0.5);
+}
+
+
 class HCException : public std::exception {
 public:
     HCException(const char* msg) : m_msg(msg) {

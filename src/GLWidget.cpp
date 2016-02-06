@@ -222,17 +222,16 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 }
 
 void GLWidget::mouseDoubleClickEvent(QMouseEvent *event) {
-    if (m_handler) {
-        if (m_handler->scrDblClick(event->x(), event->y())) {
-            updateGL();
-        }
+    bool needpaint = BaseGLWidget::mouseDoubleClick( ((event->modifiers() & Qt::ControlModifier) != 0), event->x(), event->y() );
+    if (needpaint) {
+        updateGL();
     }
+
 }
 
 void GLWidget::wheelEvent(QWheelEvent *event)
 {
-    m_zoomVal += event->delta() / ZOOM_WHEEL_FACTOR;
-    m_zoomVal = qMin(qMax(m_zoomVal, ZOOM_MIN), ZOOM_MAX);
+    BaseGLWidget::wheelEvent(event->delta() / ZOOM_WHEEL_FACTOR);
     emit zoomChanged(m_zoomVal);
     updateGL();
 }
