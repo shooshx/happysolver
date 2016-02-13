@@ -50,6 +50,8 @@ public:
     ModelGLControl(GLWidget *gl, CubeDoc *document);
     virtual ~ModelGLControl() {}
 
+    // delegated from MainWindow
+    void keyEvent(QKeyEvent *event);
 
 protected:
     virtual void emitChosenPiece(int p) {
@@ -61,9 +63,12 @@ protected:
 
 private:
     GLWidget *m_gl;
+    QTimer *m_fadeTimer;
 
 public slots:
     virtual void updateView(int hint);
+
+    bool fadeTimeout();
 
 signals:
     void changedHoverPiece(int piece);

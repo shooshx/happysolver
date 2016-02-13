@@ -90,7 +90,7 @@ void PieceGLWidget::myPaintGL()
 	/*SlvCube *slv = m_doc->getCurrentSolve();
 	if ((slv == nullptr) || ((m_selectedPiece == -1) && (!m_bSelectAll)))
 	{ // clean the view from older things
-		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		return;
 	}

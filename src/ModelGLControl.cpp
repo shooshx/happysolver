@@ -27,11 +27,32 @@
 
 #include "OpenGL/glGlob.h"
 
+#include <QTimer>
+#include <QKeyEvent>
+
 
 ModelGLControl::ModelGLControl(GLWidget* gl, CubeDoc *doc)
   : ModelControlBase(gl, doc), m_gl(gl)
 {
+    m_fadeTimer = new QTimer(this);
+    connect(m_fadeTimer, SIGNAL(timeout()), this, SLOT(fadeTimeout()));
+    m_fadeTimer->start(25);
 }
+
+bool ModelGLControl::fadeTimeout()
+{
+    if (m_buildCtrl.fadeTimeout())
+        m_gl->updateGL();
+    return false;
+}
+
+void ModelGLControl::keyEvent(QKeyEvent *event)
+{
+    bool hasCtrl = ((event->modifiers() & Qt::ControlModifier) != 0);
+    if (m_buildCtrl.doMouseMove(-1, -1, hasCtrl)) // simulate a mouse move
+        m_gl->updateGL();
+}
+
 
 void ModelGLControl::updateView(int lHint)
 {

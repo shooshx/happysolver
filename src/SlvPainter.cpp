@@ -5,6 +5,7 @@
 #include "SlvCube.h"
 #include "OpenGL/glGlob.h"
 #include "OpenGL/Shaders.h"
+#include "CubeDocBase.h"
 
 // TBD - GLControl
 void SlvPainter::paintPiece(int f, BaseGLWidget* context, bool fTargets) const
@@ -59,9 +60,13 @@ void SlvPainter::paintPiece(int f, BaseGLWidget* context, bool fTargets) const
     Vec3 name = Vec3(nameb.x/255.0, nameb.y/255.0, nameb.z/255.0);
     //printf("%d %d %d\n", name.x, name.y, name.z);
 
+    int flag = 0;
+    if (f < CubeDocBase::s_instance->m_flagPiece.size()) // can happen if not generated yet
+        flag = CubeDocBase::s_instance->m_flagPiece[f];
+
     mglCheckErrorsC("x6");
     // if dispRot >= 4 it means the real part we're drawing is inverted from the model so we need to draw the texture on the other side
-    pdef->painter.paint(fTargets, name, context, (pdef->dispRot < 4) );
+    pdef->painter.paint(fTargets, name, context, (pdef->dispRot < 4), flag );
     mglCheckErrorsC("x7");
 
     model.pop();

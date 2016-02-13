@@ -13,7 +13,7 @@ const char *code_build_vtx_glsl = " \
   void main() \n\
   {	 \n\
   	color = colorA; \n\
-  	if (tag == 1.0) \n\
+  	if (tag == 1.0)  \n\
   		color *= fadeFactor; \n\
   	else if (tag == 2.0)  \n\
   		color = vec4(1.0, 1.0, 1.0, 1.0) - color*fadeFactor; \n\

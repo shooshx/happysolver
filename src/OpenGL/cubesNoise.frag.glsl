@@ -8,6 +8,9 @@ uniform vec3 colorB;
 uniform sampler2D noisef;
 uniform int drawtype;
 
+uniform int flag;
+uniform float fadeFactor;
+
 float offset= 4.72;
 float offset2 = 0.5;
 uniform vec3 texOffset; // z non-zero means we need to invert x
@@ -48,10 +51,10 @@ void main (void)
    // gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
    // return;
 
+   vec3 color;
+
     if (drawtype == 0) { // DRAW_COLOR
-        vec3 color = colorA * LightIntensity;
-        gl_FragColor = vec4(color, 1.0);
-        return;
+        color = colorA * LightIntensity;
     }
     if (drawtype == 2) { // blend black
         vec3 p = MCposition.yzx * 0.2;
@@ -63,11 +66,9 @@ void main (void)
         float sineval = sin(intensity * offset) * 2.0;
         sineval = clamp(sineval, 0.0, 1.0);
 
-        vec3 color   = mix(colorA, colorB, sineval);
-        color       *= LightIntensity;
+        color = mix(colorA, colorB, sineval);
+        color *= LightIntensity;
 
-        gl_FragColor = vec4(color, 1.0);
-        return;
     }
     if (drawtype == 0x14) {  // DRAW_TEXTURE_INDIVIDUAL_HALF 
         float T_HIGH = 0.525;
@@ -90,8 +91,6 @@ void main (void)
         }
 
         color *= LightIntensity;
-        gl_FragColor = vec4(color, 1.0);
-        return;
     }
     if (drawtype == 0x18) { //  DRAW_TEXTURE_INDIVIDUAL_WHOLE, no need for smoothstep since its the same color
         float tx = MCposition.x;
@@ -103,9 +102,7 @@ void main (void)
             return;
         }
         vec2 t = texOffset.xy + MCposition.yz / (8.0*5.0);
-        vec3 color = texture2D(noisef, t).rgb * LightIntensity;
-        gl_FragColor = vec4(color, 1.0);
-        return;
+        color = texture2D(noisef, t).rgb * LightIntensity;
     }
     if (drawtype == 4) { // DRAW_TEXTURE_MARBLE
         vec3 p = MCposition.yzx * 0.2;
@@ -120,14 +117,16 @@ void main (void)
         float sineval = sin(intensity) * 2.98;
         sineval = clamp(sineval, 0.0, 1.0);
 
-        vec3 color   = mix(colorA, colorB, sineval);
-        color       *= LightIntensity;
-
-        gl_FragColor = vec4(color, 1.0);
-        return;
+        color = mix(colorA, colorB, sineval);
+        color *= LightIntensity;
     }
     if (drawtype == 0x100) { // flat
-        gl_FragColor = vec4(colorA, 1.0);
+        color = colorA;
     }
 
+    if (flag != 0) {
+        gl_FragColor = vec4(0.8, color.g * 0.7, color.b * 0.7, 1.0);
+        return;
+    }
+    gl_FragColor = vec4(color, 1.0);
 }

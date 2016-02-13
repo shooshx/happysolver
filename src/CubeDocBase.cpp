@@ -2,6 +2,8 @@
 #include "general.h"
 #include "Cube.h"
 
+CubeDocBase* CubeDocBase::s_instance = nullptr; // singleton for use of SlvPainter access of m_flagPiece
+
 // TBD - check messages.
 bool CubeDocBase::realOpen(const string& name, bool* gotSolutions)
 {
@@ -155,6 +157,10 @@ bool CubeDocBase::onGenShape(bool resetSlv, GenTemplate* temp)
     {
         m_build->justGen();
         m_shp.reset(newshp.release());
+
+        clearRemoveFlags();
+        m_flagPiece.resize(m_shp->fcn);
+
         if (resetSlv)
         {
             m_slvs->clear(m_shp->fcn);

@@ -35,18 +35,21 @@ public:
 
     virtual bool scrDblClick(bool hasCtrl, int x, int y);
     bool choiseDblClick(int choise);
-    virtual bool scrMove(bool rightButton, bool ctrlPressed, int x, int y);
 
     // implemeted by inheriting
     virtual void emitTilesCount(int n) {}
     virtual void emitTileHover(int tile, EActStatus act) {}
 
-    bool doMouseMove(int x, int y, bool makeBufs = true);
+    virtual bool scrMove(bool rightButton, bool ctrlPressed, int x, int y);
+    bool doMouseMove(int x, int y, bool ctrlPressed);
+    bool choiseMouseMove(int choise, bool ctrlPressed);
+
     bool isInRemove();
     void checkSides();
     void reCalcBldMinMax();
 
     void makeBuffers();
+    virtual bool fadeTimeout();
 
 private:
     bool tiledDblClick(int choise);

@@ -41,8 +41,8 @@ void BuildGLControl::slvProgStatsUpdate(int hint, int data)
 
 void BuildGLControl::keyEvent(QKeyEvent *event)
 {
-    m_bInternalBoxRemove = ((event->modifiers() & Qt::ControlModifier) != 0);
-    if (doMouseMove(-1, -1)) // simulate a mouse move
+    bool hasCtrl = ((event->modifiers() & Qt::ControlModifier) != 0);
+    if (doMouseMove(-1, -1, hasCtrl)) // simulate a mouse move
         m_gl->updateGL();
     emit changedAction(isInRemove());
 }
@@ -54,32 +54,15 @@ void BuildGLControl::changeAction(bool remove) // someone is saying its changed
         return;
 
     m_bBoxRemove = remove;
-    if (doMouseMove(-1, -1)) // simulate a mouse move
+    if (doMouseMove(-1, -1, m_bInternalBoxRemove)) // simulate a mouse move
         m_gl->updateGL();
 }
 
-void BuildGLControl::fadeTimeout()
+bool BuildGLControl::fadeTimeout()
 {
-    BuildWorld& build = m_doc->getBuild();
-    if ((!m_inFade) && (build.getTestResult() != GEN_RESULT_ILLEGAL_SIDE))
-        return;
-
-
-    if (m_inFade) {
-        m_fadeFactor += 0.2;
-        if (m_fadeFactor >= 1.0)
-            m_inFade = false;
-    }
-
-    if (build.getTestResult() == GEN_RESULT_ILLEGAL_SIDE)
-    {
-        m_errCylindrAlpha += m_errCylindrAlphaDt;
-        if ((m_errCylindrAlpha >= 1.0) || (m_errCylindrAlpha <= 0.1))
-            m_errCylindrAlphaDt = -m_errCylindrAlphaDt;
-    }
-    //printf("fade update\n");
-    m_gl->updateGL();
-
+    if (BuildControlBase::fadeTimeout())
+        m_gl->updateGL();
+    return false;
 }
 
 void BuildGLControl::updateView(int hint)

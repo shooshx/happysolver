@@ -8,25 +8,26 @@
 class BaseProgram : public ShaderProgram {
 public:
 	BaseProgram()
-		:trans("trans", this), colorAatt("colorA", this), colorAu("colorA", this), vtx("vtx", this)
+        :trans("trans", this), colorAatt("colorA", this), colorAu("colorA", this), vtx("vtx", this), fadeFactor("fadeFactor", this)
 	{}
 
 	Mat4Uniform trans;
 	UniformParam colorAu;
 	AttribParam colorAatt;
 	Vec3Attrib vtx;
+    FloatUniform fadeFactor; 
 };
 
 
 class BuildProgram : public BaseProgram {
 public:
 	BuildProgram()
-		:tag("tag", this), fadeFactor("fadeFactor", this)
+		:tag("tag", this)
 	{}
 	virtual void getCodes();
 
 	FloatAttrib tag;
-	FloatUniform fadeFactor;
+	
 };
 
 class FlatProgram : public BaseProgram {
@@ -39,7 +40,7 @@ public:
 	NoiseSlvProgram()
 		:noisef("noisef", this), colorB("colorB", this), drawtype("drawtype", this)
 		,modelMat("modelMat", this), normalMat("normalMat", this), normal("normal", this)
-		,texOffset("texOffset", this), lightPos("lightPos", this)
+		,texOffset("texOffset", this), lightPos("lightPos", this), flag("flag", this)
 	{}
 	virtual void getCodes();
 
@@ -53,6 +54,7 @@ public:
 	Vec3Attrib normal;
 	Vec3Uniform texOffset;
 	Vec3Uniform lightPos;
+    IntUniform flag; // mark with red for remove
 };
 
 

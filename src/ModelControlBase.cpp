@@ -205,27 +205,40 @@ void ModelControlBase::scrRelease(bool rightButton)
 
 bool ModelControlBase::scrMove(bool rightButton, bool ctrlPressed, int x, int y)
 {
+    int choise = m_bgl->doChoise(x, y) - 1;
+
 #ifndef EMSCRIPTEN
     if (m_doc->solvesExist())
     {
         m_nLastHoveChs = m_nHoverChoise;
-        m_nHoverChoise = m_bgl->doChoise(x, y) - 1;
+        m_nHoverChoise = choise;
         //printf("%8X\n", m_nHoverChoise);
         if (m_nHoverChoise != m_nLastHoveChs)
             emitHoverPiece(m_nHoverChoise);
     }
 #endif
-    return m_buildCtrl.scrMove(rightButton, ctrlPressed, x, y);
-    //return false;
+
+    const Shape* shp = m_doc->getCurrentShape();
+    bool ret = false;
+    if (choise >= 0 && choise < shp->fcn)
+    {
+        CoordBuild cb = shp->fcToBuildCoord(choise);
+        ret = m_buildCtrl.choiseMouseMove(MAKE_NAME(cb.dim, cb.page, cb.x, cb.y), ctrlPressed);
+    }
+    else 
+    {
+        ret = m_buildCtrl.scrMove(rightButton, ctrlPressed, x, y); //outside a piece, maybe its on the build?
+    }
+    return ret;
 }
 
 bool ModelControlBase::scrDblClick(bool hasCtrl, int x, int y) 
 { 
-    int choise = m_bgl->doChoise(x, y);
+    int choise = m_bgl->doChoise(x, y) - 1;
     cout << "CHS " << choise << endl;
     const Shape* shp = m_doc->getCurrentShape();
-    if (choise - 1 < shp->fcn) {
-        CoordBuild cb = shp->fcToBuildCoord(choise - 1);
+    if (choise < shp->fcn) {
+        CoordBuild cb = shp->fcToBuildCoord(choise);
         if (!m_buildCtrl.choiseDblClick(MAKE_NAME(cb.dim, cb.page, cb.x, cb.y)))
             return false;
     }

@@ -30,6 +30,9 @@ public:
     CubeDocBase() {
         m_build = new BuildWorld;
         m_slvs = new Solutions;
+
+        M_ASSERT(s_instance == nullptr);
+        s_instance = this;
     }
     virtual ~CubeDocBase()
     {}
@@ -85,11 +88,19 @@ public:
         m_nUpToStep = m_shp->fcn;
     }
 
+    void clearRemoveFlags() {
+        fill(m_flagPiece.begin(), m_flagPiece.end(), 0);
+    }
+
 public:
     Configuration m_conf;
     string m_lastMsg;
 
     SolveContext *m_sthread;
+
+    vector<int> m_flagPiece; // int for every face in the shape, makes SlcPainter flag pieces that are going to be deleted
+
+    static CubeDocBase* s_instance; 
 
 protected:
 

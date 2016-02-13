@@ -33,7 +33,8 @@ void BaseGLWidget::init()
 
     checkErrors("init start");
     // specify black as clear color
-    glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
+    glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
+
     // specify the back of the buffer as clear depth (0 closest, 1 farmost)
 #ifdef EMSCRIPTEN
     glClearDepthf( 1.0f );
@@ -124,7 +125,7 @@ void BaseGLWidget::reCalcProj(bool fFromScratch) // = true default
     }
 
     Mat4 p;
-    sgluPerspective(60.0, m_aspectRatio, 0.1, 100.0, p.m );
+    sgluPerspective(60.0, m_aspectRatio, 1.0, 10.0, p.m );
     proj.mult(p);
     proj.translate(0.0f, 0.0f, -4.0f);
     proj.scale(m_scrScale, m_scrScale, m_scrScale);

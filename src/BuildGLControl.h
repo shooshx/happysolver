@@ -102,7 +102,7 @@ public slots:
     }
 
     //void showAllBlue();
-    void fadeTimeout();
+    virtual bool fadeTimeout();
     void enableEdit(bool v) { 
         m_bEditEnabled = v; 
     }

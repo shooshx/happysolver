@@ -24,6 +24,7 @@
 #include "CubeAcc.h"
 
 #include "Configuration.h"
+#include <chrono>
 
 /** \file
 	Declares the Cube class which holds the solution engine.
@@ -49,7 +50,8 @@ public:
 	Cube(const Shape* shapeset, const PicsSet* picset, const EngineConf* conf); 
 	~Cube();
 
-    void puttgr(Solutions *slvs, SolveContext *thread, SlvCube* starter); // main function
+    void initPuttgr(SolveContext *thread, SlvCube* starter);
+    void puttgr(Solutions *slvs, SolveContext *thread, SlvCube* starter, int doSteps); // main function
 	void prnSolves(Solutions *solve);
 
 	// getSolveIFS has to run on a different cube then the solutions running cube since it's on another thread
@@ -155,8 +157,12 @@ public:
         m_starterSlv = starterSlv;
     }
 
+    bool isDone() const {
+        return fExitnow || selfExit;
+    }
+
     void init();
-    void doRun();
+    void doRun(int doSteps);
     virtual void notifyLastSolution(bool firstInGo)
     {}
     virtual void notifyFullEnum() 
@@ -182,6 +188,13 @@ public:
 
     // running state
     std::unique_ptr<Cube> m_rlcube;
+
+    bool selfExit = false;
+    int sessionSlvNum = 0; // session is a series of consequtive solves that are related
+    int goSlvNum = 0; // go is the super session, is the entire thread
+    int luckOffset = 0;
+    int p = 0; // the piece index in the shape where we're currently putting a piece
+    chrono::steady_clock::time_point lastRestart;
 };
 
 

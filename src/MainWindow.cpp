@@ -1005,11 +1005,13 @@ void MainWindow::Enable3DActions(bool en)
 void MainWindow::keyPressEvent(QKeyEvent *event) // capture the keys from all windows
 {
     m_buildGLControl->keyEvent(event); // delegate to the build view
+    m_modelGLControl->keyEvent(event);
     QMainWindow::keyPressEvent(event);
 }
 void MainWindow::keyReleaseEvent(QKeyEvent *event)
 {
     m_buildGLControl->keyEvent(event);
+    m_modelGLControl->keyEvent(event);
     QMainWindow::keyReleaseEvent(event);
 }
 

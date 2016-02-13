@@ -212,24 +212,33 @@ static Shape::SideFind normSide[3][4] =
     {{XZ_PLANE, 0, 0, 0}, {YZ_PLANE, 0, 0, 0}, {XZ_PLANE, -4, 0, 0}, {YZ_PLANE, 0, -4, 0}}
 };
 
+// get the fc index of the face in the generated test shape
+int Shape::getShapeFcInd(CoordBuild s) const
+{
+    Vec3i g1, gtmp;
+    BuildWorld::get3dCoords(s, g1, gtmp);
+    g1.x = g1.x * 4 - buildBounds.minx;
+    g1.y = g1.y * 4 - buildBounds.miny;
+    g1.z = g1.z * 4 - buildBounds.minpage;
+    //return locateFace((EPlane)s.dim, g1);
+    return locateFaceHardWay((EPlane)s.dim, g1);
+}
 
 int Shape::locateFace(EPlane ldr, Vec3i lex) const
 {
-    if ((lex.x < 0) || (lex.y < 0) || (lex.z < 0) ||
-        (lex.x >= size.x) || (lex.y >= size.y) || (lex.z >= size.z)) return -1;
-
+    if ((lex.x < 0) || (lex.y < 0) || (lex.z < 0) || (lex.x >= size.x) || (lex.y >= size.y) || (lex.z >= size.z)) 
+        return -1;
     return m_opt_facesLoc[ldr].axx(lex, 4);
 }
+
 
 /// locate face when m_opt_facesLoc is invalidated (after generate completes) 
 int Shape::locateFaceHardWay(EPlane ldr, Vec3i lex) const
 {
     for(int i=0; i<fcn; ++i)
     {
-        if ((faces[i].dr == ldr) &&
-            (faces[i].ex.x == lex.x) &&
-            (faces[i].ex.y == lex.y) &&
-            (faces[i].ex.z == lex.z)) return i;
+        if ((faces[i].dr == ldr) && (faces[i].ex.x == lex.x) && (faces[i].ex.y == lex.y) && (faces[i].ex.z == lex.z)) 
+            return i;
     }
     return -1;
 }
@@ -480,7 +489,7 @@ EGenResult Shape::generate(const BuildWorld *build)
     readAxis(build, fcSize.x, fcSize.y, fcSize.z, XY_PLANE, flst, &reqf, bounds);
     build->m_gen_bounds = bounds; // save the bounds of the last generate
     buildBounds = bounds;
-    cout << "BOUNDS=" << bounds.minx << "," << bounds.miny << "," << bounds.minpage << endl;
+    //cout << "BOUNDS=" << bounds.minx << "," << bounds.miny << "," << bounds.minpage << endl;
 
 //	t2 = GetTickCount();
     // fix it all according to the discovered bounds

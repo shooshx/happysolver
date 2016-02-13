@@ -272,6 +272,8 @@ public:
 
     CoordBuild fcToBuildCoord(int fc) const;
     CoordBuild scdrToBuildCoord(const Vec3i sc, int dr) const;
+    int getShapeFcInd(CoordBuild s) const;
+
 
 public:
     Vec3i size;	///< size in basic units

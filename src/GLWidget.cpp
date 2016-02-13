@@ -231,7 +231,7 @@ void GLWidget::mouseDoubleClickEvent(QMouseEvent *event) {
 
 void GLWidget::wheelEvent(QWheelEvent *event)
 {
-    BaseGLWidget::wheelEvent(event->delta() / ZOOM_WHEEL_FACTOR);
+    BaseGLWidget::mouseWheelEvent(event->delta() / ZOOM_WHEEL_FACTOR);
     emit zoomChanged(m_zoomVal);
     updateGL();
 }

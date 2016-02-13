@@ -278,7 +278,8 @@ void BuildControlBase::makeBuffers()
     if (m_bBoxRemove) {
         const Shape& shp = m_doc->getBuild().getTestShape();
         Vec3 offs = Vec3(24,24,24) - Vec3(shp.faces[0].ex)/4.0;
-        for(int i = 0; i < shp.testQuads.size(); i += 5) {
+        for(int i = 0; i < shp.testQuads.size(); i += 5)
+        {
             Vec3 c = shp.testQuads[i+4];
             if (c.r == 1.0)
                 realLines.addWithDir(shp.testQuads[i]/4+offs, shp.testQuads[i+1]/4+offs, shp.testQuads[i+2]/4+offs, shp.testQuads[i+3]/4+offs, Vec4(c.r, c.g, c.b, 1.0));
@@ -333,7 +334,8 @@ void BuildControlBase::makeBuffers()
 
                     if (GET_TYPE(theget) == TYPE_VIR) // blue
                     {
-                        color = Vec4(0.0f, 0.0f, 0.8f, 0.5f);
+                        //cout << "VIR " << theget << endl;
+                        color = Vec4(0.5f, 0.5f, 1.0f, 0.5f);
                         transTiles.add(a, b, c, d, color, name, 1);
                         transLines.add(a, b, c, d, Vec4(0.2f, 0.2f, 1.0f, 0.5f));
                     }
@@ -545,10 +547,32 @@ bool BuildControlBase::boxedDblClick(int choise, int x, int y)
 
     // make buffers and then simluate move to doChoise on the new buffers
     makeBuffers();
-    doMouseMove(x, y);
+    doMouseMove(x, y, m_bInternalBoxRemove);
     return true;
 }
 
+
+bool BuildControlBase::fadeTimeout()
+{
+    bool ret = false;
+    if (m_inFade) {
+        m_fadeFactor += 0.2;
+        if (m_fadeFactor >= 1.0)
+            m_inFade = false;
+        ret = true;
+    }
+
+    BuildWorld& build = m_doc->getBuild();
+    if (build.getTestResult() == GEN_RESULT_ILLEGAL_SIDE)
+    {
+        m_errCylindrAlpha += m_errCylindrAlphaDt;
+        if ((m_errCylindrAlpha >= 1.0) || (m_errCylindrAlpha <= 0.1))
+            m_errCylindrAlphaDt = -m_errCylindrAlphaDt;
+        ret = true;
+    }
+
+    return ret;
+}
 
 bool BuildControlBase::getChoiseTiles(int choise, bool remove, CoordBuild bb[6], Vec3i& g)
 {
@@ -582,39 +606,45 @@ bool BuildControlBase::isInRemove() {
 }
 
 // returns true if an updateGL is needed, false if not
-bool BuildControlBase::doMouseMove(int x, int y, bool makeBufs)
+bool BuildControlBase::doMouseMove(int x, int y, bool ctrlPressed)
 {
-    return false;
     if (m_fSetStrtMode)
         return false;
-    bool remove = isInRemove();
-
-    BuildWorld& build = m_doc->getBuild();
-    //printf("start move\n");
     
     int choise;
     if (x != -1) // support non-mouse updates
-    {
         choise = m_bgl->doChoise(x, y);
-        //printf("%8X  dim=%d  page=%2d  x=%2d  y=%2d\n", choise, GET_DIM(choise), GET_PAGE(choise), GET_X(choise), GET_Y(choise));
-        if ((choise == m_lastChoise) && (remove == m_bLastBoxRemove))
-            return false; // check if remove state just changed so we need to redraw
-    }
     else
         choise = m_lastChoise;
 
+    return choiseMouseMove(choise, ctrlPressed);
+}
+
+bool BuildControlBase::choiseMouseMove(int choise, bool ctrlPressed)
+{
+    m_bInternalBoxRemove = ctrlPressed;
+    bool remove = isInRemove();
+
+    if ((choise == m_lastChoise) && (remove == m_bLastBoxRemove))
+        return false; // check if remove state just changed so we need to redraw
+
     m_lastChoise = choise;
     m_bLastBoxRemove = remove;
+    EActStatus act = remove ? REMOVE : ADD;
 
-    EActStatus act = remove?REMOVE:ADD;
+
+    BuildWorld& build = m_doc->getBuild();
     
-    if (choise != -1)
+    if (choise >= 0) // -1 comes from above
     { // something chosen
+
         int theget;
         CoordBuild bb[6];
         Vec3i g;
         if ((getChoiseTiles(choise, remove, bb, g) && (g != m_lastCubeChoise)))
         { // selection was changed
+            m_doc->clearRemoveFlags();
+
             //printf("%8X (%d,%d,%d) != (%d,%d,%d)\n", choise, g.x, g.y, g.z, m_lastCubeChoise.x, m_lastCubeChoise.y, m_lastCubeChoise.z);
             if (choise < 0x10000)
                 throw HCException("bad choise"); //DebugBreak();
@@ -644,6 +674,10 @@ bool BuildControlBase::doMouseMove(int x, int y, bool makeBufs)
                         {
                             build.set(bb[j], theget | SHOW_REOMOVE);
                         }
+                        int fc = m_doc->getCurrentShape()->getShapeFcInd(bb[j]);
+                        if (fc != -1) {
+                            m_doc->m_flagPiece[fc] = 1;
+                        }
                     }
                     m_fadeFactor = 0.0f;
                     m_inFade = true;
@@ -651,8 +685,7 @@ bool BuildControlBase::doMouseMove(int x, int y, bool makeBufs)
                 else
                     act = CANT_REMOVE;
 
-                if (makeBufs)
-                    makeBuffers();
+                makeBuffers();
             }
             else
                 act = EDIT_DISABLE;
@@ -667,9 +700,9 @@ bool BuildControlBase::doMouseMove(int x, int y, bool makeBufs)
         //printf("  -1 cleared %d\n", makeBufs);
         // clean the trans place or remove from the last time
         build.clean(BuildWorld::CLEAN_TRANS_SHOW);
+        m_doc->clearRemoveFlags();
         m_lastCubeChoise = Vec3i(-1,-1,-1);
-        if (makeBufs)
-            makeBuffers();
+        makeBuffers();
         emitTileHover(choise, act);
     }
     //printf("end move\n");
@@ -679,8 +712,8 @@ bool BuildControlBase::doMouseMove(int x, int y, bool makeBufs)
 
 bool BuildControlBase::scrMove(bool rigthBot, bool ctrlPressed, int x, int y)
 {
-    m_bInternalBoxRemove = ctrlPressed;
-    bool needupdate = doMouseMove(x, y);
+    
+    bool needupdate = doMouseMove(x, y, ctrlPressed);
 
   //  m_bDoneUpdate = false;
   //  if (needupdate && (!m_bDoneUpdate))

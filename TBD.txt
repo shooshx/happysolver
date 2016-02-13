@@ -2,6 +2,8 @@ SINGLE-VIEW - todo
 -------------
 changing pic selection in the middle
 better start tile - only tiles that were in the last solution
+illegal side
+lines for black pieces
 
 
 NEW DEAL - things that don't work

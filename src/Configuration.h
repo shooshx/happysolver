@@ -120,7 +120,7 @@ class EngineConf
 public:
 	/// real defaults are in fromDefaults()
 	EngineConf()
-	: fRand(true), fRestart(true), fLuck(true), nRestart(2000), nLuck(8), nPersist(PERSIST_ONLY_FIRST)
+	: fRand(false), fRestart(true), fLuck(true), nRestart(2000), nLuck(8), nPersist(PERSIST_ONLY_FIRST)
     , nUpto(1), fAfter(true), nAfter(1), nAsym(ASYM_OUTSIDE)
 	{
     } 

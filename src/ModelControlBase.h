@@ -26,6 +26,7 @@ protected:
     FlatProgram m_progFlat; // for choice selection
     Vec3 m_modelmin, m_modelmax;
 
+public:
     BuildControlBase m_buildCtrl;
 
 protected:

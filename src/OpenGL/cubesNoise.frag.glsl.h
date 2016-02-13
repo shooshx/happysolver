@@ -11,6 +11,9 @@ const char *code_cubesNoise_frag_glsl = " \
   uniform sampler2D noisef; \n\
   uniform int drawtype; \n\
    \n\
+  uniform int flag; \n\
+  uniform float fadeFactor; \n\
+   \n\
   float offset= 4.72; \n\
   float offset2 = 0.5; \n\
   uniform vec3 texOffset; // z non-zero means we need to invert x \n\
@@ -51,10 +54,10 @@ const char *code_cubesNoise_frag_glsl = " \
      // gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); \n\
      // return; \n\
    \n\
+     vec3 color; \n\
+   \n\
       if (drawtype == 0) { // DRAW_COLOR \n\
-          vec3 color = colorA * LightIntensity; \n\
-          gl_FragColor = vec4(color, 1.0); \n\
-          return; \n\
+          color = colorA * LightIntensity; \n\
       } \n\
       if (drawtype == 2) { // blend black \n\
           vec3 p = MCposition.yzx * 0.2; \n\
@@ -66,11 +69,9 @@ const char *code_cubesNoise_frag_glsl = " \
           float sineval = sin(intensity * offset) * 2.0; \n\
           sineval = clamp(sineval, 0.0, 1.0); \n\
    \n\
-          vec3 color   = mix(colorA, colorB, sineval); \n\
-          color       *= LightIntensity; \n\
+          color = mix(colorA, colorB, sineval); \n\
+          color *= LightIntensity; \n\
    \n\
-          gl_FragColor = vec4(color, 1.0); \n\
-          return; \n\
       } \n\
       if (drawtype == 0x14) {  // DRAW_TEXTURE_INDIVIDUAL_HALF  \n\
           float T_HIGH = 0.525; \n\
@@ -93,8 +94,6 @@ const char *code_cubesNoise_frag_glsl = " \
           } \n\
    \n\
           color *= LightIntensity; \n\
-          gl_FragColor = vec4(color, 1.0); \n\
-          return; \n\
       } \n\
       if (drawtype == 0x18) { //  DRAW_TEXTURE_INDIVIDUAL_WHOLE, no need for smoothstep since its the same color \n\
           float tx = MCposition.x; \n\
@@ -106,9 +105,7 @@ const char *code_cubesNoise_frag_glsl = " \
               return; \n\
           } \n\
           vec2 t = texOffset.xy + MCposition.yz / (8.0*5.0); \n\
-          vec3 color = texture2D(noisef, t).rgb * LightIntensity; \n\
-          gl_FragColor = vec4(color, 1.0); \n\
-          return; \n\
+          color = texture2D(noisef, t).rgb * LightIntensity; \n\
       } \n\
       if (drawtype == 4) { // DRAW_TEXTURE_MARBLE \n\
           vec3 p = MCposition.yzx * 0.2; \n\
@@ -123,15 +120,17 @@ const char *code_cubesNoise_frag_glsl = " \
           float sineval = sin(intensity) * 2.98; \n\
           sineval = clamp(sineval, 0.0, 1.0); \n\
    \n\
-          vec3 color   = mix(colorA, colorB, sineval); \n\
-          color       *= LightIntensity; \n\
-   \n\
-          gl_FragColor = vec4(color, 1.0); \n\
-          return; \n\
+          color = mix(colorA, colorB, sineval); \n\
+          color *= LightIntensity; \n\
       } \n\
       if (drawtype == 0x100) { // flat \n\
-          gl_FragColor = vec4(colorA, 1.0); \n\
+          color = colorA; \n\
       } \n\
    \n\
+      if (flag != 0) { \n\
+          gl_FragColor = vec4(0.8, color.g * 0.7, color.b * 0.7, 1.0); \n\
+          return; \n\
+      } \n\
+      gl_FragColor = vec4(color, 1.0); \n\
   } \n\
   ";

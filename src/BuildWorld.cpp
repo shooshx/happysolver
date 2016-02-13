@@ -94,14 +94,17 @@ void BuildWorld::getBuildCoords(Vec3i g, CoordBuild b[6])
     b[5].dim = YZ_PLANE; b[5].page = g.x+1; b[5].x = g.y; b[5].y = g.z;
 }
 
+
+
 // get the fc index of the face in the generated test shape
+// see Shape::getShapeFcInd
 int BuildWorld::getTestShapeFcInd(CoordBuild s) const
 {
     Vec3i g1, gtmp;
     get3dCoords(s, g1, gtmp);
-    g1.x = g1.x * 4- m_gen_bounds.minx; 
-    g1.y = g1.y * 4- m_gen_bounds.miny; 
-    g1.z = g1.z * 4- m_gen_bounds.minpage;
+    g1.x = g1.x * 4 - m_gen_bounds.minx; 
+    g1.y = g1.y * 4 - m_gen_bounds.miny; 
+    g1.z = g1.z * 4 - m_gen_bounds.minpage;
     return m_testShape.locateFaceHardWay((EPlane)s.dim, g1); 
     // need to do it the hard way and not the optimized way because the
     // optimization data was not transformed
@@ -345,6 +348,7 @@ void BuildWorld::doTransparent()
                                 {
                                     if ((GET_VAL(param[sqr][4]) != FACE_DONT_TRANS))
                                     {
+                                        //cout << "add FACE_TRANS" << endl;
                                         set(param[sqr][0], param[sqr][1], param[sqr][2], param[sqr][3], FACE_TRANS | GET_SHOW(param[sqr][4]));
                                     }
                                 }
@@ -355,6 +359,7 @@ void BuildWorld::doTransparent()
                                 {
                                     if (GET_TYPE(param[sqr][4]) != TYPE_REAL) //override any virtual
                                     {
+                                        //cout << "DONT_TRANS" << endl;
                                         set(param[sqr][0], param[sqr][1], param[sqr][2], param[sqr][3], FACE_DONT_TRANS);
                                     }
                                 }
@@ -493,8 +498,9 @@ bool BuildWorld::loadFrom(MyFile *rdfl)
             }
         }
     }
-    if (strts != 1) return false;
-    doTransparent();
+    if (strts != 1)
+        return false;
+    //doTransparent(); not needed in boxed
     bootstrapSpace();
     justSave();
     justInvalidatedTest();
@@ -608,7 +614,7 @@ bool BuildWorld::saveTo(MyFile *wrfl)
         }
     }
 
-    doTransparent(); // reclaim the blue ones
+    //doTransparent(); not needed in boxed // reclaim the blue ones
 
     return true;
 }

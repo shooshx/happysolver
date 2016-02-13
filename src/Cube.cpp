@@ -358,33 +358,25 @@ void SolveContext::init()
     m_stats.reset();
     m_rlcube.reset(new Cube(m_shp, m_pics, m_conf));
     fRunning = true;
+    m_rlcube->initPuttgr(this, m_starterSlv);
 }
 
-void SolveContext::doRun()
+void Cube::initPuttgr(SolveContext *thread, SlvCube* starter)
 {
-    m_rlcube->puttgr(m_slvs, this, m_starterSlv);
-    fRunning = false; // needed here because the Stop button change depends on it
-}
-
-
-void Cube::puttgr(Solutions *slvs, SolveContext *thread, SlvCube* starter)
-{
-    bool sessionDone = false, selfExit = false;
-    int sessionSlvNum = 0; // session is a series of consequtive solves that are related
-    int goSlvNum = 0; // go is the super session, is the entire thread
-    int luckOffset = mRound((lconf.nLuck * shape->fcn) / 100.0);
+    thread->selfExit = false;
+    thread->sessionSlvNum = 0; // session is a series of consequtive solves that are related
+    thread->goSlvNum = 0; // go is the super session, is the entire thread
+    thread->luckOffset = mRound((lconf.nLuck * shape->fcn) / 100.0);
     // make sure its larger the 1 (if its there, we want it to be effective) and smaller the the maximum (just to be safe)
-    luckOffset = mMin(shape->fcn, luckOffset);
+    thread->luckOffset = mMin(shape->fcn, thread->luckOffset);
     if (lconf.nLuck > 0)
-        luckOffset = mMax(1, luckOffset);
-    cout << "luck offset=" << luckOffset << endl;
-
+        thread->luckOffset = mMax(1, thread->luckOffset);
+    //cout << "luck offset=" << luckOffset << endl;
 
     thread->m_stats.tms = 1;	// tms - times of replacing a piece
     thread->m_stats.lucky = false;
 
-    chrono::steady_clock::time_point lastRestart = chrono::steady_clock::now();
-    //QTime lastRestart = QTime::currentTime();
+    thread->lastRestart = chrono::steady_clock::now();
 
     clear();
     SillyRand::silly_rand_init(time(nullptr));
@@ -392,7 +384,7 @@ void Cube::puttgr(Solutions *slvs, SolveContext *thread, SlvCube* starter)
     int p = 0;		// p - the place we fill now (index to plc)
     if (starter != nullptr)
     { // set tiles from pervious solution
-        while(true)
+        while (true)
         {
             int compsc = starter->dt[p].comp_sc;
             if (compsc == -1)
@@ -426,8 +418,24 @@ void Cube::puttgr(Solutions *slvs, SolveContext *thread, SlvCube* starter)
         };
     }
     cout << "p= " << p << endl;
+    thread->p = p;
 
-    while (!((p == 0) && (plc[0].mtryd.tryedAll())) && (!thread->fExitnow) && (!selfExit))
+}
+
+void SolveContext::doRun(int doSteps)
+{
+    m_rlcube->puttgr(m_slvs, this, m_starterSlv, doSteps);
+    if (isDone())
+        fRunning = false; // needed here because the Stop button change depends on it
+}
+
+
+void Cube::puttgr(Solutions *slvs, SolveContext *thread, SlvCube* starter, int doSteps)
+{
+    int p = thread->p;
+    int didSteps = 0;
+
+    while (!(p == 0 && plc[0].mtryd.tryedAll()) && !thread->fExitnow && !thread->selfExit && didSteps != doSteps)
     {
 /////////// actual work ///////////////////////////////////////////////////////
         if ((p != shape->fcn) && maskAssemble(p))
@@ -436,29 +444,32 @@ void Cube::puttgr(Solutions *slvs, SolveContext *thread, SlvCube* starter)
             p--;	// if reached last piece backtrack
 /////////// handle administration /////////////////////////////////////////////
     
-        thread->m_stats.tms++;
+        ++didSteps;
+        ++thread->m_stats.tms;
 
         if (p > thread->m_stats.maxp)
             thread->m_stats.maxp = p;
 
-        if ((lconf.fLuck) && (p >= shape->fcn - luckOffset))
+        if ((lconf.fLuck) && (p >= shape->fcn - thread->luckOffset))
             thread->m_stats.lucky = true; // luck parameter. TBD-maybe not to right now.. last session?
             
         if (p == shape->fcn) //solution found
         {
             SlvCube *curslv = generateConcreteSlv(starter);
             slvs->addBackCommon(curslv);
-            ++goSlvNum;
+            ++thread->goSlvNum;
 
-            thread->notifyLastSolution(goSlvNum == 1);
-
+            thread->notifyLastSolution(thread->goSlvNum == 1);
+            bool sessionDone = false;
             switch (lconf.nPersist)
             {
             case PERSIST_ALL: break; // just continue
-            case PERSIST_ONLY_FIRST: sessionDone = true; break;
+            case PERSIST_ONLY_FIRST: 
+                sessionDone = true; 
+                break;
             case PERSIST_UPTO:
-                sessionSlvNum++;
-                if (sessionSlvNum >= lconf.nUpto) 
+                thread->sessionSlvNum++;
+                if (thread->sessionSlvNum >= lconf.nUpto)
                     sessionDone = true;
                 break;
             } 
@@ -468,19 +479,19 @@ void Cube::puttgr(Solutions *slvs, SolveContext *thread, SlvCube* starter)
                 sessionDone = false;
                 clear();
                 p = 0;
-                sessionSlvNum = 0;
+                thread->sessionSlvNum = 0;
             }
-            cout << "done " << lconf.fAfter << " " << goSlvNum << "/" << lconf.nAfter << endl;
-            if (lconf.fAfter && goSlvNum >= lconf.nAfter)
+            cout << "done " << lconf.fAfter << " " << thread->goSlvNum << "/" << lconf.nAfter << endl;
+            if (lconf.fAfter && thread->goSlvNum >= lconf.nAfter)
             {
-                selfExit = true;
+                thread->selfExit = true;
             }
 
         }
         if (lconf.fRand && lconf.fRestart && ((thread->m_stats.tms % TIME_CHECK_TMS_INTERVAL) == 0)) // restart option
         {
             chrono::steady_clock::time_point curtime = chrono::steady_clock::now();
-            chrono::milliseconds time_span = chrono::duration_cast<chrono::milliseconds>(curtime - lastRestart);
+            chrono::milliseconds time_span = chrono::duration_cast<chrono::milliseconds>(curtime - thread->lastRestart);
             //QTime curtime = QTime::currentTime();
             int interval = time_span.count();
 
@@ -490,18 +501,19 @@ void Cube::puttgr(Solutions *slvs, SolveContext *thread, SlvCube* starter)
                 {
                     clear();
                     p = 0;
-                    sessionSlvNum = 0;
+                    thread->sessionSlvNum = 0;
                 }
                 thread->m_stats.lucky = false;
-                lastRestart = curtime;
+                thread->lastRestart = curtime;
             }
         }
     }
 
-    if ((p == 0) && (plc[0].mtryd.tryedAll()) && (goSlvNum == 0)) {
+    if ((p == 0) && (plc[0].mtryd.tryedAll()) && (thread->goSlvNum == 0)) {
         thread->notifyFullEnum();
     }
 
+    thread->p = p;
 }
 
 

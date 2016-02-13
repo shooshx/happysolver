@@ -27,7 +27,7 @@ void SolveThread::run()
 
 	emit slvProgUpdated(SHINT_START, 0);
 
-    doRun();
+    doRun(-1);
 
 	emit slvProgUpdated(SHINT_STOP, 0);
 

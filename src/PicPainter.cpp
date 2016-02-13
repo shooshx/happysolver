@@ -305,7 +305,7 @@ void PicDisp::init(const DisplayConf& dpc)
 
 /// do the actual painting of a single piece in the actual OpenGL view.
 
-void PicPainter::paint(bool fTargets, const Vec3& name, BaseGLWidget *context, bool invertTex) const
+void PicPainter::paint(bool fTargets, const Vec3& name, BaseGLWidget *context, bool invertTex, int flag) const
 {
     glPolygonOffset(1.0, 1.0); // go backward, draw polygons TBD- move to slvpainter
 
@@ -322,12 +322,14 @@ void PicPainter::paint(bool fTargets, const Vec3& name, BaseGLWidget *context, b
     mglCheckErrorsC("x8");
     if (!fTargets)
     {
-
         NoiseSlvProgram* prog = ShaderProgram::currentt<NoiseSlvProgram>();
-        if (prog != nullptr) {
+        if (prog != nullptr) 
+        {
             prog->drawtype.set(def->drawtype);
             prog->colorAu.set(def->color);
             prog->colorB.set(def->exColor);
+            prog->flag.set(flag);
+
 
             if (def->gtex != nullptr) {
                 mglActiveTexture(0);
