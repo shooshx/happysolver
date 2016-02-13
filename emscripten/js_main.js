@@ -25551,7 +25551,7 @@ function __ZN4Cube6puttgrEP9SolutionsP12SolveContextP7SlvCubei(i32, i2, i37, i31
  i4 = HEAP32[i36 >> 2] | 0;
  while (1) {
   i2 = (i4 | 0) == 0;
-  if (i2 ? (i33 = HEAP32[i34 >> 2] | 0, i1 = HEAP32[i33 + 24 >> 2] | 0, i3 = HEAP32[i33 + 32 >> 2] | 0, i33 = HEAP32[i33 + 28 >> 2] | 0, (i1 | 0) == (i3 - i33 >> 2 | 0)) : 0) {
+  if (i2 ? (i33 = HEAP32[i34 >> 2] | 0, i1 = HEAP32[i33 + 24 >> 2] | 0, i3 = HEAP32[i33 + 32 >> 2] | 0, i33 = HEAP32[i33 + 28 >> 2] | 0, (i1 | 0) == (i3 - i33 | 0)) : 0) {
    i2 = i33;
    break;
   }
@@ -25671,7 +25671,7 @@ function __ZN4Cube6puttgrEP9SolutionsP12SolveContextP7SlvCubei(i32, i2, i37, i31
   STACKTOP = i39;
   return;
  } while (0);
- if ((i1 | 0) != (i3 - i2 >> 2 | 0)) {
+ if ((i1 | 0) != (i3 - i2 | 0)) {
   i40 = 0;
   HEAP32[i36 >> 2] = i40;
   STACKTOP = i39;
@@ -26511,140 +26511,6 @@ function __ZN16BuildControlBaseC2EP12BaseGLWidgetP11CubeDocBase(i6, i1, i2) {
  return;
 }
 
-function __ZN4CubeC2EPK5ShapePK7PicsSetPK10EngineConf(i17, i1, i16, i8) {
- i17 = i17 | 0;
- i1 = i1 | 0;
- i16 = i16 | 0;
- i8 = i8 | 0;
- var i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i9 = 0, i10 = 0, i11 = 0, i12 = 0, i13 = 0, i14 = 0, i15 = 0, i18 = 0, i19 = 0;
- i18 = STACKTOP;
- STACKTOP = STACKTOP + 16 | 0;
- i12 = i18;
- HEAP8[i17 >> 0] = 0;
- HEAP8[i17 + 1 >> 0] = 1;
- HEAP8[i17 + 2 >> 0] = 1;
- HEAP32[i17 + 4 >> 2] = 2e3;
- HEAP32[i17 + 8 >> 2] = 8;
- HEAP32[i17 + 12 >> 2] = 0;
- HEAP32[i17 + 16 >> 2] = 1;
- HEAP8[i17 + 20 >> 0] = 1;
- HEAP32[i17 + 24 >> 2] = 1;
- HEAP32[i17 + 28 >> 2] = 1;
- i13 = i17 + 32 | 0;
- HEAP32[i13 >> 2] = i16;
- i15 = i17 + 36 | 0;
- HEAP32[i15 >> 2] = i1;
- i5 = i17 + 40 | 0;
- i9 = HEAP32[i1 + 12 >> 2] | 0;
- HEAP32[i5 >> 2] = i9;
- i6 = i17 + 44 | 0;
- i10 = HEAP32[i1 + 16 >> 2] | 0;
- HEAP32[i6 >> 2] = i10;
- i7 = i17 + 48 | 0;
- HEAP32[i7 >> 2] = HEAP32[i1 + 20 >> 2];
- HEAP32[i17 + 52 >> 2] = Math_imul(i10, i9) | 0;
- i9 = i17 + 60 | 0;
- HEAP32[i9 >> 2] = 0;
- i10 = i17 + 64 | 0;
- HEAP32[i10 >> 2] = 0;
- HEAP32[i17 + 68 >> 2] = 0;
- i4 = i17 + 72 | 0;
- i11 = i16 + 4 | 0;
- i19 = HEAP32[i11 >> 2] | 0;
- i2 = HEAP32[i16 >> 2] | 0;
- i1 = (i19 - i2 | 0) / 900 | 0;
- HEAP32[i4 >> 2] = 0;
- i3 = i17 + 76 | 0;
- HEAP32[i3 >> 2] = 0;
- HEAP32[i17 + 80 >> 2] = 0;
- if ((i19 | 0) != (i2 | 0)) {
-  if (i1 >>> 0 > 536870911) __ZNKSt3__120__vector_base_commonILb1EE20__throw_length_errorEv(i4);
-  i19 = __Znwj(i1 << 3) | 0;
-  HEAP32[i3 >> 2] = i19;
-  HEAP32[i4 >> 2] = i19;
-  HEAP32[i17 + 80 >> 2] = i19 + (i1 << 3);
-  i2 = i1;
-  i1 = i19;
-  do {
-   HEAP32[i1 >> 2] = 0;
-   HEAP32[i1 + 4 >> 2] = 0;
-   i1 = (HEAP32[i3 >> 2] | 0) + 8 | 0;
-   HEAP32[i3 >> 2] = i1;
-   i2 = i2 + -1 | 0;
-  } while ((i2 | 0) != 0);
-  i4 = HEAP32[i4 >> 2] | 0;
-  if ((i1 | 0) != (i4 | 0)) {
-   i3 = i1 - i4 >> 3;
-   i1 = 0;
-   do {
-    HEAP32[i4 + (i1 << 3) >> 2] = 0;
-    i1 = i1 + 1 | 0;
-   } while (i1 >>> 0 < i3 >>> 0);
-   i1 = HEAP32[i16 >> 2] | 0;
-   i2 = 0;
-   do {
-    HEAP32[i4 + (i2 << 3) + 4 >> 2] = (HEAP32[i1 + (i2 * 900 | 0) + 892 >> 2] | 0) - (HEAP32[i1 + (i2 * 900 | 0) + 888 >> 2] | 0) >> 3;
-    i2 = i2 + 1 | 0;
-   } while (i2 >>> 0 < i3 >>> 0);
-  }
- }
- if (i8) {
-  HEAP32[i17 >> 2] = HEAP32[i8 >> 2];
-  HEAP32[i17 + 4 >> 2] = HEAP32[i8 + 4 >> 2];
-  HEAP32[i17 + 8 >> 2] = HEAP32[i8 + 8 >> 2];
-  HEAP32[i17 + 12 >> 2] = HEAP32[i8 + 12 >> 2];
-  HEAP32[i17 + 16 >> 2] = HEAP32[i8 + 16 >> 2];
-  HEAP32[i17 + 20 >> 2] = HEAP32[i8 + 20 >> 2];
-  HEAP32[i17 + 24 >> 2] = HEAP32[i8 + 24 >> 2];
-  HEAP32[i17 + 28 >> 2] = HEAP32[i8 + 28 >> 2];
- }
- i1 = Math_imul(HEAP32[i6 >> 2] | 0, HEAP32[i5 >> 2] | 0) | 0;
- i1 = Math_imul(i1, HEAP32[i7 >> 2] | 0) | 0;
- i2 = __Znaj(i1 >>> 0 > 1073741823 ? -1 : i1 << 2) | 0;
- if (i1) _memset(i2 | 0, 0, i1 << 2 | 0) | 0;
- HEAP32[i17 + 56 >> 2] = i2;
- __ZNSt3__16vectorI10ShapePlaceNS_9allocatorIS1_EEE6resizeEj(i9, HEAP32[(HEAP32[i15 >> 2] | 0) + 24 >> 2] | 0);
- if ((HEAP32[(HEAP32[i15 >> 2] | 0) + 24 >> 2] | 0) > 0) {
-  i8 = 0;
-  do {
-   i7 = HEAP32[i9 >> 2] | 0;
-   i4 = HEAP32[(HEAP32[i13 >> 2] | 0) + 24 >> 2] | 0;
-   i5 = i7 + (i8 * 52 | 0) + 28 | 0;
-   i6 = i7 + (i8 * 52 | 0) + 32 | 0;
-   i1 = HEAP32[i6 >> 2] | 0;
-   i2 = HEAP32[i5 >> 2] | 0;
-   i3 = i1 - i2 >> 2;
-   if (i4 >>> 0 <= i3 >>> 0) {
-    if (i4 >>> 0 < i3 >>> 0 ? (i14 = i2 + (i4 << 2) | 0, (i1 | 0) != (i14 | 0)) : 0) {
-     i1 = i1 + (~((i1 + -4 - i14 | 0) >>> 2) << 2) | 0;
-     HEAP32[i6 >> 2] = i1;
-    }
-   } else {
-    __ZNSt3__16vectorIiNS_9allocatorIiEEE8__appendEj(i5, i4 - i3 | 0);
-    i1 = HEAP32[i6 >> 2] | 0;
-    i2 = HEAP32[i7 + (i8 * 52 | 0) + 28 >> 2] | 0;
-   }
-   i1 = i1 - i2 | 0;
-   if ((i1 | 0) > 0) _memset(i2 | 0, 0, ((i1 | 0) > 4 ? i1 : 4) | 0) | 0;
-   HEAP32[i7 + (i8 * 52 | 0) + 24 >> 2] = 0;
-   i8 = i8 + 1 | 0;
-  } while ((i8 | 0) < (HEAP32[(HEAP32[i15 >> 2] | 0) + 24 >> 2] | 0));
- }
- __ZN4Cube5clearEi(i17, 0);
- i19 = __ZNSt3__124__put_character_sequenceIcNS_11char_traitsIcEEEERNS_13basic_ostreamIT_T0_EES7_PKS4_j(__ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEElsEj(13460, (HEAP32[i16 + 16 >> 2] | 0) - (HEAP32[i16 + 12 >> 2] | 0) >> 3) | 0, 22759, 9) | 0;
- i19 = __ZNSt3__124__put_character_sequenceIcNS_11char_traitsIcEEEERNS_13basic_ostreamIT_T0_EES7_PKS4_j(__ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEElsEj(i19, ((HEAP32[i11 >> 2] | 0) - (HEAP32[i16 >> 2] | 0) | 0) / 900 | 0) | 0, 22769, 18) | 0;
- i19 = __ZNSt3__124__put_character_sequenceIcNS_11char_traitsIcEEEERNS_13basic_ostreamIT_T0_EES7_PKS4_j(__ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEElsEi(i19, HEAP32[(HEAP32[i13 >> 2] | 0) + 24 >> 2] | 0) | 0, 22788, 7) | 0;
- i19 = __ZNSt3__124__put_character_sequenceIcNS_11char_traitsIcEEEERNS_13basic_ostreamIT_T0_EES7_PKS4_j(__ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEElsEj(i19, ((HEAP32[i10 >> 2] | 0) - (HEAP32[i9 >> 2] | 0) | 0) / 52 | 0) | 0, 22796, 16) | 0;
- HEAP32[i12 >> 2] = __ZNKSt3__18ios_base6getlocEv(i19 + (HEAP32[(HEAP32[i19 >> 2] | 0) + -12 >> 2] | 0) | 0) | 0;
- i17 = __ZNKSt3__16locale9use_facetERNS0_2idE(i12, 16144) | 0;
- i17 = FUNCTION_TABLE_iii[HEAP32[(HEAP32[i17 >> 2] | 0) + 28 >> 2] & 63](i17, 10) | 0;
- __ZNSt3__16localeD2Ev(i12);
- __ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEE3putEc(i19, i17) | 0;
- __ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEE5flushEv(i19) | 0;
- STACKTOP = i18;
- return;
-}
-
 function __ZNSt3__114__scan_keywordINS_19istreambuf_iteratorIwNS_11char_traitsIwEEEEPKNS_12basic_stringIwS3_NS_9allocatorIwEEEENS_5ctypeIwEEEET0_RT_SE_SD_SD_RKT1_Rjb(i16, i17, i1, i19, i15, i18, i14) {
  i16 = i16 | 0;
  i17 = i17 | 0;
@@ -26841,6 +26707,139 @@ function __ZNSt3__114__scan_keywordINS_19istreambuf_iteratorIwNS_11char_traitsIw
  _free(i20);
  STACKTOP = i22;
  return i1 | 0;
+}
+
+function __ZN4CubeC2EPK5ShapePK7PicsSetPK10EngineConf(i17, i1, i16, i8) {
+ i17 = i17 | 0;
+ i1 = i1 | 0;
+ i16 = i16 | 0;
+ i8 = i8 | 0;
+ var i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i9 = 0, i10 = 0, i11 = 0, i12 = 0, i13 = 0, i14 = 0, i15 = 0, i18 = 0, i19 = 0;
+ i18 = STACKTOP;
+ STACKTOP = STACKTOP + 16 | 0;
+ i12 = i18;
+ HEAP8[i17 >> 0] = 0;
+ HEAP8[i17 + 1 >> 0] = 1;
+ HEAP8[i17 + 2 >> 0] = 1;
+ HEAP32[i17 + 4 >> 2] = 2e3;
+ HEAP32[i17 + 8 >> 2] = 8;
+ HEAP32[i17 + 12 >> 2] = 0;
+ HEAP32[i17 + 16 >> 2] = 1;
+ HEAP8[i17 + 20 >> 0] = 1;
+ HEAP32[i17 + 24 >> 2] = 1;
+ HEAP32[i17 + 28 >> 2] = 1;
+ i13 = i17 + 32 | 0;
+ HEAP32[i13 >> 2] = i16;
+ i15 = i17 + 36 | 0;
+ HEAP32[i15 >> 2] = i1;
+ i5 = i17 + 40 | 0;
+ i9 = HEAP32[i1 + 12 >> 2] | 0;
+ HEAP32[i5 >> 2] = i9;
+ i6 = i17 + 44 | 0;
+ i10 = HEAP32[i1 + 16 >> 2] | 0;
+ HEAP32[i6 >> 2] = i10;
+ i7 = i17 + 48 | 0;
+ HEAP32[i7 >> 2] = HEAP32[i1 + 20 >> 2];
+ HEAP32[i17 + 52 >> 2] = Math_imul(i10, i9) | 0;
+ i9 = i17 + 60 | 0;
+ HEAP32[i9 >> 2] = 0;
+ i10 = i17 + 64 | 0;
+ HEAP32[i10 >> 2] = 0;
+ HEAP32[i17 + 68 >> 2] = 0;
+ i4 = i17 + 72 | 0;
+ i11 = i16 + 4 | 0;
+ i19 = HEAP32[i11 >> 2] | 0;
+ i2 = HEAP32[i16 >> 2] | 0;
+ i1 = (i19 - i2 | 0) / 900 | 0;
+ HEAP32[i4 >> 2] = 0;
+ i3 = i17 + 76 | 0;
+ HEAP32[i3 >> 2] = 0;
+ HEAP32[i17 + 80 >> 2] = 0;
+ if ((i19 | 0) != (i2 | 0)) {
+  if (i1 >>> 0 > 536870911) __ZNKSt3__120__vector_base_commonILb1EE20__throw_length_errorEv(i4);
+  i19 = __Znwj(i1 << 3) | 0;
+  HEAP32[i3 >> 2] = i19;
+  HEAP32[i4 >> 2] = i19;
+  HEAP32[i17 + 80 >> 2] = i19 + (i1 << 3);
+  i2 = i1;
+  i1 = i19;
+  do {
+   HEAP32[i1 >> 2] = 0;
+   HEAP32[i1 + 4 >> 2] = 0;
+   i1 = (HEAP32[i3 >> 2] | 0) + 8 | 0;
+   HEAP32[i3 >> 2] = i1;
+   i2 = i2 + -1 | 0;
+  } while ((i2 | 0) != 0);
+  i4 = HEAP32[i4 >> 2] | 0;
+  if ((i1 | 0) != (i4 | 0)) {
+   i3 = i1 - i4 >> 3;
+   i1 = 0;
+   do {
+    HEAP32[i4 + (i1 << 3) >> 2] = 0;
+    i1 = i1 + 1 | 0;
+   } while (i1 >>> 0 < i3 >>> 0);
+   i1 = HEAP32[i16 >> 2] | 0;
+   i2 = 0;
+   do {
+    HEAP32[i4 + (i2 << 3) + 4 >> 2] = (HEAP32[i1 + (i2 * 900 | 0) + 892 >> 2] | 0) - (HEAP32[i1 + (i2 * 900 | 0) + 888 >> 2] | 0) >> 3;
+    i2 = i2 + 1 | 0;
+   } while (i2 >>> 0 < i3 >>> 0);
+  }
+ }
+ if (i8) {
+  HEAP32[i17 >> 2] = HEAP32[i8 >> 2];
+  HEAP32[i17 + 4 >> 2] = HEAP32[i8 + 4 >> 2];
+  HEAP32[i17 + 8 >> 2] = HEAP32[i8 + 8 >> 2];
+  HEAP32[i17 + 12 >> 2] = HEAP32[i8 + 12 >> 2];
+  HEAP32[i17 + 16 >> 2] = HEAP32[i8 + 16 >> 2];
+  HEAP32[i17 + 20 >> 2] = HEAP32[i8 + 20 >> 2];
+  HEAP32[i17 + 24 >> 2] = HEAP32[i8 + 24 >> 2];
+  HEAP32[i17 + 28 >> 2] = HEAP32[i8 + 28 >> 2];
+ }
+ i1 = Math_imul(HEAP32[i6 >> 2] | 0, HEAP32[i5 >> 2] | 0) | 0;
+ i1 = Math_imul(i1, HEAP32[i7 >> 2] | 0) | 0;
+ i2 = __Znaj(i1 >>> 0 > 1073741823 ? -1 : i1 << 2) | 0;
+ if (i1) _memset(i2 | 0, 0, i1 << 2 | 0) | 0;
+ HEAP32[i17 + 56 >> 2] = i2;
+ __ZNSt3__16vectorI10ShapePlaceNS_9allocatorIS1_EEE6resizeEj(i9, HEAP32[(HEAP32[i15 >> 2] | 0) + 24 >> 2] | 0);
+ if ((HEAP32[(HEAP32[i15 >> 2] | 0) + 24 >> 2] | 0) > 0) {
+  i8 = 0;
+  do {
+   i7 = HEAP32[i9 >> 2] | 0;
+   i3 = HEAP32[(HEAP32[i13 >> 2] | 0) + 24 >> 2] | 0;
+   i4 = i7 + (i8 * 52 | 0) + 28 | 0;
+   i5 = i7 + (i8 * 52 | 0) + 32 | 0;
+   i2 = HEAP32[i5 >> 2] | 0;
+   i1 = HEAP32[i4 >> 2] | 0;
+   i6 = i2 - i1 | 0;
+   if (i3 >>> 0 <= i6 >>> 0) {
+    if (i3 >>> 0 < i6 >>> 0 ? (i14 = i1 + i3 | 0, (i2 | 0) != (i14 | 0)) : 0) {
+     HEAP32[i5 >> 2] = i14;
+     i2 = i14;
+    }
+   } else {
+    __ZNSt3__16vectorIcNS_9allocatorIcEEE8__appendEj(i4, i3 - i6 | 0);
+    i2 = HEAP32[i5 >> 2] | 0;
+    i1 = HEAP32[i7 + (i8 * 52 | 0) + 28 >> 2] | 0;
+   }
+   _memset(i1 | 0, 0, i2 - i1 | 0) | 0;
+   HEAP32[i7 + (i8 * 52 | 0) + 24 >> 2] = 0;
+   i8 = i8 + 1 | 0;
+  } while ((i8 | 0) < (HEAP32[(HEAP32[i15 >> 2] | 0) + 24 >> 2] | 0));
+ }
+ __ZN4Cube5clearEi(i17, 0);
+ i19 = __ZNSt3__124__put_character_sequenceIcNS_11char_traitsIcEEEERNS_13basic_ostreamIT_T0_EES7_PKS4_j(__ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEElsEj(13460, (HEAP32[i16 + 16 >> 2] | 0) - (HEAP32[i16 + 12 >> 2] | 0) >> 3) | 0, 22759, 9) | 0;
+ i19 = __ZNSt3__124__put_character_sequenceIcNS_11char_traitsIcEEEERNS_13basic_ostreamIT_T0_EES7_PKS4_j(__ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEElsEj(i19, ((HEAP32[i11 >> 2] | 0) - (HEAP32[i16 >> 2] | 0) | 0) / 900 | 0) | 0, 22769, 18) | 0;
+ i19 = __ZNSt3__124__put_character_sequenceIcNS_11char_traitsIcEEEERNS_13basic_ostreamIT_T0_EES7_PKS4_j(__ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEElsEi(i19, HEAP32[(HEAP32[i13 >> 2] | 0) + 24 >> 2] | 0) | 0, 22788, 7) | 0;
+ i19 = __ZNSt3__124__put_character_sequenceIcNS_11char_traitsIcEEEERNS_13basic_ostreamIT_T0_EES7_PKS4_j(__ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEElsEj(i19, ((HEAP32[i10 >> 2] | 0) - (HEAP32[i9 >> 2] | 0) | 0) / 52 | 0) | 0, 22796, 16) | 0;
+ HEAP32[i12 >> 2] = __ZNKSt3__18ios_base6getlocEv(i19 + (HEAP32[(HEAP32[i19 >> 2] | 0) + -12 >> 2] | 0) | 0) | 0;
+ i17 = __ZNKSt3__16locale9use_facetERNS0_2idE(i12, 16144) | 0;
+ i17 = FUNCTION_TABLE_iii[HEAP32[(HEAP32[i17 >> 2] | 0) + 28 >> 2] & 63](i17, 10) | 0;
+ __ZNSt3__16localeD2Ev(i12);
+ __ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEE3putEc(i19, i17) | 0;
+ __ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEE5flushEv(i19) | 0;
+ STACKTOP = i18;
+ return;
 }
 
 function __ZNSt3__114__scan_keywordINS_19istreambuf_iteratorIcNS_11char_traitsIcEEEEPKNS_12basic_stringIcS3_NS_9allocatorIcEEEENS_5ctypeIcEEEET0_RT_SE_SD_SD_RKT1_Rjb(i17, i18, i1, i20, i16, i19, i15) {
@@ -37614,86 +37613,6 @@ function __ZN8tinyxml27StrPair6GetStrEv(i9) {
  return i9 | 0;
 }
 
-function __ZN4Cube10initPuttgrEP12SolveContextP7SlvCube(i13, i15, i12) {
- i13 = i13 | 0;
- i15 = i15 | 0;
- i12 = i12 | 0;
- var i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i8 = 0, i9 = 0, i10 = 0, i11 = 0, i14 = 0, i16 = 0;
- i16 = STACKTOP;
- STACKTOP = STACKTOP + 16 | 0;
- i14 = i16;
- HEAP8[i15 + 52 >> 0] = 0;
- HEAP32[i15 + 56 >> 2] = 0;
- HEAP32[i15 + 60 >> 2] = 0;
- i8 = HEAP32[i13 + 8 >> 2] | 0;
- i11 = i13 + 36 | 0;
- i7 = (HEAP32[i11 >> 2] | 0) + 24 | 0;
- i10 = ~~+Math_floor(+(+(Math_imul(HEAP32[i7 >> 2] | 0, i8) | 0) / 100.0 + .5));
- i9 = i15 + 64 | 0;
- HEAP32[i9 >> 2] = i10;
- i7 = HEAP32[i7 >> 2] | 0;
- i10 = (i7 | 0) < (i10 | 0) ? i7 : i10;
- HEAP32[i9 >> 2] = (i8 | 0) > 0 ? ((i10 | 0) > 1 ? i10 : 1) : i10;
- i9 = i15 + 32 | 0;
- HEAP32[i9 >> 2] = 1;
- HEAP32[i9 + 4 >> 2] = 0;
- HEAP8[i15 + 40 >> 0] = 0;
- i9 = __ZNSt3__16chrono12steady_clock3nowEv() | 0;
- i10 = i15 + 72 | 0;
- HEAP32[i10 >> 2] = i9;
- HEAP32[i10 + 4 >> 2] = tempRet0;
- __ZN4Cube5clearEi(i13, 0);
- HEAP32[1557] = _time(0) | 0;
- L1 : do if (!i12) i1 = 0; else {
-  i9 = i13 + 60 | 0;
-  i10 = i13 + 72 | 0;
-  i1 = 0;
-  do {
-   i2 = HEAP32[i12 >> 2] | 0;
-   i5 = HEAP32[i2 + (i1 * 20 | 0) + 12 >> 2] | 0;
-   if ((i5 | 0) == -1) break L1;
-   i4 = HEAP32[i2 + (i1 * 20 | 0) + 16 >> 2] | 0;
-   i7 = HEAP32[i9 >> 2] | 0;
-   i8 = i7 + (i1 * 52 | 0) | 0;
-   __ZN4Cube18makePossibilities2EiR10ShapePlace(i13, i1, i8) | 0;
-   i2 = HEAP32[i7 + (i1 * 52 | 0) + 44 >> 2] | 0;
-   i6 = HEAP32[i7 + (i1 * 52 | 0) + 40 >> 2] | 0;
-   L6 : do if ((i2 | 0) == (i6 | 0)) i2 = 0; else {
-    i3 = i2 - i6 >> 3;
-    i2 = 0;
-    do {
-     if ((HEAP32[i6 + (i2 << 3) >> 2] | 0) == (i5 | 0) ? (HEAP32[i6 + (i2 << 3) + 4 >> 2] | 0) == (i4 | 0) : 0) break L6;
-     i2 = i2 + 1 | 0;
-    } while (i2 >>> 0 < i3 >>> 0);
-   } while (0);
-   i4 = HEAP32[i6 + (i2 << 3) >> 2] | 0;
-   i3 = HEAP32[i6 + (i2 << 3) + 4 >> 2] | 0;
-   i2 = (HEAP32[i7 + (i1 * 52 | 0) + 28 >> 2] | 0) + (i2 << 2) | 0;
-   if (!(HEAP32[i2 >> 2] | 0)) {
-    HEAP32[i2 >> 2] = 1;
-    i6 = i7 + (i1 * 52 | 0) + 24 | 0;
-    HEAP32[i6 >> 2] = (HEAP32[i6 >> 2] | 0) + 1;
-   }
-   HEAP32[i8 >> 2] = i4;
-   HEAP32[i7 + (i1 * 52 | 0) + 4 >> 2] = i3;
-   i8 = (HEAP32[i10 >> 2] | 0) + (i4 << 3) | 0;
-   HEAP32[i8 >> 2] = (HEAP32[i8 >> 2] | 0) + 1;
-   __ZN4Cube6putPicEiii(i13, i4, i3, i1);
-   i1 = i1 + 1 | 0;
-  } while ((i1 | 0) != (HEAP32[(HEAP32[i11 >> 2] | 0) + 24 >> 2] | 0));
- } while (0);
- i13 = __ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEElsEi(__ZNSt3__124__put_character_sequenceIcNS_11char_traitsIcEEEERNS_13basic_ostreamIT_T0_EES7_PKS4_j(13460, 22813, 3) | 0, i1) | 0;
- HEAP32[i14 >> 2] = __ZNKSt3__18ios_base6getlocEv(i13 + (HEAP32[(HEAP32[i13 >> 2] | 0) + -12 >> 2] | 0) | 0) | 0;
- i12 = __ZNKSt3__16locale9use_facetERNS0_2idE(i14, 16144) | 0;
- i12 = FUNCTION_TABLE_iii[HEAP32[(HEAP32[i12 >> 2] | 0) + 28 >> 2] & 63](i12, 10) | 0;
- __ZNSt3__16localeD2Ev(i14);
- __ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEE3putEc(i13, i12) | 0;
- __ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEE5flushEv(i13) | 0;
- HEAP32[i15 + 68 >> 2] = i1;
- STACKTOP = i16;
- return;
-}
-
 function __ZN8tinyxml212XMLAttribute9ParseDeepEPcb(i11, i5, i10) {
  i11 = i11 | 0;
  i5 = i5 | 0;
@@ -37847,6 +37766,86 @@ function __ZN8tinyxml212XMLAttribute9ParseDeepEPcb(i11, i5, i10) {
  i13 = i3 + (i6 + 1) | 0;
  STACKTOP = i12;
  return i13 | 0;
+}
+
+function __ZN4Cube10initPuttgrEP12SolveContextP7SlvCube(i13, i15, i12) {
+ i13 = i13 | 0;
+ i15 = i15 | 0;
+ i12 = i12 | 0;
+ var i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i8 = 0, i9 = 0, i10 = 0, i11 = 0, i14 = 0, i16 = 0;
+ i16 = STACKTOP;
+ STACKTOP = STACKTOP + 16 | 0;
+ i14 = i16;
+ HEAP8[i15 + 52 >> 0] = 0;
+ HEAP32[i15 + 56 >> 2] = 0;
+ HEAP32[i15 + 60 >> 2] = 0;
+ i8 = HEAP32[i13 + 8 >> 2] | 0;
+ i11 = i13 + 36 | 0;
+ i7 = (HEAP32[i11 >> 2] | 0) + 24 | 0;
+ i10 = ~~+Math_floor(+(+(Math_imul(HEAP32[i7 >> 2] | 0, i8) | 0) / 100.0 + .5));
+ i9 = i15 + 64 | 0;
+ HEAP32[i9 >> 2] = i10;
+ i7 = HEAP32[i7 >> 2] | 0;
+ i10 = (i7 | 0) < (i10 | 0) ? i7 : i10;
+ HEAP32[i9 >> 2] = (i8 | 0) > 0 ? ((i10 | 0) > 1 ? i10 : 1) : i10;
+ i9 = i15 + 32 | 0;
+ HEAP32[i9 >> 2] = 1;
+ HEAP32[i9 + 4 >> 2] = 0;
+ HEAP8[i15 + 40 >> 0] = 0;
+ i9 = __ZNSt3__16chrono12steady_clock3nowEv() | 0;
+ i10 = i15 + 72 | 0;
+ HEAP32[i10 >> 2] = i9;
+ HEAP32[i10 + 4 >> 2] = tempRet0;
+ __ZN4Cube5clearEi(i13, 0);
+ HEAP32[1557] = _time(0) | 0;
+ L1 : do if (!i12) i1 = 0; else {
+  i9 = i13 + 60 | 0;
+  i10 = i13 + 72 | 0;
+  i1 = 0;
+  do {
+   i2 = HEAP32[i12 >> 2] | 0;
+   i5 = HEAP32[i2 + (i1 * 20 | 0) + 12 >> 2] | 0;
+   if ((i5 | 0) == -1) break L1;
+   i4 = HEAP32[i2 + (i1 * 20 | 0) + 16 >> 2] | 0;
+   i7 = HEAP32[i9 >> 2] | 0;
+   i8 = i7 + (i1 * 52 | 0) | 0;
+   __ZN4Cube18makePossibilities2EiR10ShapePlace(i13, i1, i8) | 0;
+   i2 = HEAP32[i7 + (i1 * 52 | 0) + 44 >> 2] | 0;
+   i6 = HEAP32[i7 + (i1 * 52 | 0) + 40 >> 2] | 0;
+   L6 : do if ((i2 | 0) == (i6 | 0)) i2 = 0; else {
+    i3 = i2 - i6 >> 3;
+    i2 = 0;
+    do {
+     if ((HEAP32[i6 + (i2 << 3) >> 2] | 0) == (i5 | 0) ? (HEAP32[i6 + (i2 << 3) + 4 >> 2] | 0) == (i4 | 0) : 0) break L6;
+     i2 = i2 + 1 | 0;
+    } while (i2 >>> 0 < i3 >>> 0);
+   } while (0);
+   i4 = HEAP32[i6 + (i2 << 3) >> 2] | 0;
+   i3 = HEAP32[i6 + (i2 << 3) + 4 >> 2] | 0;
+   i2 = (HEAP32[i7 + (i1 * 52 | 0) + 28 >> 2] | 0) + i2 | 0;
+   if (!(HEAP8[i2 >> 0] | 0)) {
+    HEAP8[i2 >> 0] = 1;
+    i6 = i7 + (i1 * 52 | 0) + 24 | 0;
+    HEAP32[i6 >> 2] = (HEAP32[i6 >> 2] | 0) + 1;
+   }
+   HEAP32[i8 >> 2] = i4;
+   HEAP32[i7 + (i1 * 52 | 0) + 4 >> 2] = i3;
+   i8 = (HEAP32[i10 >> 2] | 0) + (i4 << 3) | 0;
+   HEAP32[i8 >> 2] = (HEAP32[i8 >> 2] | 0) + 1;
+   __ZN4Cube6putPicEiii(i13, i4, i3, i1);
+   i1 = i1 + 1 | 0;
+  } while ((i1 | 0) != (HEAP32[(HEAP32[i11 >> 2] | 0) + 24 >> 2] | 0));
+ } while (0);
+ i13 = __ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEElsEi(__ZNSt3__124__put_character_sequenceIcNS_11char_traitsIcEEEERNS_13basic_ostreamIT_T0_EES7_PKS4_j(13460, 22813, 3) | 0, i1) | 0;
+ HEAP32[i14 >> 2] = __ZNKSt3__18ios_base6getlocEv(i13 + (HEAP32[(HEAP32[i13 >> 2] | 0) + -12 >> 2] | 0) | 0) | 0;
+ i12 = __ZNKSt3__16locale9use_facetERNS0_2idE(i14, 16144) | 0;
+ i12 = FUNCTION_TABLE_iii[HEAP32[(HEAP32[i12 >> 2] | 0) + 28 >> 2] & 63](i12, 10) | 0;
+ __ZNSt3__16localeD2Ev(i14);
+ __ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEE3putEc(i13, i12) | 0;
+ __ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEE5flushEv(i13) | 0;
+ HEAP32[i15 + 68 >> 2] = i1;
+ STACKTOP = i16;
+ return;
 }
 
 function __ZNKSt3__17codecvtIwc11__mbstate_tE5do_inERS1_PKcS5_RS5_PwS7_RS7_(i4, i8, i1, i13, i14, i2, i9, i12) {
@@ -40241,77 +40240,6 @@ function __ZN4Cube18makePossibilities2EiR10ShapePlace(i4, i19, i3) {
  return i22 | 0;
 }
 
-function __ZN4Cube12maskAssembleEi(i6, i8) {
- i6 = i6 | 0;
- i8 = i8 | 0;
- var i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i7 = 0;
- i7 = HEAP32[i6 + 60 >> 2] | 0;
- i5 = i7 + (i8 * 52 | 0) | 0;
- do if ((HEAP32[i5 >> 2] | 0) != -1) {
-  __ZN4Cube6rmvPicEi(i6, i8);
-  i2 = (HEAP32[i6 + 72 >> 2] | 0) + (HEAP32[i5 >> 2] << 3) | 0;
-  HEAP32[i2 >> 2] = (HEAP32[i2 >> 2] | 0) + -1;
-  i2 = HEAP32[i7 + (i8 * 52 | 0) + 40 >> 2] | 0;
-  i4 = (HEAP32[i7 + (i8 * 52 | 0) + 44 >> 2] | 0) - i2 >> 3;
-  i3 = i7 + (i8 * 52 | 0) + 24 | 0;
-  if ((HEAP32[i3 >> 2] | 0) == (i4 | 0)) {
-   HEAP32[i5 >> 2] = -1;
-   HEAP32[i7 + (i8 * 52 | 0) + 4 >> 2] = 0;
-   i2 = HEAP32[i7 + (i8 * 52 | 0) + 28 >> 2] | 0;
-   i1 = (HEAP32[i7 + (i8 * 52 | 0) + 32 >> 2] | 0) - i2 | 0;
-   if ((i1 | 0) > 0) _memset(i2 | 0, 0, ((i1 | 0) > 4 ? i1 : 4) | 0) | 0;
-   HEAP32[i3 >> 2] = 0;
-   i8 = 0;
-   return i8 | 0;
-  } else {
-   if (!(HEAP8[i6 >> 0] | 0)) i1 = 1; else {
-    i1 = ((HEAP32[1557] | 0) * 214013 | 0) + 2531011 | 0;
-    HEAP32[1557] = i1;
-    i1 = (i1 >>> 16 >>> 0) % (i4 >>> 0) | 0;
-   }
-   i3 = HEAP32[i7 + (i8 * 52 | 0) + 28 >> 2] | 0;
-   if (!(HEAP32[i3 + (i1 << 2) >> 2] | 0)) break;
-   do i1 = (i1 + 1 | 0) % (i4 | 0) | 0; while ((HEAP32[i3 + (i1 << 2) >> 2] | 0) != 0);
-  }
- } else {
-  if (__ZN4Cube18makePossibilities2EiR10ShapePlace(i6, i8, i5) | 0) if (!(HEAP8[i6 >> 0] | 0)) {
-   i2 = HEAP32[i7 + (i8 * 52 | 0) + 40 >> 2] | 0;
-   i1 = 0;
-   break;
-  } else {
-   i4 = ((HEAP32[1557] | 0) * 214013 | 0) + 2531011 | 0;
-   HEAP32[1557] = i4;
-   i1 = HEAP32[i7 + (i8 * 52 | 0) + 40 >> 2] | 0;
-   i2 = i1;
-   i1 = (i4 >>> 16 >>> 0) % ((HEAP32[i7 + (i8 * 52 | 0) + 44 >> 2] | 0) - i1 >> 3 >>> 0) | 0;
-   break;
-  }
-  HEAP32[i5 >> 2] = -1;
-  HEAP32[i7 + (i8 * 52 | 0) + 4 >> 2] = 0;
-  i1 = HEAP32[i7 + (i8 * 52 | 0) + 28 >> 2] | 0;
-  i2 = (HEAP32[i7 + (i8 * 52 | 0) + 32 >> 2] | 0) - i1 | 0;
-  if ((i2 | 0) > 0) _memset(i1 | 0, 0, ((i2 | 0) > 4 ? i2 : 4) | 0) | 0;
-  HEAP32[i7 + (i8 * 52 | 0) + 24 >> 2] = 0;
-  i8 = 0;
-  return i8 | 0;
- } while (0);
- i3 = HEAP32[i2 + (i1 << 3) >> 2] | 0;
- i2 = HEAP32[i2 + (i1 << 3) + 4 >> 2] | 0;
- i1 = (HEAP32[i7 + (i8 * 52 | 0) + 28 >> 2] | 0) + (i1 << 2) | 0;
- if (!(HEAP32[i1 >> 2] | 0)) {
-  HEAP32[i1 >> 2] = 1;
-  i4 = i7 + (i8 * 52 | 0) + 24 | 0;
-  HEAP32[i4 >> 2] = (HEAP32[i4 >> 2] | 0) + 1;
- }
- HEAP32[i5 >> 2] = i3;
- HEAP32[i7 + (i8 * 52 | 0) + 4 >> 2] = i2;
- i7 = (HEAP32[i6 + 72 >> 2] | 0) + (i3 << 3) | 0;
- HEAP32[i7 >> 2] = (HEAP32[i7 >> 2] | 0) + 1;
- __ZN4Cube6putPicEiii(i6, i3, i2, i8);
- i8 = 1;
- return i8 | 0;
-}
-
 function __ZNSt3__16vectorIN7SlvCube8SlvPieceENS_9allocatorIS2_EEE6assignIPS2_EENS_9enable_ifIXaasr21__is_forward_iteratorIT_EE5valuesr16is_constructibleIS2_NS_15iterator_traitsIS9_E9referenceEEE5valueEvE4typeES9_S9_(i10, i2, i11) {
  i10 = i10 | 0;
  i2 = i2 | 0;
@@ -41229,6 +41157,75 @@ function __ZNKSt3__18time_getIcNS_19istreambuf_iteratorIcNS_11char_traitsIcEEEEE
  if ((i8 | 0) == 32 ? i1 : 0) i8 = 33;
  if ((i8 | 0) == 33) HEAP32[i7 >> 2] = HEAP32[i7 >> 2] | 2;
  return;
+}
+
+function __ZN4Cube12maskAssembleEi(i8, i7) {
+ i8 = i8 | 0;
+ i7 = i7 | 0;
+ var i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0;
+ i5 = HEAP32[i8 + 60 >> 2] | 0;
+ i6 = i5 + (i7 * 52 | 0) | 0;
+ do if ((HEAP32[i6 >> 2] | 0) == -1) {
+  if (!(__ZN4Cube18makePossibilities2EiR10ShapePlace(i8, i7, i6) | 0)) {
+   HEAP32[i6 >> 2] = -1;
+   HEAP32[i5 + (i7 * 52 | 0) + 4 >> 2] = 0;
+   i8 = HEAP32[i5 + (i7 * 52 | 0) + 28 >> 2] | 0;
+   _memset(i8 | 0, 0, (HEAP32[i5 + (i7 * 52 | 0) + 32 >> 2] | 0) - i8 | 0) | 0;
+   HEAP32[i5 + (i7 * 52 | 0) + 24 >> 2] = 0;
+   i8 = 0;
+   return i8 | 0;
+  }
+  if (!(HEAP8[i8 >> 0] | 0)) {
+   i2 = HEAP32[i5 + (i7 * 52 | 0) + 40 >> 2] | 0;
+   i1 = 0;
+   break;
+  } else {
+   i4 = ((HEAP32[1557] | 0) * 214013 | 0) + 2531011 | 0;
+   HEAP32[1557] = i4;
+   i1 = HEAP32[i5 + (i7 * 52 | 0) + 40 >> 2] | 0;
+   i2 = i1;
+   i1 = (i4 >>> 16 >>> 0) % ((HEAP32[i5 + (i7 * 52 | 0) + 44 >> 2] | 0) - i1 >> 3 >>> 0) | 0;
+   break;
+  }
+ } else {
+  __ZN4Cube6rmvPicEi(i8, i7);
+  i2 = (HEAP32[i8 + 72 >> 2] | 0) + (HEAP32[i6 >> 2] << 3) | 0;
+  HEAP32[i2 >> 2] = (HEAP32[i2 >> 2] | 0) + -1;
+  i2 = HEAP32[i5 + (i7 * 52 | 0) + 40 >> 2] | 0;
+  i4 = (HEAP32[i5 + (i7 * 52 | 0) + 44 >> 2] | 0) - i2 >> 3;
+  i1 = i5 + (i7 * 52 | 0) + 24 | 0;
+  if ((HEAP32[i1 >> 2] | 0) == (i4 | 0)) {
+   HEAP32[i6 >> 2] = -1;
+   HEAP32[i5 + (i7 * 52 | 0) + 4 >> 2] = 0;
+   i8 = HEAP32[i5 + (i7 * 52 | 0) + 28 >> 2] | 0;
+   _memset(i8 | 0, 0, (HEAP32[i5 + (i7 * 52 | 0) + 32 >> 2] | 0) - i8 | 0) | 0;
+   HEAP32[i1 >> 2] = 0;
+   i8 = 0;
+   return i8 | 0;
+  }
+  if (!(HEAP8[i8 >> 0] | 0)) i1 = 1; else {
+   i1 = ((HEAP32[1557] | 0) * 214013 | 0) + 2531011 | 0;
+   HEAP32[1557] = i1;
+   i1 = (i1 >>> 16 >>> 0) % (i4 >>> 0) | 0;
+  }
+  i3 = HEAP32[i5 + (i7 * 52 | 0) + 28 >> 2] | 0;
+  if (HEAP8[i3 + i1 >> 0] | 0) do i1 = (i1 + 1 | 0) % (i4 | 0) | 0; while ((HEAP8[i3 + i1 >> 0] | 0) != 0);
+ } while (0);
+ i3 = HEAP32[i2 + (i1 << 3) >> 2] | 0;
+ i2 = HEAP32[i2 + (i1 << 3) + 4 >> 2] | 0;
+ i1 = (HEAP32[i5 + (i7 * 52 | 0) + 28 >> 2] | 0) + i1 | 0;
+ if (!(HEAP8[i1 >> 0] | 0)) {
+  HEAP8[i1 >> 0] = 1;
+  i4 = i5 + (i7 * 52 | 0) + 24 | 0;
+  HEAP32[i4 >> 2] = (HEAP32[i4 >> 2] | 0) + 1;
+ }
+ HEAP32[i6 >> 2] = i3;
+ HEAP32[i5 + (i7 * 52 | 0) + 4 >> 2] = i2;
+ i6 = (HEAP32[i8 + 72 >> 2] | 0) + (i3 << 3) | 0;
+ HEAP32[i6 >> 2] = (HEAP32[i6 >> 2] | 0) + 1;
+ __ZN4Cube6putPicEiii(i8, i3, i2, i7);
+ i8 = 1;
+ return i8 | 0;
 }
 
 function __ZN7SlvCube9transformERKNSt3__16vectorIiNS0_9allocatorIiEEEE(i12, i7) {
@@ -44816,76 +44813,6 @@ function ___cxx_global_array_dtor85(i1) {
  return;
 }
 
-function __ZN4Cube5clearEi(i8, i12) {
- i8 = i8 | 0;
- i12 = i12 | 0;
- var i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i9 = 0, i10 = 0, i11 = 0;
- i1 = HEAP32[i8 + 76 >> 2] | 0;
- i3 = HEAP32[i8 + 72 >> 2] | 0;
- if ((i1 | 0) != (i3 | 0)) {
-  i1 = i1 - i3 >> 3;
-  i2 = 0;
-  do {
-   HEAP32[i3 + (i2 << 3) >> 2] = 0;
-   i2 = i2 + 1 | 0;
-  } while (i2 >>> 0 < i1 >>> 0);
- }
- i7 = i8 + 36 | 0;
- i1 = HEAP32[i7 >> 2] | 0;
- if ((HEAP32[i1 + 24 >> 2] | 0) > 0) {
-  i5 = i8 + 60 | 0;
-  i6 = 0;
-  do {
-   i3 = HEAP32[i5 >> 2] | 0;
-   HEAP32[i3 + (i6 * 52 | 0) >> 2] = -1;
-   HEAP32[i3 + (i6 * 52 | 0) + 4 >> 2] = 0;
-   i1 = HEAP32[i3 + (i6 * 52 | 0) + 28 >> 2] | 0;
-   i2 = (HEAP32[i3 + (i6 * 52 | 0) + 32 >> 2] | 0) - i1 | 0;
-   if ((i2 | 0) > 0) _memset(i1 | 0, 0, ((i2 | 0) > 4 ? i2 : 4) | 0) | 0;
-   HEAP32[i3 + (i6 * 52 | 0) + 24 >> 2] = 0;
-   i4 = HEAP32[i3 + (i6 * 52 | 0) + 40 >> 2] | 0;
-   i1 = i3 + (i6 * 52 | 0) + 44 | 0;
-   i2 = HEAP32[i1 >> 2] | 0;
-   if ((i2 | 0) != (i4 | 0)) HEAP32[i1 >> 2] = i2 + (~((i2 + -8 - i4 | 0) >>> 3) << 3);
-   i6 = i6 + 1 | 0;
-   i1 = HEAP32[i7 >> 2] | 0;
-  } while ((i6 | 0) < (HEAP32[i1 + 24 >> 2] | 0));
- }
- i9 = i1 + 12 | 0;
- i2 = HEAP32[i9 >> 2] | 0;
- if ((i2 | 0) <= 0) return;
- i10 = i8 + 40 | 0;
- i11 = i8 + 52 | 0;
- i8 = i8 + 56 | 0;
- i7 = i1 + 16 | 0;
- i6 = i1 + 20 | 0;
- i1 = HEAP32[i7 >> 2] | 0;
- i5 = 0;
- do {
-  if ((i1 | 0) > 0) {
-   i2 = HEAP32[i6 >> 2] | 0;
-   i4 = 0;
-   do {
-    if ((i2 | 0) > 0) {
-     i1 = HEAP32[i8 >> 2] | 0;
-     i3 = 0;
-     do {
-      i2 = (Math_imul(HEAP32[i10 >> 2] | 0, i4) | 0) + i5 | 0;
-      HEAP32[i1 + (i2 + (Math_imul(HEAP32[i11 >> 2] | 0, i3) | 0) << 2) >> 2] = i12;
-      i3 = i3 + 1 | 0;
-      i2 = HEAP32[i6 >> 2] | 0;
-     } while ((i3 | 0) < (i2 | 0));
-     i1 = HEAP32[i7 >> 2] | 0;
-    }
-    i4 = i4 + 1 | 0;
-   } while ((i4 | 0) < (i1 | 0));
-   i2 = HEAP32[i9 >> 2] | 0;
-  }
-  i5 = i5 + 1 | 0;
- } while ((i5 | 0) < (i2 | 0));
- return;
-}
-
 function __ZN4Mat46rotateEffff(i16, d1, d3, d4, d11) {
  i16 = i16 | 0;
  d1 = +d1;
@@ -45108,6 +45035,75 @@ function __ZN8tinyxml27XMLNodeD2Ev(i8) {
  HEAP32[i1 >> 2] = 0;
  i8 = i8 + 20 | 0;
  HEAP32[i8 >> 2] = 0;
+ return;
+}
+
+function __ZN4Cube5clearEi(i7, i12) {
+ i7 = i7 | 0;
+ i12 = i12 | 0;
+ var i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i8 = 0, i9 = 0, i10 = 0, i11 = 0;
+ i1 = HEAP32[i7 + 76 >> 2] | 0;
+ i3 = HEAP32[i7 + 72 >> 2] | 0;
+ if ((i1 | 0) != (i3 | 0)) {
+  i1 = i1 - i3 >> 3;
+  i2 = 0;
+  do {
+   HEAP32[i3 + (i2 << 3) >> 2] = 0;
+   i2 = i2 + 1 | 0;
+  } while (i2 >>> 0 < i1 >>> 0);
+ }
+ i6 = i7 + 36 | 0;
+ i1 = HEAP32[i6 >> 2] | 0;
+ if ((HEAP32[i1 + 24 >> 2] | 0) > 0) {
+  i4 = i7 + 60 | 0;
+  i5 = 0;
+  do {
+   i2 = HEAP32[i4 >> 2] | 0;
+   HEAP32[i2 + (i5 * 52 | 0) >> 2] = -1;
+   HEAP32[i2 + (i5 * 52 | 0) + 4 >> 2] = 0;
+   i1 = HEAP32[i2 + (i5 * 52 | 0) + 28 >> 2] | 0;
+   _memset(i1 | 0, 0, (HEAP32[i2 + (i5 * 52 | 0) + 32 >> 2] | 0) - i1 | 0) | 0;
+   HEAP32[i2 + (i5 * 52 | 0) + 24 >> 2] = 0;
+   i1 = HEAP32[i2 + (i5 * 52 | 0) + 40 >> 2] | 0;
+   i2 = i2 + (i5 * 52 | 0) + 44 | 0;
+   i3 = HEAP32[i2 >> 2] | 0;
+   if ((i3 | 0) != (i1 | 0)) HEAP32[i2 >> 2] = i3 + (~((i3 + -8 - i1 | 0) >>> 3) << 3);
+   i5 = i5 + 1 | 0;
+   i1 = HEAP32[i6 >> 2] | 0;
+  } while ((i5 | 0) < (HEAP32[i1 + 24 >> 2] | 0));
+ }
+ i9 = i1 + 12 | 0;
+ i2 = HEAP32[i9 >> 2] | 0;
+ if ((i2 | 0) <= 0) return;
+ i10 = i7 + 40 | 0;
+ i11 = i7 + 52 | 0;
+ i8 = i7 + 56 | 0;
+ i7 = i1 + 16 | 0;
+ i6 = i1 + 20 | 0;
+ i1 = HEAP32[i7 >> 2] | 0;
+ i5 = 0;
+ do {
+  if ((i1 | 0) > 0) {
+   i2 = HEAP32[i6 >> 2] | 0;
+   i4 = 0;
+   do {
+    if ((i2 | 0) > 0) {
+     i1 = HEAP32[i8 >> 2] | 0;
+     i3 = 0;
+     do {
+      i2 = (Math_imul(HEAP32[i10 >> 2] | 0, i4) | 0) + i5 | 0;
+      HEAP32[i1 + (i2 + (Math_imul(HEAP32[i11 >> 2] | 0, i3) | 0) << 2) >> 2] = i12;
+      i3 = i3 + 1 | 0;
+      i2 = HEAP32[i6 >> 2] | 0;
+     } while ((i3 | 0) < (i2 | 0));
+     i1 = HEAP32[i7 >> 2] | 0;
+    }
+    i4 = i4 + 1 | 0;
+   } while ((i4 | 0) < (i1 | 0));
+   i2 = HEAP32[i9 >> 2] | 0;
+  }
+  i5 = i5 + 1 | 0;
+ } while ((i5 | 0) < (i2 | 0));
  return;
 }
 
@@ -48308,6 +48304,67 @@ function __ZN12BaseGLWidgetD2Ev(i6) {
  return;
 }
 
+function __ZNSt3__16vectorIcNS_9allocatorIcEEE8__appendEj(i9, i2) {
+ i9 = i9 | 0;
+ i2 = i2 | 0;
+ var i1 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i8 = 0, i10 = 0;
+ i8 = i9 + 8 | 0;
+ i4 = HEAP32[i8 >> 2] | 0;
+ i10 = i9 + 4 | 0;
+ i1 = HEAP32[i10 >> 2] | 0;
+ i3 = i1;
+ if ((i4 - i3 | 0) >>> 0 >= i2 >>> 0) {
+  do {
+   HEAP8[i1 >> 0] = 0;
+   i1 = (HEAP32[i10 >> 2] | 0) + 1 | 0;
+   HEAP32[i10 >> 2] = i1;
+   i2 = i2 + -1 | 0;
+  } while ((i2 | 0) != 0);
+  return;
+ }
+ i1 = HEAP32[i9 >> 2] | 0;
+ i3 = i3 - i1 + i2 | 0;
+ if ((i3 | 0) < 0) __ZNKSt3__120__vector_base_commonILb1EE20__throw_length_errorEv(i9);
+ i5 = i1;
+ i1 = i4 - i5 | 0;
+ if (i1 >>> 0 < 1073741823) {
+  i1 = i1 << 1;
+  i1 = i1 >>> 0 < i3 >>> 0 ? i3 : i1;
+  i3 = (HEAP32[i10 >> 2] | 0) - i5 | 0;
+  if (!i1) {
+   i4 = 0;
+   i6 = 0;
+  } else i7 = 8;
+ } else {
+  i1 = 2147483647;
+  i3 = (HEAP32[i10 >> 2] | 0) - i5 | 0;
+  i7 = 8;
+ }
+ if ((i7 | 0) == 8) {
+  i4 = i1;
+  i6 = __Znwj(i1) | 0;
+ }
+ i1 = i6 + i3 | 0;
+ i5 = i6 + i4 | 0;
+ i4 = i1;
+ do {
+  HEAP8[i4 >> 0] = 0;
+  i4 = i1 + 1 | 0;
+  i1 = i4;
+  i2 = i2 + -1 | 0;
+ } while ((i2 | 0) != 0);
+ i2 = HEAP32[i9 >> 2] | 0;
+ i4 = (HEAP32[i10 >> 2] | 0) - i2 | 0;
+ i7 = i6 + (i3 - i4) | 0;
+ _memcpy(i7 | 0, i2 | 0, i4 | 0) | 0;
+ HEAP32[i9 >> 2] = i7;
+ HEAP32[i10 >> 2] = i1;
+ HEAP32[i8 >> 2] = i5;
+ if (!i2) return;
+ __ZdlPv(i2);
+ return;
+}
+
 function __ZNSt3__16vectorI4Vec3NS_9allocatorIS1_EEE21__push_back_slow_pathIRKS1_EEvOT_(i11, i10) {
  i11 = i11 | 0;
  i10 = i10 | 0;
@@ -49222,52 +49279,6 @@ function __ZNSt3__112basic_stringIwNS_11char_traitsIwEENS_9allocatorIwEEE6append
   }
  } while (0);
  return i9 | 0;
-}
-
-function __ZNSt3__16vectorI10ShapePlaceNS_9allocatorIS1_EEE6resizeEj(i4, i3) {
- i4 = i4 | 0;
- i3 = i3 | 0;
- var i1 = 0, i2 = 0, i5 = 0, i6 = 0, i7 = 0;
- i7 = i4 + 4 | 0;
- i5 = HEAP32[i7 >> 2] | 0;
- i1 = HEAP32[i4 >> 2] | 0;
- i2 = (i5 - i1 | 0) / 52 | 0;
- if (i2 >>> 0 < i3 >>> 0) {
-  __ZNSt3__16vectorI10ShapePlaceNS_9allocatorIS1_EEE8__appendEj(i4, i3 - i2 | 0);
-  return;
- }
- if (i2 >>> 0 <= i3 >>> 0) return;
- i6 = i1 + (i3 * 52 | 0) | 0;
- if ((i5 | 0) == (i6 | 0)) return;
- do {
-  HEAP32[i7 >> 2] = i5 + -52;
-  i1 = HEAP32[i5 + -12 >> 2] | 0;
-  i2 = i1;
-  if (i1) {
-   i3 = i5 + -8 | 0;
-   i4 = HEAP32[i3 >> 2] | 0;
-   if ((i4 | 0) != (i1 | 0)) HEAP32[i3 >> 2] = i4 + (~((i4 + -8 - i2 | 0) >>> 3) << 3);
-   __ZdlPv(i1);
-  }
-  i1 = HEAP32[i5 + -24 >> 2] | 0;
-  i2 = i1;
-  if (i1) {
-   i3 = i5 + -20 | 0;
-   i4 = HEAP32[i3 >> 2] | 0;
-   if ((i4 | 0) != (i1 | 0)) HEAP32[i3 >> 2] = i4 + (~((i4 + -4 - i2 | 0) >>> 2) << 2);
-   __ZdlPv(i1);
-  }
-  i3 = HEAP32[i5 + -40 >> 2] | 0;
-  i4 = i3;
-  if (i3) {
-   i1 = i5 + -36 | 0;
-   i2 = HEAP32[i1 >> 2] | 0;
-   if ((i2 | 0) != (i3 | 0)) HEAP32[i1 >> 2] = i2 + (~((i2 + -4 - i4 | 0) >>> 2) << 2);
-   __ZdlPv(i3);
-  }
-  i5 = HEAP32[i7 >> 2] | 0;
- } while ((i5 | 0) != (i6 | 0));
- return;
 }
 
 function __ZNSt3__16vectorIiNS_9allocatorIiEEE8__appendEj(i11, i10) {
@@ -50249,6 +50260,48 @@ function __ZNSt3__16vectorIP11ShaderParamNS_9allocatorIS2_EEE21__push_back_slow_
  return;
 }
 
+function __ZNSt3__16vectorI10ShapePlaceNS_9allocatorIS1_EEE6resizeEj(i4, i3) {
+ i4 = i4 | 0;
+ i3 = i3 | 0;
+ var i1 = 0, i2 = 0, i5 = 0, i6 = 0, i7 = 0;
+ i7 = i4 + 4 | 0;
+ i5 = HEAP32[i7 >> 2] | 0;
+ i1 = HEAP32[i4 >> 2] | 0;
+ i2 = (i5 - i1 | 0) / 52 | 0;
+ if (i2 >>> 0 < i3 >>> 0) {
+  __ZNSt3__16vectorI10ShapePlaceNS_9allocatorIS1_EEE8__appendEj(i4, i3 - i2 | 0);
+  return;
+ }
+ if (i2 >>> 0 <= i3 >>> 0) return;
+ i6 = i1 + (i3 * 52 | 0) | 0;
+ if ((i5 | 0) == (i6 | 0)) return;
+ do {
+  HEAP32[i7 >> 2] = i5 + -52;
+  i1 = HEAP32[i5 + -12 >> 2] | 0;
+  i2 = i1;
+  if (i1) {
+   i3 = i5 + -8 | 0;
+   i4 = HEAP32[i3 >> 2] | 0;
+   if ((i4 | 0) != (i1 | 0)) HEAP32[i3 >> 2] = i4 + (~((i4 + -8 - i2 | 0) >>> 3) << 3);
+   __ZdlPv(i1);
+  }
+  i1 = HEAP32[i5 + -24 >> 2] | 0;
+  if (i1) {
+   i2 = i5 + -20 | 0;
+   if ((HEAP32[i2 >> 2] | 0) != (i1 | 0)) HEAP32[i2 >> 2] = i1;
+   __ZdlPv(i1);
+  }
+  i2 = HEAP32[i5 + -40 >> 2] | 0;
+  if (i2) {
+   i1 = i5 + -36 | 0;
+   if ((HEAP32[i1 >> 2] | 0) != (i2 | 0)) HEAP32[i1 >> 2] = i2;
+   __ZdlPv(i2);
+  }
+  i5 = HEAP32[i7 >> 2] | 0;
+ } while ((i5 | 0) != (i6 | 0));
+ return;
+}
+
 function __ZNSt3__16vectorIP9GlTextureNS_9allocatorIS2_EEE21__push_back_slow_pathIS2_EEvOT_(i11, i10) {
  i11 = i11 | 0;
  i10 = i10 | 0;
@@ -50375,48 +50428,6 @@ function __ZNSt3__16vectorIP6ImgBufNS_9allocatorIS2_EEE21__push_back_slow_pathIR
  HEAP32[i9 >> 2] = i4 + (i5 << 2);
  if (!i8) return;
  __ZdlPv(i8);
- return;
-}
-
-function __ZNSt3__113__vector_baseI10ShapePlaceNS_9allocatorIS1_EEED2Ev(i8) {
- i8 = i8 | 0;
- var i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0;
- i1 = HEAP32[i8 >> 2] | 0;
- if (!i1) return;
- i7 = i8 + 4 | 0;
- i2 = HEAP32[i7 >> 2] | 0;
- if ((i2 | 0) != (i1 | 0)) {
-  do {
-   HEAP32[i7 >> 2] = i2 + -52;
-   i6 = HEAP32[i2 + -12 >> 2] | 0;
-   i3 = i6;
-   if (i6) {
-    i4 = i2 + -8 | 0;
-    i5 = HEAP32[i4 >> 2] | 0;
-    if ((i5 | 0) != (i6 | 0)) HEAP32[i4 >> 2] = i5 + (~((i5 + -8 - i3 | 0) >>> 3) << 3);
-    __ZdlPv(i6);
-   }
-   i3 = HEAP32[i2 + -24 >> 2] | 0;
-   i4 = i3;
-   if (i3) {
-    i5 = i2 + -20 | 0;
-    i6 = HEAP32[i5 >> 2] | 0;
-    if ((i6 | 0) != (i3 | 0)) HEAP32[i5 >> 2] = i6 + (~((i6 + -4 - i4 | 0) >>> 2) << 2);
-    __ZdlPv(i3);
-   }
-   i4 = HEAP32[i2 + -40 >> 2] | 0;
-   i5 = i4;
-   if (i4) {
-    i2 = i2 + -36 | 0;
-    i3 = HEAP32[i2 >> 2] | 0;
-    if ((i3 | 0) != (i4 | 0)) HEAP32[i2 >> 2] = i3 + (~((i3 + -4 - i5 | 0) >>> 2) << 2);
-    __ZdlPv(i4);
-   }
-   i2 = HEAP32[i7 >> 2] | 0;
-  } while ((i2 | 0) != (i1 | 0));
-  i1 = HEAP32[i8 >> 2] | 0;
- }
- __ZdlPv(i1);
  return;
 }
 
@@ -50816,46 +50827,6 @@ function __ZNSt3__112basic_stringIwNS_11char_traitsIwEENS_9allocatorIwEEE21__gro
  i10 = i1 + i7 | 0;
  HEAP32[i11 + 4 >> 2] = i10;
  HEAP32[i3 + (i10 << 2) >> 2] = 0;
- return;
-}
-
-function __ZNSt3__114__split_bufferI10ShapePlaceRNS_9allocatorIS1_EEED2Ev(i8) {
- i8 = i8 | 0;
- var i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0;
- i6 = HEAP32[i8 + 4 >> 2] | 0;
- i7 = i8 + 8 | 0;
- i1 = HEAP32[i7 >> 2] | 0;
- if ((i1 | 0) != (i6 | 0)) do {
-  HEAP32[i7 >> 2] = i1 + -52;
-  i5 = HEAP32[i1 + -12 >> 2] | 0;
-  i2 = i5;
-  if (i5) {
-   i3 = i1 + -8 | 0;
-   i4 = HEAP32[i3 >> 2] | 0;
-   if ((i4 | 0) != (i5 | 0)) HEAP32[i3 >> 2] = i4 + (~((i4 + -8 - i2 | 0) >>> 3) << 3);
-   __ZdlPv(i5);
-  }
-  i2 = HEAP32[i1 + -24 >> 2] | 0;
-  i3 = i2;
-  if (i2) {
-   i4 = i1 + -20 | 0;
-   i5 = HEAP32[i4 >> 2] | 0;
-   if ((i5 | 0) != (i2 | 0)) HEAP32[i4 >> 2] = i5 + (~((i5 + -4 - i3 | 0) >>> 2) << 2);
-   __ZdlPv(i2);
-  }
-  i3 = HEAP32[i1 + -40 >> 2] | 0;
-  i4 = i3;
-  if (i3) {
-   i1 = i1 + -36 | 0;
-   i2 = HEAP32[i1 >> 2] | 0;
-   if ((i2 | 0) != (i3 | 0)) HEAP32[i1 >> 2] = i2 + (~((i2 + -4 - i4 | 0) >>> 2) << 2);
-   __ZdlPv(i3);
-  }
-  i1 = HEAP32[i7 >> 2] | 0;
- } while ((i1 | 0) != (i6 | 0));
- i1 = HEAP32[i8 >> 2] | 0;
- if (!i1) return;
- __ZdlPv(i1);
  return;
 }
 
@@ -51400,6 +51371,44 @@ function __ZNKSt3__18time_putIwNS_19ostreambuf_iteratorIwNS_11char_traitsIwEEEEE
  return i1 | 0;
 }
 
+function __ZNSt3__113__vector_baseI10ShapePlaceNS_9allocatorIS1_EEED2Ev(i8) {
+ i8 = i8 | 0;
+ var i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0;
+ i1 = HEAP32[i8 >> 2] | 0;
+ if (!i1) return;
+ i7 = i8 + 4 | 0;
+ i2 = HEAP32[i7 >> 2] | 0;
+ if ((i2 | 0) != (i1 | 0)) {
+  do {
+   HEAP32[i7 >> 2] = i2 + -52;
+   i6 = HEAP32[i2 + -12 >> 2] | 0;
+   i3 = i6;
+   if (i6) {
+    i4 = i2 + -8 | 0;
+    i5 = HEAP32[i4 >> 2] | 0;
+    if ((i5 | 0) != (i6 | 0)) HEAP32[i4 >> 2] = i5 + (~((i5 + -8 - i3 | 0) >>> 3) << 3);
+    __ZdlPv(i6);
+   }
+   i3 = HEAP32[i2 + -24 >> 2] | 0;
+   if (i3) {
+    i4 = i2 + -20 | 0;
+    if ((HEAP32[i4 >> 2] | 0) != (i3 | 0)) HEAP32[i4 >> 2] = i3;
+    __ZdlPv(i3);
+   }
+   i3 = HEAP32[i2 + -40 >> 2] | 0;
+   if (i3) {
+    i2 = i2 + -36 | 0;
+    if ((HEAP32[i2 >> 2] | 0) != (i3 | 0)) HEAP32[i2 >> 2] = i3;
+    __ZdlPv(i3);
+   }
+   i2 = HEAP32[i7 >> 2] | 0;
+  } while ((i2 | 0) != (i1 | 0));
+  i1 = HEAP32[i8 >> 2] | 0;
+ }
+ __ZdlPv(i1);
+ return;
+}
+
 function __ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEE3putEc(i7, i5) {
  i7 = i7 | 0;
  i5 = i5 | 0;
@@ -51576,6 +51585,42 @@ function __ZN6MyFile9seekValueEPKcib(i5, i6, i3, i1) {
  i7 = i1;
  STACKTOP = i8;
  return i7 | 0;
+}
+
+function __ZNSt3__114__split_bufferI10ShapePlaceRNS_9allocatorIS1_EEED2Ev(i8) {
+ i8 = i8 | 0;
+ var i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0;
+ i6 = HEAP32[i8 + 4 >> 2] | 0;
+ i7 = i8 + 8 | 0;
+ i1 = HEAP32[i7 >> 2] | 0;
+ if ((i1 | 0) != (i6 | 0)) do {
+  HEAP32[i7 >> 2] = i1 + -52;
+  i5 = HEAP32[i1 + -12 >> 2] | 0;
+  i2 = i5;
+  if (i5) {
+   i3 = i1 + -8 | 0;
+   i4 = HEAP32[i3 >> 2] | 0;
+   if ((i4 | 0) != (i5 | 0)) HEAP32[i3 >> 2] = i4 + (~((i4 + -8 - i2 | 0) >>> 3) << 3);
+   __ZdlPv(i5);
+  }
+  i2 = HEAP32[i1 + -24 >> 2] | 0;
+  if (i2) {
+   i3 = i1 + -20 | 0;
+   if ((HEAP32[i3 >> 2] | 0) != (i2 | 0)) HEAP32[i3 >> 2] = i2;
+   __ZdlPv(i2);
+  }
+  i2 = HEAP32[i1 + -40 >> 2] | 0;
+  if (i2) {
+   i1 = i1 + -36 | 0;
+   if ((HEAP32[i1 >> 2] | 0) != (i2 | 0)) HEAP32[i1 >> 2] = i2;
+   __ZdlPv(i2);
+  }
+  i1 = HEAP32[i7 >> 2] | 0;
+ } while ((i1 | 0) != (i6 | 0));
+ i1 = HEAP32[i8 >> 2] | 0;
+ if (!i1) return;
+ __ZdlPv(i1);
+ return;
 }
 
 function __ZN16ModelControlBase7initTexEv(i1) {
