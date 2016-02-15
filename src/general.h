@@ -125,6 +125,8 @@ private:
 #define M_ASSERT(cond)
 #endif
 
+#define M_CHECK(cond) do { if (!(cond)) throw HCException(#cond); } while(0)
+
 void complain(const char* msg);
 
 // profile command line VC6

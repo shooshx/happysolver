@@ -77,7 +77,7 @@ protected:
 
     /// number of valid tiles in m_curMarkedTiles
     bool m_inFade;
-    float m_fadeFactor;
+
 
     /// when a D2 error occur the offending sides are marked by blinking cylinders
     /// to make the blinking effect we need to remember theie current alpha and
@@ -100,5 +100,6 @@ protected:
 public:
     Vec3 m_buildmin, m_buildmax;
     float m_preZoomFactor = 1.0;
+    float m_fadeFactor = 0.0;
 
 };

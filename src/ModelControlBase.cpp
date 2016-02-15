@@ -176,9 +176,12 @@ void ModelControlBase::drawTargets(bool inChoise)
 
     ProgramUser u(sel);
 
-    if (!inChoise)
+    if (!inChoise) {
         m_progNoise.lightPos.set(Vec3(0.0f, 0.0f, 1000.0f));
+        m_progNoise.fadeFactor.set(m_buildCtrl.m_fadeFactor);
+    }
 
+    
 
     paint(m_bgl, m_doc, slv, inChoise, m_nSingleChoise, m_doc->getUpToStep());
 

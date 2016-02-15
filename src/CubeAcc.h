@@ -69,11 +69,61 @@ private:
 	vector<UseEntry> m_dt;    // number of used pieces of each PicType
 };
 
+
+
+class BitVector
+{
+public:
+    BitVector()
+    {}
+    ~BitVector() {
+        delete[] m_d;
+    }
+
+    void resize(int szbits) {
+        m_intsz = (szbits + 31) / 32;
+        m_d = new int[m_intsz];
+        clear();
+    }
+    bool get(int i) {
+        int p = i / 32;
+        int n = i % 32;
+        return ((m_d[p] >> n) & 1) == 1;
+    }
+    void set(int i, bool v) {
+        int p = i / 32;
+        int n = i % 32;
+        int bit = 1 << n;
+        if (v)
+            m_d[p] |= bit;
+        else
+            m_d[p] &= ~bit;
+    }
+    void clear() {
+        memset(m_d, 0, m_intsz * 32);
+    }
+
+private:
+    int m_intsz = 0;
+    int* m_d = nullptr;
+};
+
+
+#define ROUND_UP(N, S) ((((N) + (S) - 1) / (S)) * (S))
+
+
 class TriedPieces {
 public:
 	TriedPieces() :cnt(0) {}
 	void realloc(int newsize) {
-		m_dt.resize(newsize);
+        int sz = ROUND_UP(newsize, 4);
+       // cout << "alloc-sz=" << sz << endl;
+        m_dt.resize( sz );
+#ifdef EMSCRIPTEN
+        if (newsize > 0) {
+            M_CHECK(( ((int)&m_dt[0]) % 4) == 0);
+        }
+#endif
 		clear();
 	}
 
@@ -90,7 +140,12 @@ public:
 	int cnt; // total count of tried pieces
 
 private:
-	vector<int> m_dt;
+#ifdef EMSCRIPTEN
+    vector<char> m_dt;
+#else
+    vector<int> m_dt;
+#endif
+
 };
 
 

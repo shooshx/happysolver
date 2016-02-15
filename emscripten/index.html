@@ -1,19 +1,20 @@
 <!doctype html>
 <html><head>
-<script>
+<!--<script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
   ga('create', 'UA-2231125-5', 'auto');
   ga('send', 'pageview');
-</script>
-<script id="stdpcs" src="j_stdpcs.xml"></script>  
+</script> -->
 
+
+<script id="stdpcs" src="stdpcs.js"></script>  
 <script id="unimesh2" src="unified_mesh.js"></script>  
+<script id="one_cube" src="one_piece_cube.js"></script>    
+<script id="one_cube" src="one_marble_cube.js"></script>    
 
-<script id="one_cube" src="j_one_piece_cube.txt"></script>    
-<script id="one_cube" src="j_one_marble_cube.txt"></script>    
 
 <script type="text/javascript">
 
@@ -28,6 +29,15 @@ var loadSolution, resize, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseWhe
 var ctrlPressed = false;
     
 function start() {
+
+    picsAddFamily("Happy Cube", "hc")
+    picsAddCube("Blue", "hc_blue")
+    picsAddCube("Red", "hc_red")
+    picsAddCube("Purple", "hc_purple")
+    picsAddFamily("Profi Cube", "pc")
+    picsAddCube("AAAA", "pc_aaa")
+    picsAddCube("BBBB", "pc_bbbb")
+    //return
 
     Module.ccall('cpp_start', null);
     
@@ -45,9 +55,9 @@ function start() {
     getTms = Module.cwrap('getTms', 'number', [])
     solveGo = Module.cwrap('solveGo', null, [])
     
-    //loadSolution(one_piece_cube_text)
+    loadSolution(one_piece_cube_text)
     //loadSolution(one_marble_cube_text)
-    solveGo()
+    //solveGo()
     
     resize(mycanvas.width, mycanvas.height)
     
@@ -62,6 +72,8 @@ function start() {
     // start drawing
     requestAnimationFrame(animProgress)
     setInterval(sampleTms, 1000)
+    
+
 }
 
 function handleMouseDown(event) {
@@ -79,10 +91,23 @@ function handleMouseDblClick(event) {
 function handleMouseWheel(event) {
     mouseWheel(-event.deltaY / 16)
 }
-
 function handleKey(event) {
     ctrlPressed = event.ctrlKey;
     mouseMove(0, ctrlPressed?1:0, -1, -1)
+}
+
+var lastFamAdded = ''
+
+function picsAddFamily(famName, id) {
+    var picsCtrl = '<div id="' + id + '_frame" class="toppic">' + famName + '\
+    <img class="toppic_icon" id="' +  id + '_img" src="arrow_up.png" onclick="pic_rolldown('+ id + '_frame, this)"/> \
+    </div>'
+    side_rel.innerHTML += picsCtrl
+    lastFamAdded = id
+}
+function picsAddCube(cubeName, id) {
+    var txt = '<div id="' + id + '_inframe" class="' + lastFamAdded + 'piccube">' + cubeName + '</div>'
+    document.getElementById(lastFamAdded + "_frame").innerHTML += txt
 }
 
 function registerTexBind(imgname, obj) {
@@ -134,13 +159,63 @@ function sampleTms() {
     lastTms = tms
 }
 
-</script>
 
+function pic_rolldown(elem, elemImg) {
+    if (elem.isDown) {
+        elem.isDown = false
+        elem.style.height = ""
+        elemImg.src = "arrow_up.png"
+    }
+    else {
+        elem.isDown = true
+        elem.style.height = "200px"
+        elemImg.src = "arrow_down.png"
+    }
+}
+
+
+var testt = "adfadfd\
+sdfsfdf"
+
+</script>
 <script src="js_main.js"></script>
+<style>
+#side_ctrl {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 200px;
+    background: #cbcfff;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+.toppic {
+    margin: 5px;
+    background: #eeeeff;
+    font-family: Verdana;
+    padding: 4px;
+    border-radius: 5px;
+}
+.in_rel {
+    position:relative; 
+    width:100%; 
+    height:100%;
+}
+.toppic_icon {
+    float: right;
+
+}
+</style>
 </head>
 <body onload="start();">
+    <div id="side_ctrl"><div id="side_rel" class="in_rel">
+
+    </div></div>
     <canvas id="mycanvas" width="800" height="700"></canvas>
     <img id="noisetex" src='cubeTex.png' style="display:none;"/>
+    <img src="arrow_up.png" style="display:none;"/>
+    <img src="arrow_down.png" style="display:none;"/>
     <div id="stat"></div>
 </body>
 </html>

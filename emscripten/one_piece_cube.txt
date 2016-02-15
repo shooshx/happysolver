@@ -1,4 +1,3 @@
-var one_piece_cube_text = `
 <Generate definition>
 :Size = 50 50 50 
 :LimitsX = 23 27 23 26 23 26 
@@ -137,4 +136,4 @@ var one_piece_cube_text = `
 ;numpic = 6 
 ;grp = 0 1 2 3 4 5 
 ;pic = 2 0 0 3 4 2 
-`
+

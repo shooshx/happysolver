@@ -128,7 +128,7 @@ const char *code_cubesNoise_frag_glsl = " \
       } \n\
    \n\
       if (flag != 0) { \n\
-          gl_FragColor = vec4(0.8, color.g * 0.7, color.b * 0.7, 1.0); \n\
+          gl_FragColor = vec4(color.g + (0.8 - color.g)*fadeFactor, color.g - (0.3 * fadeFactor), color.b - (0.3 * fadeFactor), 1.0); \n\
           return; \n\
       } \n\
       gl_FragColor = vec4(color, 1.0); \n\

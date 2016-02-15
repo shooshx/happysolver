@@ -2,8 +2,11 @@ SINGLE-VIEW - todo
 -------------
 changing pic selection in the middle
 better start tile - only tiles that were in the last solution
-illegal side
+illegal side cylinder
 lines for black pieces
+firefox
+    flicker
+    zoom
 
 
 NEW DEAL - things that don't work

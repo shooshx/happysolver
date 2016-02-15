@@ -7,7 +7,7 @@
 		<texture filename=":/new_genious128.png" in3d="true"/>
 	</textures>
 	<outlines>
-		<family name="Happy Cube" index="2" onResetSetCount="0" size="8mm" icon="images/sampleHappyCube.png">
+		<family name="Happy Cube" index="2" onResetSetCount="1" size="8mm" icon="images/sampleHappyCube.png">
 			<group name="HC-Milano"> <!-- blue -->
 				<fill type="COLOR" k="0" r="73" g="129" b="255"/>
 				<piece>1 0 1 0 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>

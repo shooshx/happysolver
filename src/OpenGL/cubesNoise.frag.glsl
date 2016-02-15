@@ -125,7 +125,7 @@ void main (void)
     }
 
     if (flag != 0) {
-        gl_FragColor = vec4(0.8, color.g * 0.7, color.b * 0.7, 1.0);
+        gl_FragColor = vec4(color.g + (0.8 - color.g)*fadeFactor, color.g - (0.3 * fadeFactor), color.b - (0.3 * fadeFactor), 1.0);
         return;
     }
     gl_FragColor = vec4(color, 1.0);

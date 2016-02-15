@@ -674,9 +674,14 @@ bool BuildControlBase::choiseMouseMove(int choise, bool ctrlPressed)
                         {
                             build.set(bb[j], theget | SHOW_REOMOVE);
                         }
-                        int fc = m_doc->getCurrentShape()->getShapeFcInd(bb[j]);
-                        if (fc != -1) {
-                            m_doc->m_flagPiece[fc] = 1;
+
+                        auto shp = m_doc->getCurrentShape();
+                        if (shp != nullptr)
+                        {
+                            int fc = shp->getShapeFcInd(bb[j]);
+                            if (fc != -1) {
+                                m_doc->m_flagPiece[fc] = 1;
+                            }
                         }
                     }
                     m_fadeFactor = 0.0f;
