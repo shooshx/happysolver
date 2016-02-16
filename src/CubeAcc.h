@@ -79,13 +79,21 @@ public:
     ~BitVector() {
         delete[] m_d;
     }
+    BitVector(const BitVector& o) : m_bitsz(o.m_bitsz), m_intsz(o.m_intsz) 
+    {
+        m_d = new int[m_intsz];
+        memcpy(m_d, o.m_d, m_intsz * 32);
+    }
+    void operator=(const BitVector&) = delete;
 
     void resize(int szbits) {
+        delete m_d;
+        m_bitsz = szbits;
         m_intsz = (szbits + 31) / 32;
         m_d = new int[m_intsz];
         clear();
     }
-    bool get(int i) {
+    bool get(int i) const {
         int p = i / 32;
         int n = i % 32;
         return ((m_d[p] >> n) & 1) == 1;
@@ -100,40 +108,79 @@ public:
             m_d[p] &= ~bit;
     }
     void clear() {
-        memset(m_d, 0, m_intsz * 32);
+        memset(m_d, 0, m_intsz * 4);
+    }
+    int size() const { 
+        return m_bitsz;
     }
 
 private:
     int m_intsz = 0;
+    int m_bitsz = 0;
     int* m_d = nullptr;
+
 };
 
 
 #define ROUND_UP(N, S) ((((N) + (S) - 1) / (S)) * (S))
 
+//#define EMSCRIPTEN
 
-class TriedPieces {
+class TriedPieces 
+{
 public:
 	TriedPieces() :cnt(0) {}
 	void realloc(int newsize) {
-        int sz = ROUND_UP(newsize, 4);
+       // int sz = ROUND_UP(newsize, 4);
        // cout << "alloc-sz=" << sz << endl;
-        m_dt.resize( sz );
-#ifdef EMSCRIPTEN
-        if (newsize > 0) {
-            M_CHECK(( ((int)&m_dt[0]) % 4) == 0);
-        }
-#endif
+        m_dt.resize(newsize);
 		clear();
 	}
 
-	int size() const { return m_dt.size(); }
+	int size() const { 
+        return m_dt.size(); 
+    }
 
-	bool get(int i) const { return (bool)m_dt[i]; }
-	void set(int i, bool val);
-
+#ifdef EMSCRIPTEN
+    bool get(int i) const {
+        return m_dt.get(i);
+    }
+    void set(int i, bool val) {
+        if (val != m_dt.get(i))
+        {
+            m_dt.set(i, (bool)val);
+            if (val)
+                ++cnt;
+            else
+                --cnt;
+        }
+    }
+#else
+	bool get(int i) const { 
+        return (bool)m_dt[i]; 
+    }
+	void set(int i, bool val) {
+        if (val != (bool)m_dt[i])
+        {
+            m_dt[i] = (bool)val;
+            if (val)
+                ++cnt;
+            else
+                --cnt;
+        }
+    }
+#endif
 	//void multset(const int* rep, const int rpsz);
-	void clear();
+
+    inline void clear()
+    {
+#ifdef EMSCRIPTEN
+        m_dt.clear();
+#else
+        memset(&m_dt[0], 0, m_dt.size() * sizeof(m_dt[0]));
+#endif
+        cnt = 0;
+    }
 
 	bool tryedAll() const { return cnt == m_dt.size(); }
 
@@ -141,26 +188,16 @@ public:
 
 private:
 #ifdef EMSCRIPTEN
-    vector<char> m_dt;
+    BitVector m_dt;
 #else
     vector<int> m_dt;
 #endif
+    
 
 };
 
 
 
-inline void TriedPieces::set(const int i, const bool val)
-{
-	if (val != (bool)m_dt[i])
-	{
-		m_dt[i] = (bool)val;
-		if (val) 
-			++cnt;
-		else 
-			--cnt;
-	}
-}
 
 /// set a number of indexes to true, according to the list supplied.
 /// this list will most likely be the PicType::rep list of

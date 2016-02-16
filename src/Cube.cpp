@@ -254,18 +254,6 @@ bool Cube::isGoodSym(const PicType &pt, int rti, int fc)
 }
 
 
-inline void TriedPieces::clear() 
-{
-#ifdef EMSCRIPTEN
-    int ptr = ((int)(&m_dt[0])) >> 2;
-    int sz = m_dt.size() >> 2;
-    //cout << "sz=" << sz << endl;
-    EM_ASM_( HEAP32.fill(0, $0, $0+$1), ptr, sz );
-#else
-    memset(&m_dt[0], 0, m_dt.size() * sizeof(m_dt[0]));
-#endif
-    cnt = 0;
-}
 
 typedef unsigned int uint;
 

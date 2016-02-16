@@ -92,8 +92,8 @@ inline uint bXor(uint a, uint b)
 typedef vector<int> TTransformVec;
 
 #define DISALLOW_COPY(className) \
-     className(const className &); \
-     className &operator=(const className &)
+     className(const className &) = delete; \
+     className &operator=(const className &) = delete;
 
 
 
