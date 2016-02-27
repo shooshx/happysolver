@@ -54,7 +54,7 @@ const char *code_cubesNoise_frag_glsl = " \
      // gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); \n\
      // return; \n\
    \n\
-     vec3 color; \n\
+     vec3 color = vec3(0.5, 0.5, 0.5); \n\
    \n\
       if (drawtype == 0) { // DRAW_COLOR \n\
           color = colorA * LightIntensity; \n\
@@ -88,7 +88,7 @@ const char *code_cubesNoise_frag_glsl = " \
    \n\
           vec2 t = texOffset.xy + MCposition.yz / (8.0*5.0); \n\
    \n\
-          vec3 color = texture2D(noisef, t).rgb; \n\
+          color = texture2D(noisef, t).rgb; \n\
           if (tx > T_LOW && tx <= T_HIGH) { \n\
               color = mix(color, colorA, smoothstep(T_LOW, T_HIGH, tx)); \n\
           } \n\

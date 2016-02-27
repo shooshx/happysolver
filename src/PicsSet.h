@@ -40,9 +40,10 @@ public:
 	// a reference for the defs this type represents
 	class AddedRef {
 	public:
-		AddedRef(int _addedInd = -1, int _defRot = -1) : addedInd(_addedInd), defRot(_defRot) {}
-		int addedInd; // index to the added list
-		int defRot; // our rtn which is the base shape refers to this rtn in the def. [0,7]
+        AddedRef() {}
+		AddedRef(int _addedInd, int _defRot) : addedInd(_addedInd), defRot(_defRot) {}
+		int addedInd = -1; // index to the added list (in Bucket - pdefs)
+		int defRot = -1; // our rtn which is the base shape refers to this rtn in the def. [0,7]
 	};
 
 	vector<AddedRef> addedInds; ///< the index of the PicDef in the bucket
@@ -62,14 +63,33 @@ public:
 
 class SlvCube;
 
-// reference to a specific rtn in a PicType
+// reference to a specific rtn in a PicType. used in the possibilites array
 class TypeRef {
 public:
-	TypeRef() : typeInd(-1), rtnInd(-1) {}
-	TypeRef(int _typeInd, int _rtnInd) : typeInd(_typeInd), rtnInd(_rtnInd) {}
-	int typeInd; // index in the comp array
-	int rtnInd;  // index in the rtns of a PicType (not absolute rotation)
+	TypeRef() {}
+    TypeRef(int _typeInd, int _rtnInd) : typeInd(_typeInd), rtnInd(_rtnInd) {}
+	int typeInd = -1; // index in the comp array
+    int rtnInd = -1;  // index in the rtns of a PicType (not absolute rotation)
 };
+
+struct PdefRef {
+    PdefRef() {}
+    PdefRef(int _pdefInd, int _defRot) : pdefInd(_pdefInd), defRot(_defRot) {}
+    int pdefInd = -1; 
+    int defRot = -1; // this can be accessed from the Bucket using the above index buts its more conveniet to have it here as well
+};
+
+// reference to a type in allComp
+struct CompRef {
+    CompRef(int aci) : allCompInd(aci) {}
+
+    int count() const { // how many instances of this pieces exist
+        return pdefsInds.size();
+    }
+    int allCompInd = -1;  // which distinct piece in allComp I'm referencing
+    vector<PdefRef> pdefsInds; // added pieces, each already knows its defRot from the comp def
+};
+
 
 /** PicsSet holds all the pieces of an active solving session.
 	When the user hits "Solve It" a PicsSet is constructed with the currently selected
@@ -89,15 +109,20 @@ public:
 	/// used in the initialization of PicBucket
 	PicsSet() : totalRtnCount(0), considerSymetric(false)
 	{}
+
+    const PicType& getComp(int ci) const;
 						
 	const PicDef* getDef(int abs_sc) const;
 
 	vector<PicType> comp;   // compressed list of distinct pieces, with references to the added list
 	vector<AddedPic> added; // all pieces added, by the order they were added
 
+    vector<CompRef> compRef; // distict pieces added to this set, reference to the allComp array in PicBucket
+
 	int totalRtnCount; // needed as the maximum size of tryd array
 	bool considerSymetric;
 
 public:
 	void add(int defInd, bool considerSym);
+    void addRef(int defInd);
 };

@@ -10,7 +10,7 @@ var stdpcs_text = '<?xml version="1.0" encoding="utf-8"?>\n\
 		<family name="Happy Cube" index="2" onResetSetCount="1" size="8mm" icon="images/sampleHappyCube.png">\n\
 			<group name="HC-Milano"> <!-- blue -->\n\
 				<fill type="COLOR" k="0" r="73" g="129" b="255"/>\n\
-				<piece>1 0 1 0 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>\n\
+				<piece>1 0 1 0 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece> <!--0-->\n\
 				<piece>0 1 0 1 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  1 1 0 1 0</piece>\n\
 				<piece>0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>\n\
 				<piece>0 1 0 1 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 1 0 1 1</piece>\n\
@@ -19,7 +19,7 @@ var stdpcs_text = '<?xml version="1.0" encoding="utf-8"?>\n\
 			</group>\n\
 			<group name="HC-NewYork"> <!-- green -->\n\
 				<fill type="COLOR" k="0" r="43" g="221" b="56"/>\n\
-				<piece>1 1 0 1 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>\n\
+				<piece>1 1 0 1 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece> <!--6-->\n\
 				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 0 0</piece>\n\
 				<piece>0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 1</piece>\n\
 				<piece>0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 0</piece>\n\
@@ -28,7 +28,7 @@ var stdpcs_text = '<?xml version="1.0" encoding="utf-8"?>\n\
 			</group>\n\
 			<group name="HC-Tokyo"> <!-- yellow -->\n\
 				<fill type="COLOR" k="0" r="255" g="255" b="0"/>\n\
-				<piece>0 0 1 1 1  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 0</piece>\n\
+				<piece>0 0 1 1 1  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 0</piece> <!--12-->\n\
 				<piece>0 0 0 1 1  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 0</piece>\n\
 				<piece>0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 1</piece>\n\
 				<piece>0 0 1 0 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  0 1 0 1 0</piece>\n\
@@ -37,7 +37,7 @@ var stdpcs_text = '<?xml version="1.0" encoding="utf-8"?>\n\
 			</group>\n\
 			<group name="HC-Amsterdam"> <!-- orange -->\n\
 				<fill type="COLOR" k="0" r="255" g="140" n="0"/>\n\
-				<piece>0 1 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 1</piece>\n\
+				<piece>0 1 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 1</piece> <!--18-->\n\
 				<piece>0 1 0 1 0  0 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>\n\
 				<piece>0 0 1 0 0  1 1 1 1 1  1 1 1 1 1  0 1 1 1 0  0 0 1 0 0</piece>\n\
 				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>\n\
@@ -46,7 +46,7 @@ var stdpcs_text = '<?xml version="1.0" encoding="utf-8"?>\n\
 			</group>\n\
 			<group name="HC-Paris"> <!-- red -->\n\
 				<fill type="COLOR" k="0" r="255" g="43" b="48"/>\n\
-				<piece>0 0 1 0 0  0 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>\n\
+				<piece>0 0 1 0 0  0 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece> <!--24-->\n\
 				<piece>0 1 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 1</piece>\n\
 				<piece>0 1 1 0 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 0 1 1</piece>\n\
 				<piece>0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>\n\
@@ -55,7 +55,7 @@ var stdpcs_text = '<?xml version="1.0" encoding="utf-8"?>\n\
 			</group>\n\
 			<group name="HC-Brussels"> <!-- purple -->\n\
 				<fill type="COLOR" k="0" r="148" g="0" b="136"/>\n\
-				<piece>1 1 0 1 1  0 1 1 1 1  1 1 1 1 0  0 1 1 1 0  0 1 0 1 0</piece>\n\
+				<piece>1 1 0 1 1  0 1 1 1 1  1 1 1 1 0  0 1 1 1 0  0 1 0 1 0</piece> <!--30-->\n\
 				<piece>0 0 1 0 0  0 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 0</piece>\n\
 				<piece>0 0 1 0 0  0 1 1 1 1  1 1 1 1 0  1 1 1 1 0  1 1 0 1 0</piece>\n\
 				<piece>0 1 0 1 1  0 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 1 0 1 0</piece>\n\
@@ -66,7 +66,7 @@ var stdpcs_text = '<?xml version="1.0" encoding="utf-8"?>\n\
 		<family name="Black Profi Cube" index="3" onResetSetCount="0" size="8mm" icon="images/sampleBlackProfi.png">\n\
 			<group name="PC-Confusius">\n\
 				<fill type="TEXTURE_BLEND" texind="0" k="2" r="0" g="0" b="202" exR="20" exG="20" exB="20"/>\n\
-				<piece>0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 0</piece>\n\
+				<piece>0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 0</piece> <!--36-->\n\
 				<piece>0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 1</piece>\n\
 				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 0 0</piece>\n\
 				<piece>0 0 1 0 1  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  1 1 0 1 1</piece>\n\
@@ -75,7 +75,7 @@ var stdpcs_text = '<?xml version="1.0" encoding="utf-8"?>\n\
 			</group>\n\
 			<group name="PC-DaVinci">\n\
 				<fill type="TEXTURE_BLEND" texind="0" k="2" r="244" g="236" b="20" exR="20" exG="20" exB="20"/>\n\
-				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>\n\
+				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece> <!--42-->\n\
 				<piece>0 0 1 0 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  0 1 0 1 0</piece>\n\
 				<piece>0 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 1</piece>\n\
 				<piece>0 0 1 0 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  1 1 0 1 0</piece>\n\
@@ -84,7 +84,7 @@ var stdpcs_text = '<?xml version="1.0" encoding="utf-8"?>\n\
 			</group>\n\
 			<group name="PC-MarcoPolo">\n\
 				<fill type="TEXTURE_BLEND" texind="0" k="2" r="236" g="6" b="17" exR="20" exG="20" exB="20"/>\n\
-				<piece>0 0 1 0 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>\n\
+				<piece>0 0 1 0 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece> <!--48-->\n\
 				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 0 0</piece>\n\
 				<piece>1 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 1</piece>\n\
 				<piece>0 0 1 0 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  1 1 0 1 0</piece>\n\
@@ -120,7 +120,7 @@ var stdpcs_text = '<?xml version="1.0" encoding="utf-8"?>\n\
 			</group>\n\
 		</family>\n\
 		<family name="Marble Cube" index="5" onResetSetCount="0" size="8mm" icon="images/sampleMarble.png">\n\
-			<group name="MC-Martin L. King">\n\
+			<group name="MC-M.L. King"> <!--Martin-->\n\
 				<fill type="TEXTURE_MARBLE" texind="1" k="0" r="55" g="120" b="255" exR="139" exG="217" exB="255"/>\n\
 				<piece>0 0 1 0 1  0 1 1 1 1  0 1 1 1 0  1 1 1 1 0  1 1 0 1 1</piece>\n\
 				<piece>0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  1 1 1 1 0  0 0 0 1 0</piece>\n\
@@ -129,7 +129,7 @@ var stdpcs_text = '<?xml version="1.0" encoding="utf-8"?>\n\
 				<piece>0 1 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 1 0 0</piece>\n\
 				<piece>1 1 0 1 1  1 1 1 1 0  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>\n\
 			</group>\n\
-			<group name="MC-Omar Khayyam">\n\
+			<group name="MC-O. Khayyam"> <!--Omar-->\n\
 				<fill type="TEXTURE_MARBLE" texind="1" k="0" r="68" g="209" b="21" exR="167" exG="255" exB="136"/>\n\
 				<piece>1 1 0 1 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  0 1 0 1 0</piece>\n\
 				<piece>0 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 1</piece>\n\
@@ -147,7 +147,7 @@ var stdpcs_text = '<?xml version="1.0" encoding="utf-8"?>\n\
 				<piece>0 1 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>\n\
 				<piece>0 0 1 0 0  1 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 1 0 0</piece>\n\
 			</group>\n\
-			<group name="MC-Buckminster Fuller">\n\
+			<group name="MC-B. Fuller"> <!--Buckminster-->\n\
 				<fill type="TEXTURE_MARBLE" texind="1" k="0" r="244" g="38" b="116" exR="252" exG="179" exB="198"/>\n\
 				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 1 0 1 0</piece>\n\
 				<piece>0 0 0 1 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>\n\
@@ -156,7 +156,7 @@ var stdpcs_text = '<?xml version="1.0" encoding="utf-8"?>\n\
 				<piece>0 1 0 1 1  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  1 1 0 1 1</piece>\n\
 				<piece>0 0 1 0 0  0 1 1 1 1  1 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>\n\
 			</group>\n\
-			<group name="MC-Mahatma Gandhi">\n\
+			<group name="MC-M. Gandhi"> <!--Mahatma-->\n\
 				<fill type="TEXTURE_MARBLE" texind="1" k="0" r="255" g="144" b="122" exR="255" exG="12" exB="0"/>\n\
 				<piece>0 1 0 1 1  0 1 1 1 1  1 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>\n\
 				<piece>0 1 0 1 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 0  0 0 1 1 0</piece>\n\
@@ -165,7 +165,7 @@ var stdpcs_text = '<?xml version="1.0" encoding="utf-8"?>\n\
 				<piece>0 0 1 0 0  0 1 1 1 1  1 1 1 1 1  1 1 1 1 0  1 0 1 0 0</piece>\n\
 				<piece>1 1 0 1 0  1 1 1 1 0  0 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>\n\
 			</group>\n\
-			<group name="MC-Albert Einstein">\n\
+			<group name="MC-A. Einstein"> <!--Albert-->\n\
 				<fill type="TEXTURE_MARBLE" texind="1" k="0" r="142" g="10" b="217" exR="222" exG="157" exB="255"/>\n\
 				<piece>0 0 0 1 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 0  0 1 0 1 0</piece>\n\
 				<piece>0 1 1 0 0  0 1 1 1 0  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>\n\

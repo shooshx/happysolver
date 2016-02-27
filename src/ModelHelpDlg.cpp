@@ -324,8 +324,8 @@ void ModelHelpDlg::updatePixmapLabel(int piece)
     int abs_sc = slv->dt[piece].abs_sc;
     if (abs_sc == -1)
         return;
-    const SlvCube::SlvPic &sps = slv->picdt[abs_sc];
-    auto& pc = PicBucket::instance().getPic(sps.gind, sps.pind);
+   // const SlvCube::SlvPic &sps = slv->picdt[abs_sc];
+    auto& pc = PicBucket::instance().pdefs[abs_sc];
     auto& px = pc.pixmap;
 	m_picImage->setPixmap(px);
 

@@ -47,10 +47,11 @@ using namespace tinyxml2;
 
 // the singleton
 PicBucket *PicBucket::g_instance = nullptr;
-void PicBucket::createSingleton() 
+PicBucket& PicBucket::createSingleton()
 { 
     if (g_instance == nullptr) // never gets erased...
         g_instance = new PicBucket; 
+    return *g_instance;
 }
 
 
@@ -526,6 +527,7 @@ bool PicBucket::loadXML(const char* data)
                         curdef.tex = newTexture(cgrp.tex->copy(curdef.xOffs, curdef.yOffs, 128, 128)/*.mirrored(false, true)*/, false);
                     }
 
+                    curdef.v.makeRtns(curdef.defRtns);
                     cgrp.picsi.push_back(pdefi);
                     ++pdefi;
                 }
@@ -543,10 +545,28 @@ bool PicBucket::loadXML(const char* data)
     // set the reset selection
     setToFamResetSel();
 
-
+    makeAllComp();
 
     return true;
 
+}
+
+void PicBucket::makeAllComp()
+{
+    PicsSet ps;
+    for (int i = 0; i < pdefs.size(); ++i) {
+        ps.add(i, false); // TBD - consider sym
+    }
+    allComp = ps.comp;
+    for(int i = 0; i < allComp.size(); ++i)
+    {
+        for(auto& ad : allComp[i].addedInds)
+        {
+            auto& r = pdefs[ad.addedInd];
+            r.indInAllComp = i;
+            r.defRot = ad.defRot;
+        }
+    }
 }
 
 
@@ -567,7 +587,7 @@ void PicBucket::setToFamResetSel()
     }
 }
 
-
+// prepares PicDisps for all pdefs with the correct roatation configured
 void PicBucket::distinctMeshes()
 {
     PicsSet ps;
@@ -577,13 +597,15 @@ void PicBucket::distinctMeshes()
     cout << ps.comp.size() << " distinct meshes out of " << pdefs.size() << " pieces\n" << endl;
 
     m_meshes.clear();
-    for(int i = 0; i < ps.comp.size(); ++i) {
+    for(int i = 0; i < ps.comp.size(); ++i) 
+    {
         auto comp = ps.comp[i];
         shared_ptr<PicDisp> pd(new PicDisp);
         pd->m_arr = comp.rtns[0];
-        for(int j = 0; j < comp.addedInds.size(); ++j) {
+        for(int j = 0; j < comp.addedInds.size(); ++j) 
+        {
             auto added = comp.addedInds[j];
-            pdefs[added.addedInd].dispRot = added.defRot;
+            pdefs[added.addedInd].dispRot = added.defRot; // TBD - this is not duplicated in allComp
             pdefs[added.addedInd].disp = pd;
         }
         m_meshes.push_back(pd);
@@ -640,7 +662,7 @@ void PicBucket::buildMeshes(const DisplayConf& dpc, ProgressCallback* prog)
 }
 
 // in Qt, s is the filename
-// in emscripten s is the buffer
+// in emscripten uses the function below
 bool PicBucket::loadUnified(const char* s) 
 {
     distinctMeshes();
@@ -843,7 +865,7 @@ int PicBucket::selectedCount() const
     return count;
 }
 
-
+// comp rot to def rot
 int rotationAdd(int base, int defRot) 
 {
     if ((defRot < 4) == (base < 4))
@@ -853,6 +875,7 @@ int rotationAdd(int base, int defRot)
 
 }
 
+// def rot to comp rot
 int rotationSub(int x, int defRot)
 {
     if (defRot < 4) {

@@ -83,8 +83,11 @@ private:
 	void clear(int cl = 0);
 
 	inline void putPic(const int n, const int r, const int p);	// put piece n in place p
+    inline void putPicArr(const PicArr& pmat, const int fc);
+
 	inline void putorig(int p, int abs_sc, int abs_rt); 
 	void rmvPic(const int p);
+    void rmvPicArr(const PicArr& pmat, const int fc);
 
 	//bool superCheck(const int fc);
 	//bool anotherpic(ShapePlace &plcfc, int fc);

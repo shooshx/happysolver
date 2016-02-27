@@ -33,10 +33,12 @@
 class UsedPieces
 {	// binary array
 public:
-	UsedPieces(const PicsSet* picSet) : m_dt(picSet->comp.size()) {
+    UsedPieces(const PicsSet* picSet) 
+        : m_dt( (picSet != nullptr) ? picSet->compRef.size() : 0) // will be null in Cube::genLinesIFS
+    {
 		clear();
 		for(int i = 0; i < m_dt.size(); ++i) {
-			m_dt[i].count = picSet->comp[i].count();
+			m_dt[i].count = picSet->compRef[i].count();
 		}
 	}
 
@@ -66,7 +68,7 @@ private:
 		int use;
 		int count;
 	};
-	vector<UseEntry> m_dt;    // number of used pieces of each PicType
+	vector<UseEntry> m_dt;    // number of used pieces of each PicType. index is the same as the comp array
 };
 
 
@@ -174,12 +176,14 @@ public:
 
     inline void clear()
     {
+        cnt = 0;
+        if (m_dt.size() == 0)
+            return;
 #ifdef EMSCRIPTEN
         m_dt.clear();
 #else
         memset(&m_dt[0], 0, m_dt.size() * sizeof(m_dt[0]));
 #endif
-        cnt = 0;
     }
 
 	bool tryedAll() const { return cnt == m_dt.size(); }
@@ -238,11 +242,11 @@ class ShapePlace
 public:
 	ShapePlace(int useSize = 0) :sc(-1), rt(0) {}
 
-	void clear() {
+	/*void clear() {
 		sc = -1;
 		rt = 0;
 		tryd.clear();
-	}
+	}*/
 
 	inline void mclear() {
 		sc = -1;
@@ -258,10 +262,17 @@ public:
 	}
 
 
-	int sc;		///< which part is now in this place, from comp
+	int sc;		///< which part is now in this place, from compRef
 	int rt;		///< what is it's rotation, index in rotation array
-	TriedPieces tryd;  ///< which pieces were already tried in this place in the current iteration.
+	//TriedPieces tryd;  ///< which pieces were already tried in this place in the current iteration.
 	TriedPieces mtryd; // should be the maximum size of 'possible' which is the total count or rtns in comp
+                       // a bit for every TypeRef in possibilities to indicate if we tryed it
+
+    int start_sc = -1; // if sc == -2, the piece there is a starter piece that was not in our comp, this is its pdef index
+    int start_rt = -1;
+
+    int start_compsc = -1; // if its a set we returned to, this is the compRef sc and rti 
+    int start_rti = -1;
 
 	vector<TypeRef> possible;
 };

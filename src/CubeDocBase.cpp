@@ -193,11 +193,11 @@ void CubeDocBase::solveGo()
     // the snapshot of the EngineConf is captured in Cube::Cube()
     // in the thread itself. (is that too late?)
     PicsSet *pics = new PicsSet(m_conf.engine.nAsym != ASYM_REGULAR);
-    if (pics->added.size() < m_shp->fcn)
-    {
+  /*  if (pics->added.size() < m_shp->fcn)  removed since in incremental build we add pieces for the new addition
+    {  TBD - replace with what? - check once starter is removed
         complain("Unable to complay, too few pieces for this shape");
         return;
-    }
+    }*/
 
   //  if (pics->added.size() == m_shp->fcn + 42 + 1) // 42 is too easy to come by.
   //      easter();

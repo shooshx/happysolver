@@ -22,6 +22,7 @@
 #include "PicPainter.h"
 #include "PicArr.h"
 #include "ImgBuf.h"
+#include "PicsSet.h"
 
 #ifdef QT_CORE_LIB
 #include <QPixmap>
@@ -111,7 +112,10 @@ public:
     mutable int lastnSelected; // used for the repressing of the button. to return to the last value.
 
     std::shared_ptr<PicDisp> disp;
-    int dispRot;
+    int dispRot;  // rotation of this def compared to the mesh pointed in disp
+
+    int indInAllComp; // index of unified shape in the Bucket's allComp
+    int defRot; // rotation of this def to the def in allComp  (same as dispRot for now)
 
 private:
     mutable int nSelected;
@@ -234,6 +238,7 @@ struct PicFamily
     int numGroups; // number of groups in this family;
     int onResetSetCount; // number of instances of this family upon reset
     string iconFilename;
+    string ctrlId; // for html
 
     mutable int nSetsSelected; // number of selected sets of this family. updated for gui
     mutable int nSelected; // number of pieces selected. updated for gui.
@@ -268,7 +273,7 @@ public:
     bool loadXML(const char* xmlname);
     ImgBuf* newTexture(ImgBuf* img, bool in3d);
 
-    static void createSingleton();
+    static PicBucket& createSingleton();
     static const PicBucket& instance() { return *g_instance; }
     static PicBucket& mutableInstance() { return *g_instance; }
 
@@ -299,6 +304,8 @@ public:
     void setToFamResetSel(); ///< reset the selected count to the reset number from the config
     void distinctMeshes();
 
+    void makeAllComp();
+
 public:
     int sumPics; ///< how many cubes, how many pics in total
     vector<PicGroupDef> grps; ///< (defs) group definitions, inside them the piece definitions
@@ -309,7 +316,9 @@ public:
 
     vector<PicFamily> families;
 
-    vector<std::shared_ptr<PicDisp> > m_meshes;
+    vector<std::shared_ptr<PicDisp> > m_meshes; // same size as allComp
+
+    vector<PicType> allComp; // (compressed) distict pieces from pdefs with references to pdefs in addedInds
 
 private:
     /// private ctor, this is a singleton

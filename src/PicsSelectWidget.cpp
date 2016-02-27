@@ -600,7 +600,7 @@ void PicsSelectWidget::updateView(int hint) // SLOT
 			int abs_sc = curslv->dt[plci].abs_sc;
             if (abs_sc == -1)
                 continue;
-			++(bucket.getPic(curslv->picdt[abs_sc].gind, curslv->picdt[abs_sc].pind).nUsed);
+            ++(bucket.pdefs[abs_sc].nUsed);
 		}
 
 		if (doReadCheckFromSlv)

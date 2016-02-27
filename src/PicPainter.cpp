@@ -357,8 +357,9 @@ void PicPainter::paint(bool fTargets, const Vec3& name, BaseGLWidget *context, b
 #ifdef QT_CORE_LIB
 bool PicPainter::exportToObj(ObjExport& oe, const Mat4& fMatrix) const
 {
+    DisplayConf displayConf;
     MyObject obj(&PicDisp::g_smoothAllocator);
-    m_pdef->disp->generateStraightShape(m_displayConf, obj);
+    m_pdef->disp->generateStraightShape(displayConf, obj);
     PicDisp::g_smoothAllocator.clear();
 
     Mesh mesh;

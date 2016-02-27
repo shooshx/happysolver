@@ -9,10 +9,12 @@ SlvCube::SlvCube(const vector<ShapePlace>& plc, const vector<ShapePlace>& abs_pl
 	: painter(nullptr), shape(_shape)
 {
     dt.reserve(plc.size());
+    //cout << "---- SLV ----" << endl;
 	for(int j = 0; j < plc.size(); ++j)
 	{
 		// sc is the index in the added array of the set
 		// rt is the absolute [0,7] rotation index
+        //cout << abs_plc[j].sc << "  " << abs_plc[j].rt << endl;
 		dt.push_back(SlvPiece(abs_plc[j].sc, abs_plc[j].rt, plc[j].sc, plc[j].rt));
 	}
 	
@@ -58,14 +60,14 @@ void SlvCube::genPainter()
 		return;
 
 	painter.setSlvCube(this); // make it not nullptr only now.
-	PicsSet pics(this);  // this ctor takes from the bucket only the data, not the selection
+	//PicsSet pics(this);  // this ctor takes from the bucket only the data, not the selection
 	// no need to consider symmetry, even if it was considered when this solution was built since we only take things
 	// from added, which is not affected by symmetry
 
 	for (int f = 0; f < dt.size(); ++f)
 	{
-		const AddedPic &ap = pics.added[dt[f].abs_sc]; 
-		dt[f].sdef = &PicBucket::instance().pdefs[ap.defInd];
+		//const AddedPic &ap = pics.added[dt[f].abs_sc]; 
+        dt[f].sdef = &PicBucket::instance().pdefs[dt[f].abs_sc]; //pics.getDef(dt[f].abs_sc); //&PicBucket::instance().pdefs[ap.defInd];
 		//dt[f].rtindx = dt[f].rt; //pty->rtns[dt[f].rt].rtnindx;
 	}
 
@@ -77,7 +79,7 @@ void SlvCube::genPainter()
 	}
 
 	// lines
-	Cube tmpcube(shape, &pics, nullptr);
+	Cube tmpcube(shape, nullptr, nullptr);
 	tmpcube.genLinesIFS(this, painter.m_linesIFS);
 }
 

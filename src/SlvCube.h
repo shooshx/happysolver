@@ -27,18 +27,18 @@ public:
 	{
         SlvPiece() {}
 		SlvPiece(int _abs_sc, int _abs_rt, int _comp_sc, int _comp_rt) 
-			: abs_sc(_abs_sc), abs_rt(_abs_rt), sdef(nullptr), comp_sc(_comp_sc), comp_rt(_comp_rt)
+			: abs_sc(_abs_sc), abs_rt(_abs_rt), sdef(nullptr) , comp_sc(_comp_sc), comp_rt(_comp_rt)
 		{}
 		// loaded data
 
-		int abs_sc = -1; ///< the piece, from the 'added' pics set
-		int abs_rt = -1; ///< absolute rotation [0,7]
+		int abs_sc = -1; ///< the piece, from the Bucket's pdef
+		int abs_rt = -1; ///< absolute rotation [0,7] of the Bucket's pdef (not the allComp)
 
 		// inferred data, using PicsSet, set in genPainter
 		const PicDef *sdef = nullptr;
 
-        int comp_sc = -1; ///< the piece fromt he 'comp' pics set
-        int comp_rt = -1; ///< rotation of the comp piece
+        int comp_sc = -1; ///< the piece fromt he 'comp' pics set TBD-REMOVE
+        int comp_rt = -1; ///< rotation of the comp piece (index in rtns, not absolute)
 	};
 
 	/// SlvPic holds the data of a single piece that was selected when the solution was generated.

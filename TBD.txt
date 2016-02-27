@@ -7,6 +7,12 @@ lines for black pieces
 firefox
     flicker
     zoom
+    
+universal slv
+    universal comp
+    compref insread of comp
+    remove added array
+rid of gind?
 
 
 NEW DEAL - things that don't work

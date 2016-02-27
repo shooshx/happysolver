@@ -154,17 +154,52 @@ void solveGo() {
     }      
 }
 
+void populatePicsSide(PicBucket& bucket)
+{
+    for(auto& fam: bucket.families) 
+    {
+        string initials;
+        char lc = 0;
+        for(auto c: fam.name) {
+            // first two letters of every word
+            if ((c >= 'A' && c <= 'Z') || (lc >= 'A' && lc <= 'Z') )
+                initials += c;
+            lc = c;
+        }
+        fam.ctrlId = initials;
+        EM_ASM_(picsAddFamily(Pointer_stringify($0), Pointer_stringify($1)), fam.name.c_str(), initials.c_str());
+        for(int gi = 0; gi < fam.numGroups; ++gi)
+        {
+            int grpi = fam.startIndex + gi;
+            auto& grp = bucket.grps[grpi];
+            string dispName = grp.name.substr(grp.name.find('-') + 1);
+            EM_ASM_(picsAddCube(Pointer_stringify($0), Pointer_stringify($1), $2), dispName.c_str(), grp.name.c_str(), grpi);
+        }
+    }
+    
+    for(const auto& fam: bucket.families) 
+    {
+        // need to do this after all the additions, otherwise it is reset for some reason
+        if (fam.onResetSetCount > 0) {
+            M_ASSERT(fam.onResetSetCount == 1); // setting count not supported
+            EM_ASM_(setFamCheck(Pointer_stringify($0), true), fam.ctrlId.c_str());
+        }
+    }    
+}
+
 bool initCubeEngine(const char* stdpcs, const char* unimesh)
 {
     try {
-        PicBucket::createSingleton();
-        
+        auto& bucket = PicBucket::createSingleton();
+    
         g_ctrl.m_modelGl.initTex();
            
-        if (!PicBucket::mutableInstance().loadXML(stdpcs))
+        if (!bucket.loadXML(stdpcs))
             return false;
+
+        populatePicsSide(bucket);
             
-        PicBucket::mutableInstance().loadUnifiedJs();    
+        bucket.loadUnifiedJs();    
         return true;
     }
     catch(const std::exception& e) {
@@ -240,6 +275,15 @@ bool cpp_slvrun()
     return false;
 }
 
+void setGrpCount(int grpi, int count)
+{
+    //cout << "PIC-SEL " << grpi << " " << count << endl;
+    auto& bucket = PicBucket::mutableInstance();
+    auto& grp = bucket.grps[grpi];
+    for(auto pi: grp.picsi) {
+        bucket.pdefs[pi].setSelected(count);
+    }
+}
 
 } // extern "C"
 

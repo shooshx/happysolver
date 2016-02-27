@@ -10,7 +10,7 @@
 		<family name="Happy Cube" index="2" onResetSetCount="1" size="8mm" icon="images/sampleHappyCube.png">
 			<group name="HC-Milano"> <!-- blue -->
 				<fill type="COLOR" k="0" r="73" g="129" b="255"/>
-				<piece>1 0 1 0 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
+				<piece>1 0 1 0 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece> <!--0-->
 				<piece>0 1 0 1 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  1 1 0 1 0</piece>
 				<piece>0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>
 				<piece>0 1 0 1 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 1 0 1 1</piece>
@@ -19,7 +19,7 @@
 			</group>
 			<group name="HC-NewYork"> <!-- green -->
 				<fill type="COLOR" k="0" r="43" g="221" b="56"/>
-				<piece>1 1 0 1 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
+				<piece>1 1 0 1 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece> <!--6-->
 				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 0 0</piece>
 				<piece>0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 1</piece>
 				<piece>0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 0</piece>
@@ -28,7 +28,7 @@
 			</group>
 			<group name="HC-Tokyo"> <!-- yellow -->
 				<fill type="COLOR" k="0" r="255" g="255" b="0"/>
-				<piece>0 0 1 1 1  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 0</piece>
+				<piece>0 0 1 1 1  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 0</piece> <!--12-->
 				<piece>0 0 0 1 1  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 0</piece>
 				<piece>0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 1</piece>
 				<piece>0 0 1 0 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  0 1 0 1 0</piece>
@@ -37,7 +37,7 @@
 			</group>
 			<group name="HC-Amsterdam"> <!-- orange -->
 				<fill type="COLOR" k="0" r="255" g="140" n="0"/>
-				<piece>0 1 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 1</piece>
+				<piece>0 1 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 1</piece> <!--18-->
 				<piece>0 1 0 1 0  0 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
 				<piece>0 0 1 0 0  1 1 1 1 1  1 1 1 1 1  0 1 1 1 0  0 0 1 0 0</piece>
 				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
@@ -46,7 +46,7 @@
 			</group>
 			<group name="HC-Paris"> <!-- red -->
 				<fill type="COLOR" k="0" r="255" g="43" b="48"/>
-				<piece>0 0 1 0 0  0 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
+				<piece>0 0 1 0 0  0 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece> <!--24-->
 				<piece>0 1 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 1</piece>
 				<piece>0 1 1 0 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 0 1 1</piece>
 				<piece>0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>
@@ -55,7 +55,7 @@
 			</group>
 			<group name="HC-Brussels"> <!-- purple -->
 				<fill type="COLOR" k="0" r="148" g="0" b="136"/>
-				<piece>1 1 0 1 1  0 1 1 1 1  1 1 1 1 0  0 1 1 1 0  0 1 0 1 0</piece>
+				<piece>1 1 0 1 1  0 1 1 1 1  1 1 1 1 0  0 1 1 1 0  0 1 0 1 0</piece> <!--30-->
 				<piece>0 0 1 0 0  0 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 0</piece>
 				<piece>0 0 1 0 0  0 1 1 1 1  1 1 1 1 0  1 1 1 1 0  1 1 0 1 0</piece>
 				<piece>0 1 0 1 1  0 1 1 1 0  0 1 1 1 1  1 1 1 1 0  1 1 0 1 0</piece>
@@ -66,7 +66,7 @@
 		<family name="Black Profi Cube" index="3" onResetSetCount="0" size="8mm" icon="images/sampleBlackProfi.png">
 			<group name="PC-Confusius">
 				<fill type="TEXTURE_BLEND" texind="0" k="2" r="0" g="0" b="202" exR="20" exG="20" exB="20"/>
-				<piece>0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 0</piece>
+				<piece>0 0 1 0 0  1 1 1 1 0  0 1 1 1 1  1 1 1 1 0  0 1 0 1 0</piece> <!--36-->
 				<piece>0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 1</piece>
 				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 0 0</piece>
 				<piece>0 0 1 0 1  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  1 1 0 1 1</piece>
@@ -75,7 +75,7 @@
 			</group>
 			<group name="PC-DaVinci">
 				<fill type="TEXTURE_BLEND" texind="0" k="2" r="244" g="236" b="20" exR="20" exG="20" exB="20"/>
-				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
+				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece> <!--42-->
 				<piece>0 0 1 0 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  0 1 0 1 0</piece>
 				<piece>0 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 1</piece>
 				<piece>0 0 1 0 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  1 1 0 1 0</piece>
@@ -84,7 +84,7 @@
 			</group>
 			<group name="PC-MarcoPolo">
 				<fill type="TEXTURE_BLEND" texind="0" k="2" r="236" g="6" b="17" exR="20" exG="20" exB="20"/>
-				<piece>0 0 1 0 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
+				<piece>0 0 1 0 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece> <!--48-->
 				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 0 1 0 0</piece>
 				<piece>1 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 1</piece>
 				<piece>0 0 1 0 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  1 1 0 1 0</piece>
@@ -120,7 +120,7 @@
 			</group>
 		</family>
 		<family name="Marble Cube" index="5" onResetSetCount="0" size="8mm" icon="images/sampleMarble.png">
-			<group name="MC-Martin L. King">
+			<group name="MC-M.L. King"> <!--Martin-->
 				<fill type="TEXTURE_MARBLE" texind="1" k="0" r="55" g="120" b="255" exR="139" exG="217" exB="255"/>
 				<piece>0 0 1 0 1  0 1 1 1 1  0 1 1 1 0  1 1 1 1 0  1 1 0 1 1</piece>
 				<piece>0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  1 1 1 1 0  0 0 0 1 0</piece>
@@ -129,7 +129,7 @@
 				<piece>0 1 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 1 0 0</piece>
 				<piece>1 1 0 1 1  1 1 1 1 0  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
 			</group>
-			<group name="MC-Omar Khayyam">
+			<group name="MC-O. Khayyam"> <!--Omar-->
 				<fill type="TEXTURE_MARBLE" texind="1" k="0" r="68" g="209" b="21" exR="167" exG="255" exB="136"/>
 				<piece>1 1 0 1 0  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  0 1 0 1 0</piece>
 				<piece>0 1 0 1 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 1</piece>
@@ -147,7 +147,7 @@
 				<piece>0 1 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>
 				<piece>0 0 1 0 0  1 1 1 1 0  1 1 1 1 1  0 1 1 1 0  0 1 1 0 0</piece>
 			</group>
-			<group name="MC-Buckminster Fuller">
+			<group name="MC-B. Fuller"> <!--Buckminster-->
 				<fill type="TEXTURE_MARBLE" texind="1" k="0" r="244" g="38" b="116" exR="252" exG="179" exB="198"/>
 				<piece>0 0 1 0 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  0 1 0 1 0</piece>
 				<piece>0 0 0 1 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
@@ -156,7 +156,7 @@
 				<piece>0 1 0 1 1  0 1 1 1 1  1 1 1 1 0  0 1 1 1 1  1 1 0 1 1</piece>
 				<piece>0 0 1 0 0  0 1 1 1 1  1 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>
 			</group>
-			<group name="MC-Mahatma Gandhi">
+			<group name="MC-M. Gandhi"> <!--Mahatma-->
 				<fill type="TEXTURE_MARBLE" texind="1" k="0" r="255" g="144" b="122" exR="255" exG="12" exB="0"/>
 				<piece>0 1 0 1 1  0 1 1 1 1  1 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>
 				<piece>0 1 0 1 0  1 1 1 1 1  0 1 1 1 0  1 1 1 1 0  0 0 1 1 0</piece>
@@ -165,7 +165,7 @@
 				<piece>0 0 1 0 0  0 1 1 1 1  1 1 1 1 1  1 1 1 1 0  1 0 1 0 0</piece>
 				<piece>1 1 0 1 0  1 1 1 1 0  0 1 1 1 1  0 1 1 1 0  0 1 0 1 0</piece>
 			</group>
-			<group name="MC-Albert Einstein">
+			<group name="MC-A. Einstein"> <!--Albert-->
 				<fill type="TEXTURE_MARBLE" texind="1" k="0" r="142" g="10" b="217" exR="222" exG="157" exB="255"/>
 				<piece>0 0 0 1 1  1 1 1 1 1  0 1 1 1 0  1 1 1 1 0  0 1 0 1 0</piece>
 				<piece>0 1 1 0 0  0 1 1 1 0  0 1 1 1 0  1 1 1 1 1  1 0 1 0 1</piece>

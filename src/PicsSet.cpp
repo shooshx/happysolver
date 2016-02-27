@@ -37,8 +37,12 @@ void PicType::load(const PicDef& thedef, bool cSym)
 
 	for(int i = 0; i < 8; ++i) {
 		bits[i] = 0;
-		if (i < rtnnum)
+        
+		if (i < rtnnum) {
 			bits[i] = rtns[i].getBits();
+        }
+        else
+            rtns[i].clear();
 	}
 }
 
@@ -53,7 +57,7 @@ void PicsSet::add(int defInd, bool cSym)
 	for (int pi = 0; pi < comp.size(); ++pi) 
 	{
 		PicType& pt = comp[pi];
-		if (checkSym && !pt.isSym)
+		if (checkSym && !pt.isSym) // can't unite pics that don't agree on symetry
 			continue;
 		for(ri = 0; ri < pt.rtnnum; ++ri) 
 		{
@@ -84,7 +88,18 @@ void PicsSet::add(int defInd, bool cSym)
 	}
 
     added.push_back( AddedPic(defInd, compind) );
+}
 
+void PicsSet::addRef(int defInd)
+{
+    const PicDef& thedef = PicBucket::instance().pdefs[defInd];
+    int refInd = 0;
+    // search if we already added this comp
+    while(refInd < compRef.size() && compRef[refInd].allCompInd != thedef.indInAllComp)
+        ++refInd;
+    if (refInd == compRef.size()) 
+        compRef.push_back(CompRef(thedef.indInAllComp));
+    compRef[refInd].pdefsInds.push_back(PdefRef(defInd, thedef.defRot));
 }
 
 
@@ -109,13 +124,19 @@ PicsSet::PicsSet(bool cSym)
 		for (int i = 0; i < bucket.pdefs[idef].getSelected(); ++i)
 		{
 			add(idef, cSym);
-		}
+            addRef(idef);
+        }
 	}
 
 }
 
 const PicDef* PicsSet::getDef(int abs_sc) const {
-	return &PicBucket::instance().pdefs[added[abs_sc].defInd];
+	//return &PicBucket::instance().pdefs[added[abs_sc].defInd];
+    return &PicBucket::instance().pdefs[abs_sc];
+}
+
+const PicType& PicsSet::getComp(int ci) const {
+    return PicBucket::instance().allComp[compRef[ci].allCompInd];
 }
 
 

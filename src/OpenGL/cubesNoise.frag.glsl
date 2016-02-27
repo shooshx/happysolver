@@ -51,7 +51,7 @@ void main (void)
    // gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
    // return;
 
-   vec3 color;
+   vec3 color = vec3(0.5, 0.5, 0.5);
 
     if (drawtype == 0) { // DRAW_COLOR
         color = colorA * LightIntensity;
@@ -85,7 +85,7 @@ void main (void)
 
         vec2 t = texOffset.xy + MCposition.yz / (8.0*5.0);
 
-        vec3 color = texture2D(noisef, t).rgb;
+        color = texture2D(noisef, t).rgb;
         if (tx > T_LOW && tx <= T_HIGH) {
             color = mix(color, colorA, smoothstep(T_LOW, T_HIGH, tx));
         }

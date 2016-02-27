@@ -94,14 +94,13 @@ Cube::Cube(const Shape* shapeset, const PicsSet* picset, const EngineConf* conf)
     cub_ = new CubeCell[xsz * ysz * zsz];
 
     plc.resize(shape->fcn); 
-    for (int i = 0; i < shape->fcn; ++i)
-    {
-        //plc[i].tryd.realloc(pics->compSize());
-        plc[i].mtryd.realloc(pics->totalRtnCount);
+    if (picset != nullptr) {
+        for (int i = 0; i < shape->fcn; ++i)
+            plc[i].mtryd.realloc(pics->totalRtnCount);
     }
 
     clear();
-    cout << picset->added.size() << " pieces, " << picset->comp.size() << " distinct-pieces, " << pics->totalRtnCount << " rtns, " << plc.size() << " places in shape" << endl;
+    //cout << picset->added.size() << " pieces, " << picset->comp.size() << " distinct-pieces, " << pics->totalRtnCount << " rtns, " << plc.size() << " places in shape" << endl;
 }	
 
 
@@ -119,13 +118,19 @@ const int Cube::whichKJ[3][2][3] = { {{0,0,1},{0,1,0}}, {{1,0,0},{0,0,1}}, {{1,0
 
 void Cube::putPic(const int n, const int r, const int fc)
 {
-    int j, k, b;
-    const PicArr &pmat = pics->comp[plc[fc].sc].rtns[plc[fc].rt];
-    int tval = shape->faces[fc].ex.x + (xsz*shape->faces[fc].ex.y) + (xTysz*shape->faces[fc].ex.z);
-
+    //const PicArr &pmat = pics->comp[plc[fc].sc].rtns[plc[fc].rt];
+    const PicArr& pmat = pics->getComp(plc[fc].sc).rtns[plc[fc].rt];
     plc[fc].sc = n;
     plc[fc].rt = r;
-    
+    putPicArr(pmat, fc);
+}
+
+void Cube::putPicArr(const PicArr& pmat, const int fc)
+{
+    int j, k, b;
+    int tval = shape->faces[fc].ex.x + (xsz*shape->faces[fc].ex.y) + (xTysz*shape->faces[fc].ex.z);
+
+   
     switch (shape->faces[fc].dr)
     {
     case YZ_PLANE:
@@ -164,13 +169,20 @@ void Cube::putPic(const int n, const int r, const int fc)
 
 void Cube::rmvPic(const int fc)
 {
-    if (plc[fc].sc == -1) 
+    if (plc[fc].sc == -1) // can be -2
         return;
 
+    //const PicArr &pmat = pics->comp[plc[fc].sc].rtns[plc[fc].rt];
+    const PicArr& pmat = pics->getComp(plc[fc].sc).rtns[plc[fc].rt];
+    rmvPicArr(pmat, fc);
+}
+
+// for the case of a piece that was put there from the starter solution but is not in our current set
+void Cube::rmvPicArr(const PicArr& pmat, const int fc)
+{
     int j, k, b;
-    const PicArr &pmat = pics->comp[plc[fc].sc].rtns[plc[fc].rt];
     int tval = shape->faces[fc].ex.x + (xsz*shape->faces[fc].ex.y) + (xTysz*shape->faces[fc].ex.z);
-    
+
     switch (shape->faces[fc].dr)
     {
     case YZ_PLANE:
@@ -208,7 +220,7 @@ void Cube::rmvPic(const int fc)
 
 TPicBits Cube::getCurrentCirc(int fc)
 {
-    M_ASSERT(plc[fc].sc == -1);
+    M_ASSERT(plc[fc].sc < 0); // -1 or -2
     PicArr pmat;
     int tval = shape->faces[fc].ex.x + (xsz*shape->faces[fc].ex.y) + (xTysz*shape->faces[fc].ex.z);
     int j, k, b;
@@ -266,13 +278,14 @@ bool Cube::makePossibilities2(int fc, ShapePlace &plcfc)
 
     plcfc.possible.clear();
     //const vector<PicsSet::RtnInfo>& allRtn = pics->allRtn;
-    int compCount = pics->comp.size();
+    int compCount = pics->compRef.size();
 
     for(int ci = 0; ci < compCount; ++ci) 
     {
         if (use.allUsed( ci ))
             continue;
-        const PicType &pt = pics->comp[ci];
+        //const PicType &pt = pics->comp[ci];
+        const PicType &pt = pics->getComp(ci);
         const int rtnnum = pt.rtnnum;
         for(int rti = 0; rti < rtnnum; ++rti) 
         {
@@ -305,8 +318,17 @@ bool Cube::maskAssemble(int fc)
 {
     ShapePlace &plcfc = plc[fc];
     int selPoss = -1;
-    if (plcfc.sc == -1) // there's nothing there
+    if (plcfc.sc < 0) // there's nothing there
     {
+        if (plcfc.sc == -2)
+        {  // it's a starter piece, need to remove it but there are not possibilities calculated yet
+            M_ASSERT(plcfc.start_sc >= 0);
+            auto pdef = PicBucket::instance().pdefs[plcfc.start_sc];
+            const PicArr& pmat = pdef.defRtns[plcfc.start_rt];
+            rmvPicArr(pmat, fc);
+            plcfc.start_sc = -1;
+            plcfc.start_rt = -1;
+        }
         if (!makePossibilities2(fc, plcfc))
         {
             plcfc.mclear();
@@ -316,7 +338,7 @@ bool Cube::maskAssemble(int fc)
         if (lconf.fRand)
             selPoss = SillyRand::silly_rand() % plcfc.possible.size();
         else
-            selPoss = 0; // TBD: random
+            selPoss = 0; 
     }
     else // something there
     {
@@ -338,9 +360,10 @@ bool Cube::maskAssemble(int fc)
         }
     }
 
-    TypeRef sel = plcfc.possible[selPoss];
+    auto sel = plcfc.possible[selPoss]; // ### reference??
     plcfc.mtryd.set(selPoss, true);
-    plcfc.sc = sel.typeInd;
+
+    plcfc.sc = sel.typeInd; // index in compRef
     plcfc.rt = sel.rtnInd;
     use.addOne(plcfc.sc);
 
@@ -382,31 +405,92 @@ void Cube::initPuttgr(SolveContext *thread, SlvCube* starter)
     { // set tiles from pervious solution
         while (true)
         {
-            int compsc = starter->dt[p].comp_sc;
-            if (compsc == -1)
+            int abssc = starter->dt[p].abs_sc;
+            if (abssc == -1) // put there by the default ctor
                 break;
-            int comprt = starter->dt[p].comp_rt;
+            int absrt = starter->dt[p].abs_rt;            
 
             ShapePlace &plcfc = plc[p];
 
-            bool okposs = makePossibilities2(p, plcfc);
-            M_ASSERT(okposs);
-            // check that the comp from starter is in the possibilities
-            int selPoss = 0;
-            for (; selPoss < plcfc.possible.size(); ++selPoss) {
-                const auto& ps = plcfc.possible[selPoss];
-                if (ps.typeInd == compsc && ps.rtnInd == comprt)
-                    break;
+            auto pdef = PicBucket::instance().pdefs[abssc];
+            // search for this starter piece comp in my compRef
+            int cri = 0;
+            while (cri < pics->compRef.size() && pics->compRef[cri].allCompInd != pdef.indInAllComp)
+                ++cri; 
+            bool found = false;
+            // search if this pdef is in the compRef we found (means this piece is part of this go)
+            if (cri < pics->compRef.size()) {
+                int crDefi = 0;
+                const auto& cr = pics->compRef[cri];
+                while (crDefi < cr.pdefsInds.size() && cr.pdefsInds[crDefi].pdefInd != abssc)
+                    ++crDefi;
+                found = crDefi < cr.pdefsInds.size();
             }
-            M_ASSERT(selPoss < plcfc.possible.size());
 
-            TypeRef sel = plcfc.possible[selPoss];
-            plcfc.mtryd.set(selPoss, true);
-            plcfc.sc = sel.typeInd;
-            plcfc.rt = sel.rtnInd;
-            use.addOne(plcfc.sc);
+            bool didPlace = false; // can fail if we have less of a piece we used to have before
+                                   // if this happens, we treat it like a foreign piece (-2). if the user
+                                   // wants to get rid of it, she can remove the cube from the shape and readd it
+            if (found)
+            { // we're using something this is in our compRef, need to recreate sc and rt and possibilities
 
-            putPic(plcfc.sc, plcfc.rt, p);
+                int compsc = cri; //starter->dt[p].comp_sc;
+                M_ASSERT(compsc >= 0);
+
+                const auto& c = pics->getComp(cri);
+                const auto& d = PicBucket::instance().pdefs[abssc];
+                int comp_absrt = rotationSub(absrt, d.defRot); // starter def rotatation to comp rotation
+                int rti = 0; // find what is the rti for the abs_rt of the comp that we take from the starter
+                while (rti < c.rtnnum && c.rtns[rti].rtnindx != comp_absrt)
+                    ++rti;
+
+                //int comprt = starter->dt[p].comp_rt;
+
+                bool okposs = makePossibilities2(p, plcfc);
+                if (okposs)
+                {
+                    // check that the comp from starter is in the possibilities
+                    int selPoss = 0;
+                    for (; selPoss < plcfc.possible.size(); ++selPoss) {
+                        const auto& ps = plcfc.possible[selPoss];
+                        if (ps.typeInd == compsc && ps.rtnInd == rti)
+                            break;
+                    }
+                
+                    if (selPoss < plcfc.possible.size()) // although this piece is in the set, it was already used so it was not in the possibilites which take into account the count of the pieces
+                    {
+                        TypeRef sel = plcfc.possible[selPoss];
+                        plcfc.mtryd.set(selPoss, true);
+                        plcfc.sc = sel.typeInd;
+                        plcfc.rt = sel.rtnInd;
+                        use.addOne(plcfc.sc);
+
+                        putPic(plcfc.sc, plcfc.rt, p);
+
+                        plcfc.start_sc = abssc;
+                        plcfc.start_rt = absrt;
+
+                        plcfc.start_compsc = compsc;
+                        plcfc.start_rti = rti;
+
+                        didPlace = true;
+                    }
+                }
+            }
+            
+            if (!didPlace)
+            {
+                plcfc.sc = -2; // means it's a piece from the starter
+                plcfc.rt = -2;
+                plcfc.start_sc = abssc;
+                plcfc.start_rt = absrt;
+
+                plcfc.start_compsc = -1;
+                plcfc.start_rti = -1;
+
+                const PicArr& pmat = pdef.defRtns[absrt];
+                putPicArr(pmat, p);
+            }
+            // mark one instance of this pieces compRef as used, if it's in compRef
 
             ++p;
             if (p == shape->fcn)
@@ -521,10 +605,10 @@ void Cube::puttgr(Solutions *slvs, SolveContext *thread, SlvCube* starter, int d
 SlvCube* Cube::generateConcreteSlv(SlvCube* starter)
 {
     // don't use vector<bool> since it is evil
-    vector<vector<int> > used(pics->comp.size()); // how much of each PicType we used
-    for(int i = 0; i < used.size(); ++i) {
-        used[i].resize(pics->comp[i].addedInds.size());
-        std::fill(used[i].begin(), used[i].end(), 0);
+    vector<vector<int> > used(pics->compRef.size()); // how much of each PicType we used
+    for(int ui = 0; ui < used.size(); ++ui) {
+        used[ui].resize(pics->compRef[ui].pdefsInds.size());
+        std::fill(used[ui].begin(), used[ui].end(), 0);
     }
     
     vector<ShapePlace> abs_plc(plc.size());
@@ -534,23 +618,40 @@ SlvCube* Cube::generateConcreteSlv(SlvCube* starter)
         for (; i < plc.size(); ++i)
         {
             // if we decided on something other than the piece in the starter slv
-            if (plc[i].sc != starter->dt[i].comp_sc || plc[i].rt != starter->dt[i].comp_rt)
-                break;
-            int asc = starter->dt[i].abs_sc;
-            if (asc == -1)
-                break;
+            if (plc[i].sc == -2)
+            {
+                int asc = plc[i].start_sc;
+                if (asc == -1)
+                    break;
 
-            // mark used
-            int ti = plc[i].sc;
-            const PicType& pt = pics->comp[ti];
-            auto &ut = used[ti];
-            int select = 0;
-            while (pt.addedInds[select].addedInd != asc)
-                ++select;
-            ut[select] = 1;
+                abs_plc[i].sc = asc;
+                abs_plc[i].rt = plc[i].start_rt;
+            }
+            else
+            {
+                if (plc[i].start_compsc == -1)
+                    break;
+                if (plc[i].sc != plc[i].start_compsc || plc[i].rt != plc[i].start_rti)
+                    break;
+                int asc = starter->dt[i].abs_sc;
+                if (asc == -1)
+                    break;
 
-            abs_plc[i].sc = asc;
-            abs_plc[i].rt = starter->dt[i].abs_rt;
+                // mark used
+                int ti = plc[i].sc;
+                const auto& pt = pics->compRef[ti];
+                auto &ut = used[ti];
+                // find the index of the actual piece placed in the starter solution in the list of pieces added in this compRef
+                int select = 0;
+                while (select < pt.pdefsInds.size() && pt.pdefsInds[select].pdefInd != asc)
+                    ++select;
+                M_ASSERT(select < pt.pdefsInds.size());
+                ut[select] = 1;
+
+                abs_plc[i].sc = plc[i].start_sc;
+                abs_plc[i].rt = plc[i].start_rt;
+
+            }
         }
     }
     cout << "ci=" << i << endl;
@@ -558,7 +659,7 @@ SlvCube* Cube::generateConcreteSlv(SlvCube* starter)
     for(; i < plc.size(); ++i) 
     {
         int ti = plc[i].sc;
-        const PicType& pt = pics->comp[ti];
+        const PicType& pt = pics->getComp(ti);
 
         auto &ut = used[ti];
         int select = 0;
@@ -566,11 +667,14 @@ SlvCube* Cube::generateConcreteSlv(SlvCube* starter)
             select = SillyRand::silly_rand() % ut.size();
         while (ut[select] != 0)
             select = (select + 1) % ut.size(); // must end since we placed a part
-        ut[select] = 1;
+        ut[select] = 1; // a piece that was added multiple times, will be there multiple times
 
-        const PicType::AddedRef& added = pt.addedInds[select];
-        abs_plc[i].sc = added.addedInd;
+        const auto& added = pics->compRef[ti].pdefsInds[select]; //pt.addedInds[select];
+        abs_plc[i].sc = added.pdefInd;
         // the order they were added to the solution is NO LONGER the same order as they are selected from the set.
+        //cout << "A " << pt.rtns[plc[i].rt].rtnindx << endl;
+        int a = plc[i].rt;
+        int b = pt.rtns[plc[i].rt].rtnindx;
         int dr = rotationAdd(pt.rtns[plc[i].rt].rtnindx, added.defRot);
         abs_plc[i].rt = dr;
     }
@@ -589,7 +693,8 @@ void Cube::putorig(int p, int abs_sc, int abs_rt)
     const int cx = shape->faces[p].ex.x, cy = shape->faces[p].ex.y, cz = shape->faces[p].ex.z;
     int j, k, b;	
     //const PicArr &pmat = pics->comp[sc].rtns[rt];
-    const PicArr &pmat = pics->getDef(abs_sc)->defRtns[abs_rt];
+
+    const PicArr &pmat = PicBucket::instance().pdefs[abs_sc].defRtns[abs_rt];
     
     for (b = 0; b < 16; ++b)
     {

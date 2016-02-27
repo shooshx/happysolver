@@ -20,10 +20,21 @@ public:
 	bool equalTo(const PicArr &dest, bool bSym = false) const;
 	void makeRtns(PicArr rtns[8]) const;
 
-	int& set(int x, int y) { return v[x * 5 + y]; }
-	int axx(int x, int y) const { return v[(x << 2)+x + y]; }
+	int& set(int x, int y) { 
+        return v[x * 5 + y]; 
+    }
+	int axx(int x, int y) const { 
+        return v[(x << 2)+x + y]; 
+    }
 
 	TPicBits getBits() const;
+
+    void clear() {
+        for (int i = 0; i < 25; ++i)
+            v[i] = 0;
+        turned = false;
+        rtnindx = -1;
+    }
 
 	int v[25];
 	

@@ -105,12 +105,10 @@ public:
 
     bool exportToObj(ObjExport& oe, const Mat4& fMatrix) const;
 
-private:
-    bool realExportToObj(ObjExport& oe, const Mat4& fMatrix) const;
 
 private:
     PicDef *m_pdef;
-    DisplayConf m_displayConf;
+
 
 };
 

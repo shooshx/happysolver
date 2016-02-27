@@ -26,11 +26,12 @@ var prog = null
 var model = { vtxBuf: null }
 
 var loadSolution, resize, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseWheel, cpp_draw, cpp_slvrun, getTms
+var setGrpCount
 var ctrlPressed = false;
     
 function start() {
 
-    picsAddFamily("Happy Cube", "hc")
+  /*  picsAddFamily("Happy Cube", "hc")
     picsAddCube("Blue", "hc_blue")
     picsAddCube("Red", "hc_red")
     picsAddCube("Purple", "hc_purple")
@@ -38,10 +39,7 @@ function start() {
     picsAddCube("AAAA", "pc_aaa")
     picsAddCube("BBBB", "pc_bbbb")
     //return
-
-    Module.ccall('cpp_start', null);
-    
-    Module.ccall('initCubeEngine', 'boolean', ['string', 'number'], [stdpcs_text, 0])
+*/
 
     loadSolution = Module.cwrap('loadSolution', null, ['string'])
     resize = Module.cwrap('resize', null, ['number', 'number'])
@@ -54,16 +52,20 @@ function start() {
     cpp_slvrun = Module.cwrap('cpp_slvrun', 'boolean', [])
     getTms = Module.cwrap('getTms', 'number', [])
     solveGo = Module.cwrap('solveGo', null, [])
+    setGrpCount = Module.cwrap('setGrpCount', null, ['number', 'number'])
+
+    Module.ccall('cpp_start', null);
+    Module.ccall('initCubeEngine', 'boolean', ['string', 'number'], [stdpcs_text, 0])
     
-    loadSolution(one_piece_cube_text)
+    //loadSolution(one_piece_cube_text)
     //loadSolution(one_marble_cube_text)
-    //solveGo()
+    solveGo()
     
     resize(mycanvas.width, mycanvas.height)
     
     mycanvas.onmousedown = handleMouseDown;
     document.onmouseup = handleMouseUp;
-    document.onmousemove = handleMouseMove;
+    mycanvas.onmousemove = handleMouseMove;
     mycanvas.ondblclick = handleMouseDblClick;
     mycanvas.onwheel = handleMouseWheel
     
@@ -97,17 +99,95 @@ function handleKey(event) {
 }
 
 var lastFamAdded = ''
+var pics_families = {} // make family id to { cubes: list of { cid: cube-id, grpi: group-index } }
+var pics_cubes = {} // make cube id to { famid }
 
 function picsAddFamily(famName, id) {
-    var picsCtrl = '<div id="' + id + '_frame" class="toppic">' + famName + '\
-    <img class="toppic_icon" id="' +  id + '_img" src="arrow_up.png" onclick="pic_rolldown('+ id + '_frame, this)"/> \
-    </div>'
+    id = id.replace(/[-\. ]/g, '_')
+    var picsCtrl = '<div id="ID_frame" class="toppic"><div class="famtitle">\
+    <input class="fam_check" id="ID_fcheck" type="checkbox" onclick="on_fam_check(\'ID\', ID_fcheck.checked)">\
+    <div class="fam_label" onclick="pic_rolldown(\'ID\')">LABEL</div>\
+    <img class="toppic_icon" id="ID_img" src="arrow_up.png" onclick="pic_rolldown(\'ID\')"></div> \
+    <div id="ID_famframe" class="inframe"></div> \
+    </div>'.replace(/ID/g, id).replace(/LABEL/g, famName)
+
     side_rel.innerHTML += picsCtrl
     lastFamAdded = id
+    pics_families[id] = { cubes: []}
 }
-function picsAddCube(cubeName, id) {
-    var txt = '<div id="' + id + '_inframe" class="' + lastFamAdded + 'piccube">' + cubeName + '</div>'
-    document.getElementById(lastFamAdded + "_frame").innerHTML += txt
+function picsAddCube(cubeName, id, grpi) {
+    id = id.replace(/[-\. ]/g, '_')
+    var txt = '<div id="ID_inframe" class="piccube">\
+    <input class="cube_check" id="ID_ccheck" type="checkbox" onclick="on_cube_check(\'ID\', ID_ccheck.checked, INDEX)">LABEL\
+    <input class="cube_count" id="ID_ccount" type="number" min="0" onchange="on_cube_count(\'ID\', INDEX)">\
+    </div>'.replace(/ID/g, id).replace(/LABEL/g, cubeName).replace(/INDEX/g, grpi)
+    
+    document.getElementById(lastFamAdded + "_famframe").innerHTML += txt
+    pics_families[lastFamAdded].cubes.push( { cid: id, grpi: grpi})
+    pics_cubes[id] = { famid: lastFamAdded }
+}
+
+// update the cube count after a check is changed. v is boolean for the value of the check
+function dispCCount(id, v, gind) {
+    var ccount = document.getElementById(id + "_ccount")
+    ccount.style.display = (v ? "inline":"none")
+    if (v && ccount.value <= 0)
+        ccount.value = 1
+    
+    if (v)
+        setGrpCount(gind, ccount.value)
+    else
+        setGrpCount(gind, 0)
+}
+
+function on_fam_check(id, v) {
+    var fcubes = pics_families[id].cubes;
+    for(var i in fcubes) {
+        var c = fcubes[i]
+        document.getElementById(c.cid + "_ccheck").checked = v
+        dispCCount(c.cid, v, c.grpi)
+    }
+}
+
+// from C++ on initialization. just need to take care of the checkboxes and count display. the counts are already there
+function setFamCheck(id, v) {
+    document.getElementById(id + "_fcheck").checked = v
+    on_fam_check(id, v)
+}
+
+function picFamCheck(id) {
+    var famid = pics_cubes[id].famid
+    var fcubes = pics_families[famid].cubes;
+    var allTrue = true, allFalse = true
+    for(var i in fcubes) {
+        var iv = document.getElementById(fcubes[i].cid + "_ccheck").checked
+        allTrue = allTrue && iv
+        allFalse = allFalse && !iv
+    }
+    var famCheck = document.getElementById(famid + "_fcheck")
+    famCheck.indeterminate = false
+    if (allTrue)
+        famCheck.checked = true
+    else if (allFalse)
+        famCheck.checked = false
+    else 
+        famCheck.indeterminate = true   
+}
+
+function on_cube_check(id, v, gind) {
+    dispCCount(id, v, gind)
+    picFamCheck(id)
+}
+
+function on_cube_count(id, gind) {
+    var ccount = document.getElementById(id + "_ccount")
+    var ccheck = document.getElementById(id + "_ccheck")
+    var prevCh = ccheck.checked, newCh = (ccount.value > 0)
+    if (prevCh != newCh) {
+        ccheck.checked = newCh
+        picFamCheck(id)
+    }
+    setGrpCount(gind, ccount.value)
 }
 
 function registerTexBind(imgname, obj) {
@@ -160,16 +240,46 @@ function sampleTms() {
 }
 
 
-function pic_rolldown(elem, elemImg) {
-    if (elem.isDown) {
-        elem.isDown = false
-        elem.style.height = ""
-        elemImg.src = "arrow_up.png"
+
+function pic_rolldown(id) {
+    var outframe = document.getElementById(id + '_frame')
+    var elem = document.getElementById(id + '_famframe')
+    var elemImg = document.getElementById(id + '_img')
+    
+    // roll up anything else that is rolled down
+ /*   for(var fid in pics_families) {
+        if (fid == id)
+            continue
+        if (document.getElementById(fid + '_famframe').isOpen) {
+            pic_rolldown(fid)
+        }
+    }*/
+    
+    if (elem.isOpen) {
+        elem.isOpen = false
+        //elem.style.display = 'none'
+        outframe.style.height = "26px";
+
+        elemImg.classList.remove('arrowAnimUp')
+  
+        var newone = elemImg.cloneNode(true); // restart the animation
+        elemImg.parentNode.replaceChild(newone, elemImg);
+        
+        newone.classList.add('arrowAnimDown')
+        newone.classList.remove('arrowUpsideDown')
     }
     else {
-        elem.isDown = true
-        elem.style.height = "200px"
-        elemImg.src = "arrow_down.png"
+        elem.isOpen = true
+        //elem.style.display = 'inline'
+        outframe.style.height = "156px";
+        
+        elemImg.classList.remove('arrowAnimDown')
+
+        var newone = elemImg.cloneNode(true);
+        elemImg.parentNode.replaceChild(newone, elemImg);
+
+        newone.classList.add('arrowAnimUp')
+        newone.classList.add('arrowUpsideDown')
     }
 }
 
@@ -185,10 +295,11 @@ sdfsfdf"
     right: 0;
     top: 0;
     bottom: 0;
-    width: 200px;
+    width: 230px;
     background: #cbcfff;
     margin-top: 8px;
     margin-bottom: 8px;
+    overflow:hidden;
 }
 .toppic {
     margin: 5px;
@@ -196,21 +307,86 @@ sdfsfdf"
     font-family: Verdana;
     padding: 4px;
     border-radius: 5px;
+    /*transition: max-height 1s linear;*/
+    height: 26px;
 }
 .in_rel {
     position:relative; 
     width:100%; 
-    height:100%;
+    top: 100px;
+    bottom: 20px;
+    overflow: hidden;
 }
 .toppic_icon {
     float: right;
-
+    padding: 3px 0 3px 0;
 }
+.inframe {
+    display: block;
+    visibility: hidden;
+}
+.cube_count {
+    display: none; /* start retracted */
+}
+.piccube {
+    height: 26px;
+    line-height: 26px; /* vertical align */
+    background: #ffffff;
+    padding: 6px;
+    margin:4px;
+    
+    border-radius: 5px;
+}
+.famtitle {
+    height: 26px;
+    line-height: 26px;
+}
+
+@keyframes rotate180 {
+    0%   {transform: rotate(0deg);}
+    100% {transform: rotate(180deg);}
+}
+.arrowAnimUp {
+    animation-name: rotate180;
+    animation-duration: 0.2s;
+}
+.arrowAnimDown {
+    animation-name: rotate180;
+    animation-duration: 0.2s;
+    animation-direction: reverse;
+}
+.arrowUpsideDown {
+    transform: rotate(180deg);
+}
+.fam_check {
+    width: 17px;
+    height: 17px;
+    margin: 0 4px 0 2px;
+    vertical-align: text-bottom;
+}
+.fam_label {
+    display:inline-block;
+    width: 160px;
+}
+.cube_check {
+    width: 17px;
+    height: 17px;
+    vertical-align: text-bottom;
+    margin: 0 4px 0 0
+}
+.cube_count {
+    float: right;
+    width: 50px;
+    height: 17px;
+    padding: 2px 0 2px 0;
+    text-align: center;
+}
+
 </style>
 </head>
 <body onload="start();">
     <div id="side_ctrl"><div id="side_rel" class="in_rel">
-
+    
     </div></div>
     <canvas id="mycanvas" width="800" height="700"></canvas>
     <img id="noisetex" src='cubeTex.png' style="display:none;"/>
