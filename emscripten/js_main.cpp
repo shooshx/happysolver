@@ -192,14 +192,14 @@ bool initCubeEngine(const char* stdpcs, const char* unimesh)
     try {
         auto& bucket = PicBucket::createSingleton();
     
-        g_ctrl.m_modelGl.initTex();
+        //g_ctrl.m_modelGl.initTex();
            
         if (!bucket.loadXML(stdpcs))
             return false;
 
         populatePicsSide(bucket);
             
-        bucket.loadUnifiedJs();    
+        //bucket.loadUnifiedJs();    
         return true;
     }
     catch(const std::exception& e) {

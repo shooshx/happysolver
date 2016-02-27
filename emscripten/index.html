@@ -54,11 +54,12 @@ function start() {
     solveGo = Module.cwrap('solveGo', null, [])
     setGrpCount = Module.cwrap('setGrpCount', null, ['number', 'number'])
 
-    Module.ccall('cpp_start', null);
+    //Module.ccall('cpp_start', null);
     Module.ccall('initCubeEngine', 'boolean', ['string', 'number'], [stdpcs_text, 0])
     
     //loadSolution(one_piece_cube_text)
     //loadSolution(one_marble_cube_text)
+    return
     solveGo()
     
     resize(mycanvas.width, mycanvas.height)
