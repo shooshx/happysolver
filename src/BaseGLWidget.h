@@ -34,6 +34,8 @@ public:
     virtual bool scrMove(bool rightButton, bool ctrlPressed, int x, int y) { return false; }
     virtual bool scrDblClick(bool ctrlPressed, int x, int y) { return false; }
 
+    virtual void clearChoise() {}
+
 protected:
     BaseGLWidget *m_bgl;
 };

@@ -417,40 +417,51 @@ bool PicBucket::loadXML(const char* data)
 
             cgrp.drawtype = getDrawType(fill->Attribute("type"));
 
-            ImgBuf* baseTex = nullptr;
-            GlTexture* baseGTex = nullptr;
+            cgrp.color = Vec3(float(fill->IntAttribute("r")) / 255.0f,
+                              float(fill->IntAttribute("g")) / 255.0f,
+                              float(fill->IntAttribute("b")) / 255.0f);
+            cgrp.exColor = Vec3(float(fill->IntAttribute("exR")) / 255.0f,
+                                float(fill->IntAttribute("exG")) / 255.0f,
+                                float(fill->IntAttribute("exB")) / 255.0f);
+            cgrp.blackness = (EBlackness)fill->IntAttribute("k");
+
+            ImgBuf* baseTex = nullptr;   
+            int txind = 0;
             if (fill->Attribute("texind") != nullptr)
             {
-                int txind = fill->IntAttribute("texind");
-                if (txind >= 0 && txind < texs.size()) {
+                txind = fill->IntAttribute("texind");
+                if (txind >= 0 && txind < texs.size()) 
                     baseTex = texs[txind];
-                    baseGTex = gtexs[txind+1]; // gtex starts with the noise tex at 0
-                }
-                else {
-                    cout << "missing texture " << txind << endl;
-                }
+                else 
+                    cout << "missing texture image" << txind << endl;
+
             }
 
             cgrp.tex = baseTex;
 
-            cgrp.color = Vec3( float(fill->IntAttribute("r")) / 255.0f, 
-                               float(fill->IntAttribute("g")) / 255.0f, 
-                               float(fill->IntAttribute("b")) / 255.0f);
-            cgrp.exColor = Vec3( float(fill->IntAttribute("exR")) / 255.0f, 
-                                 float(fill->IntAttribute("exG")) / 255.0f,
-                                 float(fill->IntAttribute("exB")) / 255.0f);
-            cgrp.blackness = (EBlackness)fill->IntAttribute("k");
     
             if (baseTex != nullptr) 
             {
-                if (cgrp.drawtype == DRAW_TEXTURE_BLEND || cgrp.drawtype == DRAW_TEXTURE_MARBLE)
-                {
+                if (cgrp.drawtype == DRAW_TEXTURE_BLEND || cgrp.drawtype == DRAW_TEXTURE_MARBLE) {
                     cgrp.tex = newTexture(cgrp.blendImage(baseTex), false);
-                    cgrp.gtex = gtexs[0]; //the noise tex
                 }
-                else if (cgrp.isIndividual()) {
-                    cgrp.gtex = baseGTex;
+            }
+
+
+            if (cgrp.drawtype == DRAW_TEXTURE_BLEND || cgrp.drawtype == DRAW_TEXTURE_MARBLE) {
+                cgrp.gtex = gtexs[0]; //the noise tex
+            }
+            else if (cgrp.isIndividual()) 
+            {
+                GlTexture* baseGTex = nullptr;
+                // see ModelControlBase::initTex()
+                if (txind >= 0 && txind + 1 < gtexs.size() && gtexs[txind + 1] != nullptr) {
+                    baseGTex = gtexs[txind + 1]; // gtex starts with the noise tex at 0
                 }
+                else
+                    cout << "missing gl-texture " << txind << endl;
+
+                cgrp.gtex = baseGTex;
             }
 
             //QDomNodeList xpics = cube->ElementsByTagName("piece");
@@ -484,11 +495,12 @@ bool PicBucket::loadXML(const char* data)
 
                         }
                     }
-                    if (cgrp.isIndividual() && cgrp.tex != nullptr)
+                    if (cgrp.isIndividual() && cgrp.gtex != nullptr)
                     {
                         curdef.xOffs = xpic->IntAttribute("x1");
                         curdef.yOffs = xpic->IntAttribute("y1");
-                        curdef.tex = newTexture(cgrp.tex->copy(curdef.xOffs, curdef.yOffs, 128, 128)/*.mirrored(false, true)*/, false);
+                        if (cgrp.tex != nullptr)
+                            curdef.tex = newTexture(cgrp.tex->copy(curdef.xOffs, curdef.yOffs, 128, 128)/*.mirrored(false, true)*/, false);
                     }
                     curdef.v.makeRtns(curdef.defRtns);
                     cgrp.picsi.push_back(pdefi); // the index in the bucket
@@ -555,7 +567,7 @@ void PicBucket::makeAllComp()
 {
     PicsSet ps;
     for (int i = 0; i < pdefs.size(); ++i) {
-        ps.add(i, false); // TBD - consider sym
+        ps.add(i, true); // TBD - consider sym
     }
     allComp = ps.comp;
     for(int i = 0; i < allComp.size(); ++i)

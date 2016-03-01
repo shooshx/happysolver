@@ -1267,7 +1267,7 @@ void Shape::makeNeiTransforms()
 
     MatStack m;
     startNeiTransform(m);
-    checkNeiTranBFS(m, ang, [this](const Mat4& m, int){ this->checkAddQuad(m); } );
+//    checkNeiTranBFS(m, ang, [this](const Mat4& m, int){ this->checkAddQuad(m); } ); // test martrics
     //m.translate(0,0,-4);
     //checkNeiTran(m, 3, pass, 0);
 

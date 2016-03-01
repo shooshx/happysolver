@@ -41,9 +41,11 @@ class RunContext : public SolveContext
 {
 public:
     virtual void notifyLastSolution(bool firstInGo) override;
-    virtual void notifyFullEnum() override
-    { 
+    virtual void notifyFullEnum() override { 
         cout << "Full-enum" << endl;
+    }
+    virtual void notifyNotEnoughPieces() override {
+        cout << "Not enough pieces" << endl;
     }
 
     virtual void doStart() override {
@@ -192,14 +194,14 @@ bool initCubeEngine(const char* stdpcs, const char* unimesh)
     try {
         auto& bucket = PicBucket::createSingleton();
     
-        //g_ctrl.m_modelGl.initTex();
+        g_ctrl.m_modelGl.initTex();
            
         if (!bucket.loadXML(stdpcs))
             return false;
 
         populatePicsSide(bucket);
             
-        //bucket.loadUnifiedJs();    
+        bucket.loadUnifiedJs();    
         return true;
     }
     catch(const std::exception& e) {
@@ -208,9 +210,10 @@ bool initCubeEngine(const char* stdpcs, const char* unimesh)
     }        
 }
 
-void resize(int width, int height) 
+void resizeGl(int width, int height) 
 {
     g_ctrl.m_gl.resize(width, height);
+    g_ctrl.requestDraw();
 }
 
 void mouseDown(int rightButton, int x, int y) {
@@ -283,6 +286,13 @@ void setGrpCount(int grpi, int count)
     for(auto pi: grp.picsi) {
         bucket.pdefs[pi].setSelected(count);
     }
+}
+
+void setEditAction(int a)
+{
+    //cout << "EDIT "  << a << endl;
+    g_ctrl.m_modelGl.m_buildCtrl.m_bEditEnabled = (a != 0);
+    g_ctrl.m_modelGl.m_buildCtrl.m_bBoxRemove = (a == 2);
 }
 
 } // extern "C"

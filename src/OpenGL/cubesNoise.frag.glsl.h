@@ -74,23 +74,23 @@ const char *code_cubesNoise_frag_glsl = " \
    \n\
       } \n\
       if (drawtype == 0x14) {  // DRAW_TEXTURE_INDIVIDUAL_HALF  \n\
-          float T_HIGH = 0.525; \n\
-          float T_LOW = 0.475; \n\
+          const float T_HIGH = 0.525; \n\
+          const float T_LOW = 0.475; \n\
    \n\
           float tx = MCposition.x; \n\
           if (texOffset.z != 0.0) \n\
               tx = 1.0 - tx; \n\
    \n\
           if (tx > T_HIGH) { \n\
-              gl_FragColor = vec4(colorA * LightIntensity, 1.0); \n\
-              return; \n\
+              color = colorA; \n\
           } \n\
+          else { \n\
+              vec2 t = texOffset.xy + MCposition.yz / (8.0*5.0); \n\
    \n\
-          vec2 t = texOffset.xy + MCposition.yz / (8.0*5.0); \n\
-   \n\
-          color = texture2D(noisef, t).rgb; \n\
-          if (tx > T_LOW && tx <= T_HIGH) { \n\
-              color = mix(color, colorA, smoothstep(T_LOW, T_HIGH, tx)); \n\
+              color = texture2D(noisef, t).rgb; \n\
+              if (tx > T_LOW && tx <= T_HIGH) { \n\
+                  color = mix(color, colorA, smoothstep(T_LOW, T_HIGH, tx)); \n\
+              } \n\
           } \n\
    \n\
           color *= LightIntensity; \n\
@@ -101,11 +101,13 @@ const char *code_cubesNoise_frag_glsl = " \
               tx = 1.0 - tx; \n\
    \n\
           if (tx > 0.2) { \n\
-              gl_FragColor = vec4(colorA * LightIntensity, 1.0); \n\
-              return; \n\
+              color = colorA; \n\
           } \n\
-          vec2 t = texOffset.xy + MCposition.yz / (8.0*5.0); \n\
-          color = texture2D(noisef, t).rgb * LightIntensity; \n\
+          else { \n\
+              vec2 t = texOffset.xy + MCposition.yz / (8.0*5.0); \n\
+              color = texture2D(noisef, t).rgb; \n\
+          } \n\
+          color *= LightIntensity; \n\
       } \n\
       if (drawtype == 4) { // DRAW_TEXTURE_MARBLE \n\
           vec3 p = MCposition.yzx * 0.2; \n\
@@ -131,6 +133,7 @@ const char *code_cubesNoise_frag_glsl = " \
           gl_FragColor = vec4(color.g + (0.8 - color.g)*fadeFactor, color.g - (0.3 * fadeFactor), color.b - (0.3 * fadeFactor), 1.0); \n\
           return; \n\
       } \n\
+   \n\
       gl_FragColor = vec4(color, 1.0); \n\
   } \n\
   ";

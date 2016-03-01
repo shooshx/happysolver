@@ -66,7 +66,7 @@ void SlvPainter::paintPiece(int f, BaseGLWidget* context, bool fTargets) const
 
     mglCheckErrorsC("x6");
     // if dispRot >= 4 it means the real part we're drawing is inverted from the model so we need to draw the texture on the other side
-    pdef->painter.paint(fTargets, name, context, (pdef->dispRot < 4), flag );
+    pdef->painter.paint(fTargets, name, context, (pdef->dispRot >= 4), flag );
     mglCheckErrorsC("x7");
 
     model.pop();

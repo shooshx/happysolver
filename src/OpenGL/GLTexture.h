@@ -42,9 +42,13 @@ public:
 			  uint minFilter = GL_NEAREST, uint magFilter = GL_NEAREST, uint wrap = GL_CLAMP_TO_EDGE);
 	void destroy();
 
-	uint handle() const { return m_obj; }
+	uint handle() const { 
+        return m_obj; 
+    }
 	// means we're not going to delete this texture. better take care of it yourself.
-	void detach() { m_obj = -1; }
+	void detach() { 
+        m_obj = -1; 
+    }
 
 	const Vec3i& size() const { return m_size; }
 	bool isValid() const { return m_obj != -1; }

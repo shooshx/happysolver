@@ -170,6 +170,8 @@ public:
     {}
     virtual void notifyFullEnum() 
     {}
+    virtual void notifyNotEnoughPieces()
+    {}
 
     virtual void doStart()
     {}

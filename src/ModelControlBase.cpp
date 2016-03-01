@@ -31,7 +31,8 @@ void ModelControlBase::reCalcSlvMinMax()
         return; // HACK, don't want to recenter each time so that the build and model would be in sync
     did = true;  // don't recenter every time TBD hack
     auto slv = m_doc->getCurrentSolve();
-    M_ASSERT(slv != nullptr);
+    if (slv == nullptr)
+        return;
     SlvPainter &pnt = slv->painter;
 
     m_bgl->aqmin = m_modelmin = pnt.qmin;
@@ -61,14 +62,29 @@ public:
 
 void ModelControlBase::initTex()
 {
+    auto& bucket = PicBucket::mutableInstance();
 #ifdef QT_CORE_LIB
-    PicBucket::mutableInstance().gtexs.push_back(NoiseGenerator::make3Dnoise());
+    bucket.gtexs.push_back(NoiseGenerator::make3Dnoise());
 #else
     auto tex = new JsGlTexture;
     tex->init(GL_TEXTURE_2D, Vec2i(1024, 512), 1, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, nullptr, GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE);
-    tex->registerBind("noise3dimg");
+    tex->registerBind("noisetex");
+    bucket.gtexs.push_back(tex);
 
-    PicBucket::mutableInstance().gtexs.push_back(tex);
+    bucket.gtexs.push_back(nullptr); // black
+    bucket.gtexs.push_back(nullptr); // marble
+
+	// little genius textures
+    tex = new JsGlTexture;
+    tex->init(GL_TEXTURE_2D, Vec2i(1024, 1024), 1, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, nullptr, GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE);
+    tex->registerBind("genious");
+    bucket.gtexs.push_back(tex);
+    
+    tex = new JsGlTexture;
+    tex->init(GL_TEXTURE_2D, Vec2i(1024, 1024), 1, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, nullptr, GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE);
+    tex->registerBind("newgenious");
+    bucket.gtexs.push_back(tex);
+   
 #endif
 }
 
@@ -222,6 +238,8 @@ bool ModelControlBase::scrMove(bool rightButton, bool ctrlPressed, int x, int y)
 #endif
 
     const Shape* shp = m_doc->getCurrentShape();
+    if (shp == nullptr)
+        return false;
     bool ret = false;
     if (choise >= 0 && choise < shp->fcn)
     {

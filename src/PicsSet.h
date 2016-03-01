@@ -119,8 +119,9 @@ public:
 
     vector<CompRef> compRef; // distict pieces added to this set, reference to the allComp array in PicBucket
 
-	int totalRtnCount; // needed as the maximum size of tryd array
-	bool considerSymetric;
+	int totalRtnCount = 0; // needed as the maximum size of tryd array
+	bool considerSymetric = false;
+    int picCount = 0; // number of pieces
 
 public:
 	void add(int defInd, bool considerSym);

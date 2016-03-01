@@ -25,9 +25,11 @@ var gl = null, canvas = null
 var prog = null
 var model = { vtxBuf: null }
 
-var loadSolution, resize, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseWheel, cpp_draw, cpp_slvrun, getTms
-var setGrpCount
+var loadSolution, resizeGl, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseWheel, cpp_draw, cpp_slvrun, getTms
+var setGrpCount, setEditAction
 var ctrlPressed = false;
+
+var ACT_NONE = 0, ACT_ADD = 1, ACT_REMOVE = 2
     
 function start() {
 
@@ -42,7 +44,7 @@ function start() {
 */
 
     loadSolution = Module.cwrap('loadSolution', null, ['string'])
-    resize = Module.cwrap('resize', null, ['number', 'number'])
+    resizeGl = Module.cwrap('resizeGl', null, ['number', 'number'])
     mouseDown = Module.cwrap('mouseDown', null, ['number', 'number', 'number'])
     mouseUp = Module.cwrap('mouseUp', null, ['number'])
     mouseMove = Module.cwrap('mouseMove', null, ['number', 'number', 'number', 'number'])
@@ -53,16 +55,19 @@ function start() {
     getTms = Module.cwrap('getTms', 'number', [])
     solveGo = Module.cwrap('solveGo', null, [])
     setGrpCount = Module.cwrap('setGrpCount', null, ['number', 'number'])
+    setEditAction = Module.cwrap('setEditAction', null, ['number'])
+    
 
-    //Module.ccall('cpp_start', null);
+    Module.ccall('cpp_start', null);
     Module.ccall('initCubeEngine', 'boolean', ['string', 'number'], [stdpcs_text, 0])
     
     //loadSolution(one_piece_cube_text)
     //loadSolution(one_marble_cube_text)
-    return
+
     solveGo()
     
-    resize(mycanvas.width, mycanvas.height)
+    doResize();
+    //resize(mycanvas.width, mycanvas.height)
     
     mycanvas.onmousedown = handleMouseDown;
     document.onmouseup = handleMouseUp;
@@ -76,7 +81,9 @@ function start() {
     requestAnimationFrame(animProgress)
     setInterval(sampleTms, 1000)
     
-
+    addingCube.checked = true;
+    setEditAction(ACT_ADD) 
+    
 }
 
 function handleMouseDown(event) {
@@ -90,6 +97,7 @@ function handleMouseMove(event) {
 }
 function handleMouseDblClick(event) {
     mouseDblClick(ctrlPressed?1:0, event.clientX, event.clientY);
+    return true
 }
 function handleMouseWheel(event) {
     mouseWheel(-event.deltaY / 16)
@@ -192,13 +200,11 @@ function on_cube_count(id, gind) {
 }
 
 function registerTexBind(imgname, obj) {
-    console.log("reg-tex " + imgname)
-    //var img = new Image()
-    //img.onload = function() {
-        _glBindTexture(GLctx.TEXTURE_2D, obj)
-        GLctx.texImage2D(GLctx.TEXTURE_2D, 0, GLctx.RGBA, GLctx.RGBA, GLctx.UNSIGNED_BYTE, noisetex)
-    //}
-    //img.src = 'cubeTex.jpg'
+    console.log("reg-tex " + imgname + " " + obj)
+
+    _glBindTexture(GLctx.TEXTURE_2D, obj)
+    var img = document.getElementById(imgname)
+    GLctx.texImage2D(GLctx.TEXTURE_2D, 0, GLctx.RGBA, GLctx.RGBA, GLctx.UNSIGNED_BYTE, img)
 }
 
 function requestAnim() {
@@ -248,18 +254,20 @@ function pic_rolldown(id) {
     var elemImg = document.getElementById(id + '_img')
     
     // roll up anything else that is rolled down
- /*   for(var fid in pics_families) {
+    for(var fid in pics_families) {
         if (fid == id)
             continue
         if (document.getElementById(fid + '_famframe').isOpen) {
             pic_rolldown(fid)
         }
-    }*/
+    }
     
     if (elem.isOpen) {
         elem.isOpen = false
-        //elem.style.display = 'none'
+        //  elem.style.display = 'none'
         outframe.style.height = "26px";
+        elem.style.visibility = 'hidden'
+        elem.style.opacity = 0.0
 
         elemImg.classList.remove('arrowAnimUp')
   
@@ -271,8 +279,10 @@ function pic_rolldown(id) {
     }
     else {
         elem.isOpen = true
-        //elem.style.display = 'inline'
-        outframe.style.height = "156px";
+        //  elem.style.display = 'block'
+        outframe.style.height = "283px";
+        elem.style.visibility = 'visible'
+        elem.style.opacity = 1.0
         
         elemImg.classList.remove('arrowAnimDown')
 
@@ -285,12 +295,50 @@ function pic_rolldown(id) {
 }
 
 
-var testt = "adfadfd\
-sdfsfdf"
+function doResize() {
+    mycanvas.width = window.innerWidth - 230 - 16
+    mycanvas.height = window.innerHeight - 16
+    side_rel.style.height = "" + (window.innerHeight - 200) + "px"
+    
+    resizeGl(mycanvas.width, mycanvas.height)
+    requestAnim()
+}
 
+function triggerAdd() {
+    if (addingCube.checked) {
+        removingCube.checked = false
+        setEditAction(ACT_ADD) 
+    }
+    else {
+        setEditAction(ACT_NONE)
+    }
+}
+function triggerRemove() {
+    if (removingCube.checked) {
+        addingCube.checked = false
+        setEditAction(ACT_REMOVE)
+    }
+    else {
+        setEditAction(ACT_NONE)
+    }
+
+}
+    
 </script>
 <script src="js_main.js"></script>
 <style>
+body {
+    margin: 0;
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+     user-select: none;
+}
+#mycanvas {
+    margin: 8px 0 0 8px;
+    border-radius: 12px;
+}
 #side_ctrl {
     position: absolute;
     right: 0;
@@ -301,6 +349,7 @@ sdfsfdf"
     margin-top: 8px;
     margin-bottom: 8px;
     overflow:hidden;
+    border-radius: 8px;
 }
 .toppic {
     margin: 5px;
@@ -308,8 +357,9 @@ sdfsfdf"
     font-family: Verdana;
     padding: 4px;
     border-radius: 5px;
-    /*transition: max-height 1s linear;*/
+    transition: height 0.2s ease-in-out;
     height: 26px;
+    
 }
 .in_rel {
     position:relative; 
@@ -325,6 +375,9 @@ sdfsfdf"
 .inframe {
     display: block;
     visibility: hidden;
+    position: relative;
+    opacity: 0;
+    transition: all 0.2s ease-in-out;
 }
 .cube_count {
     display: none; /* start retracted */
@@ -376,23 +429,105 @@ sdfsfdf"
     margin: 0 4px 0 0
 }
 .cube_count {
-    float: right;
+    position: absolute;
+    right: 12px;
     width: 50px;
     height: 17px;
     padding: 2px 0 2px 0;
     text-align: center;
 }
+#stat {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+}
+
+/*------------------------------------------------------------*/
+.sc-btn {
+  -webkit-appearance: button;
+  display: inline-block;
+  position: absolute;
+
+  font-family: "Helvetica Neue", "Helvetica", sans-serif;
+
+  border-radius: 0.4em;
+
+  box-shadow: inset rgba(0, 0, 0, 0.1) 0px -0.15em 0px, inset rgba(255, 255, 255, 0.2) 0px 0.15em 0px, rgba(0, 0, 0, 0.3) 0px 0.1em 0.3em;
+  text-align: center;
+  cursor: pointer;
+  overflow: hidden; 
+  
+  color: #222;
+  text-shadow: rgba(127, 127, 127, 0.4) 0 1px 0;
+  background-color: #ebebeb;
+  background-image: linear-gradient(to bottom, white, #ebebeb);   
+  
+  width: 100px;
+  height: 40px;
+  line-height: 40px;
+  margin: 7px;
+  outline:none;  /* no focus outline */
+  font-size:110%;
+}
+
+.sc-btn:hover {
+  color: #222;
+  background-color: #d2d2d2;
+  background-image: linear-gradient(to bottom, white, #d2d2d2);
+  background-color: #fdfdfd;   
+}
+
+.sc-btn:active {
+    box-shadow: rgba(255, 255, 255, 0.2) 0 0.1em 0, inset rgba(0, 0, 0, 0.3) 0px 0.25em 1em; 
+    color: #fff;
+    background-color: #dfdfdf;
+    background-image: linear-gradient(to bottom, #479ceb, #1067c1); 
+}
+.sc-btn:checked {
+  color: #fff;
+  background-color: #dfdfdf;
+  background-image: linear-gradient(to bottom, #479ceb, #1067c1); 
+}
+
+
+
+#addingCube {
+  background-image: linear-gradient(to bottom, white, #DADAFD);
+}
+#addingCube:active, #addingCube:checked {
+    background-image: linear-gradient(to bottom, #61adf4, #1067c1); 
+}
+#addingCube:before {
+  content: "Add";
+}
+#removingCube {
+  background-image: linear-gradient(to bottom, white, #FDDADA);
+}
+#removingCube {
+    left: 115px;
+}
+#removingCube:before {
+  content: "Remove";
+}
+#removingCube:active, #removingCube:checked {
+    background-image: linear-gradient(to bottom, #f57979, #e32323); 
+}
 
 </style>
 </head>
-<body onload="start();">
-    <div id="side_ctrl"><div id="side_rel" class="in_rel">
+<body onload="start()" onresize="doResize()" >
+    <div id="side_ctrl">
+    <input id="addingCube" class="sc-btn" type="checkbox" onclick="triggerAdd()"/>
+    <input id="removingCube" class="sc-btn" type="checkbox" onclick="triggerRemove()"/>
+    <div id="side_rel" class="in_rel">
     
     </div></div>
     <canvas id="mycanvas" width="800" height="700"></canvas>
     <img id="noisetex" src='cubeTex.png' style="display:none;"/>
     <img src="arrow_up.png" style="display:none;"/>
     <img src="arrow_down.png" style="display:none;"/>
+    <img id="newgenious" src="../new_genious128.png" style="display:none;"/>
+    <img id="genious" src="../littlegenious128_2.png" style="display:none;"/>
     <div id="stat"></div>
 </body>
 </html>

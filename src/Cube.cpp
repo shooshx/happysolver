@@ -316,6 +316,7 @@ bool Cube::makePossibilities2(int fc, ShapePlace &plcfc)
 // or to remove an existing pic and put anohter
 bool Cube::maskAssemble(int fc)
 {
+    M_ASSERT(fc >= 0);
     ShapePlace &plcfc = plc[fc];
     int selPoss = -1;
     if (plcfc.sc < 0) // there's nothing there
@@ -515,7 +516,9 @@ void Cube::puttgr(Solutions *slvs, SolveContext *thread, SlvCube* starter, int d
     int p = thread->p;
     int didSteps = 0;
 
-    while (!(p == 0 && plc[0].mtryd.tryedAll()) && !thread->fExitnow && !thread->selfExit && didSteps != doSteps)
+    // p == -1 means we tried all possibilities from piece 0 and backtracked - this means there was a full enumeration
+
+    while ((p != -1) && !thread->fExitnow && !thread->selfExit && didSteps != doSteps)
     {
 /////////// actual work ///////////////////////////////////////////////////////
         if ((p != shape->fcn) && maskAssemble(p))
@@ -523,9 +526,17 @@ void Cube::puttgr(Solutions *slvs, SolveContext *thread, SlvCube* starter, int d
         else 
             p--;	// if reached last piece backtrack
 /////////// handle administration /////////////////////////////////////////////
+
     
         ++didSteps;
         ++thread->m_stats.tms;
+
+
+        if (pics->picCount < shape->fcn - p) {// we suddently don't have enough pieces to fill all the places
+            thread->notifyNotEnoughPieces();
+            thread->selfExit = true;
+            break;
+        }
 
         if (p > thread->m_stats.maxp)
             thread->m_stats.maxp = p;
@@ -589,8 +600,9 @@ void Cube::puttgr(Solutions *slvs, SolveContext *thread, SlvCube* starter, int d
         }
     }
 
-    if ((p == 0) && (plc[0].mtryd.tryedAll()) && (thread->goSlvNum == 0)) {
+    if (p == -1 && thread->goSlvNum == 0) {
         thread->notifyFullEnum();
+        thread->selfExit = true;
     }
 
     thread->p = p;

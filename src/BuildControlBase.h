@@ -41,6 +41,8 @@ public:
     virtual void emitTileHover(int tile, EActStatus act) {}
 
     virtual bool scrMove(bool rightButton, bool ctrlPressed, int x, int y);
+    virtual void clearChoise();
+
     bool doMouseMove(int x, int y, bool ctrlPressed);
     bool choiseMouseMove(int choise, bool ctrlPressed);
 
@@ -64,19 +66,17 @@ private:
 protected:
     CubeDocBase *m_doc;
 
-    bool m_bEditEnabled;
     bool m_fSetStrtMode;
 
-
     bool m_bInternalBoxRemove; // internal, from ctrl
-    bool m_bBoxRemove; // from the GUI button. this represents the external status, not including Ctrl button
+    
 
     bool m_bLastBoxRemove; ///< used in mouseMoveEvent()
     int m_lastChoise; ///< used in mouseMoveEvent()
     Vec3i m_lastCubeChoise; ///< used in mouseMoveEvent()
 
     /// number of valid tiles in m_curMarkedTiles
-    bool m_inFade;
+    bool m_inFade = false;
 
 
     /// when a D2 error occur the offending sides are marked by blinking cylinders
@@ -101,5 +101,9 @@ public:
     Vec3 m_buildmin, m_buildmax;
     float m_preZoomFactor = 1.0;
     float m_fadeFactor = 0.0;
+
+    bool m_bBoxRemove = false; // from the GUI button. this represents the external status, not including Ctrl button
+    bool m_bEditEnabled = false;
+
 
 };

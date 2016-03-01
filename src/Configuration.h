@@ -78,7 +78,7 @@ class DisplayConf
 {
 public:
 	DisplayConf() 
-        :numberOfPasses(0), bVtxNormals(false), bLight(false), nLines(LINES_NONE), nSwapTexEndians(-1), slvBkColor(0.5, 0.5, 0.5)
+        :numberOfPasses(0), bVtxNormals(false), bLight(false), nLines(LINES_NONE), nSwapTexEndians(-1), slvBkColor(0.7, 0.7, 0.7)
 	{
 		for(int i = 0; i < 4; ++i)
 			passRound[i] = false;

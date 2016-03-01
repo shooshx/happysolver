@@ -148,8 +148,10 @@ void BuildWorld::clean(ECleanMethod meth) //, WorldLimits& withlim, bool na)
                         }
                         else if (meth == CLEAN_TRANS_SHOW)
                         {
-                            if (GET_TYPE(theget) == TYPE_VIR)
+                            if (GET_TYPE(theget) == TYPE_VIR) {
                                 set(dim, page, x, y, 0); // rid of virtual ones
+                                //cout << "--cleaned" << endl;
+                            }
                             else
                                 set(dim, page, x, y, GET_VAL(theget));
                         }

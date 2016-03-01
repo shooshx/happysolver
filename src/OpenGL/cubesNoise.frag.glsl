@@ -71,23 +71,23 @@ void main (void)
 
     }
     if (drawtype == 0x14) {  // DRAW_TEXTURE_INDIVIDUAL_HALF 
-        float T_HIGH = 0.525;
-        float T_LOW = 0.475;
+        const float T_HIGH = 0.525;
+        const float T_LOW = 0.475;
 
         float tx = MCposition.x;
         if (texOffset.z != 0.0)
             tx = 1.0 - tx;
 
         if (tx > T_HIGH) {
-            gl_FragColor = vec4(colorA * LightIntensity, 1.0);
-            return;
+            color = colorA;
         }
+        else {
+            vec2 t = texOffset.xy + MCposition.yz / (8.0*5.0);
 
-        vec2 t = texOffset.xy + MCposition.yz / (8.0*5.0);
-
-        color = texture2D(noisef, t).rgb;
-        if (tx > T_LOW && tx <= T_HIGH) {
-            color = mix(color, colorA, smoothstep(T_LOW, T_HIGH, tx));
+            color = texture2D(noisef, t).rgb;
+            if (tx > T_LOW && tx <= T_HIGH) {
+                color = mix(color, colorA, smoothstep(T_LOW, T_HIGH, tx));
+            }
         }
 
         color *= LightIntensity;
@@ -98,11 +98,13 @@ void main (void)
             tx = 1.0 - tx;
 
         if (tx > 0.2) {
-            gl_FragColor = vec4(colorA * LightIntensity, 1.0);
-            return;
+            color = colorA;
         }
-        vec2 t = texOffset.xy + MCposition.yz / (8.0*5.0);
-        color = texture2D(noisef, t).rgb * LightIntensity;
+        else {
+            vec2 t = texOffset.xy + MCposition.yz / (8.0*5.0);
+            color = texture2D(noisef, t).rgb;
+        }
+        color *= LightIntensity;
     }
     if (drawtype == 4) { // DRAW_TEXTURE_MARBLE
         vec3 p = MCposition.yzx * 0.2;
@@ -128,5 +130,6 @@ void main (void)
         gl_FragColor = vec4(color.g + (0.8 - color.g)*fadeFactor, color.g - (0.3 * fadeFactor), color.b - (0.3 * fadeFactor), 1.0);
         return;
     }
+
     gl_FragColor = vec4(color, 1.0);
 }

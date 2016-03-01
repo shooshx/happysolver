@@ -118,6 +118,7 @@ PicsSet::PicsSet(bool cSym)
 	: totalRtnCount(0), considerSymetric(cSym)
 {
 	const PicBucket &bucket = PicBucket::instance();
+    picCount = 0;
 	for(int idef = 0; idef < bucket.pdefs.size(); ++idef) 
 	{
 		// if the piece is selected a number of times, load it that number of times in to the set.
@@ -125,6 +126,7 @@ PicsSet::PicsSet(bool cSym)
 		{
 			add(idef, cSym);
             addRef(idef);
+            ++picCount;
         }
 	}
 

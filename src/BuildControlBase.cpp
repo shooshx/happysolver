@@ -275,6 +275,7 @@ void BuildControlBase::makeBuffers()
     LineAdder realLines(m_realLines);
     LineAdder transLines(m_transLines);
 
+#if 0 // some old test
     if (m_bBoxRemove) {
         const Shape& shp = m_doc->getBuild().getTestShape();
         Vec3 offs = Vec3(24,24,24) - Vec3(shp.faces[0].ex)/4.0;
@@ -289,9 +290,9 @@ void BuildControlBase::makeBuffers()
 
         return;
     }
+#endif
 
     const BuildWorld &build = m_doc->getBuild();
-
     for(int dim = 0; dim < 3; ++dim)
     {
         const SqrLimits &lim = build.m_limits[dim];
@@ -338,6 +339,7 @@ void BuildControlBase::makeBuffers()
                         color = Vec4(0.5f, 0.5f, 1.0f, 0.5f);
                         transTiles.add(a, b, c, d, color, name, 1);
                         transLines.add(a, b, c, d, Vec4(0.2f, 0.2f, 1.0f, 0.5f));
+                        //cout << "TRANS " << a << " " << b << " " << c << " " << d << endl;
                     }
                     else
                     {
@@ -620,6 +622,11 @@ bool BuildControlBase::doMouseMove(int x, int y, bool ctrlPressed)
     return choiseMouseMove(choise, ctrlPressed);
 }
 
+void BuildControlBase::clearChoise() // for when we're moving the mouse rotating and don't want to see a selection
+{
+    choiseMouseMove(-1, false);
+}
+
 bool BuildControlBase::choiseMouseMove(int choise, bool ctrlPressed)
 {
     m_bInternalBoxRemove = ctrlPressed;
@@ -627,11 +634,11 @@ bool BuildControlBase::choiseMouseMove(int choise, bool ctrlPressed)
 
     if ((choise == m_lastChoise) && (remove == m_bLastBoxRemove))
         return false; // check if remove state just changed so we need to redraw
+    //cout << "MOVE " << remove << " " << m_bLastBoxRemove << " " << choise << endl;
 
     m_lastChoise = choise;
     m_bLastBoxRemove = remove;
     EActStatus act = remove ? REMOVE : ADD;
-
 
     BuildWorld& build = m_doc->getBuild();
     
@@ -651,6 +658,7 @@ bool BuildControlBase::choiseMouseMove(int choise, bool ctrlPressed)
 
             if (m_bEditEnabled)
             {
+                //cout << "CLEAN " << remove << endl;
                 build.clean(BuildWorld::CLEAN_TRANS_SHOW);
 
                 if (!remove)
@@ -660,6 +668,7 @@ bool BuildControlBase::choiseMouseMove(int choise, bool ctrlPressed)
                         if (GET_TYPE(build.get(bb[j])) != TYPE_REAL)  //do the removes
                         {
                             build.set(bb[j], FACE_TRANS_SEL);
+                            //cout << "TTT " << bb[j].x << endl;
                         }
                     }
                     m_fadeFactor = 0.0f;

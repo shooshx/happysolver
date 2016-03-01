@@ -44,6 +44,10 @@ protected:
     virtual void emitChosenPiece(int p) {}
     virtual void emitHoverPiece(int p) {}
 
+    virtual void clearChoise() override {
+        m_buildCtrl.clearChoise();
+    }
+
 public:
     //static void drawIFSPolygons(BaseGLWidget *that, const MyObject &obj, bool fTargets);
    // static void drawIFSLines(const MyObject &obj, bool singleChoise);

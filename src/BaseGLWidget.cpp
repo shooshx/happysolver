@@ -410,13 +410,16 @@ void BaseGLWidget::mouseWheelEvent(int delta)
 
 bool BaseGLWidget::mouseMove(int buttons, int hasCtrl, int x, int y)
 {
-    bool needupdate = false;
-    if (m_handler)
-        needupdate = m_handler->scrMove(buttons, hasCtrl, x, y);
-
-    if (buttons == 0) {
+    // if buttons are pressed, don't sample because it lowers the FPS of rotating significantly
+    if (buttons == 0) 
+    {
+        bool needupdate = false;
+        if (m_handler)
+            needupdate = m_handler->scrMove(buttons, hasCtrl, x, y);
         return needupdate;
     }
+    if (m_handler) // don't want to see selection while moving
+        m_handler->clearChoise();
 
     int dx = x - m_lastPos.x;
     int dy = y - m_lastPos.y;
