@@ -51,7 +51,7 @@ public:
     void reCalcBldMinMax();
 
     void makeBuffers();
-    virtual bool fadeTimeout();
+    virtual bool fadeTimeout(float delta);
 
 private:
     bool tiledDblClick(int choise);

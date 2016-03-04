@@ -90,10 +90,10 @@ public:
         EM_ASM(requestAnim());
     }
     
-    void draw() {
+    void draw(float delta) {
         m_requested = false;
         try {
-            m_requested = m_modelGl.m_buildCtrl.fadeTimeout();
+            m_requested = m_modelGl.m_buildCtrl.fadeTimeout(delta);
             m_gl.paint(false);
         }
         catch(const std::exception& e) {
@@ -216,6 +216,8 @@ void resizeGl(int width, int height)
     g_ctrl.requestDraw();
 }
 
+bool cpp_draw(float deltaSec);
+
 void mouseDown(int rightButton, int x, int y) {
     g_ctrl.m_gl.mousePress(rightButton, x, y);
     g_ctrl.requestDraw();
@@ -228,6 +230,7 @@ void mouseMove(int buttons, int ctrlPressed, int x, int y) {
     bool needUpdate = g_ctrl.m_gl.mouseMove(buttons, ctrlPressed, x, y);
     // always need draw since swapBuffers is automatic and doChoise clears the view
     g_ctrl.requestDraw();
+    cpp_draw(0);
 }
 void mouseDblClick(int ctrlPressed, int x, int y) {
     bool needUpdate = g_ctrl.m_gl.mouseDoubleClick(ctrlPressed, x, y);
@@ -265,7 +268,7 @@ void cpp_start()
 bool cpp_draw(float deltaSec) 
 {
     if (g_ctrl.m_requested)
-        g_ctrl.draw();
+        g_ctrl.draw(deltaSec);
     return g_ctrl.m_requested;
 }
 

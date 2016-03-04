@@ -554,11 +554,11 @@ bool BuildControlBase::boxedDblClick(int choise, int x, int y)
 }
 
 
-bool BuildControlBase::fadeTimeout()
+bool BuildControlBase::fadeTimeout(float delta)
 {
     bool ret = false;
     if (m_inFade) {
-        m_fadeFactor += 0.2;
+        m_fadeFactor += delta;
         if (m_fadeFactor >= 1.0)
             m_inFade = false;
         ret = true;

@@ -93,6 +93,8 @@ protected:
     void switchIn();
     void switchOut();
 
+    virtual bool fadeTimeout(float delta);
+
 public slots:
     virtual void updateView(int hint);
     void setSelectYellow(bool v) { 
@@ -101,8 +103,11 @@ public slots:
         m_gl->updateGL(); 
     }
 
+    bool fadeTimeout() {
+        return fadeTimeout(0.2);
+    }
+
     //void showAllBlue();
-    virtual bool fadeTimeout();
     void enableEdit(bool v) { 
         m_bEditEnabled = v; 
     }

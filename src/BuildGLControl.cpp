@@ -58,9 +58,9 @@ void BuildGLControl::changeAction(bool remove) // someone is saying its changed
         m_gl->updateGL();
 }
 
-bool BuildGLControl::fadeTimeout()
+bool BuildGLControl::fadeTimeout(float delta)
 {
-    if (BuildControlBase::fadeTimeout())
+    if (BuildControlBase::fadeTimeout(delta))
         m_gl->updateGL();
     return false;
 }

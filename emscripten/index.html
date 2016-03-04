@@ -50,7 +50,7 @@ function start() {
     mouseMove = Module.cwrap('mouseMove', null, ['number', 'number', 'number', 'number'])
     mouseDblClick = Module.cwrap('mouseDblClick', null, ['number', 'number', 'number'])
     mouseWheel = Module.cwrap('mouseWheel', null, ['number'])
-    cpp_draw = Module.cwrap('cpp_draw', 'boolean', [])
+    cpp_draw = Module.cwrap('cpp_draw', 'boolean', ['number'])
     cpp_slvrun = Module.cwrap('cpp_slvrun', 'boolean', [])
     getTms = Module.cwrap('getTms', 'number', [])
     solveGo = Module.cwrap('solveGo', null, [])
@@ -81,9 +81,13 @@ function start() {
     requestAnimationFrame(animProgress)
     setInterval(sampleTms, 1000)
     
-    addingCube.checked = true;
+    addingCubeCheck.checked = true
+    setCheck(addingCube, true)
+    removingCubeCheck.checked = false
+    setCheck(removingCube, false)
     setEditAction(ACT_ADD) 
     
+
 }
 
 function handleMouseDown(event) {
@@ -114,7 +118,8 @@ var pics_cubes = {} // make cube id to { famid }
 function picsAddFamily(famName, id) {
     id = id.replace(/[-\. ]/g, '_')
     var picsCtrl = '<div id="ID_frame" class="toppic"><div class="famtitle">\
-    <input class="fam_check" id="ID_fcheck" type="checkbox" onclick="on_fam_check(\'ID\', ID_fcheck.checked)">\
+    <input class="fam_check_box hidden mycheck" id="ID_fcheck" type="checkbox" onchange="on_fam_check(\'ID\', ID_fcheck.checked);setCheck(ID_fcheck_label, ID_fcheck.checked)" />\
+    <label class="fam_check mycheck_label" id="ID_fcheck_label" for="ID_fcheck" ></label>\
     <div class="fam_label" onclick="pic_rolldown(\'ID\')">LABEL</div>\
     <img class="toppic_icon" id="ID_img" src="arrow_up.png" onclick="pic_rolldown(\'ID\')"></div> \
     <div id="ID_famframe" class="inframe"></div> \
@@ -123,17 +128,26 @@ function picsAddFamily(famName, id) {
     side_rel.innerHTML += picsCtrl
     lastFamAdded = id
     pics_families[id] = { cubes: []}
+    
+    /*document.getElementById(id + "_fcheck").onchange = function() { 
+        document.getElementById(id + "_fcheck_label").classList.toggle('mycheck_checked') 
+    }*/
 }
 function picsAddCube(cubeName, id, grpi) {
     id = id.replace(/[-\. ]/g, '_')
     var txt = '<div id="ID_inframe" class="piccube">\
-    <input class="cube_check" id="ID_ccheck" type="checkbox" onclick="on_cube_check(\'ID\', ID_ccheck.checked, INDEX)">LABEL\
+    <input class="cube_check_box hidden mycheck" id="ID_ccheck" type="checkbox" onchange="on_cube_check(\'ID\', ID_ccheck.checked, INDEX);setCheck(ID_ccheck_label, ID_ccheck.checked)"/>\
+    <label class="cube_check mycheck_label" id="ID_ccheck_label" for="ID_ccheck" ></label>LABEL\
     <input class="cube_count" id="ID_ccount" type="number" min="0" onchange="on_cube_count(\'ID\', INDEX)">\
     </div>'.replace(/ID/g, id).replace(/LABEL/g, cubeName).replace(/INDEX/g, grpi)
     
     document.getElementById(lastFamAdded + "_famframe").innerHTML += txt
     pics_families[lastFamAdded].cubes.push( { cid: id, grpi: grpi})
     pics_cubes[id] = { famid: lastFamAdded }
+    
+    document.getElementById(id + "_ccheck").onchange = function() { 
+        document.getElementById(id + "_ccheck_label").classList.toggle('mycheck_checked') 
+    }
 }
 
 // update the cube count after a check is changed. v is boolean for the value of the check
@@ -149,11 +163,28 @@ function dispCCount(id, v, gind) {
         setGrpCount(gind, 0)
 }
 
+function setCheck(idlabel, v) {
+    idlabel.classList.remove('mycheck_inter')
+    if (v === true)
+        idlabel.classList.add('mycheck_checked')
+    else if (v === false)
+        idlabel.classList.remove('mycheck_checked')
+    
+}
+function setIntermediate(idlabel, v) {
+    if (v === true)
+        idlabel.classList.add('mycheck_inter')
+    else if (v === false)
+        idlabel.classList.remove('mycheck_inter')
+}
+
+
 function on_fam_check(id, v) {
     var fcubes = pics_families[id].cubes;
     for(var i in fcubes) {
         var c = fcubes[i]
         document.getElementById(c.cid + "_ccheck").checked = v
+        setCheck(document.getElementById(c.cid + "_ccheck_label"), v)
         dispCCount(c.cid, v, c.grpi)
     }
 }
@@ -161,6 +192,7 @@ function on_fam_check(id, v) {
 // from C++ on initialization. just need to take care of the checkboxes and count display. the counts are already there
 function setFamCheck(id, v) {
     document.getElementById(id + "_fcheck").checked = v
+    setCheck(document.getElementById(id + "_fcheck_label"), v)
     on_fam_check(id, v)
 }
 
@@ -169,18 +201,30 @@ function picFamCheck(id) {
     var fcubes = pics_families[famid].cubes;
     var allTrue = true, allFalse = true
     for(var i in fcubes) {
-        var iv = document.getElementById(fcubes[i].cid + "_ccheck").checked
+        var cid = fcubes[i].cid
+        var iv = document.getElementById(cid + "_ccheck").checked
+
         allTrue = allTrue && iv
         allFalse = allFalse && !iv
     }
     var famCheck = document.getElementById(famid + "_fcheck")
+    var famLabel = document.getElementById(famid + "_fcheck_label")
     famCheck.indeterminate = false
-    if (allTrue)
+    if (allTrue) {
         famCheck.checked = true
-    else if (allFalse)
+        setIntermediate(famLabel, false)
+        setCheck(famLabel, true)
+    }
+    else if (allFalse) {
         famCheck.checked = false
-    else 
+        setIntermediate(famLabel, false)
+        setCheck(famLabel, false)
+    }
+    else {
         famCheck.indeterminate = true   
+        setCheck(famLabel, false)
+        setIntermediate(famLabel, true)
+    }
 }
 
 function on_cube_check(id, v, gind) {
@@ -191,9 +235,11 @@ function on_cube_check(id, v, gind) {
 function on_cube_count(id, gind) {
     var ccount = document.getElementById(id + "_ccount")
     var ccheck = document.getElementById(id + "_ccheck")
+    var clabel = document.getElementById(id + "_ccheck_label")
     var prevCh = ccheck.checked, newCh = (ccount.value > 0)
     if (prevCh != newCh) {
         ccheck.checked = newCh
+        setCheck(clabel, newCh)
         picFamCheck(id)
     }
     setGrpCount(gind, ccount.value)
@@ -212,7 +258,7 @@ function requestAnim() {
 }
 
 function animProgress() {
-    var again = cpp_draw();
+    var again = cpp_draw(0.2);
     if (again)
         requestAnimationFrame(animProgress)
     
@@ -305,8 +351,8 @@ function doResize() {
 }
 
 function triggerAdd() {
-    if (addingCube.checked) {
-        removingCube.checked = false
+    if (addingCubeCheck.checked) {
+        removingCubeCheck.checked = false
         setEditAction(ACT_ADD) 
     }
     else {
@@ -314,14 +360,24 @@ function triggerAdd() {
     }
 }
 function triggerRemove() {
-    if (removingCube.checked) {
-        addingCube.checked = false
+    if (removingCubeCheck.checked) {
+        addingCubeCheck.checked = false
         setEditAction(ACT_REMOVE)
     }
     else {
         setEditAction(ACT_NONE)
     }
 
+}
+
+function triggerAbout(v) {
+    aboutBtn.checked = v
+    if (v) {
+        aboutBack.style.display = "inline"
+    }
+    else {
+        aboutBack.style.display = "none"
+    }
 }
     
 </script>
@@ -415,8 +471,8 @@ body {
 .fam_check {
     width: 17px;
     height: 17px;
-    margin: 0 4px 0 2px;
-    vertical-align: text-bottom;
+    margin: -4px 4px 0 2px;
+    vertical-align: middle;
 }
 .fam_label {
     display:inline-block;
@@ -425,8 +481,8 @@ body {
 .cube_check {
     width: 17px;
     height: 17px;
-    vertical-align: text-bottom;
-    margin: 0 4px 0 0
+    vertical-align: middle;
+    margin: -4px 7px 0 0
 }
 .cube_count {
     position: absolute;
@@ -442,9 +498,23 @@ body {
     left: 8px;
 }
 
+.mycheck_label {
+    background-image: url(check_none.png);
+    display: inline-block;
+}
+.mycheck_checked {
+    background-image: url(check_checked.png);
+}
+.mycheck_inter {
+    background-image: url(check_int.png);
+}
+
 /*------------------------------------------------------------*/
+.hidden {
+    position:absolute;
+    z-index:-1;
+    }
 .sc-btn {
-  -webkit-appearance: button;
   display: inline-block;
   position: absolute;
 
@@ -483,8 +553,8 @@ body {
     background-color: #dfdfdf;
     background-image: linear-gradient(to bottom, #479ceb, #1067c1); 
 }
-.sc-btn:checked {
-  color: #fff;
+.sc-btn:checked  {
+
   background-color: #dfdfdf;
   background-image: linear-gradient(to bottom, #479ceb, #1067c1); 
 }
@@ -494,7 +564,8 @@ body {
 #addingCube {
   background-image: linear-gradient(to bottom, white, #DADAFD);
 }
-#addingCube:active, #addingCube:checked {
+#addingCube:active, #addingCubeCheck:checked + #addingCube{
+    color: #fff;
     background-image: linear-gradient(to bottom, #61adf4, #1067c1); 
 }
 #addingCube:before {
@@ -509,25 +580,69 @@ body {
 #removingCube:before {
   content: "Remove";
 }
-#removingCube:active, #removingCube:checked {
+#removingCube:active, #removingCubeCheck:checked + #removingCube{
+    color: #fff;
     background-image: linear-gradient(to bottom, #f57979, #e32323); 
+}
+#aboutBtn:before {
+  content: "?";
+}
+#aboutBtn {
+   right: 8px;
+   width: 40px;
+   bottom: 8px;
+}
+
+#aboutBack {
+    display: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(20,20,20, 0.82);
+    top: 0;
+    left: 0;
+}
+#aboutWin {
+    position: absolute;
+    width: 600px;
+    height: 400px;
+    top: 25%;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    background: #FFF;
+    border-radius: 15px;
+    padding: 20px;
 }
 
 </style>
 </head>
 <body onload="start()" onresize="doResize()" >
     <div id="side_ctrl">
-    <input id="addingCube" class="sc-btn" type="checkbox" onclick="triggerAdd()"/>
-    <input id="removingCube" class="sc-btn" type="checkbox" onclick="triggerRemove()"/>
+    <input id="addingCubeCheck" class="hidden" onclick="triggerAdd()" type="checkbox">
+    <label id="addingCube" class="sc-btn" for="addingCubeCheck" ></label>
+    <input id="removingCubeCheck" class="hidden" onclick="triggerRemove()" type="checkbox"/>
+    <label id="removingCube" class="sc-btn" for="removingCubeCheck"/></label>
+    <label id="aboutBtn" class="sc-btn" onclick="triggerAbout(true)"/></label>
     <div id="side_rel" class="in_rel">
+    </div></div>
+    
+    <canvas id="mycanvas" width="800" height="700"></canvas>
+    
+    <div id="aboutBack" onclick="triggerAbout(false)"><div id="aboutWin">
+    Happy Cube Solver<br>
+    Designed and implemented by Shy Shalom<br>
+    shooshx@gmail.com<br>
     
     </div></div>
-    <canvas id="mycanvas" width="800" height="700"></canvas>
+    
     <img id="noisetex" src='cubeTex.png' style="display:none;"/>
     <img src="arrow_up.png" style="display:none;"/>
     <img src="arrow_down.png" style="display:none;"/>
     <img id="newgenious" src="../new_genious128.png" style="display:none;"/>
     <img id="genious" src="../littlegenious128_2.png" style="display:none;"/>
+    <img id="dummy_check1" src="check_int.png" style="display:none;"/> <!-- avoid flicker -->
     <div id="stat"></div>
 </body>
 </html>

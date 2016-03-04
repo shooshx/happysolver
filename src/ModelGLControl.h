@@ -61,6 +61,8 @@ protected:
         emit changedHoverPiece(p);
     }
 
+    bool fadeTimeout(float delta);
+
 private:
     GLWidget *m_gl;
     QTimer *m_fadeTimer;
@@ -68,7 +70,10 @@ private:
 public slots:
     virtual void updateView(int hint);
 
-    bool fadeTimeout();
+
+    bool fadeTimeout() {
+        return fadeTimeout(0.2);
+    }
 
 signals:
     void changedHoverPiece(int piece);

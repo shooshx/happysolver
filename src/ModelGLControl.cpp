@@ -39,9 +39,9 @@ ModelGLControl::ModelGLControl(GLWidget* gl, CubeDoc *doc)
     m_fadeTimer->start(25);
 }
 
-bool ModelGLControl::fadeTimeout()
+bool ModelGLControl::fadeTimeout(float delta)
 {
-    if (m_buildCtrl.fadeTimeout())
+    if (m_buildCtrl.fadeTimeout(delta))
         m_gl->updateGL();
     return false;
 }
