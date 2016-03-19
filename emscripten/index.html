@@ -9,7 +9,7 @@
   ga('send', 'pageview');
 </script> -->
 
-
+<link rel="icon" href="favicon.ico" type="image/x-icon"/>
 <script id="stdpcs" src="stdpcs.js"></script>  
 <script id="unimesh2" src="unified_mesh.js"></script>  
 <script id="one_cube" src="one_piece_cube.js"></script>    
@@ -389,6 +389,11 @@ function triggerAbout(v) {
     else {
         aboutBack.style.display = "none"
     }
+    
+    aboutWin.onclick = function(e) {
+        e.stopPropagation()
+    }
+
 }
     
 </script>
@@ -416,7 +421,7 @@ body {
     margin-top: 8px;
     margin-bottom: 8px;
     overflow:hidden;
-    border-radius: 8px;
+    border-radius: 8px 0 0 8px;
 }
 .toppic {
     margin: 5px;
@@ -627,6 +632,22 @@ body {
     padding: 20px;
 }
 
+h1, h2, h3 {
+    margin: 0;
+    font-family: Tahoma;
+}
+h3 {
+    font-size: 12px;
+    font-family: monospace;
+    margin: 20px 0 0 0;
+}
+h2 {
+    font-size: 20px;
+}
+h1 {
+    font-size: 30px;
+}
+
 </style>
 </head>
 <body onload="start()" onresize="doResize()" >
@@ -642,9 +663,15 @@ body {
     <canvas id="mycanvas" width="800" height="700"></canvas>
     
     <div id="aboutBack" onclick="triggerAbout(false)"><div id="aboutWin">
-    Happy Cube Solver<br>
-    Designed and implemented by Shy Shalom<br>
-    shooshx@gmail.com<br>
+    <h1>Happy Cube Solver</h1><br>
+    <h2>Designed and implemented by Shy Shalom (1995 - 2016)<br>
+    <a href="mailto:shooshx@gmail.com" target="_blank">shooshx@gmail.com</a><br></h2>
+    <h3>Using this program automatically implies that you respect the copyrights on the Happy Cube&copy;&reg; Puzzles.<br>
+This program is indented to support you while playing live with the Happy Cube&copy;&reg; Puzzles. These puzzles are worldwide manufacturered by HAPPY bvba, Belgium, on licensed and thus restricted base (<a href="http://www.happy.be" target="_blank" id="linka">www.happy.be</a>). The Happy Cube puzzles are the result of a real invention in 1986 by Dirk Laureyssens. This means that using the puzzle snits as well as puzzle piece shapes to create or manufacture your own puzzles is illegal and against law, since the Happy Cube Puzzles are worldwide protected by many US copyrights since 1987.<br>
+Please note that using the puzzle snits as well as puzzle piece shapes to create or manufacture your own puzzles is illegal and against law, since the Happy Cube&copy;&reg; Puzzles are worldwide protected by US copyrights since 1987.<br>
+Puzzles copyright (C) Dirk Laureyssens 1986-2016. All rights reserved. The Happy Cube puzzles are protected with several US copyrights since 1987 (TXU 271722, TX2332525, TX2359816 and many others). They are exclusively manufactured by Happy bvba, B-2980 Zoersel, Belgium, and distributed worldwide by partners. Using the puzzle snits as well as puzzle piece shapes to create or manufacture your own puzzles is illegal and against law. 
+Happy Cube, Little Genius, Profi Cube and Marble Cube are registered trademarks of Happy bvba, Zoersel, Belgium. 
+If you have any questions concerning the usage of HAPPY materials, please send your detailed request in writing to <a href="mailto:info@happy.be" target="_blank">info@happy.be</a>. See <a href="http://www.happy.be" target="_blank">http://www.happy.be</a> for more information</h3>
     
     </div></div>
     

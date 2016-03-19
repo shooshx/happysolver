@@ -306,7 +306,9 @@ void setEditAction(int a)
 
 void restartSolve()
 {
-    g_ctrl.m_modelGl.restartSolve();
+    if (g_ctrl.m_doc.isSlvEngineRunning()) {
+        g_ctrl.m_modelGl.restartSolve();
+    }
 }
 
 } // extern "C"

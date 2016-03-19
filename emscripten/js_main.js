@@ -24695,6 +24695,165 @@ function __ZN16ModelControlBase9myPaintGLEb(i16, i15) {
  return;
 }
 
+function __ZN4Cube6puttgrEP9SolutionsP12SolveContextP7SlvCubei(i34, i2, i36, i33, i32) {
+ i34 = i34 | 0;
+ i2 = i2 | 0;
+ i36 = i36 | 0;
+ i33 = i33 | 0;
+ i32 = i32 | 0;
+ var i1 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i8 = 0, i9 = 0, i10 = 0, i11 = 0, i12 = 0, i13 = 0, i14 = 0, i15 = 0, i16 = 0, i17 = 0, i18 = 0, i19 = 0, i20 = 0, i21 = 0, i22 = 0, i23 = 0, i24 = 0, i25 = 0, i26 = 0, i27 = 0, i28 = 0, i29 = 0, i30 = 0, i31 = 0, i35 = 0, i37 = 0, i38 = 0, i39 = 0;
+ i39 = STACKTOP;
+ STACKTOP = STACKTOP + 16 | 0;
+ i16 = i39;
+ i37 = i36 + 68 | 0;
+ i1 = HEAP32[i37 >> 2] | 0;
+ i28 = i34 + 36 | 0;
+ i29 = (i1 | 0) == (HEAP32[(HEAP32[i28 >> 2] | 0) + 24 >> 2] | 0);
+ L1 : do if ((i1 | 0) != -1) {
+  i31 = i36 + 24 | 0;
+  i35 = i36 + 52 | 0;
+  i17 = i36 + 32 | 0;
+  i18 = i34 + 32 | 0;
+  i19 = i36 + 44 | 0;
+  i20 = i34 + 2 | 0;
+  i23 = i2 + 12 | 0;
+  i24 = i2 + 16 | 0;
+  i25 = i2 + 8 | 0;
+  i26 = i2 + 20 | 0;
+  i4 = i2 + 4 | 0;
+  i27 = i36 + 60 | 0;
+  i5 = i34 + 12 | 0;
+  i6 = i34 + 20 | 0;
+  i7 = i34 + 24 | 0;
+  i8 = i36 + 56 | 0;
+  i9 = i34 + 16 | 0;
+  i10 = i34 + 1 | 0;
+  i11 = i36 + 72 | 0;
+  i12 = i34 + 4 | 0;
+  i13 = i36 + 40 | 0;
+  i14 = i36 + 64 | 0;
+  i15 = 0;
+  while (1) {
+   if (HEAP32[i31 >> 2] | 0) {
+    i38 = 42;
+    break;
+   }
+   if ((i15 | 0) == (i32 | 0) | (HEAP8[i35 >> 0] | 0) != 0) {
+    i38 = 42;
+    break;
+   }
+   do if (!i29) {
+    if ((i1 | 0) != (HEAP32[(HEAP32[i28 >> 2] | 0) + 24 >> 2] | 0) ? __ZN4Cube12maskAssembleEi(i34, i1) | 0 : 0) {
+     i1 = i1 + 1 | 0;
+     break;
+    }
+    i1 = i1 + -1 | 0;
+   } while (0);
+   i15 = i15 + 1 | 0;
+   i2 = i17;
+   i2 = _i64Add(HEAP32[i2 >> 2] | 0, HEAP32[i2 + 4 >> 2] | 0, 1, 0) | 0;
+   i3 = i17;
+   HEAP32[i3 >> 2] = i2;
+   HEAP32[i3 + 4 >> 2] = tempRet0;
+   if ((HEAP32[(HEAP32[i18 >> 2] | 0) + 44 >> 2] | 0) < ((HEAP32[(HEAP32[i28 >> 2] | 0) + 24 >> 2] | 0) - i1 | 0)) {
+    i38 = 38;
+    break;
+   }
+   if ((i1 | 0) > (HEAP32[i19 >> 2] | 0)) HEAP32[i19 >> 2] = i1;
+   if ((HEAP8[i20 >> 0] | 0) != 0 ? (i1 | 0) >= ((HEAP32[(HEAP32[i28 >> 2] | 0) + 24 >> 2] | 0) - (HEAP32[i14 >> 2] | 0) | 0) : 0) HEAP8[i13 >> 0] = 1;
+   if ((i1 | 0) == (HEAP32[(HEAP32[i28 >> 2] | 0) + 24 >> 2] | 0)) {
+    i2 = __ZN4Cube19generateConcreteSlvEP7SlvCube(i34, i33) | 0;
+    HEAP32[i16 >> 2] = i2;
+    i3 = HEAP32[i23 >> 2] | 0;
+    if ((i3 | 0) == (HEAP32[i24 >> 2] | 0)) __ZNSt3__16vectorIP7SlvCubeNS_9allocatorIS2_EEE21__push_back_slow_pathIRKS2_EEvOT_(i25, i16); else {
+     HEAP32[i3 >> 2] = i2;
+     HEAP32[i23 >> 2] = (HEAP32[i23 >> 2] | 0) + 4;
+    }
+    if ((HEAP8[i26 >> 0] | 0) == 0 ? (HEAP8[i26 >> 0] = 1, i30 = HEAP32[i4 >> 2] | 0, (i30 | 0) != 0) : 0) FUNCTION_TABLE_vii[HEAP32[HEAP32[i30 >> 2] >> 2] & 63](i30, 1);
+    i3 = HEAP32[i27 >> 2] | 0;
+    HEAP32[i27 >> 2] = i3 + 1;
+    FUNCTION_TABLE_vii[HEAP32[HEAP32[i36 >> 2] >> 2] & 63](i36, (i3 | 0) == 0);
+    switch (HEAP32[i5 >> 2] | 0) {
+    case 2:
+     {
+      i3 = (HEAP32[i8 >> 2] | 0) + 1 | 0;
+      HEAP32[i8 >> 2] = i3;
+      if ((i3 | 0) >= (HEAP32[i9 >> 2] | 0)) i38 = 25;
+      break;
+     }
+    case 0:
+     {
+      i38 = 25;
+      break;
+     }
+    default:
+     {}
+    }
+    if ((i38 | 0) == 25) {
+     i38 = 0;
+     __ZN4Cube5clearEi(i34, 0);
+     HEAP32[i8 >> 2] = 0;
+     i1 = 0;
+    }
+    i3 = __ZNSt3__124__put_character_sequenceIcNS_11char_traitsIcEEEERNS_13basic_ostreamIT_T0_EES7_PKS4_j(13528, 23005, 5) | 0;
+    i3 = __ZNSt3__124__put_character_sequenceIcNS_11char_traitsIcEEEERNS_13basic_ostreamIT_T0_EES7_PKS4_j(__ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEElsEb(i3, (HEAP8[i6 >> 0] | 0) != 0) | 0, 23011, 1) | 0;
+    i3 = __ZNSt3__124__put_character_sequenceIcNS_11char_traitsIcEEEERNS_13basic_ostreamIT_T0_EES7_PKS4_j(__ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEElsEi(i3, HEAP32[i27 >> 2] | 0) | 0, 23013, 1) | 0;
+    i3 = __ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEElsEi(i3, HEAP32[i7 >> 2] | 0) | 0;
+    HEAP32[i16 >> 2] = __ZNKSt3__18ios_base6getlocEv(i3 + (HEAP32[(HEAP32[i3 >> 2] | 0) + -12 >> 2] | 0) | 0) | 0;
+    i2 = __ZNKSt3__16locale9use_facetERNS0_2idE(i16, 16212) | 0;
+    i2 = FUNCTION_TABLE_iii[HEAP32[(HEAP32[i2 >> 2] | 0) + 28 >> 2] & 63](i2, 10) | 0;
+    __ZNSt3__16localeD2Ev(i16);
+    __ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEE3putEc(i3, i2) | 0;
+    __ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEE5flushEv(i3) | 0;
+    if ((HEAP8[i6 >> 0] | 0) != 0 ? (HEAP32[i27 >> 2] | 0) >= (HEAP32[i7 >> 2] | 0) : 0) HEAP8[i35 >> 0] = 1;
+   }
+   if ((((HEAP8[i34 >> 0] | 0) != 0 ? (HEAP8[i10 >> 0] | 0) != 0 : 0) ? (i3 = i17, i3 = ___remdi3(HEAP32[i3 >> 2] | 0, HEAP32[i3 + 4 >> 2] | 0, 2e5, 0) | 0, (i3 | 0) == 0 & (tempRet0 | 0) == 0) : 0) ? (i21 = __ZNSt3__16chrono12steady_clock3nowEv() | 0, i22 = tempRet0, i3 = i11, i3 = _i64Subtract(i21 | 0, i22 | 0, HEAP32[i3 >> 2] | 0, HEAP32[i3 + 4 >> 2] | 0) | 0, i3 = ___divdi3(i3 | 0, tempRet0 | 0, 1e6, 0) | 0, (i3 | 0) >= (HEAP32[i12 >> 2] | 0)) : 0) {
+    if (!((HEAP8[i20 >> 0] | 0) != 0 ? (HEAP8[i13 >> 0] | 0) != 0 : 0)) {
+     __ZN4Cube5clearEi(i34, 0);
+     HEAP32[i8 >> 2] = 0;
+     i1 = 0;
+    }
+    HEAP8[i13 >> 0] = 0;
+    i3 = i11;
+    HEAP32[i3 >> 2] = i21;
+    HEAP32[i3 + 4 >> 2] = i22;
+   }
+   if ((i1 | 0) == -1) {
+    i38 = 39;
+    break L1;
+   }
+  }
+  if ((i38 | 0) == 38) {
+   FUNCTION_TABLE_vi[HEAP32[(HEAP32[i36 >> 2] | 0) + 8 >> 2] & 255](i36);
+   HEAP8[i35 >> 0] = 1;
+   if ((i1 | 0) == -1) {
+    i1 = i27;
+    break;
+   }
+   HEAP32[i37 >> 2] = i1;
+   STACKTOP = i39;
+   return;
+  } else if ((i38 | 0) == 42) {
+   HEAP32[i37 >> 2] = i1;
+   STACKTOP = i39;
+   return;
+  }
+ } else i38 = 39; while (0);
+ if ((i38 | 0) == 39) i1 = i36 + 60 | 0;
+ if (HEAP32[i1 >> 2] | 0) {
+  i38 = -1;
+  HEAP32[i37 >> 2] = i38;
+  STACKTOP = i39;
+  return;
+ }
+ FUNCTION_TABLE_vi[HEAP32[(HEAP32[i36 >> 2] | 0) + 4 >> 2] & 255](i36);
+ HEAP8[i36 + 52 >> 0] = 1;
+ i38 = -1;
+ HEAP32[i37 >> 2] = i38;
+ STACKTOP = i39;
+ return;
+}
+
 function __ZNSt3__111__money_putIcE8__formatEPcRS2_S3_jPKcS5_RKNS_5ctypeIcEEbRKNS_10money_base7patternEccRKNS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEESL_SL_i(i37, i39, i38, i36, i1, i24, i23, i28, i29, i25, i32, i27, i31, i30, i26) {
  i37 = i37 | 0;
  i39 = i39 | 0;
@@ -25129,158 +25288,6 @@ function __ZNSt3__111__money_putIwE8__formatEPwRS2_S3_jPKwS5_RKNS_5ctypeIwEEbRKN
  default:
   HEAP32[i35 >> 2] = i33;
  }
- return;
-}
-
-function __ZN4Cube6puttgrEP9SolutionsP12SolveContextP7SlvCubei(i33, i2, i35, i32, i31) {
- i33 = i33 | 0;
- i2 = i2 | 0;
- i35 = i35 | 0;
- i32 = i32 | 0;
- i31 = i31 | 0;
- var i1 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i8 = 0, i9 = 0, i10 = 0, i11 = 0, i12 = 0, i13 = 0, i14 = 0, i15 = 0, i16 = 0, i17 = 0, i18 = 0, i19 = 0, i20 = 0, i21 = 0, i22 = 0, i23 = 0, i24 = 0, i25 = 0, i26 = 0, i27 = 0, i28 = 0, i29 = 0, i30 = 0, i34 = 0, i36 = 0, i37 = 0, i38 = 0;
- i38 = STACKTOP;
- STACKTOP = STACKTOP + 16 | 0;
- i16 = i38;
- i36 = i35 + 68 | 0;
- i1 = HEAP32[i36 >> 2] | 0;
- L1 : do if ((i1 | 0) != -1) {
-  i25 = i35 + 24 | 0;
-  i34 = i35 + 52 | 0;
-  i26 = i33 + 36 | 0;
-  i27 = i35 + 32 | 0;
-  i28 = i33 + 32 | 0;
-  i30 = i35 + 44 | 0;
-  i17 = i33 + 2 | 0;
-  i18 = i2 + 12 | 0;
-  i19 = i2 + 16 | 0;
-  i20 = i2 + 8 | 0;
-  i23 = i2 + 20 | 0;
-  i4 = i2 + 4 | 0;
-  i24 = i35 + 60 | 0;
-  i5 = i33 + 12 | 0;
-  i6 = i33 + 20 | 0;
-  i7 = i33 + 24 | 0;
-  i8 = i35 + 56 | 0;
-  i9 = i33 + 16 | 0;
-  i10 = i33 + 1 | 0;
-  i11 = i35 + 72 | 0;
-  i12 = i33 + 4 | 0;
-  i13 = i35 + 40 | 0;
-  i14 = i35 + 64 | 0;
-  i15 = 0;
-  while (1) {
-   if (HEAP32[i25 >> 2] | 0) {
-    i37 = 41;
-    break;
-   }
-   if ((i15 | 0) == (i31 | 0) | (HEAP8[i34 >> 0] | 0) != 0) {
-    i37 = 41;
-    break;
-   }
-   if ((i1 | 0) != (HEAP32[(HEAP32[i26 >> 2] | 0) + 24 >> 2] | 0) ? __ZN4Cube12maskAssembleEi(i33, i1) | 0 : 0) i1 = i1 + 1 | 0; else i1 = i1 + -1 | 0;
-   i15 = i15 + 1 | 0;
-   i2 = i27;
-   i2 = _i64Add(HEAP32[i2 >> 2] | 0, HEAP32[i2 + 4 >> 2] | 0, 1, 0) | 0;
-   i3 = i27;
-   HEAP32[i3 >> 2] = i2;
-   HEAP32[i3 + 4 >> 2] = tempRet0;
-   if ((HEAP32[(HEAP32[i28 >> 2] | 0) + 44 >> 2] | 0) < ((HEAP32[(HEAP32[i26 >> 2] | 0) + 24 >> 2] | 0) - i1 | 0)) {
-    i37 = 37;
-    break;
-   }
-   if ((i1 | 0) > (HEAP32[i30 >> 2] | 0)) HEAP32[i30 >> 2] = i1;
-   if ((HEAP8[i17 >> 0] | 0) != 0 ? (i1 | 0) >= ((HEAP32[(HEAP32[i26 >> 2] | 0) + 24 >> 2] | 0) - (HEAP32[i14 >> 2] | 0) | 0) : 0) HEAP8[i13 >> 0] = 1;
-   if ((i1 | 0) == (HEAP32[(HEAP32[i26 >> 2] | 0) + 24 >> 2] | 0)) {
-    i2 = __ZN4Cube19generateConcreteSlvEP7SlvCube(i33, i32) | 0;
-    HEAP32[i16 >> 2] = i2;
-    i3 = HEAP32[i18 >> 2] | 0;
-    if ((i3 | 0) == (HEAP32[i19 >> 2] | 0)) __ZNSt3__16vectorIP7SlvCubeNS_9allocatorIS2_EEE21__push_back_slow_pathIRKS2_EEvOT_(i20, i16); else {
-     HEAP32[i3 >> 2] = i2;
-     HEAP32[i18 >> 2] = (HEAP32[i18 >> 2] | 0) + 4;
-    }
-    if ((HEAP8[i23 >> 0] | 0) == 0 ? (HEAP8[i23 >> 0] = 1, i29 = HEAP32[i4 >> 2] | 0, (i29 | 0) != 0) : 0) FUNCTION_TABLE_vii[HEAP32[HEAP32[i29 >> 2] >> 2] & 63](i29, 1);
-    i3 = HEAP32[i24 >> 2] | 0;
-    HEAP32[i24 >> 2] = i3 + 1;
-    FUNCTION_TABLE_vii[HEAP32[HEAP32[i35 >> 2] >> 2] & 63](i35, (i3 | 0) == 0);
-    switch (HEAP32[i5 >> 2] | 0) {
-    case 2:
-     {
-      i3 = (HEAP32[i8 >> 2] | 0) + 1 | 0;
-      HEAP32[i8 >> 2] = i3;
-      if ((i3 | 0) >= (HEAP32[i9 >> 2] | 0)) i37 = 24;
-      break;
-     }
-    case 0:
-     {
-      i37 = 24;
-      break;
-     }
-    default:
-     {}
-    }
-    if ((i37 | 0) == 24) {
-     i37 = 0;
-     __ZN4Cube5clearEi(i33, 0);
-     HEAP32[i8 >> 2] = 0;
-     i1 = 0;
-    }
-    i3 = __ZNSt3__124__put_character_sequenceIcNS_11char_traitsIcEEEERNS_13basic_ostreamIT_T0_EES7_PKS4_j(13528, 23005, 5) | 0;
-    i3 = __ZNSt3__124__put_character_sequenceIcNS_11char_traitsIcEEEERNS_13basic_ostreamIT_T0_EES7_PKS4_j(__ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEElsEb(i3, (HEAP8[i6 >> 0] | 0) != 0) | 0, 23011, 1) | 0;
-    i3 = __ZNSt3__124__put_character_sequenceIcNS_11char_traitsIcEEEERNS_13basic_ostreamIT_T0_EES7_PKS4_j(__ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEElsEi(i3, HEAP32[i24 >> 2] | 0) | 0, 23013, 1) | 0;
-    i3 = __ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEElsEi(i3, HEAP32[i7 >> 2] | 0) | 0;
-    HEAP32[i16 >> 2] = __ZNKSt3__18ios_base6getlocEv(i3 + (HEAP32[(HEAP32[i3 >> 2] | 0) + -12 >> 2] | 0) | 0) | 0;
-    i2 = __ZNKSt3__16locale9use_facetERNS0_2idE(i16, 16212) | 0;
-    i2 = FUNCTION_TABLE_iii[HEAP32[(HEAP32[i2 >> 2] | 0) + 28 >> 2] & 63](i2, 10) | 0;
-    __ZNSt3__16localeD2Ev(i16);
-    __ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEE3putEc(i3, i2) | 0;
-    __ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEE5flushEv(i3) | 0;
-    if ((HEAP8[i6 >> 0] | 0) != 0 ? (HEAP32[i24 >> 2] | 0) >= (HEAP32[i7 >> 2] | 0) : 0) HEAP8[i34 >> 0] = 1;
-   }
-   if ((((HEAP8[i33 >> 0] | 0) != 0 ? (HEAP8[i10 >> 0] | 0) != 0 : 0) ? (i3 = i27, i3 = ___remdi3(HEAP32[i3 >> 2] | 0, HEAP32[i3 + 4 >> 2] | 0, 2e5, 0) | 0, (i3 | 0) == 0 & (tempRet0 | 0) == 0) : 0) ? (i21 = __ZNSt3__16chrono12steady_clock3nowEv() | 0, i22 = tempRet0, i3 = i11, i3 = _i64Subtract(i21 | 0, i22 | 0, HEAP32[i3 >> 2] | 0, HEAP32[i3 + 4 >> 2] | 0) | 0, i3 = ___divdi3(i3 | 0, tempRet0 | 0, 1e6, 0) | 0, (i3 | 0) >= (HEAP32[i12 >> 2] | 0)) : 0) {
-    if (!((HEAP8[i17 >> 0] | 0) != 0 ? (HEAP8[i13 >> 0] | 0) != 0 : 0)) {
-     __ZN4Cube5clearEi(i33, 0);
-     HEAP32[i8 >> 2] = 0;
-     i1 = 0;
-    }
-    HEAP8[i13 >> 0] = 0;
-    i3 = i11;
-    HEAP32[i3 >> 2] = i21;
-    HEAP32[i3 + 4 >> 2] = i22;
-   }
-   if ((i1 | 0) == -1) {
-    i37 = 38;
-    break L1;
-   }
-  }
-  if ((i37 | 0) == 37) {
-   FUNCTION_TABLE_vi[HEAP32[(HEAP32[i35 >> 2] | 0) + 8 >> 2] & 255](i35);
-   HEAP8[i34 >> 0] = 1;
-   if ((i1 | 0) == -1) {
-    i1 = i24;
-    break;
-   }
-   HEAP32[i36 >> 2] = i1;
-   STACKTOP = i38;
-   return;
-  } else if ((i37 | 0) == 41) {
-   HEAP32[i36 >> 2] = i1;
-   STACKTOP = i38;
-   return;
-  }
- } else i37 = 38; while (0);
- if ((i37 | 0) == 38) i1 = i35 + 60 | 0;
- if (HEAP32[i1 >> 2] | 0) {
-  i37 = -1;
-  HEAP32[i36 >> 2] = i37;
-  STACKTOP = i38;
-  return;
- }
- FUNCTION_TABLE_vi[HEAP32[(HEAP32[i35 >> 2] | 0) + 4 >> 2] & 255](i35);
- HEAP8[i35 + 52 >> 0] = 1;
- i37 = -1;
- HEAP32[i36 >> 2] = i37;
- STACKTOP = i38;
  return;
 }
 
@@ -43316,6 +43323,80 @@ function __ZN4Cube14getCurrentCircEi(i4, i3) {
  return i1 & 65535 | 0;
 }
 
+function __ZN12BaseGLWidget8doChoiseEii(i8, i6, i7) {
+ i8 = i8 | 0;
+ i6 = i6 | 0;
+ i7 = i7 | 0;
+ var i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0;
+ if ((HEAP8[2648] | 0) == 0 ? (___cxa_guard_acquire(2648) | 0) != 0 : 0) {
+  HEAP32[1803] = 0;
+  HEAP32[1804] = 0;
+  HEAP32[1805] = 0;
+  ___cxa_atexit(164, 7212, ___dso_handle | 0) | 0;
+  ___cxa_guard_release(2648);
+ }
+ i2 = HEAP32[i8 + 252 >> 2] | 0;
+ if ((HEAP32[1806] | 0) == (i2 | 0)) {
+  i1 = i8 + 256 | 0;
+  if ((HEAP32[1807] | 0) != (HEAP32[i1 >> 2] | 0)) i3 = 7;
+ } else {
+  i1 = i8 + 256 | 0;
+  i3 = 7;
+ }
+ do if ((i3 | 0) == 7) {
+  HEAP32[1806] = i2;
+  i1 = HEAP32[i1 >> 2] | 0;
+  HEAP32[1807] = i1;
+  i1 = Math_imul(i1, i2) | 0;
+  i2 = HEAP32[1804] | 0;
+  i3 = HEAP32[1803] | 0;
+  i4 = i2 - i3 >> 2;
+  if (i1 >>> 0 > i4 >>> 0) {
+   __ZNSt3__16vectorIiNS_9allocatorIiEEE8__appendEj(7212, i1 - i4 | 0);
+   break;
+  }
+  if (i1 >>> 0 < i4 >>> 0 ? (i5 = i3 + (i1 << 2) | 0, (i2 | 0) != (i5 | 0)) : 0) HEAP32[1804] = i2 + (~((i2 + -4 - i5 | 0) >>> 2) << 2);
+ } while (0);
+ i1 = i8 + 288 | 0;
+ if (HEAP8[i1 >> 0] | 0) {
+  i8 = HEAP32[1807] | 0;
+  i7 = ~i7;
+  i7 = i8 + i7 | 0;
+  i8 = HEAP32[1806] | 0;
+  i8 = Math_imul(i7, i8) | 0;
+  i8 = i8 + i6 | 0;
+  i7 = HEAP32[1803] | 0;
+  i8 = i7 + (i8 << 2) | 0;
+  i8 = HEAP32[i8 >> 2] | 0;
+  i8 = i8 & 16777215;
+  i7 = (i8 | 0) == 0;
+  i8 = i7 ? -1 : i8;
+  return i8 | 0;
+ }
+ _glClearColor(0.0, 0.0, 0.0, 1.0);
+ _glClear(16640);
+ FUNCTION_TABLE_vii[HEAP32[(HEAP32[i8 >> 2] | 0) + 8 >> 2] & 63](i8, 21495);
+ i2 = HEAP32[i8 + 240 >> 2] | 0;
+ if (i2) FUNCTION_TABLE_vii[HEAP32[HEAP32[i2 >> 2] >> 2] & 63](i2, 1);
+ FUNCTION_TABLE_vii[HEAP32[(HEAP32[i8 >> 2] | 0) + 8 >> 2] & 63](i8, 21499);
+ _glReadPixels(0, 0, HEAP32[1806] | 0, HEAP32[1807] | 0, 6408, 5121, HEAP32[1803] | 0);
+ HEAP8[i1 >> 0] = 1;
+ HEAP8[i8 + 220 >> 0] = 1;
+ i8 = HEAP32[1807] | 0;
+ i7 = ~i7;
+ i7 = i8 + i7 | 0;
+ i8 = HEAP32[1806] | 0;
+ i8 = Math_imul(i7, i8) | 0;
+ i8 = i8 + i6 | 0;
+ i7 = HEAP32[1803] | 0;
+ i8 = i7 + (i8 << 2) | 0;
+ i8 = HEAP32[i8 >> 2] | 0;
+ i8 = i8 & 16777215;
+ i7 = (i8 | 0) == 0;
+ i8 = i7 ? -1 : i8;
+ return i8 | 0;
+}
+
 function __ZN8tinyxml28MemPoolTILi44EE5AllocEv(i10) {
  i10 = i10 | 0;
  var i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i8 = 0, i9 = 0;
@@ -43520,78 +43601,6 @@ function __ZN16ModelControlBase11drawTargetsEb(i9, i8) {
  HEAP32[1290] = 0;
  STACKTOP = i10;
  return;
-}
-
-function __ZN12BaseGLWidget8doChoiseEii(i8, i6, i7) {
- i8 = i8 | 0;
- i6 = i6 | 0;
- i7 = i7 | 0;
- var i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0;
- if ((HEAP8[2648] | 0) == 0 ? (___cxa_guard_acquire(2648) | 0) != 0 : 0) {
-  HEAP32[1803] = 0;
-  HEAP32[1804] = 0;
-  HEAP32[1805] = 0;
-  ___cxa_atexit(164, 7212, ___dso_handle | 0) | 0;
-  ___cxa_guard_release(2648);
- }
- i2 = HEAP32[i8 + 252 >> 2] | 0;
- if ((HEAP32[1806] | 0) == (i2 | 0)) {
-  i1 = i8 + 256 | 0;
-  if ((HEAP32[1807] | 0) != (HEAP32[i1 >> 2] | 0)) i3 = 7;
- } else {
-  i1 = i8 + 256 | 0;
-  i3 = 7;
- }
- do if ((i3 | 0) == 7) {
-  HEAP32[1806] = i2;
-  i1 = HEAP32[i1 >> 2] | 0;
-  HEAP32[1807] = i1;
-  i1 = Math_imul(i1, i2) | 0;
-  i2 = HEAP32[1804] | 0;
-  i3 = HEAP32[1803] | 0;
-  i4 = i2 - i3 >> 2;
-  if (i1 >>> 0 > i4 >>> 0) {
-   __ZNSt3__16vectorIiNS_9allocatorIiEEE8__appendEj(7212, i1 - i4 | 0);
-   break;
-  }
-  if (i1 >>> 0 < i4 >>> 0 ? (i5 = i3 + (i1 << 2) | 0, (i2 | 0) != (i5 | 0)) : 0) HEAP32[1804] = i2 + (~((i2 + -4 - i5 | 0) >>> 2) << 2);
- } while (0);
- i1 = i8 + 288 | 0;
- if (HEAP8[i1 >> 0] | 0) {
-  i8 = HEAP32[1807] | 0;
-  i7 = i8 - i7 | 0;
-  i8 = HEAP32[1806] | 0;
-  i8 = Math_imul(i7, i8) | 0;
-  i8 = i8 + i6 | 0;
-  i7 = HEAP32[1803] | 0;
-  i8 = i7 + (i8 << 2) | 0;
-  i8 = HEAP32[i8 >> 2] | 0;
-  i8 = i8 & 16777215;
-  i7 = (i8 | 0) == 0;
-  i8 = i7 ? -1 : i8;
-  return i8 | 0;
- }
- _glClearColor(0.0, 0.0, 0.0, 1.0);
- _glClear(16640);
- FUNCTION_TABLE_vii[HEAP32[(HEAP32[i8 >> 2] | 0) + 8 >> 2] & 63](i8, 21495);
- i2 = HEAP32[i8 + 240 >> 2] | 0;
- if (i2) FUNCTION_TABLE_vii[HEAP32[HEAP32[i2 >> 2] >> 2] & 63](i2, 1);
- FUNCTION_TABLE_vii[HEAP32[(HEAP32[i8 >> 2] | 0) + 8 >> 2] & 63](i8, 21499);
- _glReadPixels(0, 0, HEAP32[1806] | 0, HEAP32[1807] | 0, 6408, 5121, HEAP32[1803] | 0);
- HEAP8[i1 >> 0] = 1;
- HEAP8[i8 + 220 >> 0] = 1;
- i8 = HEAP32[1807] | 0;
- i7 = i8 - i7 | 0;
- i8 = HEAP32[1806] | 0;
- i8 = Math_imul(i7, i8) | 0;
- i8 = i8 + i6 | 0;
- i7 = HEAP32[1803] | 0;
- i8 = i7 + (i8 << 2) | 0;
- i8 = HEAP32[i8 >> 2] | 0;
- i8 = i8 & 16777215;
- i7 = (i8 | 0) == 0;
- i8 = i7 ? -1 : i8;
- return i8 | 0;
 }
 
 function _wcsrtombs(i3, i6, i1, i2) {
@@ -59513,6 +59522,17 @@ function __ZNKSt3__17codecvtIcc11__mbstate_tE10do_unshiftERS1_PcS4_RS4_(i3, i1, 
  return 3;
 }
 
+function __ZN11CubeDocBase18isSlvEngineRunningEv(i1) {
+ i1 = i1 | 0;
+ i1 = HEAP32[i1 + 88 >> 2] | 0;
+ if (!i1) {
+  i1 = 0;
+  return i1 | 0;
+ }
+ i1 = (HEAP8[i1 + 28 >> 0] | 0) != 0;
+ return i1 | 0;
+}
+
 function __ZNKSt3__110moneypunctIwLb1EE16do_negative_signEv(i1, i2) {
  i1 = i1 | 0;
  i2 = i2 | 0;
@@ -60078,6 +60098,12 @@ function ___cxa_is_pointer_type(i1) {
  i1 = i1 | 0;
  if (!i1) i1 = 0; else i1 = (___dynamic_cast(i1, 2936, 2984, 0) | 0) != 0;
  return i1 & 1 | 0;
+}
+
+function _restartSolve() {
+ if (!(__ZN11CubeDocBase18isSlvEngineRunningEv(8) | 0)) return;
+ __ZN16ModelControlBase12restartSolveEv(432);
+ return;
 }
 
 function __ZNSt3__18ios_base5clearEj(i2, i1) {
@@ -61279,11 +61305,6 @@ function _scalbnl(d2, i1) {
  d2 = +d2;
  i1 = i1 | 0;
  return +(+_scalbn(d2, i1));
-}
-
-function _restartSolve() {
- __ZN16ModelControlBase12restartSolveEv(432);
- return;
 }
 
 function __ZNK10__cxxabiv116__shim_type_info5noop2Ev(i1) {

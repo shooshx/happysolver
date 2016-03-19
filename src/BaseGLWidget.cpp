@@ -271,8 +271,8 @@ int BaseGLWidget::doChoise(int chX, int chY)
         m_screenNeedUpdate = true;
     }
 
-
-    int index = (bufHeight - chY) * bufWidth + chX;
+       
+    int index = (bufHeight - 1 - chY) * bufWidth + chX;
     int choose = buffer[index] & 0xffffff;
     if (choose == 0)
         return -1;

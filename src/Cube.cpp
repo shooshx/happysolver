@@ -516,15 +516,19 @@ void Cube::puttgr(Solutions *slvs, SolveContext *thread, SlvCube* starter, int d
     int p = thread->p;
     int didSteps = 0;
 
-    // p == -1 means we tried all possibilities from piece 0 and backtracked - this means there was a full enumeration
+    bool wasDone = (p == shape->fcn); // was done from the initialization, need to skip placing piece
 
+    // p == -1 means we tried all possibilities from piece 0 and backtracked - this means there was a full enumeration
     while ((p != -1) && !thread->fExitnow && !thread->selfExit && didSteps != doSteps)
     {
 /////////// actual work ///////////////////////////////////////////////////////
-        if ((p != shape->fcn) && maskAssemble(p))
-            p++;
-        else 
-            p--;	// if reached last piece backtrack
+        if (!wasDone)
+        {
+            if ((p != shape->fcn) && maskAssemble(p))
+                p++;
+            else 
+                p--;	// if reached last piece backtrack
+        }
 /////////// handle administration /////////////////////////////////////////////
 
     
