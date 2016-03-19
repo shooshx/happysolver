@@ -26,7 +26,7 @@ var prog = null
 var model = { vtxBuf: null }
 
 var loadSolution, resizeGl, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseWheel, cpp_draw, cpp_slvrun, getTms
-var setGrpCount, setEditAction
+var setGrpCount, setEditAction, restartSolve
 var ctrlPressed = false;
 
 var ACT_NONE = 0, ACT_ADD = 1, ACT_REMOVE = 2
@@ -56,7 +56,7 @@ function start() {
     solveGo = Module.cwrap('solveGo', null, [])
     setGrpCount = Module.cwrap('setGrpCount', null, ['number', 'number'])
     setEditAction = Module.cwrap('setEditAction', null, ['number'])
-    
+    restartSolve  = Module.cwrap('restartSolve', null, [])
 
     Module.ccall('cpp_start', null);
     Module.ccall('initCubeEngine', 'boolean', ['string', 'number'], [stdpcs_text, 0])
@@ -96,7 +96,12 @@ function handleMouseDown(event) {
 function handleMouseUp(event) {
     mouseUp( (event.button == 2)?1:0)
 }
+var lastX = null, lastY = null
 function handleMouseMove(event) {
+    if (event.clientX == lastX && event.clientY == lastY)
+        return; // for some reason this event arrives in clicks as well
+    lastX = event.clientX
+    lastY = event.clientY
     mouseMove(event.buttons, ctrlPressed?1:0, event.clientX, event.clientY)
 }
 function handleMouseDblClick(event) {
@@ -107,8 +112,10 @@ function handleMouseWheel(event) {
     mouseWheel(-event.deltaY / 16)
 }
 function handleKey(event) {
+    if (event.ctrlKey == ctrlPressed)
+        return;
     ctrlPressed = event.ctrlKey;
-    mouseMove(0, ctrlPressed?1:0, -1, -1)
+    mouseMove(0, ctrlPressed?1:0, lastX, lastY)
 }
 
 var lastFamAdded = ''
@@ -118,7 +125,7 @@ var pics_cubes = {} // make cube id to { famid }
 function picsAddFamily(famName, id) {
     id = id.replace(/[-\. ]/g, '_')
     var picsCtrl = '<div id="ID_frame" class="toppic"><div class="famtitle">\
-    <input class="fam_check_box hidden mycheck" id="ID_fcheck" type="checkbox" onchange="on_fam_check(\'ID\', ID_fcheck.checked);setCheck(ID_fcheck_label, ID_fcheck.checked)" />\
+    <input class="fam_check_box hidden mycheck" id="ID_fcheck" type="checkbox" onchange="on_fam_check(\'ID\', ID_fcheck.checked, true);setCheck(ID_fcheck_label, ID_fcheck.checked)" />\
     <label class="fam_check mycheck_label" id="ID_fcheck_label" for="ID_fcheck" ></label>\
     <div class="fam_label" onclick="pic_rolldown(\'ID\')">LABEL</div>\
     <img class="toppic_icon" id="ID_img" src="arrow_up.png" onclick="pic_rolldown(\'ID\')"></div> \
@@ -179,7 +186,7 @@ function setIntermediate(idlabel, v) {
 }
 
 
-function on_fam_check(id, v) {
+function on_fam_check(id, v, doSolve) {
     var fcubes = pics_families[id].cubes;
     for(var i in fcubes) {
         var c = fcubes[i]
@@ -187,13 +194,15 @@ function on_fam_check(id, v) {
         setCheck(document.getElementById(c.cid + "_ccheck_label"), v)
         dispCCount(c.cid, v, c.grpi)
     }
+    if (doSolve)
+        restartSolve()
 }
 
 // from C++ on initialization. just need to take care of the checkboxes and count display. the counts are already there
 function setFamCheck(id, v) {
     document.getElementById(id + "_fcheck").checked = v
     setCheck(document.getElementById(id + "_fcheck_label"), v)
-    on_fam_check(id, v)
+    on_fam_check(id, v, false)
 }
 
 function picFamCheck(id) {
@@ -230,6 +239,7 @@ function picFamCheck(id) {
 function on_cube_check(id, v, gind) {
     dispCCount(id, v, gind)
     picFamCheck(id)
+    restartSolve()
 }
 
 function on_cube_count(id, gind) {
@@ -243,6 +253,7 @@ function on_cube_count(id, gind) {
         picFamCheck(id)
     }
     setGrpCount(gind, ccount.value)
+    restartSolve()
 }
 
 function registerTexBind(imgname, obj) {

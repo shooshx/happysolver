@@ -13,6 +13,11 @@ void SlvPainter::paintPiece(int f, BaseGLWidget* context, bool fTargets) const
     const PicDef *pdef = m_scube->dt[f].sdef;
     Shape::FaceDef *face = &m_scube->shape->faces[f];
 
+    auto cd = m_scube->shape->scdrToBuildCoord(face->ex, face->dr);
+    auto bldtype = CubeDocBase::s_instance->getBuild().get(cd);
+    if (GET_TYPE(bldtype) != TYPE_REAL)
+        return; // the piece is not in the build shape (happens in a generate error), don't display the solution piece
+
     //int rtnindx = m_scube->dt[f].abs_rt;
     //rtnindx += pdef->dispRot;
     int rtnindx = rotationSub(m_scube->dt[f].abs_rt, pdef->dispRot);
@@ -21,7 +26,7 @@ void SlvPainter::paintPiece(int f, BaseGLWidget* context, bool fTargets) const
     //cout << "START-MODEL " << model.cur() << endl;
 
     model.push();
-    if (false) {
+/*    if (false) { // old way, before matrics 
         model.translate(face->ex.x, face->ex.y, face->ex.z);
         switch (face->dr)
         {
@@ -37,12 +42,12 @@ void SlvPainter::paintPiece(int f, BaseGLWidget* context, bool fTargets) const
             break;
         }
     }
-    else {
-        model.translate(0.5,0.5,-0.5);
-        model.cur().mult(m_mats[f]);
-        model.translate(-0.5,-0.5,0.5);
-        model.rotate(90, 0, 1, 0);
-    }
+    else {*/
+    model.translate(0.5,0.5,-0.5);
+    model.cur().mult(m_mats[f]);
+    model.translate(-0.5,-0.5,0.5);
+    model.rotate(90, 0, 1, 0);
+    //}
 
     model.translate(0.5, 2.5, 2.5);
 
@@ -62,7 +67,7 @@ void SlvPainter::paintPiece(int f, BaseGLWidget* context, bool fTargets) const
 
     int flag = 0;
     if (f < CubeDocBase::s_instance->m_flagPiece.size()) // can happen if not generated yet
-        flag = CubeDocBase::s_instance->m_flagPiece[f];
+        flag = CubeDocBase::s_instance->m_flagPiece[f]; // flag to be marked in red for remove
 
     mglCheckErrorsC("x6");
     // if dispRot >= 4 it means the real part we're drawing is inverted from the model so we need to draw the texture on the other side
@@ -94,6 +99,8 @@ void SlvPainter::paint(BaseGLWidget* context, bool fTargets, int singleChoise, i
 {
     context->model.translate(0,0,+1);
     m_scube->shape->makeTransformsMatrics(0, m_mats);
+
+    //cout << "*****" << endl;
 
     if (singleChoise < 0)
     {

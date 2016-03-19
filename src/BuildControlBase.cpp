@@ -364,6 +364,8 @@ void BuildControlBase::makeBuffers()
     m_transTiles.makeSelfBos();
     m_realLines.makeSelfBos();
     m_transLines.makeSelfBos();
+
+
 }
             
 
@@ -564,14 +566,14 @@ bool BuildControlBase::fadeTimeout(float delta)
         ret = true;
     }
 
-    BuildWorld& build = m_doc->getBuild();
+   /* BuildWorld& build = m_doc->getBuild();
     if (build.getTestResult() == GEN_RESULT_ILLEGAL_SIDE)
     {
         m_errCylindrAlpha += m_errCylindrAlphaDt;
         if ((m_errCylindrAlpha >= 1.0) || (m_errCylindrAlpha <= 0.1))
             m_errCylindrAlphaDt = -m_errCylindrAlphaDt;
         ret = true;
-    }
+    }*/
 
     return ret;
 }
@@ -595,7 +597,7 @@ bool BuildControlBase::getChoiseTiles(int choise, bool remove, CoordBuild bb[6],
         return false;
 
     //int xxx = build.m_space.axx(g).fill;
-    M_ASSERT(build.m_space.axx(g).fill == (remove ? 1 : 0)); // XXXa really nasty bug.
+//    M_ASSERT(build.m_space.axx(g).fill == (remove ? 1 : 0)); // XXXa really nasty bug.
 
     BuildWorld::getBuildCoords(g, bb);
     return true;
@@ -631,7 +633,6 @@ bool BuildControlBase::choiseMouseMove(int choise, bool ctrlPressed)
 {
     m_bInternalBoxRemove = ctrlPressed;
     bool remove = isInRemove();
-
     if ((choise == m_lastChoise) && (remove == m_bLastBoxRemove))
         return false; // check if remove state just changed so we need to redraw
     //cout << "MOVE " << remove << " " << m_bLastBoxRemove << " " << choise << endl;
@@ -826,6 +827,7 @@ bool BuildControlBase::tiledDblClick(int choise)
         }
     }
     makeBuffers();
+    m_bgl->invalidateChoice();
     return true;
 }
 

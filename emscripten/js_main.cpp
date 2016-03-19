@@ -227,10 +227,14 @@ void mouseUp(int rightButton) {
     g_ctrl.requestDraw();
 }
 void mouseMove(int buttons, int ctrlPressed, int x, int y) {
+
     bool needUpdate = g_ctrl.m_gl.mouseMove(buttons, ctrlPressed, x, y);
     // always need draw since swapBuffers is automatic and doChoise clears the view
-    g_ctrl.requestDraw();
-    cpp_draw(0);
+    if (needUpdate || g_ctrl.m_gl.m_screenNeedUpdate) {
+        g_ctrl.requestDraw();
+        cpp_draw(0);
+        g_ctrl.m_gl.m_screenNeedUpdate = false;
+    }
 }
 void mouseDblClick(int ctrlPressed, int x, int y) {
     bool needUpdate = g_ctrl.m_gl.mouseDoubleClick(ctrlPressed, x, y);
@@ -289,6 +293,8 @@ void setGrpCount(int grpi, int count)
     for(auto pi: grp.picsi) {
         bucket.pdefs[pi].setSelected(count);
     }
+    
+
 }
 
 void setEditAction(int a)
@@ -296,6 +302,11 @@ void setEditAction(int a)
     //cout << "EDIT "  << a << endl;
     g_ctrl.m_modelGl.m_buildCtrl.m_bEditEnabled = (a != 0);
     g_ctrl.m_modelGl.m_buildCtrl.m_bBoxRemove = (a == 2);
+}
+
+void restartSolve()
+{
+    g_ctrl.m_modelGl.restartSolve();
 }
 
 } // extern "C"

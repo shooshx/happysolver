@@ -197,9 +197,16 @@ void ModelControlBase::drawTargets(bool inChoise)
         m_progNoise.fadeFactor.set(m_buildCtrl.m_fadeFactor);
     }
 
+    int upTo = m_doc->getUpToStep();
+
+    if (slv != m_lastSlv || m_lastUpTo != upTo) {
+        m_bgl->invalidateChoice();
+        m_lastSlv = slv;
+        m_lastUpTo = upTo;
+    }
     
 
-    paint(m_bgl, m_doc, slv, inChoise, m_nSingleChoise, m_doc->getUpToStep());
+    paint(m_bgl, m_doc, slv, inChoise, m_nSingleChoise, upTo);
 
 }
 
@@ -268,6 +275,12 @@ bool ModelControlBase::scrDblClick(bool hasCtrl, int x, int y)
             return false;
     }
 
+    restartSolve();
+    return true;
+}
+
+void ModelControlBase::restartSolve()
+{
     if (m_doc->isSlvEngineRunning()) {
         m_doc->solveStop();
     }
@@ -275,5 +288,4 @@ bool ModelControlBase::scrDblClick(bool hasCtrl, int x, int y)
     m_doc->transferShape(); // does generate
     m_doc->solveGo();
 
-    return true;
 }

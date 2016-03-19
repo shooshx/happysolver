@@ -25,6 +25,7 @@ BaseGLWidget::BaseGLWidget()
     // some defaults to get things started
     aqmin = Vec3(-3, -3, -3);
     aqmax = Vec3(3, 3, 3);
+    m_choiceBufferValid = false;
 }
 
 void BaseGLWidget::init() 
@@ -231,32 +232,48 @@ static void sgluPickMatrix(double x, double y, double deltax, double deltay, int
 
 int BaseGLWidget::doChoise(int chX, int chY)
 {
-    int	viewport[4] = {0, 0, m_cxClient, m_cyClient};
+    static vector<int> buffer;
+    static int bufWidth = 0, bufHeight = 0;
+    if (bufWidth != m_cxClient || bufHeight != m_cyClient) {
+        bufWidth = m_cxClient;
+        bufHeight = m_cyClient;
+        buffer.resize(bufWidth * bufHeight);
+    }
+
+    //int	viewport[4] = {0, 0, m_cxClient, m_cyClient};
    // makeCurrent();
 
-    proj.push();
-    proj.identity();
+    //proj.push();
+    //proj.identity();
     
     // This Creates A Matrix That Will Zoom Up To A Small Portion Of The Screen, Where The Mouse Is.
     //gluPickMatrix((GLdouble)chX, (GLdouble)(viewport[3]-chY), 1.0f, 1.0f, viewport);
-    sgluPickMatrix((double)chX, (double)(viewport[3]-chY), 1.0f, 1.0f, viewport, proj);
+    //sgluPickMatrix((double)chX, (double)(viewport[3]-chY), 1.0f, 1.0f, viewport, proj);
     
-    reCalcProj(false);
+    //reCalcProj(false);
 
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-   // callDrawTargets();
-    paint(true);
+    if (!m_choiceBufferValid)
+    {
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+       // callDrawTargets();
+        paint(true);
         
-    proj.pop();
+        //proj.pop();
 
-    int choose = -1;
-    uint buf[10] = {0};
+        //int choose = -1;
+        //uint buf[10] = {0};
 
-    //glReadPixels(viewport[2] / 2, viewport[3] / 2, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, buf);
-    glReadPixels(0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, buf);
-    //printf("%X\n", buf[0]);
-    choose = buf[0] & 0xffffff;
+        //glReadPixels(viewport[2] / 2, viewport[3] / 2, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, buf);
+        glReadPixels(0, 0, bufWidth, bufHeight, GL_RGBA, GL_UNSIGNED_BYTE, buffer.data());
+        m_choiceBufferValid = true;
+        //printf("%X\n", buf[0]);
+        m_screenNeedUpdate = true;
+    }
+
+
+    int index = (bufHeight - chY) * bufWidth + chX;
+    int choose = buffer[index] & 0xffffff;
     if (choose == 0)
         return -1;
 
@@ -406,6 +423,7 @@ bool BaseGLWidget::mouseDoubleClick(bool hasCtrl, int x, int y)
 void BaseGLWidget::mouseWheelEvent(int delta)
 {
     m_zoomVal = mMin(mMax(m_zoomVal + delta, ZOOM_MIN), ZOOM_MAX);
+    invalidateChoice();
 }
 
 bool BaseGLWidget::mouseMove(int buttons, int hasCtrl, int x, int y)
@@ -436,6 +454,7 @@ bool BaseGLWidget::mouseMove(int buttons, int hasCtrl, int x, int y)
         //scale(dx, dy); 
         //    break;
     }
+    invalidateChoice();
     m_lastPos = Vec2i(x, y);
 
     return true;

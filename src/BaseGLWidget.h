@@ -65,6 +65,10 @@ public:
     bool mouseDoubleClick(bool hasCtrl, int x, int y);
     void mouseWheelEvent(int delta);
 
+    void invalidateChoice() {
+        m_choiceBufferValid = false;
+    }
+
 public: 
     // this needs to be public for the PicPainter to be able to access it.
     list<int> m_textures;
@@ -74,6 +78,7 @@ public:
     int m_minScaleReset;  //a view can set this member for to limit the maximal size of an object at reset. default is 0 for no effect
     bool m_cullFace;
     Vec3 aqmin, aqmax; // bbox for everything, floats as an optinimazation, no conversion 
+    bool m_screenNeedUpdate = false; // used by the javascript wrapper to detect if we need to draw the screen again since this cleared it for the choise
 
 public:
 
@@ -116,4 +121,5 @@ private:
     double m_aspectRatio;		///< hold the fixed Aspect Ration
     double m_scrScale, m_realScale;
 
+    bool m_choiceBufferValid = false;
 };

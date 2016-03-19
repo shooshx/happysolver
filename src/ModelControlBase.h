@@ -16,6 +16,8 @@ public:
     void reCalcSlvMinMax();
     virtual void switchIn() override;
 
+    void restartSolve();
+
 protected:
     CubeDocBase *m_doc;
 
@@ -25,6 +27,9 @@ protected:
     NoiseSlvProgram m_progNoise;
     FlatProgram m_progFlat; // for choice selection
     Vec3 m_modelmin, m_modelmax;
+
+    SlvCube* m_lastSlv = nullptr; // for knowing if we need to invalidate the choise
+    int m_lastUpTo = -1;
 
 public:
     BuildControlBase m_buildCtrl;
@@ -47,6 +52,7 @@ protected:
     virtual void clearChoise() override {
         m_buildCtrl.clearChoise();
     }
+
 
 public:
     //static void drawIFSPolygons(BaseGLWidget *that, const MyObject &obj, bool fTargets);
