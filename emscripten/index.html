@@ -109,7 +109,7 @@ function handleMouseDblClick(event) {
     return true
 }
 function handleMouseWheel(event) {
-    mouseWheel(-event.deltaY / 16)
+    mouseWheel( (event.deltaY < 0) ? -16 : 16)
 }
 function handleKey(event) {
     if (event.ctrlKey == ctrlPressed)
@@ -621,7 +621,7 @@ body {
 #aboutWin {
     position: absolute;
     width: 600px;
-    height: 400px;
+    height: 460px;
     top: 25%;
     left: 0;
     right: 0;
@@ -639,13 +639,14 @@ h1, h2, h3 {
 h3 {
     font-size: 12px;
     font-family: monospace;
-    margin: 20px 0 0 0;
+    margin: 30px 0 0 0;
 }
 h2 {
     font-size: 20px;
 }
 h1 {
     font-size: 30px;
+    margin: 0 0 0 30px;
 }
 
 </style>
