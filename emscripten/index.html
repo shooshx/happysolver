@@ -102,6 +102,9 @@ function handleMouseMove(event) {
         return; // for some reason this event arrives in clicks as well
     lastX = event.clientX
     lastY = event.clientY
+    var but = event.buttons
+    if (but === undefined)
+        but = event.which // for safari
     console.log(event.button + " " + event.clientX + " " + event.clientY)
     mouseMove(event.button, ctrlPressed?1:0, event.clientX, event.clientY)
 }
