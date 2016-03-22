@@ -551,6 +551,7 @@ bool BuildControlBase::boxedDblClick(int choise, int x, int y)
 
     // make buffers and then simluate move to doChoise on the new buffers
     makeBuffers();
+    m_bgl->invalidateChoice();
     doMouseMove(x, y, m_bInternalBoxRemove);
     return true;
 }

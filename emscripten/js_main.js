@@ -16055,9 +16055,11 @@ function __ZN16BuildControlBase13boxedDblClickEiii(i34, i3, i32, i33) {
   }
   FUNCTION_TABLE_vii[HEAP32[(HEAP32[i34 >> 2] | 0) + 40 >> 2] & 63](i34, HEAP32[i13 >> 2] | 0);
   __ZN16BuildControlBase11makeBuffersEv(i34);
+  i1 = HEAP32[i34 + 4 >> 2] | 0;
+  HEAP8[i1 + 288 >> 0] = 0;
   i2 = (HEAP8[i31 >> 0] | 0) != 0;
   if (!(HEAP8[i34 + 12 >> 0] | 0)) {
-   if ((i32 | 0) == -1) i1 = HEAP32[i34 + 16 >> 2] | 0; else i1 = __ZN12BaseGLWidget8doChoiseEii(HEAP32[i34 + 4 >> 2] | 0, i32, i33) | 0;
+   if ((i32 | 0) == -1) i1 = HEAP32[i34 + 16 >> 2] | 0; else i1 = __ZN12BaseGLWidget8doChoiseEii(i1, i32, i33) | 0;
    __ZN16BuildControlBase15choiseMouseMoveEib(i34, i1, i2) | 0;
   }
   i1 = 1;
