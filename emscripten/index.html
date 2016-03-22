@@ -102,7 +102,10 @@ function handleMouseMove(event) {
         return; // for some reason this event arrives in clicks as well
     lastX = event.clientX
     lastY = event.clientY
-    mouseMove(event.buttons, ctrlPressed?1:0, event.clientX, event.clientY)
+    var but = event.buttons
+    if (but === undefined)
+        but = event.which // for safari
+    mouseMove(but, ctrlPressed?1:0, event.clientX, event.clientY)
 }
 function handleMouseDblClick(event) {
     mouseDblClick(ctrlPressed?1:0, event.clientX, event.clientY);
