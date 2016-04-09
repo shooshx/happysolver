@@ -53,6 +53,8 @@ public:
     void makeBuffers();
     virtual bool fadeTimeout(float delta);
 
+    void reloadWorld();
+
 private:
     bool tiledDblClick(int choise);
     bool boxedDblClick(int choise, int x, int y);

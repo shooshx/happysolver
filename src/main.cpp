@@ -85,8 +85,12 @@ void console()
 #endif
 
 
+
+
+
 int main(int argc, char *argv[])
 {
+
 // 	int res[8][8];
 // 	for(int base = 0; base < 8; ++base) {
 // 		for(int rot = 0; rot < 8; ++rot) {

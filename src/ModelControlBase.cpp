@@ -92,6 +92,17 @@ void ModelControlBase::initTex()
 
 void ModelControlBase::myPaintGL(bool inChoise)
 {
+    if (!inChoise) // in choise, it's already doing its own clear with black, not this back color
+    {
+        SlvCube *scube = m_doc->getCurrentSolve();
+        Vec3 bkc = m_doc->m_conf.disp.slvBkColor;
+        if (m_nSingleChoise >= 0 && scube != nullptr && scube->getPieceGrpDef(m_nSingleChoise)->blackness > BLACK_NOT)
+            glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
+        else
+            glClearColor(bkc.r, bkc.g, bkc.b, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
+
     // draw the object
 //    double zv = zoomFactor();
     double zv = m_bgl->zoomFactor();
@@ -139,19 +150,7 @@ void ModelControlBase::paint(BaseGLWidget* context, CubeDocBase *doc, SlvCube *s
     { // caused by untimely updates of the single piece view. show the first one
         singleChoise = 0; // not -1 because that will show the entire model
     }
-
-    if (!fTargets)
-    {
-        //glEnable(GL_COLOR_MATERIAL);
-        Vec3 bkc = doc->m_conf.disp.slvBkColor;
-        if ((singleChoise >= 0) && (scube->getPieceGrpDef(singleChoise)->blackness > BLACK_NOT))
-            glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
-        else
-            glClearColor(bkc.r, bkc.g, bkc.b, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    }
-    
-
+  
  //   glEnable(GL_BLEND);
  //   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
  //   glEnable(GL_POLYGON_OFFSET_FILL);

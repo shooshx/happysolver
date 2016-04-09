@@ -99,7 +99,7 @@ class PicsSet
 {	
 public:
 	/// this ctor takes the selection from the Solution
-	PicsSet(const SlvCube *scube); 
+//	PicsSet(const SlvCube *scube);  never used
 
 	///	this ctor takes the selection from the bucket
 	///	with bSym == true, there are more rtns for every pic.

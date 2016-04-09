@@ -102,7 +102,7 @@ void PicsSet::addRef(int defInd)
     compRef[refInd].pdefsInds.push_back(PdefRef(defInd, thedef.defRot));
 }
 
-
+/*
 PicsSet::PicsSet(const SlvCube *scube)
 	: totalRtnCount(0), considerSymetric(false)
 {// no need for cSym. see SlvCube.cpp
@@ -112,7 +112,7 @@ PicsSet::PicsSet(const SlvCube *scube)
 		add(defInd, false);
 	}
 }
-
+*/
 
 PicsSet::PicsSet(bool cSym) 
 	: totalRtnCount(0), considerSymetric(cSym)

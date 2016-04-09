@@ -106,8 +106,8 @@ class Shape
 {
 public:
     
-    Shape()	:size(-1, -1, -1), fcn(0), sdn(0), cnn(0), sdnError(0),
-        rotfirst(false), faces(nullptr), sides(nullptr), corners(nullptr), errorSides(nullptr), volume(-1)
+    Shape()	:size(-1, -1, -1), fcn(0), sdn(0), cnn(0),
+        rotfirst(false), faces(nullptr), volume(-1)
     {}
     
     ~Shape()
@@ -223,7 +223,9 @@ public:
         int nei[6];		///< neighboring faces to this corner. can have any number of 1,2,3,4,5,6 neibours. (empty is -1)
     };
 
-    vector<Vec3> testQuads;
+    //vector<Vec3> testQuads;
+
+    void initSizeAndBounds(const SqrLimits& bounds);
 
 private:
 
@@ -238,11 +240,14 @@ private:
     };
 
     void readAxis(const BuildWorld *build, int iss, int jss, int pgss, EPlane planedr, list<FaceDef> &flst, int *reqfirst, SqrLimits &bound);
-    int checkSide(EAxis ldr, int x, int y, int z, list<SideDef> &slst, list<SideDef> &slstError);
-    int checkCorner(int x, int y, int z, list<CornerDef> &clst);
+    bool checkSide(EAxis ldr, int x, int y, int z, vector<SideDef> &slst, vector<SideDef> &slstError);
+    bool checkCorner(int x, int y, int z, vector<CornerDef> &clst);
 
     void copyFace(Shape::FaceDef src, Shape::FaceDef *dest); 
 
+    EGenResult readWorld(const BuildWorld *build, int* reqf);
+    EGenResult buildSidesAndCorners();
+    EGenResult orderFacesInSequence(int reqf);
     void makeReverseNei(); // returns true if succesfull
     void makeVolumeAndFacing();
     void makePieceCheckBits();
@@ -250,10 +255,10 @@ private:
     int locateFace(EPlane ldr, Vec3i lex) const;	// locate a face, if not existing, return -1;
 
     void faceNei(int whos, int fnei[4]);	// return a face's neibours
-    int faceNeiFirst(int whos, TransType trans[]);
-    int faceNeiFirstOpt(int whos, TransType trans[]);
-    EGenResult reArrangeFacesDFS(FaceDef faces[], FaceDef revis[], TransType trans[]);
-    EGenResult reArrangeFacesBFS(FaceDef faces[], FaceDef revis[], TransType trans[]);
+    //int faceNeiFirst(int whos, TransType trans[]);
+    int faceNeiFirstOpt(int whos, vector<TransType>& trans);
+    EGenResult reArrangeFacesDFS(FaceDef faces[], FaceDef revis[], vector<TransType>& trans);
+  //  EGenResult reArrangeFacesBFS(FaceDef faces[], FaceDef revis[], vector<TransType>& trans);
 
     // stuff related to neighbor transformations
     void makeNeiTransforms();
@@ -281,14 +286,14 @@ public:
     int fcn;		///< number of faces
     int sdn;		///< number of sides (edges)
     int cnn;		///< number of corners
-    int sdnError;  ///< number of Error sides. if there are error sides, "sides" contains the errors and sdn = 0
+
         
     bool rotfirst;	///< true if first piece should be rotated
 
     FaceDef *faces;		///< array of faces
-    SideDef *sides;		///< array of sides
-    CornerDef *corners; ///< array of corners
-    SideDef *errorSides; ///< array of error sides.
+    vector<SideDef> sides;		///< array of sides
+    vector<CornerDef> corners; ///< array of corners
+    vector<SideDef> errorSides; ///< array of error sides. if there are error sides, this contains the errors and sdn = 0
 
     SqrLimits buildBounds; ///< original bounds of the build space so we could recreate the build coordinates from the face coordinates
 

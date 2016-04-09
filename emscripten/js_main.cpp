@@ -145,6 +145,7 @@ void loadSolution(const char* buf) {
     }        
 }
 
+
 void solveGo() {
     try {
         g_ctrl.m_doc.solveGo();
@@ -269,6 +270,12 @@ void cpp_start()
         cout << "START_GOT-EXCEPTION " << e.what() << endl;
     }        
 }
+
+void conf(bool rand) 
+{
+    g_ctrl.m_doc.m_conf.engine.fRand = true;
+}
+
 bool cpp_draw(float deltaSec) 
 {
     if (g_ctrl.m_requested)
@@ -309,6 +316,34 @@ void restartSolve()
     if (g_ctrl.m_doc.isSlvEngineRunning()) {
         g_ctrl.m_modelGl.restartSolve();
     }
+}
+
+int serializeCurrent()
+{
+    static string s;
+    s = g_ctrl.m_doc.serializeMinBin();
+    cout << "**** " << s.size() << "::";
+    for(int i = 0;i < s.size(); ++i) {
+        cout << (uint32_t)(uint8_t)s[i] << " ";
+        EM_ASM_( scratchArr.push($0), (uint8_t)s[i] );
+    }
+    cout << endl;
+    return 0;
+}
+
+// AQoAAAgAQAAAAARAAQAQAAEAEAQAAQAgCARBHXRogCOG8YptBGEKWzg=
+void deserializeAndLoad(int len)
+{
+    string s;
+    s.resize(len);
+    for(int i = 0; i < s.size(); ++i) {
+        s[i] = EM_ASM_INT( return scratchArr[$0], i);
+    }
+    g_ctrl.m_doc.loadMinBin(s);
+    g_ctrl.m_modelGl.m_buildCtrl.reloadWorld();
+    
+    g_ctrl.m_doc.setCurSlvToLast();
+    g_ctrl.requestDraw();
 }
 
 } // extern "C"

@@ -92,7 +92,7 @@ bool Shape::loadFrom(MyFile *rdfl)
         deallocate();
         return false;
     }
-    sides = new SideDef[sdn];
+    sides.resize(sdn);
 
     for(i = 0; i < sdn; ++i)
     {
@@ -110,7 +110,7 @@ bool Shape::loadFrom(MyFile *rdfl)
         deallocate();
         return false;
     }
-    corners = new CornerDef[cnn];
+    corners.resize(cnn);
     for(i = 0; i < cnn; ++i)
     {
         nne = 0;
@@ -143,15 +143,11 @@ void Shape::deallocate()
 {
     if (faces != nullptr) delete[] faces;
     faces = nullptr;
-    if (sides != nullptr) delete[] sides;
-    sides = nullptr;
-    if (corners != nullptr) delete[] corners;
-    corners = nullptr;
-    if (errorSides != nullptr) delete[] errorSides;
-    errorSides = nullptr;
-
+    sides.clear();
+    corners.clear();
+    errorSides.clear();
     fcn = 0; sdn = 0; cnn = 0;
-    sdnError = 0;
+
 }
 
 
@@ -224,6 +220,20 @@ int Shape::getShapeFcInd(CoordBuild s) const
     return locateFaceHardWay((EPlane)s.dim, g1);
 }
 
+/// locate face when m_opt_facesLoc is invalidated (after generate completes) 
+int Shape::locateFaceHardWay(EPlane ldr, Vec3i lex) const
+{
+    for (int i = 0; i<fcn; ++i)
+    {
+        if ((faces[i].dr == ldr) && (faces[i].ex.x == lex.x) && (faces[i].ex.y == lex.y) && (faces[i].ex.z == lex.z))
+            return i;
+    }
+    return -1;
+}
+
+
+/////////////////////////////// GENERATOR /////////////////////////////////////
+
 int Shape::locateFace(EPlane ldr, Vec3i lex) const
 {
     if ((lex.x < 0) || (lex.y < 0) || (lex.z < 0) || (lex.x >= size.x) || (lex.y >= size.y) || (lex.z >= size.z)) 
@@ -232,19 +242,7 @@ int Shape::locateFace(EPlane ldr, Vec3i lex) const
 }
 
 
-/// locate face when m_opt_facesLoc is invalidated (after generate completes) 
-int Shape::locateFaceHardWay(EPlane ldr, Vec3i lex) const
-{
-    for(int i=0; i<fcn; ++i)
-    {
-        if ((faces[i].dr == ldr) && (faces[i].ex.x == lex.x) && (faces[i].ex.y == lex.y) && (faces[i].ex.z == lex.z)) 
-            return i;
-    }
-    return -1;
-}
-
-
-int Shape::checkSide(EAxis ldr, int x, int y, int z, list<SideDef> &slst, list<SideDef> &slstError)
+bool Shape::checkSide(EAxis ldr, int x, int y, int z, vector<SideDef> &slst, vector<SideDef>& slstError)
 {	// fails, return 0, if there are more than 2 faces to a side
     int nec = 0, nei[4] ,i, fcl;			
     
@@ -259,19 +257,19 @@ int Shape::checkSide(EAxis ldr, int x, int y, int z, list<SideDef> &slst, list<S
                 
     if (nec == 2)
     {
-        slst.push_front(SideDef(ldr, Vec3i(x, y, z), nei));
+        slst.push_back(SideDef(ldr, Vec3i(x, y, z), nei));
         ++sdn;
     }
     else if (nec > 2) 
     {
-        slstError.push_front(SideDef(ldr, Vec3i(x, y, z), nei));
-        ++sdnError;
-        return 0;	// found a side with more than 2 faces
+        // error side ex should in the scene coordinates, adding bounds
+        slstError.push_back(SideDef(ldr, Vec3i(x, y, z) + buildBounds.getMin(), nei));
+        return false;	// found a side with more than 2 faces
     }
-    return 1;
+    return true;
 }
 
-int Shape::checkCorner(int x, int y, int z, list<CornerDef> &clst)
+bool Shape::checkCorner(int x, int y, int z, vector<CornerDef> &clst)
 {
     int nec = 0, i, fcl, nei[12] = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
     EPlane lpln[12];
@@ -302,20 +300,19 @@ int Shape::checkCorner(int x, int y, int z, list<CornerDef> &clst)
     {
         for(i=nec; i<12; ++i)
             nei[i] = -1;
-        clst.push_front(CornerDef(Vec3i(x, y, z), nei));
+        clst.push_back(CornerDef(Vec3i(x, y, z), nei));
 
         ++cnn;
     }
     else
     {
         if (nec > 6) 
-            return 0;	// found a corner with more than 6 faces
+            return false;	// found a corner with more than 6 faces
     }
-    return 1;
+    return true;
 }
 
 
-/////////////////////////////// GENERATOR /////////////////////////////////////
 
 CoordBuild Shape::fcToBuildCoord(int fc) const
 {
@@ -359,7 +356,8 @@ void Shape::readAxis(const BuildWorld *build, int iss, int jss, int pgss, EPlane
                     }
                     x *= 4; y *= 4; z *= 4;
 
-                    if (GET_VAL(tmp) == FACE_STRT) *reqfirst = fcn;
+                    if (GET_VAL(tmp) == FACE_STRT) 
+                        *reqfirst = fcn;
                     flst.push_front(FaceDef(planedr, Vec3i(x, y, z)));
                     fcn++;
 
@@ -384,7 +382,7 @@ int Shape::faceNeiFirst(int whos, TransType trans[])
 
 // create a translation of face neighbors according to the order of their importance.
 // neighbors which have more neighbors themselves have higher priority
-int Shape::faceNeiFirstOpt(int whos, TransType trans[])
+int Shape::faceNeiFirstOpt(int whos, vector<TransType>& trans)
 {
     int win = -1, wrank = 0;
     bool wInTemp = false; // winner
@@ -417,7 +415,7 @@ int Shape::faceNeiFirstOpt(int whos, TransType trans[])
 }
 
 
-EGenResult Shape::reArrangeFacesDFS(FaceDef faces[], FaceDef revis[], TransType trans[])
+EGenResult Shape::reArrangeFacesDFS(FaceDef faces[], FaceDef revis[], vector<TransType>& trans)
 {
     int revi = 0;
     int addi = 0;
@@ -450,56 +448,35 @@ EGenResult Shape::reArrangeFacesDFS(FaceDef faces[], FaceDef revis[], TransType 
     return GEN_RESULT_OK;
 }
 
-
-
-EGenResult Shape::generate(const BuildWorld *build)
+void Shape::initSizeAndBounds(const SqrLimits& bounds)
 {
-//	unsigned int s, t1, t2, t25, t3, t4, t5, t6;
-//	s = GetTickCount();
-
-    int i, j, x, y, z, reqf = -1;
-    
-    for (i = 0; i < 3; ++i)
-    {
-        if (!m_opt_facesLoc[i].isCreated())
-            m_opt_facesLoc[i].create(BUILD_SIZE, BUILD_SIZE, BUILD_SIZE);
-        m_opt_facesLoc[i].clear(-1); // clear face optimizing array
-    }
-
-    deallocate();
-//	t1 = GetTickCount();
-
-    Vec3i fcSize(build->size);
-
-    rotfirst = false; // ####### change
-
-    fcn = 0;
-    sdn = 0;
-    cnn = 0;
-    sdnError = 0;
-
-    SqrLimits bounds; //page plays z
-    bounds.Inverse(BUILD_SIZE * 4);
-        
-    ///////// BUILD FACES ///
-    list<FaceDef> flst;
-
-    readAxis(build, fcSize.y, fcSize.z, fcSize.x, YZ_PLANE, flst, &reqf, bounds);
-    readAxis(build, fcSize.x, fcSize.z, fcSize.y, XZ_PLANE, flst, &reqf, bounds);
-    readAxis(build, fcSize.x, fcSize.y, fcSize.z, XY_PLANE, flst, &reqf, bounds);
-    build->m_gen_bounds = bounds; // save the bounds of the last generate
     buildBounds = bounds;
     //cout << "BOUNDS=" << bounds.minx << "," << bounds.miny << "," << bounds.minpage << endl;
-
-//	t2 = GetTickCount();
     // fix it all according to the discovered bounds
     size.x = bounds.maxx - bounds.minx + 4 + 1; // need the +4 if we have a piece in the side with no cover
     size.y = bounds.maxy - bounds.miny + 4 + 1;
     size.z = bounds.maxpage - bounds.minpage + 4 + 1; // page plays z
+}
+
+EGenResult Shape::readWorld(const BuildWorld *build, int* reqf)
+{
+    Vec3i fcSize(build->size);
+    SqrLimits bounds; //page plays z
+    bounds.Inverse(BUILD_SIZE * 4);
+
+    ///////// BUILD FACES ///
+    list<FaceDef> flst;
+
+
+    readAxis(build, fcSize.y, fcSize.z, fcSize.x, YZ_PLANE, flst, reqf, bounds);
+    readAxis(build, fcSize.x, fcSize.z, fcSize.y, XZ_PLANE, flst, reqf, bounds);
+    readAxis(build, fcSize.x, fcSize.y, fcSize.z, XY_PLANE, flst, reqf, bounds);
+    build->m_gen_bounds = bounds; // save the bounds of the last generate
+    initSizeAndBounds(bounds);
 
     faces = new FaceDef[fcn];
-    list<FaceDef>::const_iterator faceit = flst.cbegin(); 
-    for(i = 0; i < fcn; ++i)
+    auto faceit = flst.cbegin();
+    for (int i = 0; i < fcn; ++i)
     {	// convert the linked list to an array, NORMAIZE the coodrinates to the size of the array, and dispose of the list
         faces[i].dr = faceit->dr;
         faces[i].ex = Vec3i(faceit->ex.x - bounds.minx, faceit->ex.y - bounds.miny, faceit->ex.z - bounds.minpage);
@@ -509,119 +486,86 @@ EGenResult Shape::generate(const BuildWorld *build)
     }
     flst.clear();
 
-//	t25 = GetTickCount();
-    ///////////// BUILD SIDES AND CORNERS ///////////////
-    list<SideDef> slst, slstError;
-    list<CornerDef> clst;
+    // first some sanity check needed for generating the face sequences later
+    if (*reqf == -1)
+        return GEN_RESULT_NO_START; // no start found
+    *reqf = fcn - *reqf - 1; // order is upsidedown (list to vector)
+    return GEN_RESULT_OK;
+}
 
+EGenResult Shape::buildSidesAndCorners()
+{
     bool illegalCorners = false; // sanity check for corners
     bool illegalSides = false;
-    for(x = 0; x < size.x; x += 4)
+    for (int x = 0; x < size.x; x += 4)
     {
-        for(y = 0; y < size.y; y += 4)
+        for (int y = 0; y < size.y; y += 4)
         {
-            for(z = 0; z < size.z; z+= 4)
-            {	
+            for (int z = 0; z < size.z; z += 4)
+            {
                 // look for sides in the all axis
                 // need a seperate if for each one so none will get skipped
-                if (!checkSide(X_AXIS, x, y, z, slst, slstError))
+                if (!checkSide(X_AXIS, x, y, z, sides, errorSides))
                     illegalSides = true;
-                if (!checkSide(Y_AXIS, x, y, z, slst, slstError))
+                if (!checkSide(Y_AXIS, x, y, z, sides, errorSides))
                     illegalSides = true;
-                if (!checkSide(Z_AXIS, x, y, z, slst, slstError)) 
+                if (!checkSide(Z_AXIS, x, y, z, sides, errorSides))
                     illegalSides = true;
 
-                if (!(checkCorner(x, y, z, clst))) 
+                if (!(checkCorner(x, y, z, corners)))
                     illegalCorners = true;
             }
         }
     }
 
-//	t3 = GetTickCount();
+    //	t3 = GetTickCount();
     // this shouldn't happen since it should have been discovered as illegal sides
-    // illegal conrners can't happen without illegal corners
+    // illegal conrners can't happen without illegal sides
     if (illegalCorners && (!illegalSides))
         return GEN_RESULT_UNKNOWN;
 
-    // if there are illegal sides they are in the list, vectorify them and exit
-
-/////////////////////////////////////////////////////////////////////
-// Vectorify
     if (illegalSides)
     {
-        errorSides = new SideDef[sdnError];
-        // convert the linked list to an array, and dispose of the list
-        list<SideDef>::const_iterator sideIt = slstError.cbegin();
-        for(i = 0; i < sdnError; ++i) 
-        {	
-            errorSides[i] = *sideIt;
-            errorSides[i].ex.x += bounds.minx; // un-normalize it to build space
-            errorSides[i].ex.y += bounds.miny;
-            errorSides[i].ex.z += bounds.minpage;
-            ++sideIt;
-        }
         sdn = 0; cnn = 0;
         return GEN_RESULT_ILLEGAL_SIDE;
     }
+    return GEN_RESULT_OK;
+}
 
-    sides = new SideDef[sdn];
-    // convert the linked list to an array, and dispose of the list
-    list<SideDef>::const_iterator sideIt = slst.cbegin();
-    for(i = 0; i < sdn; ++i)
-    {	
-        sides[i] = *sideIt;
-        ++sideIt;
-    }
-
-    corners = new CornerDef[cnn];
-    list<CornerDef>::const_iterator cornerIt = clst.cbegin();
-    for(i = 0; i < cnn; ++i)
-    {	// convert the linked list to an array, and dispose of the list
-        corners[i] = *cornerIt;
-        ++cornerIt;
-    }
-
-//	t4 = GetTickCount();
-    makeVolumeAndFacing(); // need this now because the template is indexed with EFacing
-    
-///////////////////////////////////////////////////////////
-// transform faces order for a building sequence
-    // first some sanity check to see that its possible (maybe could be done before)
-    if (reqf == -1) 
-        return GEN_RESULT_NO_START; // no start found
-    reqf = fcn - reqf - 1; // order is upsidedown
-
+EGenResult Shape::orderFacesInSequence(int reqf)
+{
     // to help the face travesal transform routine, set the face-sides information temporatly
     // needed so faceNei() could work properly in O(1)
     make_sides_facenei();
 
     // prepare ground for transform
     FaceDef *revis = new FaceDef[fcn];
-    TransType *trans = new TransType[fcn];
+    vector<TransType> trans(fcn);
 
     revis[0] = faces[reqf];
     trans[reqf].to = 0;
-    trans[0].who = reqf; 
+    trans[0].who = reqf;
 
-    // TBD-
-    //     not randomised
+    // TBD- not randomised?
 
     // call the transform
     EGenResult aret = reArrangeFacesDFS(faces, revis, trans);
-    if (aret != GEN_RESULT_OK)
+    if (aret != GEN_RESULT_OK) {
+        delete[] faces;
         return aret;
+    }
 
     // cleanup and transform for the sides and corners
 
-    for(i = 0; i < sdn; ++i)
+    for (int i = 0; i < sdn; ++i)
     {
         sides[i].nei[0] = trans[sides[i].nei[0]].to;
         sides[i].nei[1] = trans[sides[i].nei[1]].to;
     }
 
-    for(i = 0; i < cnn; ++i)
+    for (int i = 0; i < cnn; ++i)
     {
-        for(j = 0; j < 6; ++j)
+        for (int j = 0; j < 6; ++j)
         {
             if (corners[i].nei[j] != -1)
                 corners[i].nei[j] = trans[corners[i].nei[j]].to;
@@ -629,14 +573,46 @@ EGenResult Shape::generate(const BuildWorld *build)
     }
 
     delete[] faces;
-    faces = revis; 
+    faces = revis;
+    return GEN_RESULT_OK;
+}
 
-    delete[] trans;
+EGenResult Shape::generate(const BuildWorld *build)
+{
+    for (int i = 0; i < 3; ++i)
+    {
+        if (!m_opt_facesLoc[i].isCreated())
+            m_opt_facesLoc[i].create(BUILD_SIZE, BUILD_SIZE, BUILD_SIZE);
+        m_opt_facesLoc[i].clear(-1); // clear face optimizing array
+    }
 
-//	t5 = GetTickCount();
-///////////////////////////////////////////////////////////////////
-// some additional tasks
+    deallocate();
 
+    rotfirst = false; // ####### change
+    fcn = 0;
+    sdn = 0;
+    cnn = 0;
+
+    int reqf = -1; // index of the start piece in the list
+    EGenResult gret;
+
+    gret = readWorld(build, &reqf);
+    if (gret != GEN_RESULT_OK)
+        return gret;
+
+    gret = buildSidesAndCorners();
+    if (gret != GEN_RESULT_OK)
+        return gret;
+
+    makeVolumeAndFacing(); // need this now because the template is indexed with EFacing
+    
+    // transform faces order for a building sequence (so far the order was what was read from the world
+
+    gret = orderFacesInSequence(reqf);
+    if (gret != GEN_RESULT_OK)
+        return gret;
+
+    // some additional tasks
     makeReverseNei();
 
     makePieceCheckBits();
@@ -644,6 +620,7 @@ EGenResult Shape::generate(const BuildWorld *build)
 
     return GEN_RESULT_OK;
 }
+
 
 // make the check-bits mask for every face, according to its relative place in the placing order
 // pieces that are placed before a piece are added to the mask
@@ -734,7 +711,8 @@ void Shape::makeVolumeAndFacing()
 }
 
 
-void Shape::make_sides_facenei() {
+void Shape::make_sides_facenei()
+{
     vector<int> counters(fcn, 0);
 
     for (int i = 0; i < fcn; ++i) 
@@ -965,8 +943,9 @@ const char* drName(int d) {
     return "UNKNOWN";
 }
 
-int g_count = 0;
+//int g_count = 0;
 
+/*
 void Shape::checkAddQuad(const Mat4& m) 
 {
     testQuads.push_back( m.transformVec(Vec3(0.1,0.1,0.0)) );
@@ -978,6 +957,7 @@ void Shape::checkAddQuad(const Mat4& m)
     else
         testQuads.push_back( Vec3(0.3,0.3,1));
 }
+*/
 
 int g_testAngle[3] = {90,90,90};
 bool doPrint = false;
@@ -1255,15 +1235,15 @@ void Shape::makeNeiTransforms()
     }
 
     // check
-    g_count = 0;
+    //g_count = 0;
 
     // move to the first face
 
     int ang = g_testAngle[0];
     //checkNeiTranDFS(m, start, pass, 0, ang, checkAddQuad);
 
-    g_count = 0;
-    testQuads.clear();
+    //g_count = 0;
+    //testQuads.clear();
 
     MatStack m;
     startNeiTransform(m);

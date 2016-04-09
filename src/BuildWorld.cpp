@@ -643,7 +643,7 @@ void BuildWorld::unGenerate(const Shape *shp)
     clean(BuildWorld::CLEAN_CLEAR);
 
     int s = FACE_STRT; // first one gets STRT
-
+    // place it in the middle
     int offsetX = (size.x - (shp->size.x / 4))/2;
     int offsetY = (size.y - (shp->size.y / 4))/2;
     int offsetZ = (size.z - (shp->size.z / 4))/2;

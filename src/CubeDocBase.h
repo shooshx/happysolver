@@ -29,7 +29,7 @@ class CubeDocBase
 public:
     CubeDocBase() {
         m_build = new BuildWorld;
-        m_slvs = new Solutions;
+        m_slvs.reset(new Solutions);
 
         M_ASSERT(s_instance == nullptr);
         s_instance = this;
@@ -46,20 +46,21 @@ public:
 
     SlvCube *getCurrentSolve() 
     { 
-        if (m_slvs == nullptr) 
+        if (m_slvs.get() == nullptr || m_slvs->size() == 0 || m_nCurSlv == -1)
             return nullptr;
-        return ((m_slvs->size() == 0)?(nullptr):(m_slvs->at(m_nCurSlv))); 
+
+        return m_slvs->at(m_nCurSlv); 
     }
 
     int getCurrentSolveIndex() { 
         return m_nCurSlv; 
     }
     bool solvesExist() const { 
-        return ((m_slvs != nullptr) && (m_slvs->size() > 0)); 
+        return ((m_slvs.get() != nullptr) && (m_slvs->size() > 0)); 
     }
     int getSolvesNumber() const 
     { 
-        if (m_slvs == nullptr) 
+        if (m_slvs.get() == nullptr) 
             return 0;
         return m_slvs->size(); 
     }
@@ -92,6 +93,13 @@ public:
         fill(m_flagPiece.begin(), m_flagPiece.end(), 0);
     }
 
+    string serializeMinText();
+    void loadMinText(const string& s);
+    string serializeMinBin();
+    bool loadMinBin(const string& s);
+
+    void generateFromFaces(const vector<tuple<Vec3i, int>>& faces);
+    void addSlvMin(const vector<pair<int, int>>& sv);
 public:
     Configuration m_conf;
     string m_lastMsg;
@@ -105,7 +113,7 @@ public:
 protected:
 
     shared_ptr<Shape> m_shp;
-    Solutions *m_slvs;
+    unique_ptr<Solutions> m_slvs;
 
     /// the current design
     BuildWorld *m_build; 

@@ -71,10 +71,10 @@ public:
 
 	//int picssz;
 	vector<SlvPic> picdt; // used to construct PicsSet
-	bool bConsidersSym; // the solve needs to know if it was symmetric or not to know how to build the pics. this is bad. TBD
+	//bool bConsidersSym; // the solve needs to know if it was symmetric or not to know how to build the pics. this is bad. TBD
 
 	SlvPainter painter;
-	const Shape* shape; ///< the shape this solution is based on. the shape is held by CubeDoc
+	const Shape* shape = nullptr; ///< the shape this solution is based on. the shape is held by CubeDoc
 
 private:
 	void makeDt(ShapePlace *plc);

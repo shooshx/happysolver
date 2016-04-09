@@ -1,6 +1,8 @@
 #include "CubeDocBase.h"
 #include "general.h"
 #include "Cube.h"
+#include "SlvCube.h"
+#include <sstream>
 
 CubeDocBase* CubeDocBase::s_instance = nullptr; // singleton for use of SlvPainter access of m_flagPiece
 
@@ -32,8 +34,8 @@ bool CubeDocBase::realOpen(const string& name, bool* gotSolutions)
     auto_ptr<Shape> gendshape(new Shape);
     gendshape->generate(newbuild); // get the return value? no real need to.
 
-    Solutions *newslvs = nullptr;
-    auto_ptr<Shape> loadedshp(new Shape);
+    unique_ptr<Solutions> newslvs;
+    unique_ptr<Shape> loadedshp(new Shape);
 
     if (!loadedshp->loadFrom(&rdfl))
     { // no shape (hence no solutions) but there is a build
@@ -58,11 +60,11 @@ bool CubeDocBase::realOpen(const string& name, bool* gotSolutions)
 
         newbuild->justGen(); // shouldn't gen it next time.
 
-        newslvs = new Solutions(gendshape->fcn);
+        newslvs.reset(new Solutions(gendshape->fcn));
         if (!newslvs->readFrom(&rdfl, gendshape.get()))
         {
             m_lastMsg = "failed reading";
-            delete newslvs; newslvs = nullptr;
+            newslvs.reset();
             return false;
         }
         else
@@ -70,7 +72,7 @@ bool CubeDocBase::realOpen(const string& name, bool* gotSolutions)
             if (newslvs->slvsz != gendshape->fcn)
             { // solutions has errors
                 m_lastMsg = "Error opening solution file.\nfile: " + name + "\n\nFile contains shape faces inconsistency\nSolutions not loaded";
-                delete newslvs; newslvs = nullptr;
+                newslvs.reset();
                 return false;
             }
             else
@@ -96,8 +98,7 @@ bool CubeDocBase::realOpen(const string& name, bool* gotSolutions)
     // what to do with solutions?
     if (hasSolutions)
     {
-        delete m_slvs;
-        m_slvs = newslvs;
+        m_slvs.reset(newslvs.release());
         m_nCurSlv = 0; // re-set it from -1
         *gotSolutions = true;
     }
@@ -149,7 +150,8 @@ bool CubeDocBase::callGenerate(Shape *shape, bool bSilent)
 bool CubeDocBase::onGenShape(bool resetSlv, GenTemplate* temp)
 {
     unique_ptr<Shape> newshp(new Shape);
-    newshp->m_genTemplate = temp;
+    // the generate process first fills as much of the template as possible, then new tiles
+    newshp->m_genTemplate = temp; 
     bool ret = callGenerate(newshp.get(), false);
     newshp->m_genTemplate = nullptr;
 
@@ -206,7 +208,7 @@ void CubeDocBase::solveGo()
 
 
     m_sthread->fExitnow = 0;
-    m_sthread->setRuntime(m_slvs, m_shp.get(), pics, &m_conf.engine, getCurrentSolve());
+    m_sthread->setRuntime(m_slvs.get(), m_shp.get(), pics, &m_conf.engine, getCurrentSolve());
     m_sthread->doStart();
 
 }
@@ -249,3 +251,216 @@ void CubeDocBase::transferShape()
 
     m_slvs->toNewShape(m_shp.get());
 }
+
+
+void CubeDocBase::generateFromFaces(const vector<tuple<Vec3i, int>>& faces)
+{
+    SqrLimits bounds;
+    bounds.Inverse(BUILD_SIZE * 4);
+    Shape tmp;
+    tmp.faces = new Shape::FaceDef[faces.size()];
+    tmp.fcn = faces.size();
+    for(int i = 0; i < faces.size(); ++i) {
+        const auto& t = faces[i];
+        auto& f = tmp.faces[i];
+        f.ex = get<0>(t);
+        f.dr = (EPlane)get<1>(t);
+        bounds.MaxMin(f.ex.z, f.ex.x, f.ex.y);
+    }
+    tmp.initSizeAndBounds(bounds);
+    m_build->unGenerate(&tmp);
+    onGenShape();
+}
+
+void CubeDocBase::addSlvMin(const vector<pair<int, int>>& sv)
+{
+    cout << "load-slv " << sv.size() << endl;
+    auto newslvs = new Solutions(sv.size());
+    SlvCube* slv = new SlvCube(m_shp.get());
+    newslvs->addBackCommon(slv);
+    slv->dt.resize(sv.size());
+    for(int i = 0; i < sv.size(); ++i) {
+        slv->dt[i].abs_sc = sv[i].first;
+        slv->dt[i].abs_rt = sv[i].second;
+    }
+    m_slvs.reset(newslvs);
+    m_nCurSlv = 0; 
+}
+
+void CubeDocBase::loadMinText(const string& s)
+{
+    istringstream is(s);
+    int fcn = 0, x, y, z, dr, sc, rt;
+    is >> fcn;
+    vector<tuple<Vec3i, int>> faces;
+    for(int i = 0; i < fcn; ++i) {
+        is >> x >> y >> z >> dr;
+        if (!is.good()) {
+            cout << "unexpected end read faces " << i << endl;
+            return;
+        }
+        faces.push_back(make_tuple(Vec3i(x, y, z), dr));
+    }
+    vector<pair<int, int>> slv; // sc, dt
+    for(int i = 0; i < fcn; ++i) {
+        is >> sc >> rt;
+        if (!is.good()) {
+            cout << "unexpected end read solution " << i << endl;
+            return;
+        }
+        slv.push_back(make_pair(sc, rt));
+    }
+
+    generateFromFaces(faces);
+    addSlvMin(slv);
+}
+
+string CubeDocBase::serializeMinText()
+{
+    ostringstream os;
+    os << m_shp->fcn << "\n";
+    for (int i = 0; i < m_shp->fcn; ++i) {
+        const auto& face = m_shp->faces[i];
+        os << face.ex.x << " " << face.ex.y << " " << face.ex.z << " " << face.dr << " ";
+    }
+    os << "\n";
+    auto slv = getCurrentSolve();
+    if (slv == nullptr)
+        return os.str();
+    M_ASSERT(slv->dt.size() == m_shp->fcn);
+    for (int i = 0; i < m_shp->fcn; ++i) {
+        os << slv->dt[i].abs_sc << " " << slv->dt[i].abs_rt << " ";
+    }
+    os << "\n";
+    return os.str();
+}
+
+//    00BBCCDD  cur=6, count=5
+// AAAAA 
+class BinWriter
+{
+public:
+    BinWriter(string& s) : m_buf(s)
+    {}
+
+    void addBits(uint8_t v, int bitCount) {
+        M_ASSERT((v & (~bitMasks[bitCount])) == 0); // check other bits not in bit count are 0
+        if (m_curShift + bitCount > 8) {
+            m_curByte |= v << m_curShift;
+            m_buf.push_back(m_curByte);
+            m_curByte = v >> (8 - m_curShift);
+            m_curShift = bitCount - 8 + m_curShift;
+        }
+        else {
+            m_curByte |= v << m_curShift;
+            m_curShift += bitCount;
+        }
+    }
+    void flush() {
+        m_buf.push_back(m_curByte);
+        m_curByte = 0;
+        m_curShift = 0;
+    }
+
+    uint8_t readBits(int bitCount)
+    {
+        uint8_t r;
+        if (m_curShift + bitCount > 8) {
+            if (rdEnd())
+                return 0;
+            r = m_curByte >> m_curShift;
+            m_curByte = m_buf[m_rdOffset++];
+            r |= m_curByte << (8 - m_curShift);
+            m_curShift = bitCount - 8 + m_curShift;
+        }
+        else {
+            if (m_rdOffset == 0) {
+                if (rdEnd())
+                    return 0;
+                m_curByte = m_buf[m_rdOffset++];
+            }
+            r = m_curByte >> m_curShift;
+            m_curShift += bitCount;
+        }
+        return r & bitMasks[bitCount];
+    }
+    bool rdEnd() {
+        m_reachedEnd = m_rdOffset >= m_buf.size();
+        return m_reachedEnd;
+    }
+
+
+    static const uint8_t bitMasks[];
+    string& m_buf;
+    int m_curShift = 0;
+    uint8_t m_curByte;
+    int m_rdOffset = 0; // next byte to read
+    bool m_reachedEnd = false;
+};
+
+const uint8_t BinWriter::bitMasks[] = { 0, 0x1, 0x3, 0x7, 0xf, 0x1f, 0x3f, 0x7f, 0xff };
+
+string CubeDocBase::serializeMinBin()
+{
+    string ret;
+    BinWriter wr(ret);
+    wr.addBits(0x01, 8); // version
+    wr.addBits(m_shp->fcn, 8);
+    for (int i = 0; i < m_shp->fcn; ++i) {
+        const auto& face = m_shp->faces[i];
+        wr.addBits(face.ex.x / 4, 6);
+        wr.addBits(face.ex.y / 4, 6);
+        wr.addBits(face.ex.z / 4, 6);
+        wr.addBits(face.dr, 2);
+    }
+    auto slv = getCurrentSolve();
+    if (slv != nullptr)
+    {
+        M_ASSERT(slv->dt.size() == m_shp->fcn);
+        for (int i = 0; i < m_shp->fcn; ++i) {
+            wr.addBits(slv->dt[i].abs_sc, 8);
+            wr.addBits(slv->dt[i].abs_rt, 3);
+        }
+    }
+    wr.flush();
+    return wr.m_buf;
+}
+
+
+bool CubeDocBase::loadMinBin(const string& s)
+{
+    BinWriter rd(const_cast<string&>(s));
+    if (rd.readBits(8) != 0x01)
+        return false;
+    int fcn = rd.readBits(8);
+    int x, y, z, dr, sc, rt;
+    vector<tuple<Vec3i, int>> faces;
+    for (int i = 0; i < fcn; ++i) {
+        x = rd.readBits(6) * 4;
+        y = rd.readBits(6) * 4;
+        z = rd.readBits(6) * 4;
+        dr = rd.readBits(2);
+        if (rd.m_reachedEnd) {
+            cout << "unexpected end reading faces " << i << endl;
+            return false;
+        }
+        faces.push_back(make_tuple(Vec3i(x, y, z), dr));
+    }
+
+    vector<pair<int, int>> slv; // sc, dt
+    for (int i = 0; i < fcn; ++i) {
+        sc = rd.readBits(8);
+        rt = rd.readBits(3);
+        if (rd.m_reachedEnd) {
+            cout << "unexpected end reading slv " << i << endl;
+            return false;
+        }
+        slv.push_back(make_pair(sc, rt));
+    }
+
+    generateFromFaces(faces);
+    addSlvMin(slv);
+    return true;
+}
+
+

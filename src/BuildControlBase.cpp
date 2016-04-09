@@ -374,9 +374,9 @@ void BuildControlBase::drawErrorCyliders()
 {
     const Shape &tstshp = m_doc->getBuild().getTestShape();
 
-    for (int i = 0; i < tstshp.sdnError; ++i)
+    for (int i = 0; i < tstshp.errorSides.size(); ++i)
     {
-        Shape::SideDef &sd = tstshp.errorSides[i];
+        const Shape::SideDef &sd = tstshp.errorSides[i];
         float x = sd.ex.x / 4.0,y = sd.ex.y / 4.0, z = sd.ex.z / 4.0;
 
         MatStack &model = m_bgl->model;
@@ -403,7 +403,6 @@ void BuildControlBase::drawErrorCyliders()
 
 void BuildControlBase::drawTargets(bool inChoise)
 {
-    //printf("draw %d\n", inChoise);
     ProgramUser use(&m_prog);
     m_prog.trans.set(m_bgl->transformMat());
 
@@ -554,6 +553,13 @@ bool BuildControlBase::boxedDblClick(int choise, int x, int y)
     m_bgl->invalidateChoice();
     doMouseMove(x, y, m_bInternalBoxRemove);
     return true;
+}
+
+void BuildControlBase::reloadWorld()
+{
+    m_doc->getBuild().reClacLimits();
+    makeBuffers();
+    m_bgl->invalidateChoice();
 }
 
 

@@ -26,7 +26,7 @@ var prog = null
 var model = { vtxBuf: null }
 
 var loadSolution, resizeGl, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseWheel, cpp_draw, cpp_slvrun, getTms
-var setGrpCount, setEditAction, restartSolve
+var setGrpCount, setEditAction, restartSolve, serializeCurrent, deserializeAndLoad
 var ctrlPressed = false;
 
 var ACT_NONE = 0, ACT_ADD = 1, ACT_REMOVE = 2
@@ -57,12 +57,19 @@ function start() {
     setGrpCount = Module.cwrap('setGrpCount', null, ['number', 'number'])
     setEditAction = Module.cwrap('setEditAction', null, ['number'])
     restartSolve  = Module.cwrap('restartSolve', null, [])
+    serializeCurrent  = Module.cwrap('serializeCurrent', 'number', [])
+    deserializeAndLoad = Module.cwrap('deserializeAndLoad', null, ['number'])
 
     Module.ccall('cpp_start', null);
+    Module.ccall('conf', null, ['boolean'], [true])
     Module.ccall('initCubeEngine', 'boolean', ['string', 'number'], [stdpcs_text, 0])
     
     loadSolution(one_piece_cube_text)
     //loadSolution(one_marble_cube_text)
+
+    if (window.location.search.length > 0) {
+        loadUrl(window.location.toString())
+    }
 
     //solveGo()
     
@@ -73,7 +80,7 @@ function start() {
     document.onmouseup = handleMouseUp;
     mycanvas.onmousemove = handleMouseMove;
     mycanvas.ondblclick = handleMouseDblClick;
-    mycanvas.onwheel = handleMouseWheel
+    mycanvas.onwheel = mycanvas.onmousewheel = handleMouseWheel // second one is for internet explorer
     
     document.onkeydown = document.onkeyup = handleKey  
 
@@ -92,9 +99,11 @@ function start() {
 
 function handleMouseDown(event) {
     mouseDown( (event.button == 2)?1:0, event.clientX, event.clientY)
+    return false
 }
 function handleMouseUp(event) {
     mouseUp( (event.button == 2)?1:0)
+    return false
 }
 var lastX = null, lastY = null
 function handleMouseMove(event) {
@@ -106,19 +115,23 @@ function handleMouseMove(event) {
     if (but === undefined)
         but = event.which // for safari
     mouseMove(but, ctrlPressed?1:0, event.clientX, event.clientY)
+    return false
 }
 function handleMouseDblClick(event) {
     mouseDblClick(ctrlPressed?1:0, event.clientX, event.clientY);
-    return true
+    return false
 }
 function handleMouseWheel(event) {
-    mouseWheel( (event.deltaY < 0) ? 16 : -16)
+    var d = event.wheelDelta
+    mouseWheel( (d > 0) ? 16 : -16)
+    return false
 }
 function handleKey(event) {
     if (event.ctrlKey == ctrlPressed)
         return;
     ctrlPressed = event.ctrlKey;
     mouseMove(0, ctrlPressed?1:0, lastX, lastY)
+    return false
 }
 
 var lastFamAdded = ''
@@ -396,7 +409,63 @@ function triggerAbout(v) {
     aboutWin.onclick = function(e) {
         e.stopPropagation()
     }
+}
 
+
+var scratchArr = []
+
+function bufferToBase64(buf) {
+    var binstr = Array.prototype.map.call(buf, function (ch) {
+        return String.fromCharCode(ch);
+    }).join('');
+    return btoa(binstr);
+}
+
+function base64ToBuffer(base64) {
+    try {
+        var binstr = atob(base64);
+        var buf = new Uint8Array(binstr.length);
+        Array.prototype.forEach.call(binstr, function (ch, i) {
+          buf[i] = ch.charCodeAt(0);
+        });
+        return buf;
+    } catch(err) {
+        return "";
+    }
+}
+
+function triggerUrl(v) {
+    if (urlPopup.style.visibility == "visible") {
+        urlPopup.style.visibility = "hidden"
+        return
+    }
+    scratchArr = []
+    serializeCurrent()
+    var b = bufferToBase64(scratchArr)
+    console.log(b)
+    urlPopup.style.visibility = "visible"
+    var url = window.location.toString()
+    var qmark = url.indexOf('?')
+    if (qmark > 0)
+        url = url.substr(0, qmark)
+    urlEdit.value = url + '?l=' + b
+    urlEdit.select()
+}
+
+//loadUrl("AQoAAAgAQAAAAARAAQAQAAEAEAQAAQAgCARBHXRogCOG8YptBGEKWzg=")
+function loadUrl(b) {
+    var srchAt = b.indexOf('?l=')
+    if (srchAt != -1)
+        b = b.substr(srchAt + 3)
+    if (b.length == 0)
+        return;
+    scratchArr = base64ToBuffer(b)
+    deserializeAndLoad(scratchArr.length)
+}
+
+function urlEditChanged() {
+    loadUrl(urlEdit.value)
+    urlPopup.style.visibility = "hidden"
 }
     
 </script>
@@ -409,10 +478,11 @@ body {
     -webkit-user-select: none;
     -ms-user-select: none;
      user-select: none;
+    background: #b2b2b2; 
 }
 #mycanvas {
     margin: 8px 0 0 8px;
-    border-radius: 12px;
+    
 }
 #side_ctrl {
     position: absolute;
@@ -612,6 +682,20 @@ body {
    bottom: 8px;
 }
 
+#urlBtn:before {
+  content: "";
+}
+#urlBtn {
+   right: 8px;
+   width: 40px;
+   bottom: 55px;
+   height: 30px;
+   background: url(url-icon_s3.png) #ebebeb;
+   background-position: center; 
+   background-repeat: no-repeat; 
+}
+
+
 #aboutBack {
     display: none;
     position: absolute;
@@ -651,6 +735,24 @@ h1 {
     font-size: 30px;
     margin: 0 0 0 30px;
 }
+#urlPopup {
+    position: absolute;
+    bottom: 100px;
+    right: 16px;
+    width: 300px;
+    height: 36px;
+    background: #ededed;
+    border-radius: 6px;
+    border: 1px outset #A9A7A7;
+    visibility: hidden;
+}
+#urlEdit {
+    height: 20px;
+    margin: 5px;
+    width: 286px;
+    
+}
+
 
 </style>
 </head>
@@ -661,8 +763,10 @@ h1 {
     <input id="removingCubeCheck" class="hidden" onclick="triggerRemove()" type="checkbox"/>
     <label id="removingCube" class="sc-btn" for="removingCubeCheck"/></label>
     <label id="aboutBtn" class="sc-btn" onclick="triggerAbout(true)"/></label>
+    <label id="urlBtn" class="sc-btn" onclick="triggerUrl(true)"/></label>
     <div id="side_rel" class="in_rel">
     </div></div>
+    <div id="urlPopup"><input id="urlEdit" type="text" onchange="urlEditChanged()"/></div>
     
     <canvas id="mycanvas" width="800" height="700"></canvas>
     
