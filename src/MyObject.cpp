@@ -36,7 +36,7 @@ void MyObject::MyPointWrapper::detach(MyAllocator *m_alloc) const
 
 // checks if a point is in m_tmppoints, if not, copy and insert it
 // returns the pointer to the permanent point
-MyPoint* MyObject::CopyCheckPoint(Vec3 *c)
+MyPoint* MyObject::CopyCheckPoint(const Vec3 *c)
 {
     static MyPoint p;
     p.setp(*c);
@@ -60,10 +60,31 @@ void MyObject::addLine(Vec3 *inp1, Vec3 *inp2, double inR, double inG, double in
 void MyObject::addPoly(Vec3 *inplst, TexAnchor *ancs, Texture *tex)
 {
     MyPolygon *nply = m_alloc->m_polyPool.allocate();
-    nply->init(ancs, tex);
+    nply->init(ancs);
     for (int lstp = 0; lstp < 4; ++lstp)
     {
         nply->vtx[lstp] = CopyCheckPoint(&inplst[lstp]);
+    }
+
+    plylst.push_back(nply);
+}
+
+void MyObject::addPoly(const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d, bool flip)
+{
+    MyPolygon *nply = m_alloc->m_polyPool.allocate();
+    nply->init(nullptr);
+
+    if (flip) {
+        nply->vtx[3] = CopyCheckPoint(&a);
+        nply->vtx[2] = CopyCheckPoint(&b);
+        nply->vtx[1] = CopyCheckPoint(&c);
+        nply->vtx[0] = CopyCheckPoint(&d);
+    }
+    else {
+        nply->vtx[0] = CopyCheckPoint(&a);
+        nply->vtx[1] = CopyCheckPoint(&b);
+        nply->vtx[2] = CopyCheckPoint(&c);
+        nply->vtx[3] = CopyCheckPoint(&d);
     }
 
     plylst.push_back(nply);
@@ -114,22 +135,11 @@ void MyObject::vectorify()
     poly = new MyPolygon*[nPolys];
 
     // add the polygons sorted according to their texture, nullptr first
-    /*
-    Texture *availTexs[4] = { nullptr }; // no more the 4 textues in an object.. actually, no more then 3 in reality.
-    int availTexAdd = 1, availTexGet = 0;
-    while (insPoly < nPolys) // until we got all the polygons in
+    for (auto lit = plylst.begin(); lit != plylst.end() ; ++lit)
     {
-        M_ASSERT(availTexGet < availTexAdd);
-        for (TPolyList::iterator lit = plylst.begin(); lit != plylst.end() ; ++lit)
-        {
-            if ((*lit)->tex == availTexs[availTexGet])
-                poly[insPoly++] = *lit;
-            else if (((*lit)->tex != nullptr) && ((*lit)->tex != availTexs[1]) && ((*lit)->tex != availTexs[2]) && ((*lit)->tex != availTexs[3]))
-                availTexs[availTexAdd++] = (*lit)->tex;
-        }
-        ++availTexGet;
+        poly[insPoly++] = *lit;
     }
-    */
+    
     plylst.clear();
 
     if (lines != nullptr)

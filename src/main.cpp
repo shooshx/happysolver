@@ -115,6 +115,9 @@ int main(int argc, char *argv[])
 // 	return 0;
     console();
 
+   // PicBucket::buildAllMeshes();
+  //  return 1;
+
     QApplication app(argc, argv);
 
     QIcon appicon(":/images/HappySolver64f.png");

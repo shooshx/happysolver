@@ -66,6 +66,7 @@ public:
     bool verterxNormals; // use normals for every vertex (belongs more in the ifs.. but object is the drawing unit)
 
     void addPoly(Vec3 *inplst, TexAnchor *ancs = nullptr, Texture *tex = nullptr); //copy needed vertices, add poly
+    void addPoly(const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d, bool flip = false);
     void addLine(Vec3 *inp1, Vec3 *inp2, double inR, double inG, double inB, ELineType type);
     void setNakedLineColor(float color) { nakedLinesColor = color; }
     void vectorify();
@@ -80,7 +81,7 @@ public:
     
 private:
     ///////////////////// structures for startup
-    MyPoint* CopyCheckPoint(Vec3 *p);
+    MyPoint* CopyCheckPoint(const Vec3 *p);
 
     typedef list<MyPolygon*> TPolyList;
     typedef list<MyLine> TLineList;

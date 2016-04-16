@@ -1,6 +1,7 @@
 #include "Mesh.h"
 #include "OpenGL/Shaders.h"
 #include "OpenGL/glGlob.h"
+#include <fstream>
 
 
 static uint glType(Mesh::Type t) {
@@ -159,4 +160,39 @@ int Mesh::numElem() {
     if ((m_idx.size() % es) != 0)
         throw HCException("bad idx size");
     return m_idx.size() / es;
+}
+
+
+void Mesh::save(const string& path, bool asObj)
+{
+    ofstream f(path.c_str());
+    if (!f.good())
+        return;
+
+    // short hand format for unification
+    for (int i = 0; i < m_vtx.size(); ++i) {
+        Vec3& v = m_vtx[i];
+        Vec3& n = m_normals[i];
+        //Vec2& t = m_mesh.m_texCoord[i];
+        if (asObj) {
+            f << "v " << v.x << " " << v.y << " " << v.z << "\n"; // obj
+        }
+        else {
+            f << "v "  << v.x << " " << v.y << " " << v.z << " " << n.x << " " << n.y << " " << n.z << "\n"; // << " " << t.x << " " << t.y << "\n";
+        }
+        
+    }
+    if ((m_idx.size() % 4) != 0)
+        throw HCException("bad size");
+
+    for (int i = 0; i < m_idx.size(); i += 4) {
+        if (asObj) {
+            f << "f " << m_idx[i] + 1 << " " << m_idx[i + 1] + 1 << " " << m_idx[i + 2] + 1 << "\n";  // obj
+            f << "f " << m_idx[i] + 1 << " " << m_idx[i + 2] + 1 << " " << m_idx[i + 3] + 1 << "\n"; // obj
+        }
+        else {
+            f << m_idx[i] << " " << m_idx[i + 1] << " " << m_idx[i + 2] << " " << m_idx[i + 3] << "\n";
+        }
+    }
+
 }

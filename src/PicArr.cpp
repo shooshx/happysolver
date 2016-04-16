@@ -62,9 +62,6 @@ void PicArr::copyTo(PicArr &dest) const
 }
 
 
-
-
-
 TPicBits PicArr::getBits() const
 {
 	TPicBits b = 0;
@@ -75,8 +72,18 @@ TPicBits PicArr::getBits() const
 	return b;
 }
 
+void PicArr::fromBits(TPicBits v)
+{
+    TPicBits b = 1;
+    for (int i = 0; i < 16; ++i) {
+        set(frameX[i], frameY[i]) = ((v & b) != 0) ? 1 : 0;
+        b <<= 1;
+    }
+}
 
-void PicArr::makeRtns(PicArr rtns[8]) const{
+
+void PicArr::makeRtns(PicArr rtns[8]) const
+{
 	PicArr tmppic;
 	copyTo(tmppic);
 
@@ -93,4 +100,11 @@ void PicArr::makeRtns(PicArr rtns[8]) const{
 			tmppic.revY();
 		}
 	}
+}
+
+void PicArr::makeRtnsBits(TPicBits rtbits[8]) const {
+    PicArr rtns[8];
+    makeRtns(rtns);
+    for(int i = 0; i < 8; ++i)
+        rtbits[i] = rtns[i].getBits();
 }

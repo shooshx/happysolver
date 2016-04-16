@@ -306,6 +306,8 @@ public:
 
     void makeAllComp();
 
+    static void buildAllMeshes();
+
 public:
     int sumPics; ///< how many cubes, how many pics in total
     vector<PicGroupDef> grps; ///< (defs) group definitions, inside them the piece definitions

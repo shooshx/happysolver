@@ -72,8 +72,10 @@ public:
 		}
 	}
 
-	void init(TexAnchor *inAncs, Texture *_tex)
+	void init(TexAnchor *inAncs)
 	{
+        if (inAncs == nullptr)
+            return;
 		for(int i = 0; i < 4; ++i)
 		{
 			texAncs[i] = inAncs[i];

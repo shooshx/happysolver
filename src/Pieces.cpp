@@ -612,8 +612,7 @@ void PicBucket::distinctMeshes()
     for(int i = 0; i < ps.comp.size(); ++i) 
     {
         auto comp = ps.comp[i];
-        shared_ptr<PicDisp> pd(new PicDisp);
-        pd->m_arr = comp.rtns[0];
+        shared_ptr<PicDisp> pd(new PicDisp(comp.rtns[0]));
         for(int j = 0; j < comp.addedInds.size(); ++j) 
         {
             auto added = comp.addedInds[j];
@@ -661,16 +660,66 @@ void PicBucket::buildMeshes(const DisplayConf& dpc, ProgressCallback* prog)
     int cnt = 0;
     bool cancel = false;
 
-    for (int pi = 0; pi < m_meshes.size(); ++pi)
+    for (int pi = 0; pi < 5 /*m_meshes.size()*/; ++pi)
     {
         if (prog && !prog->setValue(pi))
             break;
         m_meshes[pi]->init(dpc);
+        m_meshes[pi]->initNoSubdiv();
     }
 
     if (prog)
         prog->setValue(m_meshes.size());
     PicDisp::g_smoothAllocator.checkMaxAlloc();
+
+    exit(1);
+}
+
+
+struct AddedArr {
+    PicArr p;
+    TPicBits rtbits[8]; // not condensed, just the bits
+};
+
+bool hadLoneCorner(const PicArr& a) {
+    return  ((a.axx(0, 0) == 1 && a.axx(0, 1) == 0 && a.axx(1, 0) == 0) ||
+             (a.axx(4, 0) == 1 && a.axx(4, 1) == 0 && a.axx(3, 0) == 0) ||
+             (a.axx(0, 4) == 1 && a.axx(1, 4) == 0 && a.axx(0, 3) == 0) ||
+             (a.axx(4, 4) == 1 && a.axx(3, 4) == 0 && a.axx(4, 3) == 0));
+}
+
+void PicBucket::buildAllMeshes() 
+{
+    vector<AddedArr> arrs;
+    // generate all possible pieces
+    for(int i = 0; i <= 65535; ++i) 
+    {
+        AddedArr na;
+        na.p.fromBits(i);
+        M_ASSERT(na.p.getBits() == i); // sanity
+        // check disconnected corner
+        if (hadLoneCorner(na.p)) {
+             continue;
+        }
+        na.p.makeRtnsBits(na.rtbits);
+        for(const auto& exaa: arrs) 
+        {
+            for(int innewi = 0; innewi < 8; ++innewi) {
+                for (int inexi = 0; inexi < 8; ++inexi) {
+                    if (exaa.rtbits[inexi] == na.rtbits[innewi])
+                        goto alreadyExist;
+                }
+            }
+        }
+        arrs.push_back(na);
+    alreadyExist:
+        continue;
+    }
+
+    cout << "---" << arrs.size() << endl;
+    for(const auto& a: arrs) {
+        cout << a.rtbits[0] << endl;
+    }
 }
 
 // in Qt, s is the filename

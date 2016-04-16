@@ -38,6 +38,7 @@ public:
 
     int elemSize();
     int numElem();
+    void save(const string& path, bool asObj);
 
     enum Type { NONE, LINES, TRIANGLES, QUADS, TRI_STRIP, TRI_FAN };
     struct IdxBuf {

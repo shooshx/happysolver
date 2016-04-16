@@ -19,6 +19,7 @@ public:
 	void copyTo(PicArr &dest) const;
 	bool equalTo(const PicArr &dest, bool bSym = false) const;
 	void makeRtns(PicArr rtns[8]) const;
+    void makeRtnsBits(TPicBits rtbits[8]) const;
 
 	int& set(int x, int y) { 
         return v[x * 5 + y]; 
@@ -28,6 +29,7 @@ public:
     }
 
 	TPicBits getBits() const;
+    void fromBits(TPicBits v);
 
     void clear() {
         for (int i = 0; i < 25; ++i)

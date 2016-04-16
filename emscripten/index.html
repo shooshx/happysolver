@@ -21,13 +21,14 @@
 // unified_mesh.js
 // j_unified_meshes_all.txt
     
-var gl = null, canvas = null
+var gl = null
 var prog = null
 var model = { vtxBuf: null }
 
 var loadSolution, resizeGl, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseWheel, cpp_draw, cpp_slvrun, getTms
 var setGrpCount, setEditAction, restartSolve, serializeCurrent, deserializeAndLoad
 var ctrlPressed = false;
+var editCtx = null
 
 var ACT_NONE = 0, ACT_ADD = 1, ACT_REMOVE = 2
     
@@ -76,11 +77,12 @@ function start() {
     doResize();
     //resize(mycanvas.width, mycanvas.height)
     
-    mycanvas.onmousedown = handleMouseDown;
-    document.onmouseup = handleMouseUp;
-    mycanvas.onmousemove = handleMouseMove;
-    mycanvas.ondblclick = handleMouseDblClick;
+    mycanvas.onmousedown = handleMouseDown
+    document.onmouseup = handleMouseUp
+    mycanvas.onmousemove = handleMouseMove
+    mycanvas.ondblclick = handleMouseDblClick
     mycanvas.onwheel = mycanvas.onmousewheel = handleMouseWheel // second one is for internet explorer
+    editCanvas.onclick = handleEditCanvasClick
     
     document.onkeydown = document.onkeyup = handleKey  
 
@@ -94,7 +96,10 @@ function start() {
     setCheck(removingCube, false)
     setEditAction(ACT_ADD) 
     
-
+    editCtx = editCanvas.getContext("2d")
+    picsAddFamily("Test Fam", "Test Fam", true)
+    picsAddCube("Test Cube", "Test Cube", 1000, true)
+    
 }
 
 function handleMouseDown(event) {
@@ -138,17 +143,21 @@ var lastFamAdded = ''
 var pics_families = {} // make family id to { cubes: list of { cid: cube-id, grpi: group-index } }
 var pics_cubes = {} // make cube id to { famid }
 
-function picsAddFamily(famName, id) {
+function picsAddFamily(famName, id, editable) {
     id = id.replace(/[-\. ]/g, '_')
+    var editTag = ''
+    if (editable) {
+        editTag = '<label class="addCubeBtn sc-btn"  onclick="triggerAddCube(\'ID\')"/></label>'
+    }
     var picsCtrl = '<div id="ID_frame" class="toppic"><div class="famtitle">\
     <input class="fam_check_box hidden mycheck" id="ID_fcheck" type="checkbox" onchange="on_fam_check(\'ID\', ID_fcheck.checked, true);setCheck(ID_fcheck_label, ID_fcheck.checked)" />\
-    <label class="fam_check mycheck_label" id="ID_fcheck_label" for="ID_fcheck" ></label>\
+    <label class="fam_check mycheck_label" id="ID_fcheck_label" for="ID_fcheck" ></label>ADDEDIT\
     <div class="fam_label" onclick="pic_rolldown(\'ID\')">LABEL</div>\
     <img class="toppic_icon" id="ID_img" src="arrow_up.png" onclick="pic_rolldown(\'ID\')"></div> \
     <div id="ID_famframe" class="inframe"></div> \
-    </div>'.replace(/ID/g, id).replace(/LABEL/g, famName)
+    </div>'.replace(/ADDEDIT/g, editTag).replace(/ID/g, id).replace(/LABEL/g, famName)
 
-    side_rel.innerHTML += picsCtrl
+    fams_cont.innerHTML += picsCtrl
     lastFamAdded = id
     pics_families[id] = { cubes: []}
     
@@ -156,13 +165,18 @@ function picsAddFamily(famName, id) {
         document.getElementById(id + "_fcheck_label").classList.toggle('mycheck_checked') 
     }*/
 }
-function picsAddCube(cubeName, id, grpi) {
+function picsAddCube(cubeName, id, grpi, editable) {
     id = id.replace(/[-\. ]/g, '_')
+    var editStart = '', editEnd = ''
+    if (editable) {
+        editStart = "<span class='linklike' onclick=triggerCubeEdit(\'ID\')>"
+        editEnd= "</span>"
+    }
     var txt = '<div id="ID_inframe" class="piccube">\
     <input class="cube_check_box hidden mycheck" id="ID_ccheck" type="checkbox" onchange="on_cube_check(\'ID\', ID_ccheck.checked, INDEX);setCheck(ID_ccheck_label, ID_ccheck.checked)"/>\
-    <label class="cube_check mycheck_label" id="ID_ccheck_label" for="ID_ccheck" ></label>LABEL\
+    <label class="cube_check mycheck_label" id="ID_ccheck_label" for="ID_ccheck" ></label>EDITSTARTLABELEDITEND\
     <input class="cube_count" id="ID_ccount" type="number" min="0" onchange="on_cube_count(\'ID\', INDEX)">\
-    </div>'.replace(/ID/g, id).replace(/LABEL/g, cubeName).replace(/INDEX/g, grpi)
+    </div>'.replace(/EDITSTART/g, editStart).replace(/EDITEND/g, editEnd).replace(/ID/g, id).replace(/LABEL/g, cubeName).replace(/INDEX/g, grpi)
     
     document.getElementById(lastFamAdded + "_famframe").innerHTML += txt
     pics_families[lastFamAdded].cubes.push( { cid: id, grpi: grpi})
@@ -371,7 +385,7 @@ function pic_rolldown(id) {
 function doResize() {
     mycanvas.width = window.innerWidth - 230 - 16
     mycanvas.height = window.innerHeight - 16
-    side_rel.style.height = "" + (window.innerHeight - 200) + "px"
+    side_rel.style.height = "" + (window.innerHeight - 220) + "px"
     
     resizeGl(mycanvas.width, mycanvas.height)
     requestAnim()
@@ -467,6 +481,133 @@ function urlEditChanged() {
     loadUrl(urlEdit.value)
     urlPopup.style.visibility = "hidden"
 }
+
+function triggerAddFam() {
+    var famName = window.prompt("Family Name?","");
+    picsAddFamily(famName, famName, true)
+}
+
+function triggerAddCube(intoFam) {
+    var cubeName = window.prompt("Cube Name?","");
+    picsAddCube(cubeName, cubeName, 1000, true)
+}
+
+var cube = [
+   // 0,1,2,3,4,5,6,7,8,9,1011121314
+    [ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ], // 0
+    [ 0,0,1,0,1,0,3,0,3,0,5,0,5,0,0 ], // 1
+    [ 0,1,1,1,1,1,3,3,3,3,5,5,5,5,0 ], // 2
+    [ 0,0,1,1,1,3,3,3,3,5,5,5,5,0,0 ], // 3
+    [ 0,1,1,1,1,1,3,3,3,3,5,5,5,5,0 ], // 4
+    [ 0,0,1,2,1,3,3,4,3,5,5,6,5,0,0 ], // 5
+    [ 0,2,2,2,2,2,4,4,4,4,6,6,6,6,0 ], // 6
+    [ 0,0,2,2,2,4,4,4,4,6,6,6,6,0,0 ], // 7
+    [ 0,2,2,2,2,2,4,4,4,4,6,6,6,6,0 ], // 8
+    [ 0,0,2,0,2,0,4,0,4,0,6,0,6,0,0 ], // 9
+    [ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ], // 10
+]
+var TSZ = 30
+var teeth = [
+    { x:1,  y:1, p:[0,1] },   { x:2,  y:1, p:[0,1] }, { x:3,  y:1, p:[0,1] }, { x:4,  y:1, p:[0,1] }, { x:5,  y:1, p:[0,1,3] },
+    { x:6,  y:1, p:[0,3] },   { x:7,  y:1, p:[0,3] }, { x:8,  y:1, p:[0,3] }, { x:9,  y:1, p:[0,3,5] },  
+    { x:10, y:1, p:[0,5] },   { x:11, y:1, p:[0,5] }, { x:12, y:1, p:[0,5] }, { x:13, y:1, p:[0,5] },    
+
+    { x:1,  y:5, p:[0,1,2] }, { x:2,  y:5, p:[1,2] }, { x:3,  y:5, p:[1,2] }, { x:4,  y:5, p:[1,2] }, { x:5,  y:5, p:[1,2,3,4] },
+    { x:6,  y:5, p:[3,4] },   { x:7,  y:5, p:[3,4] }, { x:8,  y:5, p:[3,4] }, { x:9,  y:5, p:[3,4,5,6] },
+    { x:10, y:5, p:[5,6] },   { x:11, y:5, p:[5,6] }, { x:12, y:5, p:[5,6] }, { x:13, y:5, p:[5,6,0] },    
+
+    { x:1,  y:9, p:[0,2] },   { x:2,  y:9, p:[0,2] }, { x:3,  y:9, p:[0,2] }, { x:4,  y:9, p:[0,2] }, { x:5,  y:9, p:[0,2,4] }, 
+    { x:6,  y:9, p:[0,4] },   { x:7,  y:9, p:[0,4] }, { x:8,  y:9, p:[0,4] }, { x:9,  y:9, p:[0,4,6] }, 
+    { x:10, y:9, p:[0,6] },   { x:11, y:9, p:[0,6] }, { x:12, y:9, p:[0,6] }, { x:13, y:9, p:[0,6] },   
+    
+    { x:1, y:2, p:[0,1] }, { x:1, y:3, p:[0,1] }, { x:1, y:4, p:[0,1] },
+    { x:1, y:6, p:[0,2] }, { x:1, y:7, p:[0,2] }, { x:1, y:8, p:[0,2] },    
+    
+    { x:5, y:2, p:[1,3] }, { x:5, y:3, p:[1,3] }, { x:5, y:4, p:[1,3] },
+    { x:5, y:6, p:[2,4] }, { x:5, y:7, p:[2,4] }, { x:5, y:8, p:[2,4] },
+
+    { x:9, y:2, p:[3,5] }, { x:9, y:3, p:[3,5] }, { x:9, y:4, p:[3,5] },
+    { x:9, y:6, p:[4,6] }, { x:9, y:7, p:[4,6] }, { x:9, y:8, p:[4,6] },
+    
+    { x:13, y:2, p:[0,5] }, { x:13, y:3, p:[0,5] }, { x:13, y:4, p:[0,5] },
+    { x:13, y:6, p:[0,6] }, { x:13, y:7, p:[0,6] }, { x:13, y:8, p:[0,6] },    
+]
+
+var col = ['white', '#5555ff', 'red', 'yellow', 'orange', 'green', 'purple']
+
+function drawLine(x, y, w, h) {
+    editCtx.beginPath()
+    editCtx.moveTo(x, y)
+    editCtx.lineTo(x + w, y + h);
+    editCtx.stroke();
+}
+
+function paintCube()
+{
+    editCtx.fillStyle = '#fff'
+    editCtx.fillRect(0, 0, editCanvas.width, editCanvas.height)
+    editCtx.strokeStyle = 'black' 
+    editCtx.lineWidth = 1
+
+    for(var x = 0; x < 15; ++x) {
+        for(var y = 0; y < 11; ++y) {
+            var v = cube[y][x]
+            editCtx.fillStyle = col[v]
+            editCtx.fillRect(x * TSZ, y * TSZ, TSZ, TSZ)    
+        }
+    }
+    
+    for(var x = 0; x < 15; ++x) {
+        for(var y = 0; y < 11; ++y) {
+            var v = cube[y][x]
+            editCtx.fillStyle = col[v]
+            if (y < 10 && x < 14) {
+                if (v != cube[y+1][x]) {
+                    drawLine(x * TSZ, y * TSZ + TSZ, TSZ, 0)
+                }
+                if (v != cube[y][x+1]) {
+                    drawLine(x * TSZ + TSZ, y * TSZ, 0, TSZ)
+                }                
+            }
+        }
+    }
+}
+
+function triggerCubeEdit(cubeId) 
+{
+    if (true) {
+        editBack.style.display = "inline"
+    }
+    else {
+        editBack.style.display = "none"
+        return
+    }
+    paintCube();
+    
+    return false
+}
+
+function handleEditCanvasClick(event)
+{
+
+    var rect = editCanvas.getBoundingClientRect()
+    var x = Math.trunc((event.clientX - rect.left)/TSZ), y = Math.trunc((event.clientY - rect.top)/TSZ)
+    console.log(x + " " + y)
+    
+    var hasSameNei = function(v, x, y) { // don't allow isolated tooth of a color
+        return cube[y][x-1] == v || cube[y][x+1] == v || cube[y-1][x] == v || cube[y+1][x] == v
+    }
+    for(ti in teeth) {
+        var t = teeth[ti]
+        if (x == t.x && y == t.y) {
+            do {
+                cube[y][x] = (cube[y][x] + 1) % 7
+            } while(!t.p.includes(cube[y][x]) || !hasSameNei(cube[y][x], x, y))
+            paintCube()
+            break
+        }
+    }
+}
     
 </script>
 <script src="js_main.js"></script>
@@ -497,7 +638,7 @@ body {
     border-radius: 8px 0 0 8px;
 }
 .toppic {
-    margin: 5px;
+    margin: 5px 5px 5px 7px;
     background: #eeeeff;
     font-family: Verdana;
     padding: 4px;
@@ -690,13 +831,11 @@ body {
    width: 40px;
    bottom: 55px;
    height: 30px;
-   background: url(url-icon_s3.png) #ebebeb;
-   background-position: center; 
-   background-repeat: no-repeat; 
+   background: url(url-icon_s3.png) #ebebeb center no-repeat;
 }
 
 
-#aboutBack {
+.popupBack {
     display: none;
     position: absolute;
     width: 100%;
@@ -705,7 +844,7 @@ body {
     top: 0;
     left: 0;
 }
-#aboutWin {
+.popupWin {
     position: absolute;
     width: 600px;
     height: 460px;
@@ -752,7 +891,30 @@ h1 {
     width: 286px;
     
 }
+#addFamBtn:before {
+  content: "";
+}
+#addFamBtn{
+    width: 34px;
+    height: 34px;
+    margin: 0 7px 7px 7px;
+    background: url(plus.png) #ebebeb center no-repeat;
+}
+.addCubeBtn {
+    width: 34px;
+    height: 25px;
+    left: 150px;
+    background: url(plus.png) #ebebeb center no-repeat;
+    margin: 0;
+}
+.linklike {
+    cursor: pointer;
+    color: blue;
+    text-decoration: underline;
+}
+#picEditWin {
 
+}
 
 </style>
 </head>
@@ -765,12 +927,15 @@ h1 {
     <label id="aboutBtn" class="sc-btn" onclick="triggerAbout(true)"/></label>
     <label id="urlBtn" class="sc-btn" onclick="triggerUrl(true)"/></label>
     <div id="side_rel" class="in_rel">
-    </div></div>
+      <div id="fams_cont"></div>
+      <label id="addFamBtn" class="sc-btn" onclick="triggerAddFam()"/></label>
+    </div>
+    </div>
     <div id="urlPopup"><input id="urlEdit" type="text" onchange="urlEditChanged()"/></div>
     
     <canvas id="mycanvas" width="800" height="700"></canvas>
     
-    <div id="aboutBack" onclick="triggerAbout(false)"><div id="aboutWin">
+    <div id="aboutBack" onclick="triggerAbout(false)" class="popupBack"><div id="aboutWin" class="popupWin">
     <h1>Happy Cube Solver</h1><br>
     <h2>Designed and implemented by Shy Shalom (1995 - 2016)<br>
     <a href="mailto:shooshx@gmail.com" target="_blank">shooshx@gmail.com</a><br></h2>
@@ -780,7 +945,10 @@ Please note that using the puzzle snits as well as puzzle piece shapes to create
 Puzzles copyright (C) Dirk Laureyssens 1986-2016. All rights reserved. The Happy Cube puzzles are protected with several US copyrights since 1987 (TXU 271722, TX2332525, TX2359816 and many others). They are exclusively manufactured by Happy bvba, B-2980 Zoersel, Belgium, and distributed worldwide by partners. Using the puzzle snits as well as puzzle piece shapes to create or manufacture your own puzzles is illegal and against law. 
 Happy Cube, Little Genius, Profi Cube and Marble Cube are registered trademarks of Happy bvba, Zoersel, Belgium. 
 If you have any questions concerning the usage of HAPPY materials, please send your detailed request in writing to <a href="mailto:info@happy.be" target="_blank">info@happy.be</a>. See <a href="http://www.happy.be" target="_blank">http://www.happy.be</a> for more information</h3>
+    </div></div>
     
+    <div id="editBack" class="popupBack"><div id="picEditWin" class="popupWin">
+    <canvas id="editCanvas" width="590", height="450"></canvas>
     </div></div>
     
     <img id="noisetex" src='cubeTex.png' style="display:none;"/>

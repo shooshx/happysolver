@@ -42,8 +42,11 @@ class ObjExport;
 class PicDisp
 {
 public:
+    PicDisp(const PicArr& arr) : m_arr(arr)
+    {}
     /// create the polygon mesh and the display list.
     void init(const DisplayConf &dpc);
+    void initNoSubdiv();
 
 #ifdef QT_CORE_LIB
     void generateStraightShape(const DisplayConf& dpc, MyObject& obj) const;
@@ -51,6 +54,7 @@ public:
 #endif
 
     bool uncub(int x, int y) const;
+    bool uncubex(int x, int y) const; // also has 1 in the center
 
     enum EPlaceType { PLACE_NORM, PLACE_X, PLACE_Y };
     void PlaceInto(int pntn, Vec3 *shpp, Vec3 *pnti1, Vec3 *pnti2, EPlaceType type) const;
