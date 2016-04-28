@@ -29,6 +29,8 @@
 #include "OpenGL/GLTexture.h"
 
 #include <iostream>
+#include <sstream>
+#include <fstream>
 
 #ifdef QT_CORE_LIB
 #include <QPainter>
@@ -393,10 +395,7 @@ bool PicBucket::loadXML(const char* data)
         xfam = xfam->NextSiblingElement(); // next family
     }
 
-    pdefs.resize(grpCount*6);
-    // the painter includes a pointer to the def so it needs to be initialized in the real vector
-    for(int i = 0; i < grpCount*6; ++i)
-        pdefs[i].reset();
+    pdefs.resize((grpCount+2)*6); // +2 extra for added edited cubes
 
 
     sumPics = 0;
@@ -563,6 +562,48 @@ bool PicBucket::loadXML(const char* data)
 
 }
 
+// update existing or add new (editor)
+void PicBucket::updateGrp(int grpi, PicArr arrs[6])
+{
+    M_ASSERT(grpi <= grps.size());
+    bool add = false;
+    M_ASSERT(grpi <= grps.size());
+    cout << "GRP " << grpi << " " << grps.size() << endl;
+    if (grpi == grps.size()) {
+        grps.push_back(PicGroupDef());
+        add = true;
+    }
+    PicGroupDef& cgrp = grps[grpi];
+    cgrp.drawtype = DRAW_COLOR;
+    cgrp.color = Vec3(1,1,1);
+    
+    for(int i = 0; i < 6; ++i) {
+        int pdefi;
+        if (add) {
+            pdefi = pdefs.size();
+            pdefs.push_back(PicDef());
+            cout << "Added Group " << pdefi << endl;
+            cgrp.picsi.push_back(pdefi);
+            M_ASSERT(cgrp.picsi.size() <= 6);
+        }
+        else {
+            M_ASSERT(cgrp.picsi.size() == 6);
+            pdefi = cgrp.picsi[i];
+        }
+
+        PicDef& curdef = pdefs[pdefi];
+        curdef.mygrpi = grpi;
+        curdef.indexInGroup = i;
+        curdef.v = arrs[i];
+        curdef.v.makeRtns(curdef.defRtns);
+    }
+
+    makeAllComp();
+
+    distinctMeshes(false);
+}
+
+
 void PicBucket::makeAllComp()
 {
     PicsSet ps;
@@ -579,6 +620,7 @@ void PicBucket::makeAllComp()
             r.defRot = ad.defRot;
         }
     }
+    cout << "Compressed " << ps.comp.size() << " shapes" << endl;
 }
 
 
@@ -599,28 +641,53 @@ void PicBucket::setToFamResetSel()
     }
 }
 
-// prepares PicDisps for all pdefs with the correct roatation configured
-void PicBucket::distinctMeshes()
+// prepares PicDisps for all pdefs with the correct roatation configured and corrolate pdefs to the disps
+// - createDisps - should we create the disps or are they already created
+void PicBucket::distinctMeshes(bool createDisps)
 {
     PicsSet ps;
     for(int i = 0; i < pdefs.size(); ++i) {
         ps.add(i, false);
     }
-    cout << ps.comp.size() << " distinct meshes out of " << pdefs.size() << " pieces\n" << endl;
+    cout << ps.comp.size() << " distinct meshes out of " << pdefs.size() << " pieces meshes=" << m_meshes.size() << endl;
 
-    m_meshes.clear();
+    if (createDisps)
+        m_meshes.clear();
+
     for(int i = 0; i < ps.comp.size(); ++i) 
     {
         auto comp = ps.comp[i];
-        shared_ptr<PicDisp> pd(new PicDisp(comp.rtns[0]));
+        auto sig = comp.rtns[0].getBits();
+        PicDisp* pd;
+        if (createDisps) {
+            pd = new PicDisp(PicArr(sig));
+            m_meshes[sig].reset(pd);
+        }
+        else {
+            //cout << "sig " << hex << sig << dec << endl;
+            auto it = m_meshes.find(sig);
+            if (it == m_meshes.end()) { // did not find signatutre in preloaded meshes
+                pd = new PicDisp(PicArr(sig));
+                cout << "Generating mesh for " << hex << sig << dec << endl;
+                pd->initNoSubdiv();
+                pd->m_mesh.makeSelfBos(true);
+
+                m_meshes[sig].reset(pd);
+            }
+            else
+                pd = it->second.get();
+        }
+
         for(int j = 0; j < comp.addedInds.size(); ++j) 
         {
             auto added = comp.addedInds[j];
             pdefs[added.addedInd].dispRot = added.defRot; // TBD - this is not duplicated in allComp
+           // cout << "PDEF " << &pdefs[added.addedInd] << "  DISP=" << pd << endl;
             pdefs[added.addedInd].disp = pd;
         }
-        m_meshes.push_back(pd);
     }
+
+   // cout << "BLAT" << endl;
 
 }
 
@@ -643,11 +710,61 @@ static PoolStats poolStats[] = {
     { 17950, 23900, 17950 }}; // 4 passes: 17922, 23870, 17920
 
 
+class MeshUnifier
+{
+public:
+    void add(const Mesh& m, TPicBits bits);
+    void save(const char* path);
+
+    stringstream m_idxlines;
+    vector<pair<Vec3,Vec3>> m_uvtx; // pos,norm
+
+};
+
+void MeshUnifier::add(const Mesh& m, TPicBits bits)
+{
+    int vCount = m_uvtx.size();
+    vector<int> indexInUni(m.m_vtx.size()); // for every vertex in the mesh, where it is in the uni vertex arr
+    for(int vi = 0; vi < m.m_vtx.size(); ++vi) {
+        const auto& v = m.m_vtx[vi];
+        const auto& n = m.m_normals[vi];
+        int ui;
+        for(ui = 0; ui < m_uvtx.size(); ++ui) {
+            const auto& uvn = m_uvtx[ui];
+            if (v == uvn.first && n == uvn.second)
+                goto nextmv;
+        }
+        m_uvtx.push_back(make_pair(v, n));
+    nextmv:
+        indexInUni[vi] = ui;
+        continue;
+    }
+
+    m_idxlines << hex << "*" << bits << dec << "\n";
+    for(int i = 0; i < m.m_idx.size(); i+=4) {
+        m_idxlines << indexInUni[m.m_idx[i]] << " " << indexInUni[m.m_idx[i + 1]] << " " << indexInUni[m.m_idx[i + 2]] << " " << indexInUni[m.m_idx[i + 3]] << "\n";
+    }
+    cout << "added " << m_uvtx.size() - vCount << "  to " << m_uvtx.size() << endl;
+}
+
+void MeshUnifier::save(const char* path)
+{
+    ofstream f(path);
+    if (!f.good()) {
+        cout << "ERROR: can't open " << path << endl;
+        return;
+    }
+    for(int ui = 0; ui < m_uvtx.size(); ++ui) {
+        const auto& vn = m_uvtx[ui];
+        f << "v " << vn.first.x << " " << vn.first.y << " " << vn.first.z << " " << vn.second.x << " " << vn.second.y << " " << vn.second.z << "\n";
+    }
+    f << m_idxlines.str();
+}
 
 void PicBucket::buildMeshes(const DisplayConf& dpc, ProgressCallback* prog)
 {
     // fill meshes
-    distinctMeshes();
+    distinctMeshes(true);
 
     if (prog)
         prog->init(m_meshes.size());
@@ -657,22 +774,27 @@ void PicBucket::buildMeshes(const DisplayConf& dpc, ProgressCallback* prog)
     PicDisp::g_smoothAllocator.init(ps.points, ps.poly, ps.he);
     PicDisp::g_smoothAllocator.clearMaxAlloc();
 
+    //MeshUnifier muni;
+
     int cnt = 0;
     bool cancel = false;
 
-    for (int pi = 0; pi < 5 /*m_meshes.size()*/; ++pi)
+    for (auto& disp: m_meshes)
     {
-        if (prog && !prog->setValue(pi))
+        if (prog && !prog->setValue(cnt++)) // progress
             break;
-        m_meshes[pi]->init(dpc);
-        m_meshes[pi]->initNoSubdiv();
+        //disp.second->init(); // full subdivision
+        disp.second->initNoSubdiv();
+        disp.second->m_mesh.makeSelfBos(true);
+        //muni.add(disp->m_mesh, disp->bits());
     }
 
     if (prog)
         prog->setValue(m_meshes.size());
     PicDisp::g_smoothAllocator.checkMaxAlloc();
 
-    exit(1);
+    //muni.save("c:/temp/no_sub_unified.txt");
+    //exit(1);
 }
 
 
@@ -713,28 +835,39 @@ void PicBucket::buildAllMeshes()
         }
         arrs.push_back(na);
     alreadyExist:
+        if ((i % 2000) == 0)
+            cout << i << "  got=" << arrs.size() << "\n";
+
         continue;
     }
 
+    MeshUnifier muni;
+
     cout << "---" << arrs.size() << endl;
     for(const auto& a: arrs) {
-        cout << a.rtbits[0] << endl;
+        cout << "------" << a.rtbits[0] << endl;
+        PicDisp disp;
+        disp.m_arr.fromBits(a.rtbits[0]);
+        disp.initNoSubdiv();
+        disp.m_mesh.makeSelfBos(true);
+        muni.add(disp.m_mesh, disp.bits());
     }
+
+    muni.save("c:/temp/all__no_sub_unified.txt");
 }
 
 // in Qt, s is the filename
 // in emscripten uses the function below
 bool PicBucket::loadUnified(const char* s) 
 {
-    distinctMeshes();
-
-
     QFile iff(s);
     if (!iff.open(QIODevice::ReadOnly | QIODevice::Text)) {
         cout << "ERROR: failed opening " << s << endl;
         return false;
     }
     QTextStream in(&iff);
+
+    m_meshes.clear();
 
     shared_ptr<Mesh::CommonData> cd(new Mesh::CommonData);
     double a,b,c;
@@ -763,22 +896,17 @@ bool PicBucket::loadUnified(const char* s)
             cd->normals.push_back(Vec3(a, b, c));
             ++vtxCount;
         }
-        else if (linebuf[0] == '*') {// mesh header
-            ushort sig = strtoul(linebuf + 1, nullptr, 16);
-            auto it = m_meshes.begin(), endit = m_meshes.end();
-            for (; it != endit; ++it)
-            {
-                if (sig == (*it)->bits()) {
-                    // finishes prev mesh, calc normals
-                    mesh = &(*it)->m_mesh;
-                    mesh->m_type = Mesh::TRIANGLES; //Mesh::QUADS;
-                    mesh->m_hasIdx = mesh->m_hasNormals = true;
-                    mesh->m_common = cd;
-                    break;
-                }
-            }
-            if (it == endit)
-                throw HCException("did not find piece for sig");
+        else if (linebuf[0] == '*') 
+        {// mesh header
+            TPicBits sig = strtoul(linebuf + 1, nullptr, 16);
+            auto* disp = new PicDisp(PicArr(sig));
+            m_meshes[sig].reset(disp);
+
+            mesh = &disp->m_mesh;
+            mesh->m_type = Mesh::TRIANGLES; //Mesh::QUADS;
+            mesh->m_hasIdx = mesh->m_hasNormals = true;
+            mesh->m_common = cd;
+
             ++meshCount;
         }
         else {
@@ -798,17 +926,15 @@ bool PicBucket::loadUnified(const char* s)
         }
     }
 
-    cd->m_vtxBo.setData(cd->vtx);
-    cd->vtx.clear();
-    cd->m_normBo.setData(cd->normals);
-    cd->normals.clear();
-    for(auto d: m_meshes) {
-        d->m_mesh.m_idxBo.setData(d->m_mesh.m_idx);
-        d->m_mesh.m_idx.clear();
+    cd->makeSelfBos();
+    for(auto& d: m_meshes) {
+        d.second->m_mesh.makeIdxBo();
     }
 
-
     cout << "Unified Mesh read " << vtxCount << " vtx " << meshCount << " meshes" << endl;
+
+    distinctMeshes(false);
+
     return true;
 }
 
@@ -818,7 +944,6 @@ bool PicBucket::loadUnified(const char* s)
 
 bool PicBucket::loadUnifiedJs()
 {
-    distinctMeshes();
     shared_ptr<Mesh::CommonData> cd(new Mesh::CommonData);
 
     cd->m_vtxBo.bind();
@@ -829,14 +954,27 @@ bool PicBucket::loadUnifiedJs()
     EM_ASM(GLctx.bufferData(GLctx.ARRAY_BUFFER, unimesh.norm, GLctx.STATIC_DRAW));
     cd->m_normBo.m_size = EM_ASM_INT_V(return unimesh.norm.length);
 
-    for (auto d : m_meshes) {
+    int len = EM_ASM_INT_V(return unimesh_keys.length);
+
+    m_meshes.clear();
+    for (int i = 0; i < len; ++i) 
+    {
+        double sig = EM_ASM_DOUBLE(return parseInt(unimesh_keys[$0]), i);
+        if (isnan(sig))
+            continue; // 'vtx' or 'norm'
+
+        auto d = new PicDisp(PicArr(sig));
+        m_meshes[sig].reset(d);
+
         d->m_mesh.m_idxBo.bind();
-        EM_ASM_(GLctx.bufferData(GLctx.ELEMENT_ARRAY_BUFFER, unimesh[$0], GLctx.STATIC_DRAW), d->bits());
+        EM_ASM_(GLctx.bufferData(GLctx.ELEMENT_ARRAY_BUFFER, unimesh[$0], GLctx.STATIC_DRAW), sig);
         d->m_mesh.m_idxBo.m_size = EM_ASM_INT(return unimesh[$0].length, d->bits());
         d->m_mesh.m_type = Mesh::TRIANGLES;
         d->m_mesh.m_hasIdx = d->m_mesh.m_hasNormals = true;
         d->m_mesh.m_common = cd;
     }
+    distinctMeshes(false);
+
     return true;
 }
 

@@ -88,7 +88,10 @@ public:
 
 	// temporarys
 	HalfEdge *he; ///< HalfEdge originating from this point. - used in MyObject::subdivide()
-	bool touched; ///< was this point adjusted in the current subdiv iteration? - used in MyObject::subdivide()
+    /// was this point adjusted in the current subdiv iteration? - used in MyObject::subdivide()
+    /// in no-subdiv meshes, did this point have a set normal? or do we need to calc it (for flat faces)
+	bool touched; 
+                   
 
 	// managment
 	static int g_ctorCount, g_dtorCount; ///< keep bookmarking of creation and deletion for debug

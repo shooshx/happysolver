@@ -1,5 +1,6 @@
 #include "PicArr.h"
-
+#include <iostream>
+using namespace std;
 
 void PicArr::turn()
 {
@@ -107,4 +108,15 @@ void PicArr::makeRtnsBits(TPicBits rtbits[8]) const {
     makeRtns(rtns);
     for(int i = 0; i < 8; ++i)
         rtbits[i] = rtns[i].getBits();
+}
+
+void PicArr::prn() {
+    for(int x = 0; x < 5; ++x)
+	{
+		for(int y = 0; y < 5; ++y)
+		{
+			cout << axx(x,y);
+		}
+        cout << endl;            
+	}
 }

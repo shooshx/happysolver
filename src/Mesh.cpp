@@ -31,7 +31,7 @@ void Mesh::calcTrianglesNormals() {
         m_normals[i].unitize();
 }
 
-void Mesh::makeSelfBos() {
+void Mesh::makeSelfBos(bool andDealloc) {
     if (!m_vtxBo.setData(m_vtx))
         return;
 
@@ -45,21 +45,50 @@ void Mesh::makeSelfBos() {
         m_tagBo.setData(m_tag);
     if (m_hasIdx)
         m_idxBo.setData(m_idx);
+
+    if (andDealloc) {
+        m_vtx.clear();
+        m_vtx.shrink_to_fit();
+        m_normals.clear();
+        m_normals.shrink_to_fit();
+        m_idx.clear();
+        m_idx.shrink_to_fit();
+
+        m_name.clear();
+        m_name.shrink_to_fit();
+        m_color4.clear();
+        m_color4.shrink_to_fit();
+        m_tag.clear();
+        m_tag.shrink_to_fit();
+    }
+}
+
+void Mesh::CommonData::makeSelfBos()
+{
+    m_vtxBo.setData(vtx);
+    vtx.clear();
+    vtx.shrink_to_fit();
+    m_normBo.setData(normals);
+    normals.clear();
+    normals.shrink_to_fit();
+}
+
+void Mesh::makeIdxBo(bool dealloc)
+{
+    m_idxBo.setData(m_idx);
+    m_idx.clear();
+    m_idx.shrink_to_fit();
 }
 
 
 void Mesh::paint(bool names) const
 {
-    const vector<Vec3> *vtx = &m_vtx, *normals = &m_normals;
     const GlArrayBuffer* vbo = &m_vtxBo;
     const GlArrayBuffer* nbo = &m_normBo;
-    //const vector<Vec2> *texCoord = &m_texCoord;
+
     if (m_common) {
-        vtx = &m_common->vtx;   
-        normals = &m_common->normals;
         vbo = &m_common->m_vtxBo;
         nbo = &m_common->m_normBo;
-    //    texCoord = &m_common->texCoord;
     }
     if (vbo->m_size == 0) {
 #ifdef EMSCRIPTEN
@@ -166,8 +195,11 @@ int Mesh::numElem() {
 void Mesh::save(const string& path, bool asObj)
 {
     ofstream f(path.c_str());
-    if (!f.good())
+    if (!f.good()) {
+        cout << "Failed opening path for mesh save " << path << endl;
         return;
+    }
+    M_ASSERT(m_vtx.size() > 0 && m_idx.size() > 0);
 
     // short hand format for unification
     for (int i = 0; i < m_vtx.size(); ++i) {
@@ -182,17 +214,22 @@ void Mesh::save(const string& path, bool asObj)
         }
         
     }
-    if ((m_idx.size() % 4) != 0)
-        throw HCException("bad size");
 
-    for (int i = 0; i < m_idx.size(); i += 4) {
-        if (asObj) {
-            f << "f " << m_idx[i] + 1 << " " << m_idx[i + 1] + 1 << " " << m_idx[i + 2] + 1 << "\n";  // obj
-            f << "f " << m_idx[i] + 1 << " " << m_idx[i + 2] + 1 << " " << m_idx[i + 3] + 1 << "\n"; // obj
-        }
-        else {
-            f << m_idx[i] << " " << m_idx[i + 1] << " " << m_idx[i + 2] << " " << m_idx[i + 3] << "\n";
+    if (m_type == QUADS)
+    {
+        if ((m_idx.size() % 4) != 0)
+            throw HCException("bad size");
+        for (int i = 0; i < m_idx.size(); i += 4) {
+            if (asObj) {
+                f << "f " << m_idx[i] + 1 << " " << m_idx[i + 1] + 1 << " " << m_idx[i + 2] + 1 << "\n";  // obj
+                f << "f " << m_idx[i] + 1 << " " << m_idx[i + 2] + 1 << " " << m_idx[i + 3] + 1 << "\n"; // obj
+            }
+            else {
+                f << m_idx[i] << " " << m_idx[i + 1] << " " << m_idx[i + 2] << " " << m_idx[i + 3] << "\n";
+            }
         }
     }
-
+    else {
+        throw HCException("can't save triangles");
+    }
 }

@@ -69,11 +69,11 @@ void MyObject::addPoly(Vec3 *inplst, TexAnchor *ancs, Texture *tex)
     plylst.push_back(nply);
 }
 
-void MyObject::addPoly(const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d, bool flip)
+// addNormal - calcs the normal of the poly and adds it to the points.
+//   this is given to selected quads which need to retain their normals and not linearize it (piece face)
+void MyObject::addPoly(const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d, bool flip, bool addNormal)
 {
     MyPolygon *nply = m_alloc->m_polyPool.allocate();
-    nply->init(nullptr);
-
     if (flip) {
         nply->vtx[3] = CopyCheckPoint(&a);
         nply->vtx[2] = CopyCheckPoint(&b);
@@ -85,6 +85,14 @@ void MyObject::addPoly(const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& 
         nply->vtx[1] = CopyCheckPoint(&b);
         nply->vtx[2] = CopyCheckPoint(&c);
         nply->vtx[3] = CopyCheckPoint(&d);
+    }
+
+    if (addNormal) { // add normals to these points according to this quad so that the normal would not blend
+        nply->calcNorm();
+        for(int i = 0; i < 4; ++i) {
+            nply->vtx[i]->n = nply->center;
+            nply->vtx[i]->touched = true;
+        }
     }
 
     plylst.push_back(nply);
@@ -154,36 +162,114 @@ void MyObject::vectorify()
 
 }
 
+void MyPolygon::calcNorm() //use the regular point and not the temp one
+{
+	// assume all points are on the same plane;
+	bool normAgain = true;
+	int pntA = 0, pntB = 1, pntC = 2;
+	double nx, ny, nz;
+	double xa, ya, za, xb, yb, zb, xc, yc, zc;
+
+	while (normAgain)
+	{	
+
+		xa = vtx[pntA]->p[0], ya = vtx[pntA]->p[1], za = vtx[pntA]->p[2];
+		xb = vtx[pntB]->p[0], yb = vtx[pntB]->p[1], zb = vtx[pntB]->p[2];
+		xc = vtx[pntC]->p[0], yc = vtx[pntC]->p[1], zc = vtx[pntC]->p[2];
+	
+		
+		nx = (ya-yb)*(za-zc)-(ya-yc)*(za-zb);
+		ny = -((xa-xb)*(za-zc)-(xa-xc)*(za-zb));
+		nz = (xa-xb)*(ya-yc)-(xa-xc)*(ya-yb);
+		
+		normAgain = ((fabs(nx) < 0.00000001) && (fabs(ny) < 0.00000001) && (fabs(nz) <0.00000001));
+		if (normAgain)
+		{
+			if (pntC < 3)
+			{
+				pntC++;
+			}
+			else
+			{
+				if (pntB < 2)
+				{
+					pntB++;
+					pntC = pntB + 1;
+				}
+				else
+				{
+					if (pntA < 1)
+					{
+						pntA++;
+						pntB = pntA + 1;
+						pntC = pntA + 2;
+					}
+					else
+					{
+                        M_ASSERT(false);
+					}
+				}
+			}
+		}
+        M_ASSERT((pntB < 4) && (pntC < 4));
+		
+	}
+	double lng = sqrt(nx*nx + ny*ny + nz*nz);
+
+
+	center[0] = nx / lng;
+	center[1] = ny / lng;
+	center[2] = nz / lng;
+
+}
+
+
 void MyObject::clacNormals(bool vtxNorms)
 {
-    verterxNormals = vtxNorms;
-    int pn;
-    for (pn = 0; pn < nPoints; ++pn)
-    {
+    for(int pn = 0; pn < nPoints; ++pn)
         points[pn]->n.clear();
-    }
 
     for (int i = 0; i < nPolys; ++i)
     {
         poly[i]->calcNorm();
         if (vtxNorms)
         {
-            for(pn = 0; pn < 4; ++pn)
-            {
+            for(int pn = 0; pn < 4; ++pn)
                 poly[i]->vtx[pn]->n += poly[i]->center;
-            }
         }
     }
 
     if (vtxNorms)
     {
-        for (pn = 0; pn < nPoints; ++pn)
-        {
+        for (int pn = 0; pn < nPoints; ++pn)
             points[pn]->n.unitize();
-        }
     }
 
 }
+
+void MyObject::clacNormalsExceptTouched()
+{
+    for (int i = 0; i < nPolys; ++i)
+    {
+        poly[i]->calcNorm();
+        for(int pn = 0; pn < 4; ++pn) {
+            auto* p = poly[i]->vtx[pn];
+            if (!p->touched)
+                p->n += poly[i]->center;
+            else {
+                int x = 0;
+            }
+
+        }
+    }
+
+    for (int pn = 0; pn < nPoints; ++pn) {
+        points[pn]->n.unitize();
+        points[pn]->touched = false;
+    }
+
+}
+
 
 /// PointPair is a simple struct of two MyPoints objects.
 /// it is used for hashing HalfEdge objects in MyObject::buildHalfEdges()
@@ -411,7 +497,7 @@ void MyObject::subdivide(bool smooth)
 
 
 
-void MyObject::toMesh(Mesh& mesh) 
+void MyObject::toMesh(Mesh& mesh, bool quads) 
 {
     mesh.clear();
     VecRep vtxrep(&mesh.m_vtx);
@@ -419,6 +505,7 @@ void MyObject::toMesh(Mesh& mesh)
     for(int pli = 0; pli < nPolys; ++pli) //polygons
     {
         MyPolygon &curpl = *poly[pli];
+        int qidx[4];
         for(int pni = 0; pni < 4; ++pni) //points
         {
             MyPoint *curpn = curpl.vtx[pni];
@@ -427,14 +514,22 @@ void MyObject::toMesh(Mesh& mesh)
                 mesh.m_normals.push_back(curpn->n);
                 //mesh.m_texCoord.push_back(Vec2(curpl.texAncs[pni].x, curpl.texAncs[pni].y));
             }
-            mesh.m_idx.push_back(index);
+            qidx[pni] = index;
+            if (quads)
+                mesh.m_idx.push_back(index);
         }
-
+        if (!quads) {
+            mesh.m_idx.push_back(qidx[0]);
+            mesh.m_idx.push_back(qidx[1]);
+            mesh.m_idx.push_back(qidx[2]);
+            mesh.m_idx.push_back(qidx[0]);
+            mesh.m_idx.push_back(qidx[2]);
+            mesh.m_idx.push_back(qidx[3]);
+        }
     }
 
-    mesh.m_type = Mesh::QUADS;
+    mesh.m_type = quads ? Mesh::QUADS : Mesh::TRIANGLES;
     mesh.m_hasNormals = true;
-//	mesh.m_hasTexCoord = true;
     mesh.m_hasIdx = true;
 
 }

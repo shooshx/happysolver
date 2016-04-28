@@ -206,9 +206,6 @@
     <ClCompile Include="..\src\MyObject.cpp">
       <Filter>3D</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\MyPolygon.cpp">
-      <Filter>3D</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\PicPainter.cpp">
       <Filter>3D</Filter>
     </ClCompile>

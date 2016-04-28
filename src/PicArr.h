@@ -9,10 +9,12 @@ typedef unsigned short TPicBits;
 class PicArr
 {
 public:
-	PicArr() :turned(false), rtnindx(-1) {
+	explicit PicArr(TPicBits bits = 0) :turned(false), rtnindx(-1) {
 		for(int i = 0; i < 25; ++i)
 			v[i] = 0;
-	} // array uninitialized
+        if (bits != 0)
+            fromBits(bits);
+	} 
  
 	void turn();
 	void revY();
@@ -37,6 +39,7 @@ public:
         turned = false;
         rtnindx = -1;
     }
+    void prn();
 
 	int v[25];
 	

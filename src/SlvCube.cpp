@@ -32,10 +32,13 @@ SlvCube::SlvCube(const Shape* _shape)
 {
 }
 
+const PicDef* SlvCube::SlvPiece::sdef() const {
+    return &PicBucket::instance().pdefs[abs_sc];
+}
 
 const PicGroupDef* SlvCube::getPieceGrpDef(int n) const 
 { 
-	return dt[n].sdef->mygrp(); 
+	return dt[n].sdef()->mygrp(); 
 }
 
 
@@ -63,13 +66,6 @@ void SlvCube::genPainter()
 	//PicsSet pics(this);  // this ctor takes from the bucket only the data, not the selection
 	// no need to consider symmetry, even if it was considered when this solution was built since we only take things
 	// from added, which is not affected by symmetry
-
-	for (int f = 0; f < dt.size(); ++f)
-	{
-		//const AddedPic &ap = pics.added[dt[f].abs_sc]; 
-        dt[f].sdef = &PicBucket::instance().pdefs[dt[f].abs_sc]; //pics.getDef(dt[f].abs_sc); //&PicBucket::instance().pdefs[ap.defInd];
-		//dt[f].rtindx = dt[f].rt; //pty->rtns[dt[f].rt].rtnindx;
-	}
 
 	painter.qmin = Vec3(0.0, 0.0, 0.0);
 	painter.qmax = painter.qmin;

@@ -10,7 +10,7 @@
 // TBD - GLControl
 void SlvPainter::paintPiece(int f, BaseGLWidget* context, bool fTargets) const
 {
-    const PicDef *pdef = m_scube->dt[f].sdef;
+    const PicDef *pdef = m_scube->dt[f].sdef();
     Shape::FaceDef *face = &m_scube->shape->faces[f];
 
     auto cd = m_scube->shape->scdrToBuildCoord(face->ex, face->dr);
@@ -71,7 +71,7 @@ void SlvPainter::paintPiece(int f, BaseGLWidget* context, bool fTargets) const
 
     mglCheckErrorsC("x6");
     // if dispRot >= 4 it means the real part we're drawing is inverted from the model so we need to draw the texture on the other side
-    pdef->painter.paint(fTargets, name, context, (pdef->dispRot >= 4), flag );
+    PicPainter(pdef).paint(fTargets, name, context, (pdef->dispRot >= 4), flag );
     mglCheckErrorsC("x7");
 
     model.pop();
@@ -142,7 +142,7 @@ void SlvPainter::paint(BaseGLWidget* context, bool fTargets, int singleChoise, i
 
 bool SlvPainter::exportPieceToObj(ObjExport& oe, int f) const
 {
-    const PicDef *pdef = m_scube->dt[f].sdef;
+    const PicDef *pdef = m_scube->dt[f].sdef();
     Shape::FaceDef *face = &m_scube->shape->faces[f];
     //int rtnindx = m_scube->dt[i].abs_rt;
     int rtnindx = rotationSub(m_scube->dt[f].abs_rt, pdef->dispRot);
@@ -173,7 +173,7 @@ bool SlvPainter::exportPieceToObj(ObjExport& oe, int f) const
     }
 
     curMatrix.translate(-0.5, -2.5, -2.5);
-    return pdef->painter.exportToObj(oe, curMatrix);
+    return PicPainter(pdef).exportToObj(oe, curMatrix);
 
 }
 

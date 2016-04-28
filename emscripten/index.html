@@ -26,9 +26,10 @@ var prog = null
 var model = { vtxBuf: null }
 
 var loadSolution, resizeGl, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseWheel, cpp_draw, cpp_slvrun, getTms
-var setGrpCount, setEditAction, restartSolve, serializeCurrent, deserializeAndLoad
+var setGrpCount, setEditAction, restartSolve, serializeCurrent, deserializeAndLoad, readCube
 var ctrlPressed = false;
 var editCtx = null
+var unimesh_keys = Object.keys(unimesh) // unimesh included above
 
 var ACT_NONE = 0, ACT_ADD = 1, ACT_REMOVE = 2
     
@@ -60,6 +61,7 @@ function start() {
     restartSolve  = Module.cwrap('restartSolve', null, [])
     serializeCurrent  = Module.cwrap('serializeCurrent', 'number', [])
     deserializeAndLoad = Module.cwrap('deserializeAndLoad', null, ['number'])
+    readCube = Module.cwrap('readCube', null, ['number'])
 
     Module.ccall('cpp_start', null);
     Module.ccall('conf', null, ['boolean'], [true])
@@ -98,7 +100,7 @@ function start() {
     
     editCtx = editCanvas.getContext("2d")
     picsAddFamily("Test Fam", "Test Fam", true)
-    picsAddCube("Test Cube", "Test Cube", 1000, true)
+    picsAddCube("Test Cube", "Test Cube", -1, true)
     
 }
 
@@ -142,6 +144,7 @@ function handleKey(event) {
 var lastFamAdded = ''
 var pics_families = {} // make family id to { cubes: list of { cid: cube-id, grpi: group-index } }
 var pics_cubes = {} // make cube id to { famid }
+var max_grpi = 0; // the largest cube number we've seen. used for adding more cubes in the ui
 
 function picsAddFamily(famName, id, editable) {
     id = id.replace(/[-\. ]/g, '_')
@@ -157,19 +160,21 @@ function picsAddFamily(famName, id, editable) {
     <div id="ID_famframe" class="inframe"></div> \
     </div>'.replace(/ADDEDIT/g, editTag).replace(/ID/g, id).replace(/LABEL/g, famName)
 
-    fams_cont.innerHTML += picsCtrl
+    var dummy = document.createElement("DIV")
+    dummy.innerHTML = picsCtrl;
+    fams_cont.appendChild(dummy.firstChild) // this way I avoid recreating the whole panel each time and making the selection invalid (as opposed to .innerHTML +=)
+    
     lastFamAdded = id
     pics_families[id] = { cubes: []}
     
-    /*document.getElementById(id + "_fcheck").onchange = function() { 
-        document.getElementById(id + "_fcheck_label").classList.toggle('mycheck_checked') 
-    }*/
 }
 function picsAddCube(cubeName, id, grpi, editable) {
+    if (grpi == -1)
+        grpi = max_grpi + 1
     id = id.replace(/[-\. ]/g, '_')
     var editStart = '', editEnd = ''
     if (editable) {
-        editStart = "<span class='linklike' onclick=triggerCubeEdit(\'ID\')>"
+        editStart = "<span class='linklike' onclick=triggerCubeEdit(true,INDEX)>"
         editEnd= "</span>"
     }
     var txt = '<div id="ID_inframe" class="piccube">\
@@ -182,9 +187,8 @@ function picsAddCube(cubeName, id, grpi, editable) {
     pics_families[lastFamAdded].cubes.push( { cid: id, grpi: grpi})
     pics_cubes[id] = { famid: lastFamAdded }
     
-    document.getElementById(id + "_ccheck").onchange = function() { 
-        document.getElementById(id + "_ccheck_label").classList.toggle('mycheck_checked') 
-    }
+    if (grpi > max_grpi)
+        max_grpi = grpi
 }
 
 // update the cube count after a check is changed. v is boolean for the value of the check
@@ -489,10 +493,24 @@ function triggerAddFam() {
 
 function triggerAddCube(intoFam) {
     var cubeName = window.prompt("Cube Name?","");
-    picsAddCube(cubeName, cubeName, 1000, true)
+    picsAddCube(cubeName, cubeName, -1, true)
 }
 
 var cube = [
+   // 0,1,2,3,4,5,6,7,8,9,1011121314
+    [ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ], // 0
+    [ 0,1,1,1,1,1,0,0,0,0,0,0,0,0,0 ], // 1
+    [ 0,1,1,1,1,1,3,3,3,5,5,5,5,5,0 ], // 2
+    [ 0,1,1,1,1,1,3,3,3,5,5,5,5,5,0 ], // 3
+    [ 0,1,1,1,1,1,3,3,3,5,5,5,5,5,0 ], // 4
+    [ 0,1,1,1,1,1,4,4,4,6,6,6,6,6,0 ], // 5
+    [ 0,0,2,2,2,2,4,4,4,6,6,6,6,6,0 ], // 6
+    [ 0,0,2,2,2,2,4,4,4,6,6,6,6,6,0 ], // 7
+    [ 0,0,2,2,2,2,4,4,4,6,6,6,6,6,0 ], // 8
+    [ 0,0,0,0,0,0,0,0,0,6,6,6,6,6,0 ], // 9
+    [ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ], // 10
+]
+var cubeX = [
    // 0,1,2,3,4,5,6,7,8,9,1011121314
     [ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ], // 0
     [ 0,0,1,0,1,0,3,0,3,0,5,0,5,0,0 ], // 1
@@ -573,15 +591,17 @@ function paintCube()
     }
 }
 
-function triggerCubeEdit(cubeId) 
+var editingCubeId = -1
+function triggerCubeEdit(v, cubeId) 
 {
-    if (true) {
+    if (v) {
         editBack.style.display = "inline"
     }
     else {
         editBack.style.display = "none"
         return
     }
+    editingCubeId = cubeId
     paintCube();
     
     return false
@@ -589,10 +609,9 @@ function triggerCubeEdit(cubeId)
 
 function handleEditCanvasClick(event)
 {
-
     var rect = editCanvas.getBoundingClientRect()
     var x = Math.trunc((event.clientX - rect.left)/TSZ), y = Math.trunc((event.clientY - rect.top)/TSZ)
-    console.log(x + " " + y)
+    //console.log(x + " " + y)
     
     var hasSameNei = function(v, x, y) { // don't allow isolated tooth of a color
         return cube[y][x-1] == v || cube[y][x+1] == v || cube[y-1][x] == v || cube[y+1][x] == v
@@ -607,6 +626,17 @@ function handleEditCanvasClick(event)
             break
         }
     }
+}
+
+function triggerEditDone()
+{
+    if (editingCubeId == -1)
+        throw "Unexpected cube-id"
+        
+    readCube(editingCubeId);
+
+    editingCubeId = -1
+    triggerCubeEdit(false)
 }
     
 </script>
@@ -916,6 +946,16 @@ h1 {
 
 }
 
+#editDoneBtn:before {
+  content: "Done";
+}
+#editDoneBtn {
+   right: 8px;
+   width: 60px;
+   bottom: 8px;
+}
+
+
 </style>
 </head>
 <body onload="start()" onresize="doResize()" >
@@ -949,6 +989,7 @@ If you have any questions concerning the usage of HAPPY materials, please send y
     
     <div id="editBack" class="popupBack"><div id="picEditWin" class="popupWin">
     <canvas id="editCanvas" width="590", height="450"></canvas>
+    <label id="editDoneBtn" class="sc-btn" onclick="triggerEditDone()"/></label>
     </div></div>
     
     <img id="noisetex" src='cubeTex.png' style="display:none;"/>

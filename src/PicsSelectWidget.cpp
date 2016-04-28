@@ -193,7 +193,7 @@ void PicsSelectWidget::continueCreate()
 
 			for (int p = 0; p < bucket.grps[g].numPics(); ++p)
 			{
-				const PicDef *pic = &(grp->getPic(p));
+				const PicDef* pic = &(grp->getPic(p));
 				PicCtrl picctrl;
 				int data = (g << 16) | p;
 

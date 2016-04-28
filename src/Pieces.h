@@ -68,15 +68,12 @@ class GlTexture;
 class PicDef
 {
 public:
-    PicDef() : mygrpi(-1), indexInGroup(-1), tex(nullptr)
-        ,xOffs(-1), yOffs(-1), painter(nullptr), nUsed(0), lastnSelected(1), nSelected(0), pathlen(0), dispRot(-1)
+    PicDef()
 #ifdef QT_CORE_LIB
-        ,pixmap(1, 1)
+        :pixmap(1, 1)
 #endif
     {} 
-    void reset() {
-        painter = PicPainter(this);
-    }
+
 
     void makeBoundingPath();
 
@@ -94,8 +91,8 @@ public:
     const PicGroupDef *mygrp() const; 
 
 
-    int mygrpi; // index of the group this piece is part of
-    int indexInGroup;  // index of this piece in the group it is part of
+    int mygrpi = -1; // index of the group this piece is part of
+    int indexInGroup = -1;  // index of this piece in the group it is part of, for saving in a solution
     PicArr v;
     PicArr defRtns[8];
 
@@ -103,22 +100,21 @@ public:
     QPixmap pixmap;
 #endif
 
-    ImgBuf *tex; // Pic specific texture or nullptr
+    ImgBuf *tex = nullptr; // Pic specific texture or nullptr
 
-    int xOffs, yOffs; // in case of TEXTURE_INDIVIDUAL_***. the x,y offsets of the texture
-    PicPainter painter;
+    int xOffs = -1, yOffs = -1; // in case of TEXTURE_INDIVIDUAL_***. the x,y offsets of the texture
 
-    mutable int nUsed;
-    mutable int lastnSelected; // used for the repressing of the button. to return to the last value.
+    mutable int nUsed = 0;
+    mutable int lastnSelected = 1; // used for the repressing of the button. to return to the last value.
 
-    std::shared_ptr<PicDisp> disp;
-    int dispRot;  // rotation of this def compared to the mesh pointed in disp
+    PicDisp* disp = nullptr;
+    int dispRot = -1;  // rotation of this def compared to the mesh pointed in disp
 
-    int indInAllComp; // index of unified shape in the Bucket's allComp
-    int defRot; // rotation of this def to the def in allComp  (same as dispRot for now)
+    int indInAllComp = -1; // index of unified shape in the Bucket's allComp
+    int defRot = -1; // rotation of this def to the def in allComp  (same as dispRot for now)
 
 private:
-    mutable int nSelected;
+    mutable int nSelected = 0;
 
 public:
     /// NAPathCoord is the same as PathPoint but without any constructors.
@@ -151,7 +147,7 @@ public:
         struct { int sx, sy, ex, ey; } prp;
     };
 
-    int pathlen;
+    int pathlen = 0;
     PathCoord path[MAX_PATH_LEN]; // bounding path - includes the last point which equals the first
 
 private:
@@ -198,7 +194,7 @@ public:
         return (drawtype & 0x10) != 0;
     }
 
-    vector<int> picsi; // indices of this group pics in the bucket
+    vector<int> picsi; // indices of this 6 group pics in the bucket
     GlTexture *gtex;
 
     ImgBuf* tex;  // the texture used
@@ -302,11 +298,13 @@ public:
 
     //int numDefs() const { return defs.size(); }
     void setToFamResetSel(); ///< reset the selected count to the reset number from the config
-    void distinctMeshes();
+    void distinctMeshes(bool createDisps);
 
     void makeAllComp();
 
     static void buildAllMeshes();
+
+    void updateGrp(int grpi, PicArr arrs[6]);
 
 public:
     int sumPics; ///< how many cubes, how many pics in total
@@ -318,7 +316,7 @@ public:
 
     vector<PicFamily> families;
 
-    vector<std::shared_ptr<PicDisp> > m_meshes; // same size as allComp
+    map<TPicBits, std::unique_ptr<PicDisp> > m_meshes; // same size as allComp
 
     vector<PicType> allComp; // (compressed) distict pieces from pdefs with references to pdefs in addedInds
 

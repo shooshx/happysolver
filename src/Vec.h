@@ -70,6 +70,14 @@ inline ostream& operator<<(ostream& o, const Vec2i v) {
     o << v.x << "," << v.y;
     return o;
 }
+inline Vec2i operator+(const Vec2i &a, const Vec2i &b)
+{
+    return Vec2i(a.x + b.x, a.y + b.y);
+}
+inline Vec2i operator-(const Vec2i &a, const Vec2i &b)
+{
+    return Vec2i(a.x - b.x, a.y - b.y);
+}
 
 class Vec3;
 

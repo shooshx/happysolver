@@ -360,10 +360,10 @@ void BuildControlBase::makeBuffers()
         }
     }
 
-    m_realTiles.makeSelfBos();
-    m_transTiles.makeSelfBos();
-    m_realLines.makeSelfBos();
-    m_transLines.makeSelfBos();
+    m_realTiles.makeSelfBos(false);
+    m_transTiles.makeSelfBos(false);
+    m_realLines.makeSelfBos(false);
+    m_transLines.makeSelfBos(false);
 
 
 }

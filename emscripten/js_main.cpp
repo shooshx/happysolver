@@ -346,5 +346,34 @@ void deserializeAndLoad(int len)
     g_ctrl.requestDraw();
 }
 
+// relates to the pieces in the js `cube` array, 0 is the frame
+Vec2i pieceOrigin[] = { Vec2i(-1,-1), Vec2i(1,1), Vec2i(1,5),
+                                      Vec2i(5,1), Vec2i(5,5),
+                                      Vec2i(9,1), Vec2i(9,5) };
+
+// the the current cube edit data and update PicBucket
+void readCube(int grpi)
+{
+    PicArr pcs[6];
+    int tlen = EM_ASM_INT_V(return teeth.length);
+    for(int i = 0; i < tlen; ++i) {
+        Vec2i tpos(EM_ASM_INT(return teeth[$0].x, i), EM_ASM_INT(return teeth[$0].y, i));
+        int plen = EM_ASM_INT(return teeth[$0].p.length, i);
+        for(int pi = 0; pi < plen; ++pi) {
+            int pp = EM_ASM_INT(return teeth[$0].p[$1], i, pi); 
+            if (pp == 0)
+                continue;
+            Vec2i inpic = tpos - pieceOrigin[pp];
+            int val = EM_ASM_INT(return cube[$0][$1], tpos.y, tpos.x);
+            //cout << "--" << tpos.x << "," << tpos.y << "  " << inpic.x << "," << inpic.y << "  " << val << " " << ((val == pp) ? 1:0) << endl;
+            pcs[pp - 1].set(inpic.y, inpic.x) = ((val == pp) ? 1:0);
+        }
+    }
+    auto& bucket = PicBucket::mutableInstance();
+    bucket.updateGrp(grpi, pcs);
+    
+}
+
+
 } // extern "C"
 

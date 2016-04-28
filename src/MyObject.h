@@ -46,7 +46,7 @@ class MyObject // should be called MyMesh
 public:
     MyObject(MyAllocator* alloc = nullptr) 
         :poly(nullptr), lines(nullptr), points(nullptr), nPolys(0), nLines(0), nPoints(0), 
-         nakedLinesColor(0.0),  verterxNormals(false), m_alloc(alloc)
+         nakedLinesColor(0.0),  m_alloc(alloc)
     {}
 
     ~MyObject()
@@ -63,21 +63,21 @@ public:
     int nPolys, nLines, nPoints;
 
     float nakedLinesColor; // color of the lines when the object is on its own (not in grpdef)
-    bool verterxNormals; // use normals for every vertex (belongs more in the ifs.. but object is the drawing unit)
 
     void addPoly(Vec3 *inplst, TexAnchor *ancs = nullptr, Texture *tex = nullptr); //copy needed vertices, add poly
-    void addPoly(const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d, bool flip = false);
+    void addPoly(const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d, bool flip = false, bool addNormal=false);
     void addLine(Vec3 *inp1, Vec3 *inp2, double inR, double inG, double inB, ELineType type);
     void setNakedLineColor(float color) { nakedLinesColor = color; }
     void vectorify();
     void clacNormals(bool vtxNormals);
+    void clacNormalsExceptTouched();
 
     /// perform the subdivision algorithm over the current mesh, producing a mesh
     /// that has 4 times as many polygons.
     /// \arg smooth should the subdivision be averaged or flat (no averaging)
     void subdivide(bool smooth);
 
-    void toMesh(Mesh& mesh);
+    void toMesh(Mesh& mesh, bool quads);
     
 private:
     ///////////////////// structures for startup

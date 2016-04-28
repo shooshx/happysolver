@@ -59,10 +59,12 @@ public:
         vector<Vec3> normals;
         mutable GlArrayBuffer m_vtxBo; // buffer object
         mutable GlArrayBuffer m_normBo;
-       // vector<Vec2> texCoord;
+       
+        void makeSelfBos();
     };
 
-    void makeSelfBos();
+    void makeSelfBos(bool andDealloc);
+    void makeIdxBo(bool dealloc);
 
 public:
     shared_ptr<CommonData> m_common;

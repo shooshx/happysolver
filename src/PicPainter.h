@@ -23,9 +23,9 @@
 #include "Mat.h"
 #include "Mesh.h"
 #include "PicArr.h"
-#ifdef QT_CORE_LIB
+
 #include "MyObject.h"
-#endif
+
 
 
 /** \file
@@ -42,16 +42,18 @@ class ObjExport;
 class PicDisp
 {
 public:
-    PicDisp(const PicArr& arr) : m_arr(arr)
+    PicDisp() {}
+    explicit PicDisp(const PicArr& arr) : m_arr(arr)
     {}
     /// create the polygon mesh and the display list.
     void init(const DisplayConf &dpc);
     void initNoSubdiv();
+    bool wasInited() const {
+        return m_mesh.m_type != Mesh::NONE;
+    }
 
-#ifdef QT_CORE_LIB
     void generateStraightShape(const DisplayConf& dpc, MyObject& obj) const;
     void placeSidePolygon(MyObject& obj, int b, bool is1, int x, int y) const;
-#endif
 
     bool uncub(int x, int y) const;
     bool uncubex(int x, int y) const; // also has 1 in the center
@@ -81,9 +83,7 @@ public:
     Mesh m_mesh;
     PicArr m_arr;
 
-#ifdef QT_CORE_LIB
     static MyAllocator g_smoothAllocator;
-#endif
 };
 
 
@@ -99,7 +99,7 @@ public:
 class PicPainter
 {
 public:
-    PicPainter(PicDef* _pdef) :m_pdef(_pdef) {}
+    PicPainter(const PicDef* _pdef) :m_pdef(_pdef) {}
     
     /// do the actual painting
     /// \arg \c bTargets draw for targets, no colors.
@@ -111,8 +111,7 @@ public:
 
 
 private:
-    PicDef *m_pdef;
-
+    const PicDef* m_pdef;
 
 };
 

@@ -115,8 +115,8 @@ int main(int argc, char *argv[])
 // 	return 0;
     console();
 
-   // PicBucket::buildAllMeshes();
-  //  return 1;
+    //PicBucket::buildAllMeshes();
+    //return 1;
 
     QApplication app(argc, argv);
 

@@ -9,10 +9,11 @@ firefox
     zoom
     
 universal slv
-    universal comp
-    compref insread of comp
     remove added array
 rid of gind?
+
+dedicated memory for selection
+rid of shared_ptr
 
 
 NEW DEAL - things that don't work

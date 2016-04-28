@@ -507,7 +507,6 @@
     <ClCompile Include="..\src\PicsSelectWidget.cpp" />
     <ClCompile Include="..\src\GLWidget.cpp" />
     <ClCompile Include="..\src\MyObject.cpp" />
-    <ClCompile Include="..\src\MyPolygon.cpp" />
     <ClCompile Include="..\src\PicPainter.cpp" />
     <ClCompile Include="..\src\Configuration.cpp" />
     <ClCompile Include="..\src\general.cpp" />

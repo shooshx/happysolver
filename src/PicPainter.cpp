@@ -29,9 +29,9 @@
 #include <fstream>
 using namespace std;
  
-#ifdef QT_CORE_LIB
+
 MyAllocator PicDisp::g_smoothAllocator;
-#endif
+
 
 #define POLY_A 0x0001
 #define POLY_B 0x0002
@@ -104,7 +104,6 @@ void PicDisp::PlaceInto(int pntn, Vec3 *shpp, Vec3 *pnti1, Vec3 *pnti2, EPlaceTy
 //static const BuildFrame build[17];
 
 
-#ifdef QT_CORE_LIB
 
 void PicDisp::placeSidePolygon(MyObject& obj, int b, bool is1, int x, int y) const
 {
@@ -273,7 +272,7 @@ void PicDisp::init(const DisplayConf& dpc)
         obj.subdivide(dpc.passRound[i]);
     }
     obj.clacNormals(dpc.bVtxNormals);
-    obj.toMesh(m_mesh);
+    obj.toMesh(m_mesh, true);
 
     stringstream ss;
     ss << "c:/temp/orig/piece_" << hex << m_arr.getBits() << "_" << rand() << ".obj";
@@ -288,19 +287,54 @@ void PicDisp::init(const DisplayConf& dpc)
 
 //---------------------------------
 
-static void addPolyMirror(MyObject& obj, const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d, bool flip = false)
+static void addPolyMirror(MyObject& obj, const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d, bool flip = false, bool addNormal=false)
 {
-    obj.addPoly(d, c, b, a, flip);
-    obj.addPoly( Vec3(a.x, a.y, 1.0f - a.z), Vec3(b.x, b.y, 1.0f - b.z), Vec3(c.x, c.y, 1.0f - c.z), Vec3(d.x, d.y, 1.0f - d.z), flip);
+    obj.addPoly(d, c, b, a, flip, addNormal);
+    obj.addPoly( Vec3(a.x, a.y, 1.0f - a.z), Vec3(b.x, b.y, 1.0f - b.z), Vec3(c.x, c.y, 1.0f - c.z), Vec3(d.x, d.y, 1.0f - d.z), flip, addNormal);
 }
 static void addAcross(MyObject& obj, float x, float y, float z1, float z2, 
-                      const Vec2& d1, const Vec2& d2, const Vec2& d3, const Vec2& d4, bool flip=false, bool flipD=false)
+                      const Vec2& d1, const Vec2& d2, const Vec2& d3, const Vec2& d4, bool flip=false, bool flipD=false, bool addNormal=false) //flipD - flips x and y
 {
     if (!flipD)
-        obj.addPoly(Vec3(x+d1.x,y+d1.y,z1), Vec3(x+d2.x,y+d2.y,z1), Vec3(x+d3.x,y+d3.y,z2), Vec3(x+d4.x,y+d4.y,z2), flip);
+        obj.addPoly(Vec3(x+d1.x,y+d1.y,z1), Vec3(x+d2.x,y+d2.y,z1), Vec3(x+d3.x,y+d3.y,z2), Vec3(x+d4.x,y+d4.y,z2), flip, addNormal);
     else
-        obj.addPoly(Vec3(x+d1.y,y+d1.x,z1), Vec3(x+d2.y,y+d2.x,z1), Vec3(x+d3.y,y+d3.x,z2), Vec3(x+d4.y,y+d4.x,z2), !flip);
+        obj.addPoly(Vec3(x+d1.y,y+d1.x,z1), Vec3(x+d2.y,y+d2.x,z1), Vec3(x+d3.y,y+d3.x,z2), Vec3(x+d4.y,y+d4.x,z2), !flip, addNormal);
 }
+static void addPolyMirrorAc(MyObject& obj, float x, float y, float z1, float z2, 
+                            const Vec2& d1, const Vec2& d2, const Vec2& d3, const Vec2& d4, bool flip=false, bool flipD=false)
+{
+    addAcross(obj, x, y, z1, z2, d1, d2, d3, d4, !flip, flipD);
+    addAcross(obj, x, y, 1-z1, 1-z2, d1, d2, d3, d4, flip, flipD);
+}
+
+static void addPolyMirrorCorner(MyObject& obj, float x, float y, float z1, float z2, 
+                                const Vec2& d1, const Vec2& d2, const Vec3& p, const Vec2& d4, bool flip=false, bool flipD=false)
+{ 
+    if (!flipD)
+        obj.addPoly(Vec3(x+d1.x,y+d1.y,z1), Vec3(x+d2.x,y+d2.y,z1), p, Vec3(x+d4.x,y+d4.y,z2), !flip);
+    else
+        obj.addPoly(Vec3(x+d1.y,y+d1.x,z1), Vec3(x+d2.y,y+d2.x,z1), p, Vec3(x+d4.y,y+d4.x,z2), flip);
+
+    if (!flipD)
+        obj.addPoly(Vec3(x+d1.x,y+d1.y,1-z1), Vec3(x+d2.x,y+d2.y,1-z1), Vec3(p.x,p.y,1-p.z), Vec3(x+d4.x,y+d4.y,1-z2), flip);
+    else
+        obj.addPoly(Vec3(x+d1.y,y+d1.x,1-z1), Vec3(x+d2.y,y+d2.x,1-z1), Vec3(p.x,p.y,1-p.z), Vec3(x+d4.y,y+d4.x,1-z2), !flip);
+}
+
+static void addPolyMirrorCorner2(MyObject& obj, float x, float y, float z1, float z2, 
+                                const Vec2& d1, const Vec3& p, const Vec2& d2, const Vec2& d4, bool flip=false, bool flipD=false)
+{ 
+    if (!flipD)
+        obj.addPoly(Vec3(x+d1.x,y+d1.y,z1), p, Vec3(x+d2.x,y+d2.y,z1), Vec3(x+d4.x,y+d4.y,z2), !flip);
+    else
+        obj.addPoly(Vec3(x+d1.y,y+d1.x,z1), p, Vec3(x+d2.y,y+d2.x,z1), Vec3(x+d4.y,y+d4.x,z2), flip);
+
+    if (!flipD)
+        obj.addPoly(Vec3(x+d1.x,y+d1.y,1-z1), Vec3(p.x,p.y,1-p.z), Vec3(x+d2.x,y+d2.y,1-z1), Vec3(x+d4.x,y+d4.y,1-z2), flip);
+    else
+        obj.addPoly(Vec3(x+d1.y,y+d1.x,1-z1), Vec3(p.x,p.y,1-p.z), Vec3(x+d2.y,y+d2.x,1-z1), Vec3(x+d4.y,y+d4.x,1-z2), !flip);
+}
+
 
 #define E 0.125
 #define ER 0.03125
@@ -323,7 +357,7 @@ void PicDisp::initNoSubdiv()
         for(int y = 0; y < 5; ++y)
         {
             if (uncubex(x, y)) {
-                addPolyMirror(obj, Vec3(x+E,y+E,0), Vec3(x+1-E,y+E,0), Vec3(x+1-E,y+1-E,0), Vec3(x+E,y+1-E,0));
+                addPolyMirror(obj, Vec3(x+E,y+E,0), Vec3(x+1-E,y+E,0), Vec3(x+1-E,y+1-E,0), Vec3(x+E,y+1-E,0), false, true);
             }
         }
     }
@@ -335,13 +369,13 @@ void PicDisp::initNoSubdiv()
         {
             int x = i, y = j;
             if (uncubex(x, y) && uncubex(x+1, y)) {
-                addPolyMirror(obj, Vec3(x+1,y+E,0), Vec3(x+1,y+1-E,0), Vec3(x+1-E,y+1-E,0), Vec3(x+1-E,y+E,0) );
-                addPolyMirror(obj, Vec3(x+1,y+E,0), Vec3(x+1,y+1-E,0), Vec3(x+1+E,y+1-E,0), Vec3(x+1+E,y+E,0), true);
+                addPolyMirror(obj, Vec3(x+1,y+E,0), Vec3(x+1,y+1-E,0), Vec3(x+1-E,y+1-E,0), Vec3(x+1-E,y+E,0), false, true );
+                addPolyMirror(obj, Vec3(x+1,y+E,0), Vec3(x+1,y+1-E,0), Vec3(x+1+E,y+1-E,0), Vec3(x+1+E,y+E,0), true, true);
             }
             x = j; y = i;
             if (uncubex(x, y) && uncubex(x, y+1)) {
-                addPolyMirror(obj, Vec3(x+E,y+1,0), Vec3(x+1-E,y+1,0), Vec3(x+1-E,y+1-E,0), Vec3(x+E,y+1-E,0), true);
-                addPolyMirror(obj, Vec3(x+E,y+1,0), Vec3(x+1-E,y+1,0), Vec3(x+1-E,y+1+E,0), Vec3(x+E,y+1+E,0));
+                addPolyMirror(obj, Vec3(x+E,y+1,0), Vec3(x+1-E,y+1,0), Vec3(x+1-E,y+1-E,0), Vec3(x+E,y+1-E,0), true, true);
+                addPolyMirror(obj, Vec3(x+E,y+1,0), Vec3(x+1-E,y+1,0), Vec3(x+1-E,y+1+E,0), Vec3(x+E,y+1+E,0), false, true);
             }
         }
     }
@@ -352,10 +386,10 @@ void PicDisp::initNoSubdiv()
         for(int y = 1; y < 5; ++y)
         {
             if (uncubex(x,y) && uncubex(x-1,y) && uncubex(x,y-1) && uncubex(x-1,y-1)) {
-                addPolyMirror(obj, Vec3(x,y,0), Vec3(x+E,y,0), Vec3(x+E,y+E,0), Vec3(x,y+E,0)); 
-                addPolyMirror(obj, Vec3(x,y,0), Vec3(x-E,y,0), Vec3(x-E,y+E,0), Vec3(x,y+E,0), true); 
-                addPolyMirror(obj, Vec3(x,y,0), Vec3(x+E,y,0), Vec3(x+E,y-E,0), Vec3(x,y-E,0), true); 
-                addPolyMirror(obj, Vec3(x,y,0), Vec3(x-E,y,0), Vec3(x-E,y-E,0), Vec3(x,y-E,0)); 
+                addPolyMirror(obj, Vec3(x,y,0), Vec3(x+E,y,0), Vec3(x+E,y+E,0), Vec3(x,y+E,0), false, true); 
+                addPolyMirror(obj, Vec3(x,y,0), Vec3(x-E,y,0), Vec3(x-E,y+E,0), Vec3(x,y+E,0), true , true); 
+                addPolyMirror(obj, Vec3(x,y,0), Vec3(x+E,y,0), Vec3(x+E,y-E,0), Vec3(x,y-E,0), true , true); 
+                addPolyMirror(obj, Vec3(x,y,0), Vec3(x-E,y,0), Vec3(x-E,y-E,0), Vec3(x,y-E,0), false, true); 
             }
         }
     }
@@ -367,125 +401,129 @@ void PicDisp::initNoSubdiv()
         for(int y = 0; y <= 5; ++y) 
         {
              bool a = uncubex(x-1,y), b = uncubex(x,y);
+             bool c = uncubex(x,y-1);
+             auto sidePanel = [=](MyObject& obj, bool flipD) {
+                 // panel
+                 addAcross(obj, x, y, E, 1-E, Vec2(0,E), Vec2(0,1-E), Vec2(0,1-E), Vec2(0,E), b!=0, flipD, true);
+                 auto ser = (b!=0)?ER:-ER;
+                 auto se = (b!=0)?E:-E;
+                 // side panels connectors to top and bottom panels
+                 addPolyMirrorAc(obj, x, y, E, ER, Vec2(0,E), Vec2(0,1-E), Vec2(ser,1-E), Vec2(ser,E), b!=0, flipD);
+                 addPolyMirrorAc(obj, x, y, 0, ER, Vec2(se,E), Vec2(se,1-E), Vec2(ser,1-E), Vec2(ser,E), b==0, flipD);  
+             };
              if (a != b) {
-                 // side panel
-                 addAcross(obj, x, y, E, 1-E, Vec2(0,E), Vec2(0,1-E), Vec2(0,1-E), Vec2(0,E), a==0, false);
-                 //-obj.addPoly(Vec3(x,y+E,E), Vec3(x,y+1-E,E), Vec3(x,y+1-E,1-E), Vec3(x,y+E,1-E), a==0); 
-                 // round from top to side panels
-                 auto ser = (a==0)?ER:-ER;
-                 auto se = (a==0)?E:-E;
-//                 addPolyMirror(obj, Vec3(x,y+E,E), Vec3(x,y+1-E,E),       Vec3(x+ser,y+1-E,ER), Vec3(x+ser,y+E,ER), a==0); 
-//                 addPolyMirror(obj, Vec3(x+se,y+E,0), Vec3(x+se,y+1-E,0), Vec3(x+ser,y+1-E,ER), Vec3(x+ser,y+E,ER), a!=0);
+                 sidePanel(obj, false);
              }
-             a = uncubex(x,y-1); b = uncubex(x,y);
-             if (a != b) {
-                 // side panel
-                 addAcross(obj, x, y, E, 1-E, Vec2(0,E), Vec2(0,1-E), Vec2(0,1-E), Vec2(0,E), a==0, true);
-                 //-addAcross(obj, x, y, E, 1-E, Vec2(E,0), Vec2(1-E,0), Vec2(1-E,0), Vec2(E,0), a!=0, false);
-                 //-obj.addPoly(Vec3(x+E,y,E), Vec3(x+1-E,y,E), Vec3(x+1-E,y,1-E), Vec3(x+E,y,1-E), a==1); 
-                 // round from top to side panels
-                 auto ser = (a==0)?ER:-ER;
-                 auto se = (a==0)?E:-E;
-//                 addPolyMirror(obj, Vec3(x+E,y,E), Vec3(x+1-E,y,E),       Vec3(x+1-E,y+ser,ER), Vec3(x+E,y+ser,ER), a==1);
-//                 addPolyMirror(obj, Vec3(x+E,y+se,0), Vec3(x+1-E,y+se,0), Vec3(x+1-E,y+ser,ER), Vec3(x+E,y+ser,ER), a!=1);
+             if (c != b) {
+                 sidePanel(obj, true);
              }
              // ------ 4 at a time conditions ------
-             bool c, d;
+             bool d;
              a = uncubex(x-1,y-1); b = uncubex(x,y-1);
              c = uncubex(x-1,y)  ; d = uncubex(x,y);
              //    --- straights ---
+             auto straightConnect = [=](MyObject& obj, bool flipD) {
+                 // slithers
+                 addAcross(obj, x,y, E,1-E, Vec2(0,0), Vec2(0,E), Vec2(0,E), Vec2(0,0), a==0, flipD, true);
+                 addAcross(obj, x,y, E,1-E, Vec2(0,0), Vec2(0,-E), Vec2(0,-E), Vec2(0,0), a!=0, flipD, true);
+                 // round squares
+                 auto ser = (a==0)?ER:-ER;
+                 auto se = (a==0)?E:-E;
+                 addPolyMirrorAc(obj, x,y, E,ER, Vec2(0,0), Vec2(0,E), Vec2(ser,E), Vec2(ser,0), a==0, flipD);
+                 addPolyMirrorAc(obj, x,y, 0,ER, Vec2(se,0), Vec2(se,E), Vec2(ser,E), Vec2(ser,0), a!= 0, flipD);
+                 addPolyMirrorAc(obj, x,y, E,ER, Vec2(0,0), Vec2(0,-E), Vec2(ser,-E), Vec2(ser,0), a!= 0, flipD);
+                 addPolyMirrorAc(obj, x,y, 0,ER, Vec2(se,0), Vec2(se,-E), Vec2(ser,-E), Vec2(ser,0), a==0, flipD);
+             };
              // 0,1 or 1,0
              // 0,1    1,0
              if ((!a && b && !c && d) || (a && !b && c && !d))  {
-                 // slithers
-/*                 obj.addPoly(Vec3(x,y,E), Vec3(x,y+E,E), Vec3(x,y+E,1-E), Vec3(x,y,1-E), a==0);  
-                 obj.addPoly(Vec3(x,y,E), Vec3(x,y-E,E), Vec3(x,y-E,1-E), Vec3(x,y,1-E), a!=0);
-                 // round squares
-                 auto ser = (a==0)?ER:-ER;
-                 auto se = (a==0)?E:-E;
-                 addPolyMirror(obj, Vec3(x,   y,E), Vec3(x,   y+E,E), Vec3(x+ser,y+E,ER), Vec3(x+ser,y,ER), a==0);
-                 addPolyMirror(obj, Vec3(x+se,y,0), Vec3(x+se,y+E,0), Vec3(x+ser,y+E,ER), Vec3(x+ser,y,ER), a!=0);
-                 addPolyMirror(obj, Vec3(x,   y,E), Vec3(x,   y-E,E), Vec3(x+ser,y-E,ER), Vec3(x+ser,y,ER), a!=0);
-                 addPolyMirror(obj, Vec3(x+se,y,0), Vec3(x+se,y-E,0), Vec3(x+ser,y-E,ER), Vec3(x+ser,y,ER), a==0);
-*/             }
+                 straightConnect(obj, false);
+             }
              // 0,0 or 1,1  it's like the above, x,y reversed
              // 1,1    0,0
              if ((a && b && !c && !d) || (!a && !b && c && d)) {
-                 // slithers
-/*                 obj.addPoly(Vec3(x,y,E), Vec3(x+E,y,E), Vec3(x+E,y,1-E), Vec3(x,y,1-E), a!=0);  
-                 obj.addPoly(Vec3(x,y,E), Vec3(x-E,y,E), Vec3(x-E,y,1-E), Vec3(x,y,1-E), a==0);
-                 // round squares
-                 auto ser = (a==0)?ER:-ER;
-                 auto se = (a==0)?E:-E;
-                 addPolyMirror(obj, Vec3(x,y   ,E), Vec3(x+E,y   ,E), Vec3(x+E,y+ser,ER), Vec3(x,y+ser,ER), a!=0);
-                 addPolyMirror(obj, Vec3(x,y+se,0), Vec3(x+E,y+se,0), Vec3(x+E,y+ser,ER), Vec3(x,y+ser,ER), a==0);
-                 addPolyMirror(obj, Vec3(x,y   ,E), Vec3(x-E,y   ,E), Vec3(x-E,y+ser,ER), Vec3(x,y+ser,ER), a==0);
-                 addPolyMirror(obj, Vec3(x,y+se,0), Vec3(x-E,y+se,0), Vec3(x-E,y+ser,ER), Vec3(x,y+ser,ER), a!=0);
-*/             }
+                 straightConnect(obj, true);
+             }
              //    --- corners ---
-             // 0,1 or 1,0
-             // 1,1    0,0
-             if ((!a && b && c && d) || (a && !b && !c && !d)) {
-/*                 obj.addPoly(Vec3(x-ER,y-ER,E), Vec3(x-E,y,E), Vec3(x-E,y,1-E), Vec3(x-ER,y-ER,1-E), a==0);
-                 obj.addPoly(Vec3(x-ER,y-ER,E), Vec3(x,y-E,E), Vec3(x,y-E,1-E), Vec3(x-ER,y-ER,1-E), a!=0);
+             auto straightCorner = [=](MyObject& obj, bool flipD, int sY, int sX, bool checkWhich) {
+                 // equals operator (==) does a XOR operation
+                 addAcross(obj, x,y, E,1-E, Vec2(sX*ER,sY*ER), Vec2(sX*E,0), Vec2(sX*E,0), Vec2(sX*ER,sY*ER), (checkWhich==0) != flipD, flipD);
+                 addAcross(obj, x,y, E,1-E, Vec2(sX*ER,sY*ER), Vec2(0,sY*E), Vec2(0,sY*E), Vec2(sX*ER,sY*ER), (checkWhich!=0) != flipD, flipD);
+
                  Vec3 p;
-                 if (a)
-                     p = Vec3(x-EP, y-EP, EP);
+                 if (checkWhich)
+                     p = Vec3(x+sY*EP, y+sX*EP, EP);
                  else
                      p = Vec3(x,y,ES);
 
-                 auto ser = (a==0)?ER:-ER;
-                 auto se = (a==0)?E:-E;
-                 addPolyMirror(obj, Vec3(x-E,y,E), Vec3(x-ER,y-ER,E), p, Vec3(x-E,y+ser,ER), a!=0);
-                 addPolyMirror(obj, Vec3(x,y-E,E), Vec3(x-ER,y-ER,E), p, Vec3(x+ser,y-E,ER), a==0); 
-                 if (a) { // only for point
-                     addPolyMirror(obj, Vec3(x-E,y+ser,ER), p, Vec3(x+ser,y-E,ER), Vec3(x-E,y-E,0), true);
+                 auto ser = (checkWhich==0)?ER:-ER;
+                 auto se = (checkWhich==0)?E:-E;
+
+                 addPolyMirrorCorner(obj, x,y, E,ER, Vec2(sX*E,0), Vec2(sX*ER,sY*ER), p, Vec2(sX*E,-sY*ser), (checkWhich!=0) != flipD, flipD);
+                 addPolyMirrorCorner(obj, x,y, E,ER, Vec2(0,sY*E), Vec2(sX*ER,sY*ER), p, Vec2(-sX*ser,sY*E), (checkWhich==0) != flipD, flipD);
+
+                 if (checkWhich) { // only for point
+                     addPolyMirrorCorner2(obj, x,y, ER,0, Vec2(sX*E,-sY*ser), p, Vec2(-sX*ser,sY*E), Vec2(sX*E,sY*E), !flipD, flipD); 
                  }
                  else { // a saddle
-                     addPolyMirror(obj, Vec3(x,y+E,0), p, Vec3(x-E,y+ser,ER), Vec3(x-E,y+E,0), true);
-                     addPolyMirror(obj, Vec3(x+E,y,0), p, Vec3(x+ser,y-E,ER), Vec3(x+E,y-E,0));   
-                     addPolyMirror(obj, Vec3(x+E,y,0), p, Vec3(x,y+E,0), Vec3(x+E,y+E,0), true);
+                     addPolyMirrorCorner(obj, x,y, 0,ER, Vec2(sX*E,-sY*E), Vec2(0,-sY*E), p, Vec2(sX*E,-sY*ser), !flipD, flipD);
+                     addPolyMirrorCorner(obj, x,y, 0,ER, Vec2(-sX*E,sY*E), Vec2(-sX*E,0), p, Vec2(-sX*ser,sY*E), flipD, flipD);
+                     addPolyMirrorCorner(obj, x,y, 0,0, Vec2(-sX*E,-sY*E), Vec2(-sX*E,0), p, Vec2(0,-sY*E), !flipD, flipD);
                  }
-*/             }
+             };
+             // 0,1 or 1,0
+             // 1,1    0,0
+             if ((!a && b && c && d) || (a && !b && !c && !d)) {
+                 straightCorner(obj, false, -1, -1, a);
+             }
              // 1,0 or 0,1  it's x mirror of the above offsets
-             // 1,1    1,1
-  /*           if ((a && !b && c && d) || (!a && b && !c && !d)) {
-                 obj.addPoly(Vec3(x+ER,y-ER,E), Vec3(x+E,y,E), Vec3(x+E,y,1-E), Vec3(x+ER,y-ER,1-E), a==0);
-                 obj.addPoly(Vec3(x+ER,y-ER,E), Vec3(x,y-E,E), Vec3(x,y-E,1-E), Vec3(x+ER,y-ER,1-E), a!=0);
+             // 1,1    0,0
+             if ((a && !b && c && d) || (!a && b && !c && !d)) {
+                 straightCorner(obj, true, 1, -1,  b);
              }
              // now x,y reversed of the above two
              // 1,1 or 0,0
              // 0,1    1,0
              if ((a && b && !c && d) || (!a && !b && c && !d)) {
-                 obj.addPoly(Vec3(x-ER,y+ER,E), Vec3(x,y+E,E), Vec3(x,y+E,1-E), Vec3(x-ER,y+ER,1-E), a!=0);
-                 obj.addPoly(Vec3(x-ER,y+ER,E), Vec3(x-E,y,E), Vec3(x-E,y,1-E), Vec3(x-ER,y+ER,1-E), a==0);
+                 straightCorner(obj, true, -1, 1, c);
              }
              // 1,1 or 1,1  it's x mirror of the above offsets
              // 1,0    1,0
              if ((a && b && c && !d) || (!a && !b && !c && d)) {
-                 obj.addPoly(Vec3(x+ER,y+ER,E), Vec3(x,y+E,E), Vec3(x,y+E,1-E), Vec3(x+ER,y+ER,1-E), a==0);
-                 obj.addPoly(Vec3(x+ER,y+ER,E), Vec3(x+E,y,E), Vec3(x+E,y,1-E), Vec3(x+ER,y+ER,1-E), a!=0);
-             }*/
+                 straightCorner(obj, false, 1, 1, d); 
+             }
 
         }
     }
 
 
-
-
-
     obj.vectorify();
-    //obj.clacNormals(true);
-    obj.toMesh(m_mesh);
-    stringstream ss;
-    ss << "c:/temp/nosub/piece_" << hex << m_arr.getBits() << "_" << rand() << ".obj";
-    m_mesh.save(ss.str(), true);
+    // flip it to the correct piece orientation
+    for(int pn = 0; pn < obj.nPoints; ++pn)
+    {
+        Vec3 v = obj.points[pn]->p;
+        obj.points[pn]->p = Vec3(1-v.z, v.y, v.x);
+        Vec3 n = obj.points[pn]->n;
+        obj.points[pn]->n = Vec3(-n.z, n.y, n.x);
+    }
+
+    obj.clacNormalsExceptTouched();
+    obj.toMesh(m_mesh, false);
+
+
+    //stringstream ss;
+    //ss << "c:/temp/nosub/piece_" << hex << m_arr.getBits() << "_" << rand() << ".obj";
+    //m_mesh.save(ss.str(), true);
 
     g_smoothAllocator.clear();
 }
 
+#undef E
+#undef ER
+#undef EP
+#undef ES
 
-#endif // QT_CORE_LIB
+
 
 
 /// do the actual painting of a single piece in the actual OpenGL view.
@@ -535,11 +573,12 @@ void PicPainter::paint(bool fTargets, const Vec3& name, BaseGLWidget *context, b
         bprog->colorAu.set(name);
         mglCheckErrorsC("x9b");
     }
-
+    M_ASSERT(m_pdef->disp != nullptr);
+    //cout << "pdef=" << m_pdef << " disp=" << m_pdef->disp << endl;
     m_pdef->disp->m_mesh.paint();
 }
 
-#ifdef QT_CORE_LIB
+
 bool PicPainter::exportToObj(ObjExport& oe, const Mat4& fMatrix) const
 {
     DisplayConf displayConf;
@@ -548,11 +587,11 @@ bool PicPainter::exportToObj(ObjExport& oe, const Mat4& fMatrix) const
     PicDisp::g_smoothAllocator.clear();
 
     Mesh mesh;
-    obj.toMesh(mesh);
+    obj.toMesh(mesh, true);
     oe.addMesh(m_pdef->mygrp(), mesh, fMatrix);
     return true;
 }
-#endif
+
 
 
 
