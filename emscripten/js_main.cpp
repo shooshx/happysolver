@@ -214,6 +214,7 @@ bool initCubeEngine(const char* stdpcs, const char* unimesh)
 void resizeGl(int width, int height) 
 {
     g_ctrl.m_gl.resize(width, height);
+    g_ctrl.m_gl.invalidateChoice();
     g_ctrl.requestDraw();
 }
 

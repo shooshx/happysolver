@@ -12,7 +12,7 @@ universal slv
     remove added array
 rid of gind?
 
-dedicated memory for selection
+
 rid of shared_ptr
 
 

@@ -237,8 +237,15 @@ int BaseGLWidget::doChoise(int chX, int chY)
     if (bufWidth != m_cxClient || bufHeight != m_cyClient) {
         bufWidth = m_cxClient;
         bufHeight = m_cyClient;
+#ifndef EMSCRIPTEN
         buffer.resize(bufWidth * bufHeight);
+#else
+        EM_ASM_(readFrameBuf = new Uint8Array($0); readFrameView = new DataView(readFrameBuf.buffer), bufWidth * bufHeight * 4);
+#endif
     }
+
+    if (chX < 0 || chY < 0 || chX >= bufWidth || chY >= bufHeight)
+        return -1;
 
     //int	viewport[4] = {0, 0, m_cxClient, m_cyClient};
    // makeCurrent();
@@ -265,15 +272,23 @@ int BaseGLWidget::doChoise(int chX, int chY)
         //uint buf[10] = {0};
 
         //glReadPixels(viewport[2] / 2, viewport[3] / 2, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, buf);
+#ifndef EMSCRIPTEN
         glReadPixels(0, 0, bufWidth, bufHeight, GL_RGBA, GL_UNSIGNED_BYTE, buffer.data());
+#else
+        EM_ASM_( GLctx.readPixels(0, 0, $0, $1, GLctx.RGBA, GLctx.UNSIGNED_BYTE, readFrameBuf), bufWidth, bufHeight);
+#endif
         m_choiceBufferValid = true;
         //printf("%X\n", buf[0]);
         m_screenNeedUpdate = true;
     }
 
-       
     int index = (bufHeight - 1 - chY) * bufWidth + chX;
-    int choose = buffer[index] & 0xffffff;
+#ifndef EMSCRIPTEN
+    int choose = buffer[index];
+#else
+    int choose = EM_ASM_INT(return readFrameView.getUint32($0, true), index * 4);
+#endif
+    choose &= 0xffffff;
     if (choose == 0)
         return -1;
 

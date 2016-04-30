@@ -27,9 +27,10 @@ var model = { vtxBuf: null }
 
 var loadSolution, resizeGl, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseWheel, cpp_draw, cpp_slvrun, getTms
 var setGrpCount, setEditAction, restartSolve, serializeCurrent, deserializeAndLoad, readCube
-var ctrlPressed = false;
+var ctrlPressed = false
 var editCtx = null
 var unimesh_keys = Object.keys(unimesh) // unimesh included above
+var readFrameBuf = null, readFrameView = null // buffer for selection readPixels. don't want it managed by emscripten
 
 var ACT_NONE = 0, ACT_ADD = 1, ACT_REMOVE = 2
     
@@ -387,7 +388,7 @@ function pic_rolldown(id) {
 
 
 function doResize() {
-    mycanvas.width = window.innerWidth - 230 - 16
+    mycanvas.width = window.innerWidth - side_ctrl.clientWidth - 16
     mycanvas.height = window.innerHeight - 16
     side_rel.style.height = "" + (window.innerHeight - 220) + "px"
     
@@ -596,9 +597,18 @@ function triggerCubeEdit(v, cubeId)
 {
     if (v) {
         editBack.style.display = "inline"
+        side_ctrl.style.width = "50%"
+        doResize()
+        setEditAction(ACT_NONE)
     }
     else {
         editBack.style.display = "none"
+        side_ctrl.style.width = "230px"
+        doResize()
+        if (addingCubeCheck.checked)
+            setEditAction(ACT_ADD)
+        else if (removingCubeCheck.checked)
+            setEditAction(ACT_REMOVE)
         return
     }
     editingCubeId = cubeId
@@ -970,6 +980,10 @@ h1 {
       <div id="fams_cont"></div>
       <label id="addFamBtn" class="sc-btn" onclick="triggerAddFam()"/></label>
     </div>
+    <div id="editBack" class="popupBack"><div id="picEditWin" class="popupWin">
+        <canvas id="editCanvas" width="590", height="450"></canvas>
+        <label id="editDoneBtn" class="sc-btn" onclick="triggerEditDone()"/></label>
+    </div></div>
     </div>
     <div id="urlPopup"><input id="urlEdit" type="text" onchange="urlEditChanged()"/></div>
     
@@ -987,10 +1001,6 @@ Happy Cube, Little Genius, Profi Cube and Marble Cube are registered trademarks 
 If you have any questions concerning the usage of HAPPY materials, please send your detailed request in writing to <a href="mailto:info@happy.be" target="_blank">info@happy.be</a>. See <a href="http://www.happy.be" target="_blank">http://www.happy.be</a> for more information</h3>
     </div></div>
     
-    <div id="editBack" class="popupBack"><div id="picEditWin" class="popupWin">
-    <canvas id="editCanvas" width="590", height="450"></canvas>
-    <label id="editDoneBtn" class="sc-btn" onclick="triggerEditDone()"/></label>
-    </div></div>
     
     <img id="noisetex" src='cubeTex.png' style="display:none;"/>
     <img src="arrow_up.png" style="display:none;"/>
