@@ -36,9 +36,10 @@ class QSettings;
 
 enum EPersistSlvSession
 {
-	PERSIST_ONLY_FIRST = 0,
-	PERSIST_ALL = 1,
-	PERSIST_UPTO = 2
+	PERSIST_ONLY_FIRST = 0,  // stop after a single solution is found
+	PERSIST_ALL = 1,   // don't stop until enumeration is complete
+	PERSIST_UPTO = 2,  // stop after nUpto were found
+    PERSIST_ONLY_ONE = 3 // same as PERSIST_ONLY_FIRST but delete the previous solution
 };
 
 /// controls how to solution engine treats Asymmetric pieces like the ones in the Little Genius cubes
@@ -120,7 +121,7 @@ class EngineConf
 public:
 	/// real defaults are in fromDefaults()
 	EngineConf()
-	: fRand(false), fRestart(true), fLuck(true), nRestart(2000), nLuck(8), nPersist(PERSIST_ONLY_FIRST)
+	: fRand(false), fRestart(true), fLuck(true), nRestart(2000), nLuck(8), nPersist(PERSIST_ONLY_ONE)
     , nUpto(1), fAfter(true), nAfter(1), nAsym(ASYM_OUTSIDE)
 	{
     } 

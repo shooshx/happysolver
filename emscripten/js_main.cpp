@@ -41,19 +41,15 @@ class RunContext : public SolveContext
 {
 public:
     virtual void notifyLastSolution(bool firstInGo) override;
-    virtual void notifyFullEnum() override { 
-        cout << "Full-enum" << endl;
-    }
-    virtual void notifyNotEnoughPieces() override {
-        cout << "Not enough pieces" << endl;
-    }
+    virtual void notifyFullEnum() override;
+    virtual void notifyNotEnoughPieces() override;
 
     virtual void doStart() override {
         init();
         EM_ASM(requestSlvRun());
     }
     virtual void doWait() override {
-        runAll();
+        runAll(); // in solveStop() this will detect that we turned fExitnow on and will stop the run 
     }
     
     bool runSome() {
@@ -114,6 +110,17 @@ void RunContext::notifyLastSolution(bool firstInGo)
 {
     cout << "Slv-notify" << endl;
     g_ctrl.m_doc.setCurSlvToLast();
+    g_ctrl.requestDraw();
+}
+
+void RunContext::notifyFullEnum() { 
+    cout << "Full-enum" << endl;
+    g_ctrl.m_doc.clearSlvs();
+    g_ctrl.requestDraw();
+}
+void RunContext::notifyNotEnoughPieces() {
+    cout << "Not enough pieces" << endl;
+    g_ctrl.m_doc.clearSlvs();
     g_ctrl.requestDraw();
 }
 
@@ -274,7 +281,8 @@ void cpp_start()
 
 void conf(bool rand) 
 {
-    g_ctrl.m_doc.m_conf.engine.fRand = true;
+    g_ctrl.m_doc.m_conf.engine.fRand = rand;
+    g_ctrl.m_doc.m_conf.engine.nPersist = PERSIST_ONLY_ONE; // otherwise solutions just stores past solutions which we don't care about
 }
 
 bool cpp_draw(float deltaSec) 
@@ -312,11 +320,17 @@ void setEditAction(int a)
     g_ctrl.m_modelGl.m_buildCtrl.m_bBoxRemove = (a == 2);
 }
 
-void restartSolve()
+void runningRestart()
 {
+    // if its running it means it still did not find a solution
     if (g_ctrl.m_doc.isSlvEngineRunning()) {
-        g_ctrl.m_modelGl.restartSolve();
+        g_ctrl.m_modelGl.restartSolve(true); // with starter
     }
+}
+
+void newRestart() 
+{
+    g_ctrl.m_modelGl.restartSolve(false); // without starter
 }
 
 int serializeCurrent()

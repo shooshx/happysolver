@@ -3,7 +3,7 @@
 #include "PicsSet.h"
 #include "Pieces.h"
 #include "Cube.h"
-
+#include <sstream>
 
 SlvCube::SlvCube(const vector<ShapePlace>& plc, const vector<ShapePlace>& abs_plc, const PicsSet *picset, const Shape *_shape) 
 	: painter(nullptr), shape(_shape)
@@ -188,4 +188,15 @@ void SlvCube::transform(const TTransformVec &moveTo)
 		newdt[moveTo[i]] = dt[i];
 	}
 	dt = std::move(newdt);
+}
+
+string SlvCube::debug_prn() const
+{
+    stringstream ss;
+    ss << dt.size() << ":";
+    for(int i = 0; i < dt.size(); ++i)
+	{
+		ss << dt[i].abs_sc << ",";
+	}
+    return ss.str();
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include "Solutions.h"
 #include "BuildWorld.h"
+#include "SlvCube.h"
 
 #include <memory>
 using namespace std;
@@ -51,6 +52,19 @@ public:
 
         return m_slvs->at(m_nCurSlv); 
     }
+    SlvCube* getCurrentSolveAndClearSlvs()
+    {
+        if (m_slvs.get() == nullptr || m_slvs->size() == 0 || m_nCurSlv == -1)
+            return nullptr;
+        auto s = m_slvs->release(m_nCurSlv);
+        m_nCurSlv = -1;
+        m_slvs->clear();
+        return s;
+    }
+    void clearSlvs() {
+        m_nCurSlv = -1;
+        m_slvs->clear();
+    }
 
     int getCurrentSolveIndex() { 
         return m_nCurSlv; 
@@ -80,12 +94,13 @@ public:
     const RunStats* getRunningStats();
 
     /// starts and stops the solution engine thread.
-    virtual void solveGo();
+    virtual void solveGo(SlvCube* starter = nullptr);
     /// stops the solve thread if its running. return only after it is stopped.
     virtual void solveStop();
 
     void setCurSlvToLast() {
         m_nCurSlv = m_slvs->size() - 1;
+        cout << "slv-count=" << m_slvs->size() << "  " << getCurrentSolve()->debug_prn() << endl;
         m_nUpToStep = m_shp->fcn;
     }
 

@@ -262,7 +262,7 @@ bool ModelControlBase::scrMove(bool rightButton, bool ctrlPressed, int x, int y)
 bool ModelControlBase::scrDblClick(bool hasCtrl, int x, int y) 
 { 
     int choise = m_bgl->doChoise(x, y) - 1;
-    cout << "CHS " << choise << endl;
+    //cout << "CHS " << choise << endl;
     const Shape* shp = m_doc->getCurrentShape();
     if (choise < shp->fcn) {
         CoordBuild cb = shp->fcToBuildCoord(choise);
@@ -274,17 +274,21 @@ bool ModelControlBase::scrDblClick(bool hasCtrl, int x, int y)
             return false;
     }
 
-    restartSolve();
+    restartSolve(true);
     return true;
 }
 
-void ModelControlBase::restartSolve()
+void ModelControlBase::restartSolve(bool withCurrentAsStarter)
 {
     if (m_doc->isSlvEngineRunning()) {
         m_doc->solveStop();
     }
 
-    m_doc->transferShape(); // does generate
-    m_doc->solveGo();
+    SlvCube* starter = nullptr;
+    if (withCurrentAsStarter) {
+        m_doc->transferShape(); // does generate
+        starter = m_doc->getCurrentSolve();
+    }
+    m_doc->solveGo(starter);
 
 }

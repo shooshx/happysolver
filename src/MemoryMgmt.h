@@ -139,9 +139,16 @@ struct MyAllocator
 	{
 		if ((m_pointsPool.getMaxAlloc() > m_pointsPool.size()) ||
 			(m_polyPool.getMaxAlloc() > m_polyPool.size()) ||
-			(m_hePool.getMaxAlloc() > m_hePool.size())) {
-			printf("warning! memory pools not optimal. max:%d, %d, %d", m_pointsPool.getMaxAlloc(),  m_polyPool.getMaxAlloc(),  m_hePool.getMaxAlloc());
+			(m_hePool.getMaxAlloc() > m_hePool.size())) 
+        {
+			cout << "Warning! memory pools not optimal. max: ";
 		}
+        else {
+            cout << "Pool sizes: ";
+        }
+        cout << " pnt=" << m_pointsPool.size() << "," << m_pointsPool.getMaxAlloc() << 
+              "  poly=" << m_polyPool.size() << "," << m_polyPool.getMaxAlloc() << 
+                 " he=" << m_hePool.size() << "," << m_hePool.getMaxAlloc() << endl;
 	}
 
 	Pool<MyPoint> m_pointsPool; //(671100); //168100);

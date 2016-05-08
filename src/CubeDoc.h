@@ -155,8 +155,8 @@ public slots:
     void slvTrigger(QAction* act);
     void slvSetIndex(int ind);
 
-    virtual void solveGo() override {
-        CubeDocBase::solveGo();
+    void solveGo() { // make them slots
+        CubeDocBase::solveGo(nullptr);
     }
     virtual void solveStop() override {
         CubeDocBase::solveStop();

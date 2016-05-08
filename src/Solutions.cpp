@@ -33,9 +33,12 @@ void Solutions::clear(int solveSize)
 
 
 
-void Solutions::addBackCommon(SlvCube *tmp)
+void Solutions::addBackCommon(SlvCube *tmp, bool keepOnlyOne)
 {
 //	M_ASSERT(tmp->slvsz == slvsz); // sanity check
+//    cout << "SLV adding at " << sv.size() << " ET:" << tmp->debug_prn() << endl;
+    if (keepOnlyOne)
+        sv.clear();
 	sv.push_back(tmp);
 	setChangedFromSave();
 }
@@ -151,7 +154,7 @@ void Solutions::toNewShape(const Shape* newShp)
     vector<int> oldToNew(oldShp->fcn); // map faces index
     fill(oldToNew.begin(), oldToNew.end(), -1);
     Vec3i boundsDelta = newShp->buildBounds.getMin() - oldShp->buildBounds.getMin();
-    cout << "Bound-Delta=" << boundsDelta.x << "," << boundsDelta.y << "," << boundsDelta.z << endl;
+    //cout << "Bound-Delta=" << boundsDelta.x << "," << boundsDelta.y << "," << boundsDelta.z << endl;
 
     for(int oi = 0; oi < oldShp->fcn; ++oi)
     {

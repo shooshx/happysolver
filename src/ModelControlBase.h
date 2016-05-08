@@ -16,7 +16,7 @@ public:
     void reCalcSlvMinMax();
     virtual void switchIn() override;
 
-    void restartSolve();
+    void restartSolve(bool withCurrentAsStarter);
 
 protected:
     CubeDocBase *m_doc;

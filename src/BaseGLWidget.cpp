@@ -247,17 +247,6 @@ int BaseGLWidget::doChoise(int chX, int chY)
     if (chX < 0 || chY < 0 || chX >= bufWidth || chY >= bufHeight)
         return -1;
 
-    //int	viewport[4] = {0, 0, m_cxClient, m_cyClient};
-   // makeCurrent();
-
-    //proj.push();
-    //proj.identity();
-    
-    // This Creates A Matrix That Will Zoom Up To A Small Portion Of The Screen, Where The Mouse Is.
-    //gluPickMatrix((GLdouble)chX, (GLdouble)(viewport[3]-chY), 1.0f, 1.0f, viewport);
-    //sgluPickMatrix((double)chX, (double)(viewport[3]-chY), 1.0f, 1.0f, viewport, proj);
-    
-    //reCalcProj(false);
 
     if (!m_choiceBufferValid)
     {
@@ -268,9 +257,6 @@ int BaseGLWidget::doChoise(int chX, int chY)
         
         //proj.pop();
 
-        //int choose = -1;
-        //uint buf[10] = {0};
-
         //glReadPixels(viewport[2] / 2, viewport[3] / 2, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, buf);
 #ifndef EMSCRIPTEN
         glReadPixels(0, 0, bufWidth, bufHeight, GL_RGBA, GL_UNSIGNED_BYTE, buffer.data());
@@ -278,7 +264,6 @@ int BaseGLWidget::doChoise(int chX, int chY)
         EM_ASM_( GLctx.readPixels(0, 0, $0, $1, GLctx.RGBA, GLctx.UNSIGNED_BYTE, readFrameBuf), bufWidth, bufHeight);
 #endif
         m_choiceBufferValid = true;
-        //printf("%X\n", buf[0]);
         m_screenNeedUpdate = true;
     }
 

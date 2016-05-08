@@ -54,6 +54,8 @@ public:
 	SlvCube(const vector<ShapePlace>& plc, const vector<ShapePlace>& abs_plc, const PicsSet *picsc, const Shape *shape);
 	/// called when opening a file
 	SlvCube(const Shape *shape); 
+    ~SlvCube() 
+    {}
 	
 	/// prepare the painter to do its job
 	void genPainter();
@@ -64,6 +66,7 @@ public:
 	
 	int numPieces() const { return dt.size(); }
 	const PicGroupDef* getPieceGrpDef(int n) const;
+    string debug_prn() const;
 
 	//int slvsz; // (size of data) keep it close. will always be equal to that of the Solutions
 	vector<SlvPiece> dt; 

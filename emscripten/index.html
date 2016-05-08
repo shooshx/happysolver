@@ -26,7 +26,7 @@ var prog = null
 var model = { vtxBuf: null }
 
 var loadSolution, resizeGl, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseWheel, cpp_draw, cpp_slvrun, getTms
-var setGrpCount, setEditAction, restartSolve, serializeCurrent, deserializeAndLoad, readCube
+var setGrpCount, setEditAction, runningRestart, serializeCurrent, deserializeAndLoad, readCube, newRestart, conf
 var ctrlPressed = false
 var editCtx = null
 var unimesh_keys = Object.keys(unimesh) // unimesh included above
@@ -59,13 +59,15 @@ function start() {
     solveGo = Module.cwrap('solveGo', null, [])
     setGrpCount = Module.cwrap('setGrpCount', null, ['number', 'number'])
     setEditAction = Module.cwrap('setEditAction', null, ['number'])
-    restartSolve  = Module.cwrap('restartSolve', null, [])
+    runningRestart  = Module.cwrap('runningRestart', null, [])
     serializeCurrent  = Module.cwrap('serializeCurrent', 'number', [])
     deserializeAndLoad = Module.cwrap('deserializeAndLoad', null, ['number'])
     readCube = Module.cwrap('readCube', null, ['number'])
-
+    newRestart  = Module.cwrap('newRestart', null, [])
+    conf = Module.cwrap('conf', null, ['number'])
+    
     Module.ccall('cpp_start', null);
-    Module.ccall('conf', null, ['boolean'], [true])
+    conf(true)
     Module.ccall('initCubeEngine', 'boolean', ['string', 'number'], [stdpcs_text, 0])
     
     loadSolution(one_piece_cube_text)
@@ -107,11 +109,12 @@ function start() {
 
 function handleMouseDown(event) {
     mouseDown( (event.button == 2)?1:0, event.clientX, event.clientY)
-    return false
+    //return false
 }
 function handleMouseUp(event) {
     mouseUp( (event.button == 2)?1:0)
-    return false
+    // returning false here breaks the spinbox
+    //return false
 }
 var lastX = null, lastY = null
 function handleMouseMove(event) {
@@ -229,8 +232,8 @@ function on_fam_check(id, v, doSolve) {
         setCheck(document.getElementById(c.cid + "_ccheck_label"), v)
         dispCCount(c.cid, v, c.grpi)
     }
-    if (doSolve)
-        restartSolve()
+    if (doSolve) // on inialization select, don't want to do this
+        runningRestart()
 }
 
 // from C++ on initialization. just need to take care of the checkboxes and count display. the counts are already there
@@ -274,7 +277,7 @@ function picFamCheck(id) {
 function on_cube_check(id, v, gind) {
     dispCCount(id, v, gind)
     picFamCheck(id)
-    restartSolve()
+    runningRestart()
 }
 
 function on_cube_count(id, gind) {
@@ -282,13 +285,14 @@ function on_cube_count(id, gind) {
     var ccheck = document.getElementById(id + "_ccheck")
     var clabel = document.getElementById(id + "_ccheck_label")
     var prevCh = ccheck.checked, newCh = (ccount.value > 0)
+    //console.log("COUNT " + prevCh + " " + newCh)
     if (prevCh != newCh) {
         ccheck.checked = newCh
         setCheck(clabel, newCh)
         picFamCheck(id)
     }
     setGrpCount(gind, ccount.value)
-    restartSolve()
+    runningRestart()
 }
 
 function registerTexBind(imgname, obj) {
@@ -593,7 +597,7 @@ function paintCube()
 }
 
 var editingCubeId = -1
-function triggerCubeEdit(v, cubeId) 
+function triggerCubeEdit(v, cubeId) // cube link pressed
 {
     if (v) {
         editBack.style.display = "inline"
@@ -612,8 +616,8 @@ function triggerCubeEdit(v, cubeId)
         return
     }
     editingCubeId = cubeId
-    paintCube();
-    
+    paintCube()
+
     return false
 }
 
@@ -626,16 +630,27 @@ function handleEditCanvasClick(event)
     var hasSameNei = function(v, x, y) { // don't allow isolated tooth of a color
         return cube[y][x-1] == v || cube[y][x+1] == v || cube[y-1][x] == v || cube[y+1][x] == v
     }
+    var didSomething = false;
     for(ti in teeth) {
         var t = teeth[ti]
         if (x == t.x && y == t.y) {
             do {
                 cube[y][x] = (cube[y][x] + 1) % 7
             } while(!t.p.includes(cube[y][x]) || !hasSameNei(cube[y][x], x, y))
-            paintCube()
+            didSomething = true;
             break
         }
     }
+    if (!didSomething)
+        return;
+    paintCube()
+    readCube(editingCubeId)
+    setGrpCount(editingCubeId, 1) // set it to be selected TBD - set back to what it was
+    conf(false) // make it not randomized so that the solution would be more or less the same
+
+    newRestart()
+    
+    conf(true)
 }
 
 function triggerEditDone()
@@ -646,7 +661,7 @@ function triggerEditDone()
     readCube(editingCubeId);
 
     editingCubeId = -1
-    triggerCubeEdit(false)
+    triggerCubeEdit(false) // remove the dialog
 }
     
 </script>

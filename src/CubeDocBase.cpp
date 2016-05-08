@@ -166,14 +166,14 @@ bool CubeDocBase::onGenShape(bool resetSlv, GenTemplate* temp)
         if (resetSlv)
         {
             m_slvs->clear(m_shp->fcn);
-            m_nCurSlv = 0;
+            m_nCurSlv = -1;
         }
     }
     return ret;
 }
 
 
-void CubeDocBase::solveGo()
+void CubeDocBase::solveGo(SlvCube *starter)
 {
     if (isSlvEngineRunning())	
     {
@@ -208,7 +208,7 @@ void CubeDocBase::solveGo()
 
 
     m_sthread->fExitnow = 0;
-    m_sthread->setRuntime(m_slvs.get(), m_shp.get(), pics, &m_conf.engine, getCurrentSolve());
+    m_sthread->setRuntime(m_slvs.get(), m_shp.get(), pics, &m_conf.engine, starter);
     m_sthread->doStart();
 
 }

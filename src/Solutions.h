@@ -80,8 +80,13 @@ public:
 	int size() const { return sv.size(); }
 	SlvCube* at(int i) { return sv[i]; }
 	const SlvCube* at(int i) const { return sv[i]; }
+    SlvCube* release(int i) {
+        auto s = sv[i];
+        sv[i] = nullptr;
+        return s;
+    }
 	
-	void addBackCommon(SlvCube *tmp);
+	void addBackCommon(SlvCube *tmp, bool keepOnlyOne = false);
 
 
 	int slvsz; // size of a solution

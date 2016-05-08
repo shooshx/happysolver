@@ -395,8 +395,8 @@ bool PicBucket::loadXML(const char* data)
         xfam = xfam->NextSiblingElement(); // next family
     }
 
-    pdefs.resize((grpCount+2)*6); // +2 extra for added edited cubes
-
+    pdefs.reserve((grpCount+2)*6); // +2 extra for added edited cubes
+    pdefs.resize(grpCount*6); 
 
     sumPics = 0;
     int grpi = 0; // (i) group number
@@ -568,7 +568,7 @@ void PicBucket::updateGrp(int grpi, PicArr arrs[6])
     M_ASSERT(grpi <= grps.size());
     bool add = false;
     M_ASSERT(grpi <= grps.size());
-    cout << "GRP " << grpi << " " << grps.size() << endl;
+    //cout << "GRP " << grpi << " " << grps.size() << endl;
     if (grpi == grps.size()) {
         grps.push_back(PicGroupDef());
         add = true;
@@ -576,7 +576,11 @@ void PicBucket::updateGrp(int grpi, PicArr arrs[6])
     PicGroupDef& cgrp = grps[grpi];
     cgrp.drawtype = DRAW_COLOR;
     cgrp.color = Vec3(1,1,1);
-    
+
+    PicDisp::g_smoothAllocator.init(640, 640, 0);
+    PicDisp::g_smoothAllocator.clearMaxAlloc();
+
+
     for(int i = 0; i < 6; ++i) {
         int pdefi;
         if (add) {
@@ -601,6 +605,8 @@ void PicBucket::updateGrp(int grpi, PicArr arrs[6])
     makeAllComp();
 
     distinctMeshes(false);
+    PicDisp::g_smoothAllocator.checkMaxAlloc();
+
 }
 
 
@@ -928,7 +934,7 @@ bool PicBucket::loadUnified(const char* s)
 
     cd->makeSelfBos();
     for(auto& d: m_meshes) {
-        d.second->m_mesh.makeIdxBo();
+        d.second->m_mesh.makeIdxBo(true);
     }
 
     cout << "Unified Mesh read " << vtxCount << " vtx " << meshCount << " meshes" << endl;

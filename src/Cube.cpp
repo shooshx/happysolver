@@ -537,6 +537,7 @@ void Cube::puttgr(Solutions *slvs, SolveContext *thread, SlvCube* starter, int d
 
 
         if (pics->picCount < shape->fcn - p) {// we suddently don't have enough pieces to fill all the places
+            cout << "NOT-ENOUGH steps=" << didSteps << " count=" << pics->picCount << endl;
             thread->notifyNotEnoughPieces();
             thread->selfExit = true;
             break;
@@ -551,15 +552,17 @@ void Cube::puttgr(Solutions *slvs, SolveContext *thread, SlvCube* starter, int d
         if (p == shape->fcn) //solution found
         {
             SlvCube *curslv = generateConcreteSlv(starter);
-            slvs->addBackCommon(curslv);
+            slvs->addBackCommon(curslv, lconf.nPersist == PERSIST_ONLY_ONE);
             ++thread->goSlvNum;
 
             thread->notifyLastSolution(thread->goSlvNum == 1);
             bool sessionDone = false;
             switch (lconf.nPersist)
             {
-            case PERSIST_ALL: break; // just continue
+            case PERSIST_ALL: 
+                break; // just continue
             case PERSIST_ONLY_FIRST: 
+            case PERSIST_ONLY_ONE:
                 sessionDone = true; 
                 break;
             case PERSIST_UPTO:
