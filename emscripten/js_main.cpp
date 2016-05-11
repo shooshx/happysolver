@@ -259,8 +259,6 @@ double getTms() {
     return (double)g_ctrl.m_runctx.m_stats.tms;
 }
 
-
-
 void cpp_start()
 {
     EmscriptenWebGLContextAttributes attr;
@@ -309,8 +307,30 @@ void setGrpCount(int grpi, int count)
     for(auto pi: grp.picsi) {
         bucket.pdefs[pi].setSelected(count);
     }
-    
+}
 
+// a stack of pushd vectors, each the size of pdefs that holds the info about the pieces selection
+// (used in editor to save the last selection
+// two ops in the same func to save exported symbols and have the stack static
+void stackPicSelection(int op) {
+    static vector<vector<int>> g_picSelectStack;
+    auto& bucket = PicBucket::mutableInstance();
+    if (op == 0) {
+        g_picSelectStack.push_back(vector<int>());
+        auto& sel = g_picSelectStack.back();
+        sel.reserve(bucket.pdefs.size());
+        for(auto& pd: bucket.pdefs) {
+            sel.push_back(pd.getSelected());
+            pd.setSelected(0);
+        }
+    }
+    else {
+        const auto& sel = g_picSelectStack.back();
+        for(int i = 0; i < bucket.pdefs.size(); ++i) {
+            bucket.pdefs[i].setSelected(sel[i]);
+        }
+        g_picSelectStack.pop_back();
+    }
 }
 
 void setEditAction(int a)
@@ -387,6 +407,15 @@ void readCube(int grpi)
     auto& bucket = PicBucket::mutableInstance();
     bucket.updateGrp(grpi, pcs);
     
+}
+
+void textureParamCube(int grpi, float r, float g, float b)
+{
+    auto& bucket = PicBucket::mutableInstance();
+    M_ASSERT(grpi >= 0 && grpi < bucket.grps.size());
+    PicGroupDef& cgrp = bucket.grps[grpi];
+    cgrp.color = Vec3(r, g, b);
+    g_ctrl.requestDraw();
 }
 
 

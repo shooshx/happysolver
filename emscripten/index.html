@@ -15,6 +15,8 @@
 <script id="one_cube" src="one_piece_cube.js"></script>    
 <!--<script id="one_cube" src="one_marble_cube.js"></script>    -->
 
+<script type="text/javascript" src="colorPick/color.all.min.js"></script>
+<script type="text/javascript" src="colorPick/jsColor.js"></script>
 
 <script type="text/javascript">
 
@@ -27,6 +29,7 @@ var model = { vtxBuf: null }
 
 var loadSolution, resizeGl, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseWheel, cpp_draw, cpp_slvrun, getTms
 var setGrpCount, setEditAction, runningRestart, serializeCurrent, deserializeAndLoad, readCube, newRestart, conf
+var stackPicSelection, textureParamCube
 var ctrlPressed = false
 var editCtx = null
 var unimesh_keys = Object.keys(unimesh) // unimesh included above
@@ -35,7 +38,22 @@ var readFrameBuf = null, readFrameView = null // buffer for selection readPixels
 var ACT_NONE = 0, ACT_ADD = 1, ACT_REMOVE = 2
     
 function start() {
-
+    var colors = jsColorPicker('input.color', {
+        customBG: '#222',
+        readOnly: true,
+        // patch: false,
+        init: function(elm, colors) { // colors is a different instance (not connected to colorPicker)
+          elm.style.backgroundColor = elm.value;
+          elm.style.color = colors.rgbaMixCustom.luminance > 0.22 ? '#222' : '#ddd';
+        },
+        initStyle: 'display: hidden',
+        mode: 'hsv-h',
+        noAlpha: true,
+        size: 1,
+        appendTo: editBack,
+        displayCallback:changeBackColor
+      });
+    
   /*  picsAddFamily("Happy Cube", "hc")
     picsAddCube("Blue", "hc_blue")
     picsAddCube("Red", "hc_red")
@@ -65,6 +83,8 @@ function start() {
     readCube = Module.cwrap('readCube', null, ['number'])
     newRestart  = Module.cwrap('newRestart', null, [])
     conf = Module.cwrap('conf', null, ['number'])
+    stackPicSelection = Module.cwrap('stackPicSelection', null, ['number'])
+    textureParamCube = Module.cwrap('textureParamCube', null, ['number','number','number','number'])
     
     Module.ccall('cpp_start', null);
     conf(true)
@@ -104,6 +124,7 @@ function start() {
     editCtx = editCanvas.getContext("2d")
     picsAddFamily("Test Fam", "Test Fam", true)
     picsAddCube("Test Cube", "Test Cube", -1, true)
+    
     
 }
 
@@ -571,14 +592,17 @@ function paintCube()
     editCtx.fillRect(0, 0, editCanvas.width, editCanvas.height)
     editCtx.strokeStyle = 'black' 
     editCtx.lineWidth = 1
+    
+    // frame
+    editCtx.strokeRect(5, 5, 15*TSZ, 11*TSZ)
 
-    for(var x = 0; x < 15; ++x) {
+   /* for(var x = 0; x < 15; ++x) {
         for(var y = 0; y < 11; ++y) {
             var v = cube[y][x]
             editCtx.fillStyle = col[v]
             editCtx.fillRect(x * TSZ, y * TSZ, TSZ, TSZ)    
         }
-    }
+    }*/
     
     for(var x = 0; x < 15; ++x) {
         for(var y = 0; y < 11; ++y) {
@@ -586,10 +610,10 @@ function paintCube()
             editCtx.fillStyle = col[v]
             if (y < 10 && x < 14) {
                 if (v != cube[y+1][x]) {
-                    drawLine(x * TSZ, y * TSZ + TSZ, TSZ, 0)
+                    drawLine(x * TSZ + 5, y * TSZ + TSZ + 5, TSZ, 0)
                 }
                 if (v != cube[y][x+1]) {
-                    drawLine(x * TSZ + TSZ, y * TSZ, 0, TSZ)
+                    drawLine(x * TSZ + TSZ + 5, y * TSZ + 5, 0, TSZ)
                 }                
             }
         }
@@ -616,6 +640,9 @@ function triggerCubeEdit(v, cubeId) // cube link pressed
         return
     }
     editingCubeId = cubeId
+    
+    editCanvas.height = 11*TSZ + 10
+    editCanvas.width = 15*TSZ + 10
     paintCube()
 
     return false
@@ -645,12 +672,16 @@ function handleEditCanvasClick(event)
         return;
     paintCube()
     readCube(editingCubeId)
+    
+    stackPicSelection(0) // push and clear
     setGrpCount(editingCubeId, 1) // set it to be selected TBD - set back to what it was
     conf(false) // make it not randomized so that the solution would be more or less the same
 
     newRestart()
     
-    conf(true)
+    conf(true)  // revert back to randomized
+    stackPicSelection(1) // pop
+    
 }
 
 function triggerEditDone()
@@ -662,6 +693,15 @@ function triggerEditDone()
 
     editingCubeId = -1
     triggerCubeEdit(false) // remove the dialog
+}
+
+function changeBackColor(colors)
+{
+    if (editBackColor.value == editBackColor.prevValue)
+        return
+    editBackColor.prevValue = editBackColor.value   
+    console.log(editBackColor.value)
+    textureParamCube(editingCubeId, colors.rgb.r, colors.rgb.g, colors.rgb.b)
 }
     
 </script>
@@ -980,6 +1020,17 @@ h1 {
    bottom: 8px;
 }
 
+.color {
+   padding: .5em;
+   margin-right: .4em;
+   border: 1px solid #aaa;
+   border-radius: 3px;
+   width: 140px;
+   font-family: monospace;
+}
+#editBackColor {
+    
+}
 
 </style>
 </head>
@@ -998,6 +1049,7 @@ h1 {
     <div id="editBack" class="popupBack"><div id="picEditWin" class="popupWin">
         <canvas id="editCanvas" width="590", height="450"></canvas>
         <label id="editDoneBtn" class="sc-btn" onclick="triggerEditDone()"/></label>
+        <input id="editBackColor" class="color" value="#2222AA" />
     </div></div>
     </div>
     <div id="urlPopup"><input id="urlEdit" type="text" onchange="urlEditChanged()"/></div>

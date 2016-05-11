@@ -565,9 +565,8 @@ bool PicBucket::loadXML(const char* data)
 // update existing or add new (editor)
 void PicBucket::updateGrp(int grpi, PicArr arrs[6])
 {
-    M_ASSERT(grpi <= grps.size());
+    M_ASSERT(grpi >= 0 && grpi <= grps.size());
     bool add = false;
-    M_ASSERT(grpi <= grps.size());
     //cout << "GRP " << grpi << " " << grps.size() << endl;
     if (grpi == grps.size()) {
         grps.push_back(PicGroupDef());
