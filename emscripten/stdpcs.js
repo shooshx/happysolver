@@ -432,5 +432,16 @@ var stdpcs_text = '<?xml version="1.0" encoding="utf-8"?>\n\
 				<piece x1="672" y1="832">0 0 1 0 0  0 1 1 1 0  1 1 1 1 1  0 1 1 1 0  1 1 0 1 1</piece>\n\
 			</group>\n\
 		</family>	\n\
+        <family name="Testt" index="9" onResetSetCount="0" size="8mm" icon="images/sampleNewLittleGenius.png">\n\
+        			<group name="Bla-Test">\n\
+				<fill type="TEXTURE_INDIVIDUAL_WHOLE" texind="3" k="0" r="188" g="0" b="177"/>\n\
+				<piece x1="32"  y1="832">1 1 1 1 1  1 1 1 1 1  1 1 1 1 1  1 1 1 1 1  1 1 1 1 1</piece>\n\
+				<piece x1="544" y1="832">0 0 0 0 0  0 1 1 1 1  0 1 1 1 1  0 1 1 1 1  0 0 0 0 0</piece>\n\
+				<piece x1="288" y1="832">0 0 0 0 0  0 1 1 1 1  0 1 1 1 0  0 1 1 1 0  0 0 0 0 0</piece>\n\
+				<piece x1="672" y1="832">0 1 1 1 0  0 1 1 1 0  0 1 1 1 0  0 1 1 1 0  0 0 0 0 0</piece>\n\
+				<piece x1="416" y1="832">0 0 0 0 0  0 1 1 1 1  1 1 1 1 1  1 1 1 1 1  0 0 0 0 0</piece>\n\
+				<piece x1="160" y1="832">1 1 1 1 1  1 1 1 1 1  1 1 1 1 1  1 1 1 1 1  1 1 1 1 1</piece>\n\
+			</group>\n\
+        </family>	\n\
 	</outlines>\n\
 </pieces>'

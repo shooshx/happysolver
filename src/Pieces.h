@@ -72,7 +72,8 @@ public:
 #ifdef QT_CORE_LIB
         :pixmap(1, 1)
 #endif
-    {} 
+    {
+    } 
 
 
     void makeBoundingPath();
@@ -102,7 +103,8 @@ public:
 
     ImgBuf *tex = nullptr; // Pic specific texture or nullptr
 
-    int xOffs = -1, yOffs = -1; // in case of TEXTURE_INDIVIDUAL_***. the x,y offsets of the texture
+    int xOffs = 0, yOffs = 0; // in case of TEXTURE_INDIVIDUAL_***. the x,y offsets of the texture
+    float texX = 0, texY = 0, texScaleX = 1.0f, texScaleY = 1.0f; // in texture coordinates, range [0,1] for opengl
 
     mutable int nUsed = 0;
     mutable int lastnSelected = 1; // used for the repressing of the button. to return to the last value.
@@ -185,7 +187,7 @@ public:
 
     ImgBuf* blendImage(ImgBuf* baseTex); // produce an image from the texture, and the colors in blend mode
 
-    PicDef& getPic(int myi);
+    PicDef& getPic(int myi); // myi-[0,5] index of the piece we want
     const PicDef& getPic(int myi) const;
 
     int numPics() const { return picsi.size(); }
@@ -195,8 +197,8 @@ public:
     }
 
     vector<int> picsi; // indices of this 6 group pics in the bucket
-    GlTexture *gtex;
-
+    shared_ptr<GlTexture> gtex; // might be shared with other pieces
+ 
     ImgBuf* tex;  // the texture used
 
     string name;
@@ -312,7 +314,7 @@ public:
     vector<PicDef> pdefs;
 
     vector<ImgBuf*> texs;
-    vector<GlTexture*> gtexs;
+    vector<shared_ptr<GlTexture>> gtexs; // textures loaded with the inital xml
 
     vector<PicFamily> families;
 

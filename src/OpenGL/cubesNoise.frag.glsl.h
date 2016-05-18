@@ -17,6 +17,7 @@ const char *code_cubesNoise_frag_glsl = " \
   float offset= 4.72; \n\
   float offset2 = 0.5; \n\
   uniform vec3 texOffset; // z non-zero means we need to invert x \n\
+  uniform vec2 texScale; // height is equal, already multiplied by 5 for MCposition [0,4] \n\
    \n\
   float mod(int x, float y){ \n\
       return float(x) - y * floor(float(x) / y); \n\
@@ -54,7 +55,7 @@ const char *code_cubesNoise_frag_glsl = " \
      // gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); \n\
      // return; \n\
    \n\
-     vec3 color = vec3(0.5, 0.5, 0.5); \n\
+      vec3 color = vec3(0.5, 0.5, 0.5); \n\
    \n\
       if (drawtype == 0) { // DRAW_COLOR \n\
           color = colorA * LightIntensity; \n\
@@ -73,42 +74,24 @@ const char *code_cubesNoise_frag_glsl = " \
           color *= LightIntensity; \n\
    \n\
       } \n\
-      if (drawtype == 0x14) {  // DRAW_TEXTURE_INDIVIDUAL_HALF  \n\
-          const float T_HIGH = 0.525; \n\
-          const float T_LOW = 0.475; \n\
+      if (drawtype == 0x14 || drawtype == 0x18)  \n\
+      {  // DRAW_TEXTURE_INDIVIDUAL_HALF  \n\
+         //  DRAW_TEXTURE_INDIVIDUAL_WHOLE, no need for smoothstep since its the same color but, meh \n\
+   \n\
    \n\
           float tx = MCposition.x; \n\
           if (texOffset.z != 0.0) \n\
               tx = 1.0 - tx; \n\
    \n\
-          if (tx > T_HIGH) { \n\
-              color = colorA; \n\
-          } \n\
-          else { \n\
-              vec2 t = texOffset.xy + MCposition.yz / (8.0*5.0); \n\
+          vec2 t = texOffset.xy + MCposition.yz * texScale; // =40 MCPosition is [0,4] \n\
    \n\
-              color = texture2D(noisef, t).rgb; \n\
-              if (tx > T_LOW && tx <= T_HIGH) { \n\
-                  color = mix(color, colorA, smoothstep(T_LOW, T_HIGH, tx)); \n\
-              } \n\
-          } \n\
+          vec4 tc = texture2D(noisef, t); \n\
+   \n\
+          color = (1.0 - tc.a) * colorA + tc.a * mix(tc.rgb, colorA, smoothstep(0.475, 0.525, tx)); \n\
    \n\
           color *= LightIntensity; \n\
       } \n\
-      if (drawtype == 0x18) { //  DRAW_TEXTURE_INDIVIDUAL_WHOLE, no need for smoothstep since its the same color \n\
-          float tx = MCposition.x; \n\
-          if (texOffset.z != 0.0) \n\
-              tx = 1.0 - tx; \n\
    \n\
-          if (tx > 0.2) { \n\
-              color = colorA; \n\
-          } \n\
-          else { \n\
-              vec2 t = texOffset.xy + MCposition.yz / (8.0*5.0); \n\
-              color = texture2D(noisef, t).rgb; \n\
-          } \n\
-          color *= LightIntensity; \n\
-      } \n\
       if (drawtype == 4) { // DRAW_TEXTURE_MARBLE \n\
           vec3 p = MCposition.yzx * 0.2; \n\
    \n\

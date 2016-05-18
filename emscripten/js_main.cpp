@@ -191,7 +191,7 @@ void populatePicsSide(PicBucket& bucket)
     {
         // need to do this after all the additions, otherwise it is reset for some reason
         if (fam.onResetSetCount > 0) {
-            M_ASSERT(fam.onResetSetCount == 1); // setting count not supported
+            M_CHECK(fam.onResetSetCount == 1); // setting count not supported
             EM_ASM_(setFamCheck(Pointer_stringify($0), true), fam.ctrlId.c_str());
         }
     }    
@@ -390,18 +390,20 @@ Vec2i pieceOrigin[] = { Vec2i(-1,-1), Vec2i(1,1), Vec2i(1,5),
 void readCube(int grpi)
 {
     PicArr pcs[6];
+    for(int i = 0; i < 6; ++i)
+        pcs[i].fillCenter(); // just for better display
     int tlen = EM_ASM_INT_V(return teeth.length);
     for(int i = 0; i < tlen; ++i) {
         Vec2i tpos(EM_ASM_INT(return teeth[$0].x, i), EM_ASM_INT(return teeth[$0].y, i));
         int plen = EM_ASM_INT(return teeth[$0].p.length, i);
         for(int pi = 0; pi < plen; ++pi) {
             int pp = EM_ASM_INT(return teeth[$0].p[$1], i, pi); 
-            if (pp == 0)
+            if (pp == 0) // 1 in the cube array is piece 0, etc'
                 continue;
             Vec2i inpic = tpos - pieceOrigin[pp];
             int val = EM_ASM_INT(return cube[$0][$1], tpos.y, tpos.x);
             //cout << "--" << tpos.x << "," << tpos.y << "  " << inpic.x << "," << inpic.y << "  " << val << " " << ((val == pp) ? 1:0) << endl;
-            pcs[pp - 1].set(inpic.y, inpic.x) = ((val == pp) ? 1:0);
+            pcs[pp - 1].set(inpic.x, inpic.y) = ((val == pp) ? 1:0);
         }
     }
     auto& bucket = PicBucket::mutableInstance();
@@ -412,12 +414,56 @@ void readCube(int grpi)
 void textureParamCube(int grpi, float r, float g, float b)
 {
     auto& bucket = PicBucket::mutableInstance();
-    M_ASSERT(grpi >= 0 && grpi < bucket.grps.size());
+    if (grpi < 0 || grpi >= bucket.grps.size()) {
+        cout << "no-such-cube " << grpi << endl;
+        return;
+    }
+
     PicGroupDef& cgrp = bucket.grps[grpi];
     cgrp.color = Vec3(r, g, b);
     g_ctrl.requestDraw();
 }
 
+int getCubeTextureHandle(int grpi, int width, int height)
+{
+    auto& bucket = PicBucket::mutableInstance();
+    if (grpi < 0 || grpi >= bucket.grps.size()) {
+        cout << "no-such-cube " << grpi << endl;
+        return 0;
+    }
+    PicGroupDef& cgrp = bucket.grps[grpi];
+    cgrp.drawtype = DRAW_TEXTURE_INDIVIDUAL_WHOLE;
+    
+    if (cgrp.gtex.get() != nullptr) {
+        const auto& sz = cgrp.gtex->size();
+        if (sz.x == width && sz.y == height) { // exists with the same size, don't recreate it
+            return cgrp.gtex->handle();
+        }
+    }
+    cgrp.gtex = make_shared<GlTexture>();
+    cgrp.gtex->init(GL_TEXTURE_2D, Vec2i(width, height), 1, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, nullptr, GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE);
+    g_ctrl.requestDraw();
+    return cgrp.gtex->handle();  
+}
+
+void readCubeTexCoord(int grpi)
+{
+    auto& bucket = PicBucket::mutableInstance();
+    if (grpi < 0 || grpi >= bucket.grps.size()) {
+        cout << "no-such-cube " << grpi << endl;
+        return;
+    }
+    PicGroupDef& cgrp = bucket.grps[grpi];
+    for(int i = 0; i < 6; ++i) {
+        auto& pic = cgrp.getPic(i);
+ 
+        pic.texX = EM_ASM_DOUBLE(return cubeTexInfo[$0].x, i);
+        pic.texY = EM_ASM_DOUBLE(return cubeTexInfo[$0].y, i);
+        pic.texScaleX = EM_ASM_DOUBLE(return cubeTexInfo[$0].scaleX, i);
+        pic.texScaleY = EM_ASM_DOUBLE(return cubeTexInfo[$0].scaleY, i);
+    }
+
+}
 
 } // extern "C"
 

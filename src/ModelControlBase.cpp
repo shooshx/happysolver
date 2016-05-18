@@ -60,13 +60,15 @@ public:
 };
 #endif
 
+// called in the initialization
+// preps the textures in the pieces bucket for the xml loading
 void ModelControlBase::initTex()
 {
     auto& bucket = PicBucket::mutableInstance();
 #ifdef QT_CORE_LIB
-    bucket.gtexs.push_back(NoiseGenerator::make3Dnoise());
+    bucket.gtexs.push_back(shared_ptr<GlTexture>(NoiseGenerator::make3Dnoise()));
 #else
-    auto tex = new JsGlTexture;
+    auto tex = make_shared<JsGlTexture>();
     tex->init(GL_TEXTURE_2D, Vec2i(1024, 512), 1, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, nullptr, GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE);
     tex->registerBind("noisetex");
     bucket.gtexs.push_back(tex);
@@ -75,12 +77,12 @@ void ModelControlBase::initTex()
     bucket.gtexs.push_back(nullptr); // marble
 
 	// little genius textures
-    tex = new JsGlTexture;
+    tex = make_shared<JsGlTexture>();
     tex->init(GL_TEXTURE_2D, Vec2i(1024, 1024), 1, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, nullptr, GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE);
     tex->registerBind("genious");
     bucket.gtexs.push_back(tex);
     
-    tex = new JsGlTexture;
+    tex = make_shared<JsGlTexture>();
     tex->init(GL_TEXTURE_2D, Vec2i(1024, 1024), 1, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, nullptr, GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE);
     tex->registerBind("newgenious");
     bucket.gtexs.push_back(tex);

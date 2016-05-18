@@ -110,13 +110,23 @@ void PicArr::makeRtnsBits(TPicBits rtbits[8]) const {
         rtbits[i] = rtns[i].getBits();
 }
 
-void PicArr::prn() {
+void PicArr::prn(bool oneLine) const {
     for(int x = 0; x < 5; ++x)
 	{
 		for(int y = 0; y < 5; ++y)
 		{
 			cout << axx(x,y);
 		}
-        cout << endl;            
+        if (oneLine)
+            cout << " ";
+        else
+            cout << endl;            
 	}
+}
+
+void PicArr::fillCenter()
+{
+    set(1,1) = 1; set(2,1) = 1; set(3,1) = 1;
+    set(1,2) = 1; set(2,2) = 1; set(3,2) = 1;
+    set(1,3) = 1; set(2,3) = 1; set(3,3) = 1;
 }

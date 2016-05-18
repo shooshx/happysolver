@@ -100,7 +100,6 @@ public:
 
     void setCurSlvToLast() {
         m_nCurSlv = m_slvs->size() - 1;
-        cout << "slv-count=" << m_slvs->size() << "  " << getCurrentSolve()->debug_prn() << endl;
         m_nUpToStep = m_shp->fcn;
     }
 

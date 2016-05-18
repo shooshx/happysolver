@@ -41,6 +41,7 @@ public:
 		:noisef("noisef", this), colorB("colorB", this), drawtype("drawtype", this)
 		,modelMat("modelMat", this), normalMat("normalMat", this), normal("normal", this)
 		,texOffset("texOffset", this), lightPos("lightPos", this), flag("flag", this)
+        ,texScale("texScale", this)
 	{}
 	virtual void getCodes();
 
@@ -55,6 +56,7 @@ public:
 	Vec3Uniform texOffset;
 	Vec3Uniform lightPos;
     IntUniform flag; // mark with red for remove
+    Vec2Uniform texScale;
 };
 
 

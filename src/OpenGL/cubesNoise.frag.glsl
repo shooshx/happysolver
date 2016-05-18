@@ -14,6 +14,7 @@ uniform float fadeFactor;
 float offset= 4.72;
 float offset2 = 0.5;
 uniform vec3 texOffset; // z non-zero means we need to invert x
+uniform vec2 texScale; // height is equal, already multiplied by 5 for MCposition [0,4]
 
 float mod(int x, float y){
     return float(x) - y * floor(float(x) / y);
@@ -51,7 +52,7 @@ void main (void)
    // gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
    // return;
 
-   vec3 color = vec3(0.5, 0.5, 0.5);
+    vec3 color = vec3(0.5, 0.5, 0.5);
 
     if (drawtype == 0) { // DRAW_COLOR
         color = colorA * LightIntensity;
@@ -70,42 +71,24 @@ void main (void)
         color *= LightIntensity;
 
     }
-    if (drawtype == 0x14) {  // DRAW_TEXTURE_INDIVIDUAL_HALF 
-        const float T_HIGH = 0.525;
-        const float T_LOW = 0.475;
+    if (drawtype == 0x14 || drawtype == 0x18) 
+    {  // DRAW_TEXTURE_INDIVIDUAL_HALF 
+       //  DRAW_TEXTURE_INDIVIDUAL_WHOLE, no need for smoothstep since its the same color but, meh
+
 
         float tx = MCposition.x;
         if (texOffset.z != 0.0)
             tx = 1.0 - tx;
 
-        if (tx > T_HIGH) {
-            color = colorA;
-        }
-        else {
-            vec2 t = texOffset.xy + MCposition.yz / (8.0*5.0);
+        vec2 t = texOffset.xy + MCposition.yz * texScale; // =40 MCPosition is [0,4]
 
-            color = texture2D(noisef, t).rgb;
-            if (tx > T_LOW && tx <= T_HIGH) {
-                color = mix(color, colorA, smoothstep(T_LOW, T_HIGH, tx));
-            }
-        }
+        vec4 tc = texture2D(noisef, t);
+
+        color = (1.0 - tc.a) * colorA + tc.a * mix(tc.rgb, colorA, smoothstep(0.475, 0.525, tx));
 
         color *= LightIntensity;
     }
-    if (drawtype == 0x18) { //  DRAW_TEXTURE_INDIVIDUAL_WHOLE, no need for smoothstep since its the same color
-        float tx = MCposition.x;
-        if (texOffset.z != 0.0)
-            tx = 1.0 - tx;
 
-        if (tx > 0.2) {
-            color = colorA;
-        }
-        else {
-            vec2 t = texOffset.xy + MCposition.yz / (8.0*5.0);
-            color = texture2D(noisef, t).rgb;
-        }
-        color *= LightIntensity;
-    }
     if (drawtype == 4) { // DRAW_TEXTURE_MARBLE
         vec3 p = MCposition.yzx * 0.2;
 

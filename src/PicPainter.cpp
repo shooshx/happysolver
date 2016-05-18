@@ -551,10 +551,11 @@ void PicPainter::paint(bool fTargets, const Vec3& name, BaseGLWidget *context, b
             prog->drawtype.set(def->drawtype);
             prog->colorAu.set(def->color);
             prog->colorB.set(def->exColor);
-            prog->flag.set(flag);
+            prog->flag.set(flag); // used for red marking cube to be removed
 
 
             if (def->gtex != nullptr) {
+                //cout << "HAS-TEX h=" << def->gtex->handle() << " " << def->drawtype << endl;
                 mglActiveTexture(0);
                 glBindTexture(GL_TEXTURE_2D, def->gtex->handle());
                 prog->noisef.set(0);
@@ -564,7 +565,8 @@ void PicPainter::paint(bool fTargets, const Vec3& name, BaseGLWidget *context, b
             prog->normalMat.set(context->model.cur().toNormalsTrans());
 
             if (def->isIndividual()) {
-                prog->texOffset.set(Vec3(m_pdef->xOffs/1024.0, m_pdef->yOffs/1024.0, invertTex?1.0f:0.0f));
+                prog->texOffset.set(Vec3(m_pdef->texX, m_pdef->texY, invertTex?1.0f:0.0f));
+                prog->texScale.set(Vec2(m_pdef->texScaleX / 5.0f, m_pdef->texScaleY / 5.0f)); // div my 5 since the position coordinates are [0,4], not [0,1]
             }
         }
         mglCheckErrorsC("x9a");

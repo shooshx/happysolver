@@ -15,7 +15,7 @@
 <script id="one_cube" src="one_piece_cube.js"></script>    
 <!--<script id="one_cube" src="one_marble_cube.js"></script>    -->
 
-<script type="text/javascript" src="colorPick/color.all.min.js"></script>
+<script type="text/javascript" src="colorPick/color.all.min.js"></script> <!--https://github.com/PitPik/colorPicker-->
 <script type="text/javascript" src="colorPick/jsColor.js"></script>
 
 <script type="text/javascript">
@@ -29,7 +29,7 @@ var model = { vtxBuf: null }
 
 var loadSolution, resizeGl, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseWheel, cpp_draw, cpp_slvrun, getTms
 var setGrpCount, setEditAction, runningRestart, serializeCurrent, deserializeAndLoad, readCube, newRestart, conf
-var stackPicSelection, textureParamCube
+var stackPicSelection, textureParamCube, getCubeTextureHandle, readCubeTexCoord
 var ctrlPressed = false
 var editCtx = null
 var unimesh_keys = Object.keys(unimesh) // unimesh included above
@@ -85,6 +85,8 @@ function start() {
     conf = Module.cwrap('conf', null, ['number'])
     stackPicSelection = Module.cwrap('stackPicSelection', null, ['number'])
     textureParamCube = Module.cwrap('textureParamCube', null, ['number','number','number','number'])
+    getCubeTextureHandle = Module.cwrap('getCubeTextureHandle', 'number', ['number', 'number', 'number'])
+    readCubeTexCoord = Module.cwrap('readCubeTexCoord', null, ['number'])
     
     Module.ccall('cpp_start', null);
     conf(true)
@@ -316,11 +318,12 @@ function on_cube_count(id, gind) {
     runningRestart()
 }
 
+// obj is the int handle of the opengl object
 function registerTexBind(imgname, obj) {
     console.log("reg-tex " + imgname + " " + obj)
 
-    _glBindTexture(GLctx.TEXTURE_2D, obj)
     var img = document.getElementById(imgname)
+    _glBindTexture(GLctx.TEXTURE_2D, obj)
     GLctx.texImage2D(GLctx.TEXTURE_2D, 0, GLctx.RGBA, GLctx.RGBA, GLctx.UNSIGNED_BYTE, img)
 }
 
@@ -577,7 +580,9 @@ var teeth = [
     { x:13, y:6, p:[0,6] }, { x:13, y:7, p:[0,6] }, { x:13, y:8, p:[0,6] },    
 ]
 
+var EDIT_MARGIN = 5
 var col = ['white', '#5555ff', 'red', 'yellow', 'orange', 'green', 'purple']
+var editImg = null
 
 function drawLine(x, y, w, h) {
     editCtx.beginPath()
@@ -590,11 +595,19 @@ function paintCube()
 {
     editCtx.fillStyle = '#fff'
     editCtx.fillRect(0, 0, editCanvas.width, editCanvas.height)
+    
+    if (editImg && editImg.loadedOk) {
+        var cwidth = editCanvas.width - 2*EDIT_MARGIN
+        var cheight = cwidth * editImg.height / editImg.width  // maintain same aspect ratio as the image
+        editCtx.drawImage(editImg, 0, 0, editImg.width, editImg.height, 
+                                   EDIT_MARGIN, EDIT_MARGIN, cwidth, cheight)
+    }
+    
     editCtx.strokeStyle = 'black' 
     editCtx.lineWidth = 1
     
     // frame
-    editCtx.strokeRect(5, 5, 15*TSZ, 11*TSZ)
+    editCtx.strokeRect(EDIT_MARGIN, EDIT_MARGIN, 15*TSZ, 11*TSZ)
 
    /* for(var x = 0; x < 15; ++x) {
         for(var y = 0; y < 11; ++y) {
@@ -610,14 +623,32 @@ function paintCube()
             editCtx.fillStyle = col[v]
             if (y < 10 && x < 14) {
                 if (v != cube[y+1][x]) {
-                    drawLine(x * TSZ + 5, y * TSZ + TSZ + 5, TSZ, 0)
+                    drawLine(x * TSZ + EDIT_MARGIN, y * TSZ + TSZ + EDIT_MARGIN, TSZ, 0)
                 }
                 if (v != cube[y][x+1]) {
-                    drawLine(x * TSZ + TSZ + 5, y * TSZ + 5, 0, TSZ)
+                    drawLine(x * TSZ + TSZ + EDIT_MARGIN, y * TSZ + EDIT_MARGIN, 0, TSZ)
                 }                
             }
         }
     }
+}
+
+function loadTexImage(url)
+{
+    editImg = new Image()
+    editImg.onload = function() {
+        editImg.loadedOk = true
+        var obj = getCubeTextureHandle(editingCubeId, editImg.width, editImg.height)
+        if (obj == 0)
+            return
+        console.log("setting img to texture " + obj)
+        _glBindTexture(GLctx.TEXTURE_2D, obj)
+        GLctx.texImage2D(GLctx.TEXTURE_2D, 0, GLctx.RGBA, GLctx.RGBA, GLctx.UNSIGNED_BYTE, editImg)
+        sendTexCoord()
+        paintCube()
+    }
+    editImg.crossOrigin = ''
+    editImg.src = url
 }
 
 var editingCubeId = -1
@@ -640,9 +671,9 @@ function triggerCubeEdit(v, cubeId) // cube link pressed
         return
     }
     editingCubeId = cubeId
-    
-    editCanvas.height = 11*TSZ + 10
-    editCanvas.width = 15*TSZ + 10
+
+    editCanvas.height = 11*TSZ + 2*EDIT_MARGIN
+    editCanvas.width = 15*TSZ + 2*EDIT_MARGIN
     paintCube()
 
     return false
@@ -658,7 +689,7 @@ function handleEditCanvasClick(event)
         return cube[y][x-1] == v || cube[y][x+1] == v || cube[y-1][x] == v || cube[y+1][x] == v
     }
     var didSomething = false;
-    for(ti in teeth) {
+    for(var ti in teeth) {
         var t = teeth[ti]
         if (x == t.x && y == t.y) {
             do {
@@ -700,8 +731,31 @@ function changeBackColor(colors)
     if (editBackColor.value == editBackColor.prevValue)
         return
     editBackColor.prevValue = editBackColor.value   
-    console.log(editBackColor.value)
+    //console.log(editBackColor.value)
     textureParamCube(editingCubeId, colors.rgb.r, colors.rgb.g, colors.rgb.b)
+}
+
+function triggerEditTexture()
+{
+    loadTexImage("http://localhost:8000/emscripten/test_texture3.png")
+    //loadTexImage("http://i.imgur.com/dPY5gPe.png") 
+    //loadTexImage("http://i.imgur.com/gIcxWPI.png")    // transparent
+    
+    
+}
+
+var baseFramePicPos = [ [1,1], [1,5], [5,1], [5,5], [9,1], [9,5] ]
+var cubeTexInfo = []
+
+function sendTexCoord()
+{
+    cubeTexInfo = []
+    for(var i = 0; i < 6; ++i) {
+        var x = baseFramePicPos[i][0] / 15
+        var y = baseFramePicPos[i][1] / 11      
+        cubeTexInfo.push({x:x, y:y, scaleX:5/15, scaleY:5/11})
+    }
+    readCubeTexCoord(editingCubeId) // reads from cubeTexInfo
 }
     
 </script>
@@ -1029,8 +1083,16 @@ h1 {
    font-family: monospace;
 }
 #editBackColor {
-    
+    width: 60px;
 }
+#editTexBtn:before {
+    content: "Texture";
+}
+#editTexBtn {
+   width: 60px;
+   
+}
+
 
 </style>
 </head>
@@ -1049,7 +1111,8 @@ h1 {
     <div id="editBack" class="popupBack"><div id="picEditWin" class="popupWin">
         <canvas id="editCanvas" width="590", height="450"></canvas>
         <label id="editDoneBtn" class="sc-btn" onclick="triggerEditDone()"/></label>
-        <input id="editBackColor" class="color" value="#2222AA" />
+        <label id="editTexBtn" class="sc-btn" onclick="triggerEditTexture()"/></label>
+        <input id="editBackColor" class="color" value="#9999cc" />
     </div></div>
     </div>
     <div id="urlPopup"><input id="urlEdit" type="text" onchange="urlEditChanged()"/></div>

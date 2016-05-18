@@ -13,9 +13,14 @@ universal slv
     remove added array
 rid of gind?
 
-
 rid of shared_ptr
+fix tranparents - depth pass
+    https://docs.google.com/presentation/d/12AGAUmElB0oOBgbEEBfhABkIMCL3CUX7kdAPLuwZ964/edit#slide=id.i158
+handle lost context webgl https://www.khronos.org/webgl/wiki/HandlingContextLost
 
+EDITOR
+------
+50% side should have minimum size
 
 NEW DEAL - things that don't work
 -------------

@@ -259,7 +259,7 @@ ImgBuf* PicBucket::newTexture(ImgBuf* t, bool in3d)
 
     if (in3d) {
         //ImgBuf* b = im.rgbSwapped();
-        GlTexture *gt = new GlTexture();
+        auto gt = make_shared<GlTexture>();
 #ifdef EMSCRIPTEN
         int iformat = GL_RGBA;
 #else
@@ -452,9 +452,9 @@ bool PicBucket::loadXML(const char* data)
             }
             else if (cgrp.isIndividual()) 
             {
-                GlTexture* baseGTex = nullptr;
+                shared_ptr<GlTexture> baseGTex;
                 // see ModelControlBase::initTex()
-                if (txind >= 0 && txind + 1 < gtexs.size() && gtexs[txind + 1] != nullptr) {
+                if (txind >= 0 && txind + 1 < gtexs.size() && gtexs[txind + 1].get() != nullptr) {
                     baseGTex = gtexs[txind + 1]; // gtex starts with the noise tex at 0
                 }
                 else
@@ -491,13 +491,20 @@ bool PicBucket::loadXML(const char* data)
                             else 
                                 curdef.v.set(x, y) = 1;
                             ++txti;
-
                         }
+                    }
+                    if (pdefi >= 324) {
+                        cout << "READ " << pdefi << "  " << text << "  ";
+                        curdef.v.prn(true);
+                        cout << endl;
                     }
                     if (cgrp.isIndividual() && cgrp.gtex != nullptr)
                     {
                         curdef.xOffs = xpic->IntAttribute("x1");
                         curdef.yOffs = xpic->IntAttribute("y1");
+                        curdef.texX = (float)curdef.xOffs / 1024.0f; // fixed size for now
+                        curdef.texY = (float)curdef.yOffs / 1024.0f;
+                        curdef.texScaleX = curdef.texScaleY = 0.125f;
                         if (cgrp.tex != nullptr)
                             curdef.tex = newTexture(cgrp.tex->copy(curdef.xOffs, curdef.yOffs, 128, 128)/*.mirrored(false, true)*/, false);
                     }
@@ -573,8 +580,10 @@ void PicBucket::updateGrp(int grpi, PicArr arrs[6])
         add = true;
     }
     PicGroupDef& cgrp = grps[grpi];
-    cgrp.drawtype = DRAW_COLOR;
-    cgrp.color = Vec3(1,1,1);
+    if (add) {
+        cgrp.drawtype = DRAW_TEXTURE_INDIVIDUAL_HALF; //DRAW_COLOR;
+        cgrp.color = Vec3(1,1,1);
+    }
 
     PicDisp::g_smoothAllocator.init(640, 640, 0);
     PicDisp::g_smoothAllocator.clearMaxAlloc();
@@ -599,6 +608,8 @@ void PicBucket::updateGrp(int grpi, PicArr arrs[6])
         curdef.indexInGroup = i;
         curdef.v = arrs[i];
         curdef.v.makeRtns(curdef.defRtns);
+        cout << "****** " << pdefi << endl;
+        pdefs[pdefi].v.prn();
     }
 
     makeAllComp();
@@ -611,8 +622,17 @@ void PicBucket::updateGrp(int grpi, PicArr arrs[6])
 
 void PicBucket::makeAllComp()
 {
+    cout << "+++ALLCOMP" << endl;
     PicsSet ps;
     for (int i = 0; i < pdefs.size(); ++i) {
+
+        if (i >= 324) {
+      	    const PicDef& thedef = PicBucket::instance().pdefs[i];
+            cout << i << "> " << hex << thedef.v.getBits() << dec << "  ";
+            thedef.v.prn(true);
+            cout << endl;
+        }
+
         ps.add(i, true); // TBD - consider sym
     }
     allComp = ps.comp;

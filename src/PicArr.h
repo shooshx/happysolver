@@ -39,7 +39,8 @@ public:
         turned = false;
         rtnindx = -1;
     }
-    void prn();
+    void prn(bool oneLine = false) const;
+    void fillCenter(); // just for printing, not functional
 
 	int v[25];
 	
