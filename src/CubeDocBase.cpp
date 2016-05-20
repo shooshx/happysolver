@@ -6,6 +6,20 @@
 
 CubeDocBase* CubeDocBase::s_instance = nullptr; // singleton for use of SlvPainter access of m_flagPiece
 
+
+void CubeDocBase::openSimple(const char* str)
+{
+    SlvCube* slv = new SlvCube(m_shp.get());
+    istringstream ss(str);
+    while (ss.good()) {
+        string c;
+        int sc = 0, rt = 0;
+        ss >> sc >> rt;
+        slv->dt.push_back(SlvCube::SlvPiece(sc, rt));
+    }
+    m_slvs->addBackCommon(slv);
+}
+
 // TBD - check messages.
 bool CubeDocBase::realOpen(const string& name, bool* gotSolutions)
 {

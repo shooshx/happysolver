@@ -300,6 +300,11 @@ public:
     void set(const Mat3& v) const;
 };
 
+class Mat2Uniform : public UniformParam {
+public:
+    Mat2Uniform(const char* name, ShaderProgram* prog) : UniformParam(name, prog) {}
+    void set(const Mat2& v) const;
+};
 
 void mglActiveTexture(int i);
 

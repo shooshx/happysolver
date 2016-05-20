@@ -22,6 +22,7 @@
 #include "Shape.h"
 #include "Solutions.h"
 #include "CubeAcc.h"
+#include "SlvCube.h"
 
 #include "Configuration.h"
 #include <chrono>
@@ -145,6 +146,7 @@ public:
 	volatile mint64 tms; ///< number of piece changes
 	volatile bool lucky; ///< luck state of the engine.
 	volatile int maxp;  ///< the maximal place reached on the shape
+    unique_ptr<SlvCube> maxpSlv; ///< a solution with the maximum place reached
 };
 
 // this is a reentrant context in which we can just run a few iterations of the solve engine and exit

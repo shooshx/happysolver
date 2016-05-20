@@ -543,8 +543,10 @@ void Cube::puttgr(Solutions *slvs, SolveContext *thread, SlvCube* starter, int d
             break;
         }
 
-        if (p > thread->m_stats.maxp)
+        if (p > thread->m_stats.maxp) {
             thread->m_stats.maxp = p;
+            thread->m_stats.maxpSlv.reset(generateConcreteSlv(starter));
+        }
 
         if ((lconf.fLuck) && (p >= shape->fcn - thread->luckOffset))
             thread->m_stats.lucky = true; // luck parameter. TBD-maybe not to right now.. last session?
@@ -608,6 +610,7 @@ void Cube::puttgr(Solutions *slvs, SolveContext *thread, SlvCube* starter, int d
     }
 
     if (p == -1 && thread->goSlvNum == 0) {
+        slvs->addBackCommon(thread->m_stats.maxpSlv.release());
         thread->notifyFullEnum();
         thread->selfExit = true;
     }
@@ -646,6 +649,10 @@ SlvCube* Cube::generateConcreteSlv(SlvCube* starter)
                 abs_plc[i].sc = asc;
                 abs_plc[i].rt = plc[i].start_rt;
             }
+            else if (plc[i].sc == -1)
+            {
+                continue;
+            }
             else
             {
                 if (plc[i].start_compsc == -1)
@@ -673,11 +680,13 @@ SlvCube* Cube::generateConcreteSlv(SlvCube* starter)
             }
         }
     }
-    cout << "ci=" << i << endl;
+    //cout << "ci=" << i << endl;
 
     for(; i < plc.size(); ++i) 
     {
         int ti = plc[i].sc;
+        if (ti == -1) // it's unoccupied
+            continue;
         const PicType& pt = pics->getComp(ti);
 
         auto &ut = used[ti];

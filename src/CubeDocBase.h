@@ -100,6 +100,9 @@ public:
 
     void setCurSlvToLast() {
         m_nCurSlv = m_slvs->size() - 1;
+        auto s = getCurrentSolve();
+        if (s)
+            cout << "SLV " << s->debug_prn();
         m_nUpToStep = m_shp->fcn;
     }
 
@@ -114,6 +117,8 @@ public:
 
     void generateFromFaces(const vector<tuple<Vec3i, int>>& faces);
     void addSlvMin(const vector<pair<int, int>>& sv);
+
+    void openSimple(const char* str);
 public:
     Configuration m_conf;
     string m_lastMsg;

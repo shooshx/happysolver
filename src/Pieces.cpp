@@ -494,9 +494,7 @@ bool PicBucket::loadXML(const char* data)
                         }
                     }
                     if (pdefi >= 324) {
-                        cout << "READ " << pdefi << "  " << text << "  ";
-                        curdef.v.prn(true);
-                        cout << endl;
+                        cout << "READ " << pdefi << "  " << text << "  " <<  curdef.v.prn(true) << endl;
                     }
                     if (cgrp.isIndividual() && cgrp.gtex != nullptr)
                     {
@@ -608,13 +606,21 @@ void PicBucket::updateGrp(int grpi, PicArr arrs[6])
         curdef.indexInGroup = i;
         curdef.v = arrs[i];
         curdef.v.makeRtns(curdef.defRtns);
-        cout << "****** " << pdefi << endl;
-        pdefs[pdefi].v.prn();
+        //cout << "****** " << pdefi << pdefs[pdefi].v.prn() << endl;
+        
     }
 
     makeAllComp();
 
     distinctMeshes(false);
+
+    for (int i = 0; i < pdefs.size(); ++i) {
+        if (i >= 324) {
+      	    const PicDef& thedef = PicBucket::instance().pdefs[i];
+            cout << i << "> " << thedef.v.prn(true) << "   " << thedef.defRot << " " << thedef.dispRot << endl;
+        }
+    }
+
     PicDisp::g_smoothAllocator.checkMaxAlloc();
 
 }
@@ -625,14 +631,6 @@ void PicBucket::makeAllComp()
     cout << "+++ALLCOMP" << endl;
     PicsSet ps;
     for (int i = 0; i < pdefs.size(); ++i) {
-
-        if (i >= 324) {
-      	    const PicDef& thedef = PicBucket::instance().pdefs[i];
-            cout << i << "> " << hex << thedef.v.getBits() << dec << "  ";
-            thedef.v.prn(true);
-            cout << endl;
-        }
-
         ps.add(i, true); // TBD - consider sym
     }
     allComp = ps.comp;
@@ -645,6 +643,8 @@ void PicBucket::makeAllComp()
             r.defRot = ad.defRot;
         }
     }
+
+
     cout << "Compressed " << ps.comp.size() << " shapes" << endl;
 }
 

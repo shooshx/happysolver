@@ -19,6 +19,8 @@ const char *code_cubesNoise_frag_glsl = " \
   uniform vec3 texOffset; // z non-zero means we need to invert x \n\
   uniform vec2 texScale; // height is equal, already multiplied by 5 for MCposition [0,4] \n\
    \n\
+  uniform mat2 texTrans; \n\
+   \n\
   float mod(int x, float y){ \n\
       return float(x) - y * floor(float(x) / y); \n\
   } \n\
@@ -83,9 +85,11 @@ const char *code_cubesNoise_frag_glsl = " \
           if (texOffset.z != 0.0) \n\
               tx = 1.0 - tx; \n\
    \n\
-          vec2 t = texOffset.xy + MCposition.yz * texScale; // =40 MCPosition is [0,4] \n\
+          vec2 tcoord = ((MCposition.zy - vec2(2.5, 2.5)) * texTrans) + vec2(2.5,2.5); \n\
+          vec2 t = texOffset.xy + tcoord * texScale; // =40 MCPosition is [0,4] \n\
    \n\
           vec4 tc = texture2D(noisef, t); \n\
+         // tc = vec4(MCposition.zy, 1.0, 1.0); \n\
    \n\
           color = (1.0 - tc.a) * colorA + tc.a * mix(tc.rgb, colorA, smoothstep(0.475, 0.525, tx)); \n\
    \n\

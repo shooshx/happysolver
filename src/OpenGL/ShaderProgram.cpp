@@ -290,6 +290,13 @@ void UniformParam::set(const Mat3& v) const {
         glUniformMatrix3fv(m_uid, 1, false, v.m);
 }
 
+template<>
+void UniformParam::set(const Mat2& v) const {
+    if (m_uid != -1)
+        glUniformMatrix2fv(m_uid, 1, false, v.m);
+}
+
+
 
 template<> 
 void AttribParam::set(const float& v) const {
@@ -346,7 +353,9 @@ void Mat4Uniform::set(const Mat4& v) const {
 void Mat3Uniform::set(const Mat3& v) const {
     UniformParam::set(v);
 }
-
+void Mat2Uniform::set(const Mat2& v) const {
+    UniformParam::set(v);
+}
 
 
 void UniformParam::getLocation(uint progId)

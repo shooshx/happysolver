@@ -502,8 +502,8 @@ void PicDisp::initNoSubdiv()
     for(int pn = 0; pn < obj.nPoints; ++pn)
     {
         Vec3 v = obj.points[pn]->p;
-        obj.points[pn]->p = Vec3(1-v.z, v.y, v.x);
-        Vec3 n = obj.points[pn]->n;
+        obj.points[pn]->p = Vec3(1-v.z, v.y, v.x); // see same transformation in the individual half shader
+        Vec3 n = obj.points[pn]->n; // normals
         obj.points[pn]->n = Vec3(-n.z, n.y, n.x);
     }
 
@@ -528,7 +528,7 @@ void PicDisp::initNoSubdiv()
 
 /// do the actual painting of a single piece in the actual OpenGL view.
 
-void PicPainter::paint(bool fTargets, const Vec3& name, BaseGLWidget *context, bool invertTex, int flag) const
+void PicPainter::paint(bool fTargets, const Vec3& name, BaseGLWidget *context, bool invertTex, int flag, int dispRot) const
 {
     glPolygonOffset(1.0, 1.0); // go backward, draw polygons TBD- move to slvpainter
 
@@ -567,6 +567,16 @@ void PicPainter::paint(bool fTargets, const Vec3& name, BaseGLWidget *context, b
             if (def->isIndividual()) {
                 prog->texOffset.set(Vec3(m_pdef->texX, m_pdef->texY, invertTex?1.0f:0.0f));
                 prog->texScale.set(Vec2(m_pdef->texScaleX / 5.0f, m_pdef->texScaleY / 5.0f)); // div my 5 since the position coordinates are [0,4], not [0,1]
+                switch(dispRot) {
+                case 1:  prog->texTrans.set(Mat2(0,-1,1,0));  break;
+                case 3:  prog->texTrans.set(Mat2(0,1,-1,0));  break;
+                case 4:  prog->texTrans.set(Mat2(0,1,1,0));  break;
+                case 6:  prog->texTrans.set(Mat2(0,-1,-1,0));  break;
+                case 2:  prog->texTrans.set(Mat2(-1,0,0,-1));  break;
+                case 5:  prog->texTrans.set(Mat2(-1,0,0,1)); break;
+                case 7:  prog->texTrans.set(Mat2(1,0,0,-1)); break;
+                default: prog->texTrans.set(Mat2(1,0,0,1));  break;
+                }
             }
         }
         mglCheckErrorsC("x9a");

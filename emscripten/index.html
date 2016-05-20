@@ -29,7 +29,7 @@ var model = { vtxBuf: null }
 
 var loadSolution, resizeGl, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseWheel, cpp_draw, cpp_slvrun, getTms
 var setGrpCount, setEditAction, runningRestart, serializeCurrent, deserializeAndLoad, readCube, newRestart, conf
-var stackPicSelection, textureParamCube, getCubeTextureHandle, readCubeTexCoord
+var stackPicSelection, textureParamCube, getCubeTextureHandle, readCubeTexCoord, loadSlvSimple
 var ctrlPressed = false
 var editCtx = null
 var unimesh_keys = Object.keys(unimesh) // unimesh included above
@@ -87,6 +87,7 @@ function start() {
     textureParamCube = Module.cwrap('textureParamCube', null, ['number','number','number','number'])
     getCubeTextureHandle = Module.cwrap('getCubeTextureHandle', 'number', ['number', 'number', 'number'])
     readCubeTexCoord = Module.cwrap('readCubeTexCoord', null, ['number'])
+    loadSlvSimple = Module.cwrap('loadSlvSimple', null, ['string'])
     
     Module.ccall('cpp_start', null);
     conf(true)
@@ -111,7 +112,8 @@ function start() {
     mycanvas.onwheel = mycanvas.onmousewheel = handleMouseWheel // second one is for internet explorer
     editCanvas.onclick = handleEditCanvasClick
     
-    document.onkeydown = document.onkeyup = handleKey  
+    document.onkeydown = handleKeyDown
+    document.onkeyup = handleKey  
 
     // start drawing
     requestAnimationFrame(animProgress)
@@ -160,6 +162,16 @@ function handleMouseWheel(event) {
     mouseWheel( (d > 0) ? 16 : -16)
     return false
 }
+
+function handleKeyDown(event) {
+    if (event.keyCode == '65' && event.ctrlKey) {
+        var s = window.prompt("slv data")
+        loadSlvSimple(s)
+        return
+    }
+    handleKey(event)
+}
+
 function handleKey(event) {
     if (event.ctrlKey == ctrlPressed)
         return;
@@ -749,11 +761,13 @@ var cubeTexInfo = []
 
 function sendTexCoord()
 {
+    var imgRatio = (editImg.height/editImg.width) / (editCanvas.height/editCanvas.width)
+    
     cubeTexInfo = []
     for(var i = 0; i < 6; ++i) {
         var x = baseFramePicPos[i][0] / 15
-        var y = baseFramePicPos[i][1] / 11      
-        cubeTexInfo.push({x:x, y:y, scaleX:5/15, scaleY:5/11})
+        var y = baseFramePicPos[i][1] / (11 * imgRatio)    
+        cubeTexInfo.push({x:x, y:y, scaleX:5/15, scaleY:5/(11*imgRatio) })
     }
     readCubeTexCoord(editingCubeId) // reads from cubeTexInfo
 }

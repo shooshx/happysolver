@@ -21,6 +21,7 @@ handle lost context webgl https://www.khronos.org/webgl/wiki/HandlingContextLost
 EDITOR
 ------
 50% side should have minimum size
+BUG - texture does not rotate with piece
 
 NEW DEAL - things that don't work
 -------------

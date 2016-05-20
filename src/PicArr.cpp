@@ -1,5 +1,5 @@
 #include "PicArr.h"
-#include <iostream>
+#include <sstream>
 using namespace std;
 
 void PicArr::turn()
@@ -110,18 +110,20 @@ void PicArr::makeRtnsBits(TPicBits rtbits[8]) const {
         rtbits[i] = rtns[i].getBits();
 }
 
-void PicArr::prn(bool oneLine) const {
-    for(int x = 0; x < 5; ++x)
+string PicArr::prn(bool oneLine) const {
+    stringstream ss;
+    for(int y = 0; y < 5; ++y)
 	{
-		for(int y = 0; y < 5; ++y)
+		for(int x = 0; x < 5; ++x)
 		{
-			cout << axx(x,y);
+			ss << axx(x,y);
 		}
         if (oneLine)
-            cout << " ";
+            ss << " ";
         else
-            cout << endl;            
+            ss << endl;            
 	}
+    return ss.str();
 }
 
 void PicArr::fillCenter()

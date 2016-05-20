@@ -1,5 +1,6 @@
 #pragma once
-
+#include <string>
+using namespace std;
 
 typedef unsigned short TPicBits;
 
@@ -24,10 +25,10 @@ public:
     void makeRtnsBits(TPicBits rtbits[8]) const;
 
 	int& set(int x, int y) { 
-        return v[x * 5 + y]; 
+        return v[y * 5 + x]; 
     }
 	int axx(int x, int y) const { 
-        return v[(x << 2)+x + y]; 
+        return v[(y << 2)+y + x]; 
     }
 
 	TPicBits getBits() const;
@@ -39,7 +40,7 @@ public:
         turned = false;
         rtnindx = -1;
     }
-    void prn(bool oneLine = false) const;
+    string prn(bool oneLine = false) const;
     void fillCenter(); // just for printing, not functional
 
 	int v[25];

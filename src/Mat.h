@@ -32,6 +32,24 @@ public:
     float m[9];
 };
 
+class Mat2
+{
+public:
+    Mat2(float a, float b, float c, float d) {
+        m[0] = a; m[1] = b; m[2] = c; m[3] = d;
+    }
+    float operator()(int x, int y) const {
+        return m[x + y*2];
+    }
+    float& operator()(int x, int y) {
+        return m[x + y*2];
+    }
+
+
+    float m[4];
+};
+
+
 class Mat4
 {
 public:

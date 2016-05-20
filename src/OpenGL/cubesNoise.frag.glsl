@@ -16,6 +16,8 @@ float offset2 = 0.5;
 uniform vec3 texOffset; // z non-zero means we need to invert x
 uniform vec2 texScale; // height is equal, already multiplied by 5 for MCposition [0,4]
 
+uniform mat2 texTrans;
+
 float mod(int x, float y){
     return float(x) - y * floor(float(x) / y);
 }
@@ -80,7 +82,8 @@ void main (void)
         if (texOffset.z != 0.0)
             tx = 1.0 - tx;
 
-        vec2 t = texOffset.xy + MCposition.yz * texScale; // =40 MCPosition is [0,4]
+        vec2 tcoord = ((MCposition.zy - vec2(2.5, 2.5)) * texTrans) + vec2(2.5,2.5);
+        vec2 t = texOffset.xy + tcoord * texScale; // =40 MCPosition is [0,4]
 
         vec4 tc = texture2D(noisef, t);
 

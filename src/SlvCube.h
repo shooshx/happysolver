@@ -26,8 +26,11 @@ public:
 	struct SlvPiece
 	{
         SlvPiece() {}
+        SlvPiece(int _abs_sc, int _abs_rt) 
+            : abs_sc(_abs_sc), abs_rt(_abs_rt)
+        {}
 		SlvPiece(int _abs_sc, int _abs_rt, int _comp_sc, int _comp_rt) 
-			: abs_sc(_abs_sc), abs_rt(_abs_rt) , comp_sc(_comp_sc), comp_rt(_comp_rt)
+			: abs_sc(_abs_sc), abs_rt(_abs_rt), comp_sc(_comp_sc), comp_rt(_comp_rt)
 		{}
 		// loaded data
 

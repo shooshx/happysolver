@@ -196,7 +196,7 @@ string SlvCube::debug_prn() const
     ss << dt.size() << ":";
     for(int i = 0; i < dt.size(); ++i)
 	{
-		ss << dt[i].abs_sc << ",";
+		ss << dt[i].abs_sc << "," << dt[i].abs_rt << ",";
 	}
     return ss.str();
 }

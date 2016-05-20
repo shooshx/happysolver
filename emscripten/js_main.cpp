@@ -115,7 +115,8 @@ void RunContext::notifyLastSolution(bool firstInGo)
 
 void RunContext::notifyFullEnum() { 
     cout << "Full-enum" << endl;
-    g_ctrl.m_doc.clearSlvs();
+    g_ctrl.m_doc.setCurSlvToLast();
+    //g_ctrl.m_doc.clearSlvs();
     g_ctrl.requestDraw();
 }
 void RunContext::notifyNotEnoughPieces() {
@@ -152,6 +153,15 @@ void loadSolution(const char* buf) {
     }        
 }
 
+// read a string with just sc,rt for th
+void loadSlvSimple(const char* str)
+{
+    g_ctrl.m_doc.openSimple(str);
+
+    g_ctrl.m_doc.setCurSlvToLast();
+    //g_ctrl.slvReady();
+    g_ctrl.requestDraw();
+}
 
 void solveGo() {
     try {
