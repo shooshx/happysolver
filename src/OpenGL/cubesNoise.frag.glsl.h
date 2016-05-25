@@ -89,7 +89,6 @@ const char *code_cubesNoise_frag_glsl = " \
           vec2 t = texOffset.xy + tcoord * texScale; // =40 MCPosition is [0,4] \n\
    \n\
           vec4 tc = texture2D(noisef, t); \n\
-         // tc = vec4(MCposition.zy, 1.0, 1.0); \n\
    \n\
           color = (1.0 - tc.a) * colorA + tc.a * mix(tc.rgb, colorA, smoothstep(0.475, 0.525, tx)); \n\
    \n\

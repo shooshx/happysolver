@@ -29,7 +29,7 @@ var model = { vtxBuf: null }
 
 var loadSolution, resizeGl, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseWheel, cpp_draw, cpp_slvrun, getTms
 var setGrpCount, setEditAction, runningRestart, serializeCurrent, deserializeAndLoad, readCube, newRestart, conf
-var stackPicSelection, textureParamCube, getCubeTextureHandle, readCubeTexCoord, loadSlvSimple
+var stackState, textureParamCube, getCubeTextureHandle, readCubeTexCoord, loadSlvSimple
 var ctrlPressed = false
 var editCtx = null
 var unimesh_keys = Object.keys(unimesh) // unimesh included above
@@ -83,7 +83,7 @@ function start() {
     readCube = Module.cwrap('readCube', null, ['number'])
     newRestart  = Module.cwrap('newRestart', null, [])
     conf = Module.cwrap('conf', null, ['number'])
-    stackPicSelection = Module.cwrap('stackPicSelection', null, ['number'])
+    stackState = Module.cwrap('stackState', null, ['number'])
     textureParamCube = Module.cwrap('textureParamCube', null, ['number','number','number','number'])
     getCubeTextureHandle = Module.cwrap('getCubeTextureHandle', 'number', ['number', 'number', 'number'])
     readCubeTexCoord = Module.cwrap('readCubeTexCoord', null, ['number'])
@@ -111,6 +111,8 @@ function start() {
     mycanvas.ondblclick = handleMouseDblClick
     mycanvas.onwheel = mycanvas.onmousewheel = handleMouseWheel // second one is for internet explorer
     editCanvas.onclick = handleEditCanvasClick
+    editCanvas.onmousemove = handleEditCanvasMove
+    editCanvas.onmousedown = handleEditCanvasDown
     
     document.onkeydown = handleKeyDown
     document.onkeyup = handleKey  
@@ -332,7 +334,7 @@ function on_cube_count(id, gind) {
 
 // obj is the int handle of the opengl object
 function registerTexBind(imgname, obj) {
-    console.log("reg-tex " + imgname + " " + obj)
+    //console.log("reg-tex " + imgname + " " + obj)
 
     var img = document.getElementById(imgname)
     _glBindTexture(GLctx.TEXTURE_2D, obj)
@@ -428,9 +430,12 @@ function pic_rolldown(id) {
 
 
 function doResize() {
+    if (side_ctrl.editMode)
+        side_ctrl.style.width = Math.max(window.innerWidth*0.5, 650) + "px"
     mycanvas.width = window.innerWidth - side_ctrl.clientWidth - 16
     mycanvas.height = window.innerHeight - 16
     side_rel.style.height = "" + (window.innerHeight - 220) + "px"
+    picEditWin.style.top = (side_ctrl.clientHeight - picEditWin.clientHeight) * 0.5 + "px"
     
     resizeGl(mycanvas.width, mycanvas.height)
     requestAnim()
@@ -595,6 +600,8 @@ var teeth = [
 var EDIT_MARGIN = 5
 var col = ['white', '#5555ff', 'red', 'yellow', 'orange', 'green', 'purple']
 var editImg = null
+var imgOffset = {x:0, y:0}
+var imgZoom = 1.0
 
 function drawLine(x, y, w, h) {
     editCtx.beginPath()
@@ -608,11 +615,12 @@ function paintCube()
     editCtx.fillStyle = '#fff'
     editCtx.fillRect(0, 0, editCanvas.width, editCanvas.height)
     
-    if (editImg && editImg.loadedOk) {
+    if (editImg && editImg.loadedOk) 
+    {
         var cwidth = editCanvas.width - 2*EDIT_MARGIN
         var cheight = cwidth * editImg.height / editImg.width  // maintain same aspect ratio as the image
-        editCtx.drawImage(editImg, 0, 0, editImg.width, editImg.height, 
-                                   EDIT_MARGIN, EDIT_MARGIN, cwidth, cheight)
+        editCtx.drawImage(editImg, 0,0, editImg.width, editImg.height, 
+                                   imgOffset.x + EDIT_MARGIN, imgOffset.y + EDIT_MARGIN, cwidth*imgZoom, cheight*imgZoom)
     }
     
     editCtx.strokeStyle = 'black' 
@@ -664,35 +672,76 @@ function loadTexImage(url)
 }
 
 var editingCubeId = -1
-function triggerCubeEdit(v, cubeId) // cube link pressed
+function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
 {
     if (v) {
         editBack.style.display = "inline"
-        side_ctrl.style.width = "50%"
+        side_ctrl.editMode = true // for resize
         doResize()
+        editActionPiecesCheck.checked = true
+        editActionMoveCheck.checked = false
+        editZoomSlider.value = 100
+        editZoomText.value = "100%"
         setEditAction(ACT_NONE)
+
+        editingCubeId = cubeId
+
+        stackState(0) // push and clear
+        
+        readCube(editingCubeId)
+        setGrpCount(editingCubeId, 1) // set it to be selected TBD - set back to what it was
+        conf(false) // make it not randomized so that the solution would be more or less the same
+        
+        editCanvas.height = 11*TSZ + 2*EDIT_MARGIN
+        editCanvas.width = 15*TSZ + 2*EDIT_MARGIN
+        paintCube()   
+        newRestart()        
     }
-    else {
+    else 
+    {
+        conf(true)  // revert back to randomized
+        stackState(1) // pop last
+
         editBack.style.display = "none"
         side_ctrl.style.width = "230px"
+        side_ctrl.editMode = false
         doResize()
         if (addingCubeCheck.checked)
             setEditAction(ACT_ADD)
         else if (removingCubeCheck.checked)
             setEditAction(ACT_REMOVE)
-        return
     }
-    editingCubeId = cubeId
+}
 
-    editCanvas.height = 11*TSZ + 2*EDIT_MARGIN
-    editCanvas.width = 15*TSZ + 2*EDIT_MARGIN
+var lastDrag = null
+function handleEditCanvasDown(event)
+{
+    lastDrag = {x:event.clientX, y:event.clientY}
+}
+
+function handleEditCanvasMove(event)
+{
+    if (!editActionMoveCheck.checked)
+        return
+    if (event.buttons != 1 || lastDrag == null) // left mouse button
+        return
+
+    imgOffset.x += event.clientX - lastDrag.x
+    imgOffset.y += event.clientY - lastDrag.y
+    lastDrag = {x:event.clientX, y:event.clientY}
+    
     paintCube()
-
-    return false
+    sendTexCoord()
 }
 
 function handleEditCanvasClick(event)
 {
+    if (editActionPiecesCheck.checked)
+        checkToothClick(event)
+}
+ 
+function checkToothClick(event)
+{ 
     var rect = editCanvas.getBoundingClientRect()
     var x = Math.trunc((event.clientX - rect.left)/TSZ), y = Math.trunc((event.clientY - rect.top)/TSZ)
     //console.log(x + " " + y)
@@ -716,14 +765,9 @@ function handleEditCanvasClick(event)
     paintCube()
     readCube(editingCubeId)
     
-    stackPicSelection(0) // push and clear
-    setGrpCount(editingCubeId, 1) // set it to be selected TBD - set back to what it was
-    conf(false) // make it not randomized so that the solution would be more or less the same
 
     newRestart()
     
-    conf(true)  // revert back to randomized
-    stackPicSelection(1) // pop
     
 }
 
@@ -761,15 +805,46 @@ var cubeTexInfo = []
 
 function sendTexCoord()
 {
-    var imgRatio = (editImg.height/editImg.width) / (editCanvas.height/editCanvas.width)
-    
+    if (editImg === null)
+        return
+    var imgRatio = (editImg.height/editImg.width) / ((editCanvas.height- 2*EDIT_MARGIN)/(editCanvas.width- 2*EDIT_MARGIN))
+
     cubeTexInfo = []
     for(var i = 0; i < 6; ++i) {
-        var x = baseFramePicPos[i][0] / 15
-        var y = baseFramePicPos[i][1] / (11 * imgRatio)    
-        cubeTexInfo.push({x:x, y:y, scaleX:5/15, scaleY:5/(11*imgRatio) })
+        var x = baseFramePicPos[i][0] / (15*imgZoom)  - imgOffset.x / ((editCanvas.width - 2*EDIT_MARGIN)*imgZoom)
+        var y = baseFramePicPos[i][1] / (11 * imgRatio*imgZoom) - imgOffset.y / ((editCanvas.height - 2*EDIT_MARGIN) * imgRatio*imgZoom)
+        
+        cubeTexInfo.push({x:x, y:y, scaleX:5/(15*imgZoom), scaleY:5/(11*imgRatio*imgZoom) })
     }
     readCubeTexCoord(editingCubeId) // reads from cubeTexInfo
+}
+
+function triggerAction(bpr)
+{
+    if (bpr == 1) {
+        if (editActionPiecesCheck.checked) {
+            editActionMoveCheck.checked = false
+        }
+    }
+    else {
+        if (editActionMoveCheck.checked) {
+            editActionPiecesCheck.checked = false
+        }
+    }
+}
+
+function changeImgZoom(widget, v)
+{
+    if (widget == 1) { // slider changed
+        editZoomText.value = v + "%"
+    }
+    else { // edit changed
+        editZoomSlider.value = v
+    }
+    imgZoom = v / 100.0
+    
+    paintCube()
+    sendTexCoord()
 }
     
 </script>
@@ -961,34 +1036,23 @@ body {
     color: #fff;
     background-image: linear-gradient(to bottom, #61adf4, #1067c1); 
 }
-#addingCube:before {
-  content: "Add";
-}
 #removingCube {
   background-image: linear-gradient(to bottom, white, #FDDADA);
 }
 #removingCube {
     left: 115px;
 }
-#removingCube:before {
-  content: "Remove";
-}
 #removingCube:active, #removingCubeCheck:checked + #removingCube{
     color: #fff;
     background-image: linear-gradient(to bottom, #f57979, #e32323); 
 }
-#aboutBtn:before {
-  content: "?";
-}
+
 #aboutBtn {
    right: 8px;
    width: 40px;
    bottom: 8px;
 }
 
-#urlBtn:before {
-  content: "";
-}
 #urlBtn {
    right: 8px;
    width: 40px;
@@ -1054,9 +1118,7 @@ h1 {
     width: 286px;
     
 }
-#addFamBtn:before {
-  content: "";
-}
+
 #addFamBtn{
     width: 34px;
     height: 34px;
@@ -1076,12 +1138,10 @@ h1 {
     text-decoration: underline;
 }
 #picEditWin {
-
+    height: 550px;
 }
 
-#editDoneBtn:before {
-  content: "Done";
-}
+
 #editDoneBtn {
    right: 8px;
    width: 60px;
@@ -1099,24 +1159,87 @@ h1 {
 #editBackColor {
     width: 60px;
 }
-#editTexBtn:before {
-    content: "Texture";
-}
+
 #editTexBtn {
    width: 60px;
    
 }
+#editActionPieces {
+    top: 100px;
+    right: 40px
+}
+#editActionPieces:active, #editActionPiecesCheck:checked + #editActionPieces,
+#editActionMove:active, #editActionMoveCheck:checked + #editActionMove {
+  background-color: #dfdfdf;
+  background-image: linear-gradient(to bottom, #479ceb, #1067c1); 
+  color: #fff;
+}
 
+#editActionMove {
+    top: 150px;
+    right: 40px
+}
+{
+  background-color: #dfdfdf;
+  background-image: linear-gradient(to bottom, #479ceb, #1067c1); 
+  color: #fff;
+}
+
+#editZoomSlider {
+    position: absolute;
+    height: 200px;
+    width: 40px;
+    right: 8px;
+    top: 30px;
+    -webkit-appearance: slider-vertical;
+    writing-mode: bt-lr
+}
+#editZoomText {
+    position: absolute;
+    top: 240px;
+    width: 40px;
+    right: 8px;
+    text-align: center;
+    height: 20px;
+}
+
+.editFillRadio, .editFillLabel {
+    font-family: "Helvetica Neue", "Helvetica", sans-serif;
+    font-size:110%;
+    margin: 6px;
+}
+#editFillColor {
+    top: 400px;
+}
+#editFillTexture {
+    top: 420px;
+}
+.fillRadio {
+    height: 40px;
+    width: 180px;
+    position: static;
+    margin: 1px;
+    text-align: left;
+    text-indent: 10px;
+}
+#editFillColor:active,   #editFillColorRadio:checked +   #editFillColor,
+#editFillTexture:active, #editFillTextureRadio:checked + #editFillTexture,
+#editFillMarble:active,  #editFillMarbleRadio:checked +  #editFillMarble,
+#editFillMix:active,     #editFillMixRadio:checked +     #editFillMix {
+  background-color: #dfdfdf;
+  background-image: linear-gradient(to bottom, #479ceb, #1067c1); 
+  color: #fff;
+}
 
 </style>
 </head>
 <body onload="start()" onresize="doResize()" >
     <div id="side_ctrl">
     <input id="addingCubeCheck" class="hidden" onclick="triggerAdd()" type="checkbox">
-    <label id="addingCube" class="sc-btn" for="addingCubeCheck" ></label>
+    <label id="addingCube" class="sc-btn" for="addingCubeCheck" >Add</label>
     <input id="removingCubeCheck" class="hidden" onclick="triggerRemove()" type="checkbox"/>
-    <label id="removingCube" class="sc-btn" for="removingCubeCheck"/></label>
-    <label id="aboutBtn" class="sc-btn" onclick="triggerAbout(true)"/></label>
+    <label id="removingCube" class="sc-btn" for="removingCubeCheck"/>Remove</label>
+    <label id="aboutBtn" class="sc-btn" onclick="triggerAbout(true)"/>?</label>
     <label id="urlBtn" class="sc-btn" onclick="triggerUrl(true)"/></label>
     <div id="side_rel" class="in_rel">
       <div id="fams_cont"></div>
@@ -1124,10 +1247,27 @@ h1 {
     </div>
     <div id="editBack" class="popupBack"><div id="picEditWin" class="popupWin">
         <canvas id="editCanvas" width="590", height="450"></canvas>
-        <label id="editDoneBtn" class="sc-btn" onclick="triggerEditDone()"/></label>
-        <label id="editTexBtn" class="sc-btn" onclick="triggerEditTexture()"/></label>
+        <label id="editDoneBtn" class="sc-btn" onclick="triggerEditDone()"/>Done</label>
+        <label id="editTexBtn" class="sc-btn" onclick="triggerEditTexture()"/>Texture</label>
         <input id="editBackColor" class="color" value="#9999cc" />
-    </div></div>
+        
+        <input id="editActionPiecesCheck" class="hidden" onclick="triggerAction(1)" type="checkbox">
+        <label id="editActionPieces" class="sc-btn" for="editActionPiecesCheck"/>Edit Pieces</label>
+        <input id="editActionMoveCheck" class="hidden" onclick="triggerAction(2)" type="checkbox">
+        <label id="editActionMove" class="sc-btn" for="editActionMoveCheck"/>Move Image</label>
+        <input id="editZoomSlider" type="range" orient="vertical" min="20" max="200" step="1" oninput="changeImgZoom(1,editZoomSlider.value)"/>
+        <input id="editZoomText" type="text" oninput="changeImgZoom(2,parseFloat(editZoomText.value))"/>
+        
+        <br>
+        <input id="editFillColorRadio" class="hidden" type="radio" name="fill">
+        <label id="editFillColor" class ="sc-btn fillRadio" for="editFillColorRadio">Uniform Color</label><br>
+        <input id="editFillTextureRadio" class="hidden" type="radio" name="fill">
+        <label id="editFillTexture" class ="sc-btn fillRadio" for="editFillTextureRadio">Texture from Image</label><br>
+        <input id="editFillMarbleRadio" class="hidden" type="radio" name="fill">
+        <label id="editFillMarble" class ="sc-btn fillRadio" for="editFillMarbleRadio">Marble Texture</label><br>
+        <input id="editFillMixRadio" class="hidden" type="radio" name="fill">
+        <label id="editFillMix" class ="sc-btn fillRadio" for="editFillMixRadio">Mix Texture</label><br>
+    </div></div></div>
     </div>
     <div id="urlPopup"><input id="urlEdit" type="text" onchange="urlEditChanged()"/></div>
     

@@ -319,6 +319,8 @@ void ModelHelpDlg::updatePixmapLabel(int piece)
     if (piece < 0) 
 		return;
 	SlvCube *slv = m_doc->getCurrentSolve();
+    if (slv == nullptr)
+        return;
     if (piece >= slv->dt.size()) // can happen if its a choise from the build control
         return;
     int abs_sc = slv->dt[piece].abs_sc;

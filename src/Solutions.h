@@ -90,9 +90,14 @@ public:
 
 
 	int slvsz; // size of a solution
-	IChangeNotify *changedFromSave;
+	
+    void setChangedNotifier(IChangeNotify* n) {
+        changedFromSave = n;
+    }
 
 private:
+
+    IChangeNotify *changedFromSave;
 
 	vector<SlvCube*> sv;
 	bool m_bChangedFromSave;

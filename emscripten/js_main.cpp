@@ -108,7 +108,7 @@ MainCtrl g_ctrl;
 
 void RunContext::notifyLastSolution(bool firstInGo)
 {
-    cout << "Slv-notify" << endl;
+    //cout << "Slv-notify" << endl;
     g_ctrl.m_doc.setCurSlvToLast();
     g_ctrl.requestDraw();
 }
@@ -311,36 +311,34 @@ bool cpp_slvrun()
 
 void setGrpCount(int grpi, int count)
 {
-    //cout << "PIC-SEL " << grpi << " " << count << endl;
     auto& bucket = PicBucket::mutableInstance();
+    if (grpi < 0 || grpi >= bucket.grps.size()) {
+        cout << "no-such-cube(sc) " << grpi << endl;
+        return;
+    }
+    //cout << "PIC-SEL " << grpi << " " << count << endl;
     auto& grp = bucket.grps[grpi];
     for(auto pi: grp.picsi) {
         bucket.pdefs[pi].setSelected(count);
     }
 }
 
+
+
 // a stack of pushd vectors, each the size of pdefs that holds the info about the pieces selection
 // (used in editor to save the last selection
 // two ops in the same func to save exported symbols and have the stack static
-void stackPicSelection(int op) {
-    static vector<vector<int>> g_picSelectStack;
-    auto& bucket = PicBucket::mutableInstance();
+void stackState(int op) 
+{
     if (op == 0) {
-        g_picSelectStack.push_back(vector<int>());
-        auto& sel = g_picSelectStack.back();
-        sel.reserve(bucket.pdefs.size());
-        for(auto& pd: bucket.pdefs) {
-            sel.push_back(pd.getSelected());
-            pd.setSelected(0);
-        }
+        g_ctrl.m_doc.pushState();
     }
     else {
-        const auto& sel = g_picSelectStack.back();
-        for(int i = 0; i < bucket.pdefs.size(); ++i) {
-            bucket.pdefs[i].setSelected(sel[i]);
-        }
-        g_picSelectStack.pop_back();
+        g_ctrl.m_doc.popState();
+        g_ctrl.requestDraw();
     }
+    g_ctrl.m_modelGl.m_buildCtrl.reloadWorld();
+    
 }
 
 void setEditAction(int a)
@@ -472,7 +470,7 @@ void readCubeTexCoord(int grpi)
         pic.texScaleX = EM_ASM_DOUBLE(return cubeTexInfo[$0].scaleX, i);
         pic.texScaleY = EM_ASM_DOUBLE(return cubeTexInfo[$0].scaleY, i);
     }
-
+    g_ctrl.requestDraw();
 }
 
 } // extern "C"

@@ -61,7 +61,7 @@ CubeDoc::CubeDoc(QWidget *parent)
   :QObject(parent), m_curWarning(WARN_NONE), m_curPicsWarning(WARN_NONE), m_slvDone(this)
 {
 
-	m_slvs->changedFromSave = &m_slvDone;
+	m_slvs->setChangedNotifier(&m_slvDone);
 
 	//connect(m_slvs, SIGNAL(changedFromSave(bool)), this, SIGNAL(changedFromSave(bool)));
 
@@ -190,7 +190,7 @@ void CubeDoc::openAndHandle(QString name)
         // announce there is a new solution(s)
         // tell the main frame to switch to the model view... (this will happen becuase there were no solutions before)
 
-        m_slvs->changedFromSave = &m_slvDone;
+        m_slvs->setChangedNotifier(&m_slvDone);
 
         g_main->setUpdatesEnabled(false); // TBD: should use proper signal
         // updates need to be disabled to avoid the flicker caused by the DoReset that comes with
@@ -253,7 +253,7 @@ bool CubeDoc::checkUnsaved(int types)
 		}
 	}
 	
-	if ( ((types & DTShape) != 0) && (m_build != nullptr) && (m_build->getChangedFromSave()))
+	if ( ((types & DTShape) != 0) && (m_build.get() != nullptr) && (m_build->getChangedFromSave()))
 	{
 		int ret = QMessageBox::question(g_main, APP_NAME, tr("The shape was not saved\n\nDo you wish to save it?"), 
 			QMessageBox::Yes |  QMessageBox::Default, QMessageBox::No, QMessageBox::Cancel | QMessageBox::Escape);
@@ -449,24 +449,21 @@ bool CubeDoc::realSave(int unGenSlvAnswer)
 		return false;
 	}
 
-	BuildWorld* savebuild = m_build;
+    unique_ptr<BuildWorld> ungenned;
+	BuildWorld* savebuild = m_build.get();
 	if (doUngenerate)
 	{
-		savebuild = new BuildWorld;
+        ungenned.reset(new BuildWorld);
+		savebuild = ungenned.get();
 		savebuild->unGenerate(m_shp.get());
 	}
 	if (!savebuild->saveTo(&wrfl))
 	{
 		QMessageBox::critical(g_main, APP_NAME, tr("Error saving generate data"), QMessageBox::Ok, 0);
-		if (doUngenerate)
-			delete savebuild;
 		wrfl.close();
 		return false;
 	}
 	wrfl.writeNums(0, true); // write CRLF
-
-	if (doUngenerate)
-		delete savebuild;
 
 	if (saveCurShape)
 	{
@@ -662,4 +659,9 @@ void CubeDoc::transferShape()
 {
     CubeDocBase::transferShape();
     emit updateViews(HINT_SLV_NXPR);
+}
+
+void CubeDoc::testt() {
+    CubeDocBase::pushState();
+    CubeDocBase::popState();
 }

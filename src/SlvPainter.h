@@ -52,7 +52,10 @@ class SlvPainter
 {
 public:
     // contains a pointer to its parent
-    SlvPainter(const SlvCube* _scube) :m_scube(_scube) {}
+    SlvPainter(const SlvCube* _scube) :m_scube(_scube) 
+    {
+
+    }
     void paint(BaseGLWidget* context, bool fTargets, int singleChoise, int upToStep, ELinesDraw cfgLines) const;
 
     bool exportToObj(ObjExport& oe) const;

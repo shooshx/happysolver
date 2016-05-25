@@ -224,7 +224,6 @@ TPicBits Cube::getCurrentCirc(int fc)
     PicArr pmat;
     int tval = shape->faces[fc].ex.x + (xsz*shape->faces[fc].ex.y) + (xTysz*shape->faces[fc].ex.z);
     int j, k, b;
-
     switch (shape->faces[fc].dr)
     {
     case YZ_PLANE:
@@ -498,7 +497,7 @@ void Cube::initPuttgr(SolveContext *thread, SlvCube* starter)
                 break; // shouldn't really happen
         };
     }
-    cout << "p= " << p << endl;
+    //cout << "p= " << p << endl;
     thread->p = p;
 
 }

@@ -74,14 +74,34 @@ public:
 
 	~MyPoint() { ++g_dtorCount; }
 	
-	void clear() { p.clear(); n.clear(); }
-	void setp(const Vec3 &c) { p = c; }
-	uint hash() const { const uint *up = reinterpret_cast<const uint*>(p.ptr()); return (bXor(up[0], bXor(up[1] >> 8, up[2] >> 16))); }
+	void clear() { 
+        const_cast<Vec3&>(p).clear(); 
+        n.clear(); 
+    }
+	void setp(const Vec3 &c) { 
+        const_cast<Vec3&>(p) = c; 
+    }
+	uint hash() const { 
+        const uint *up = reinterpret_cast<const uint*>(p.ptr()); 
+        return bXor(up[0], bXor(up[1] >> 8, up[2] >> 16));
+    }
 
-	MyPoint &operator+=(const MyPoint& a) { p += a.p; return *this; }
-	MyPoint &operator/=(float s) { p /= s; return *this; }
-	MyPoint &operator*=(float s) { p *= s; return *this; }
-	MyPoint &operator=(const MyPoint& a) { p = a.p; return *this; }
+	MyPoint &operator+=(const MyPoint& a) { 
+        p += a.p; 
+        return *this; 
+    }
+	MyPoint &operator/=(float s) {
+        p /= s; 
+        return *this; 
+    }
+	MyPoint &operator*=(float s) { 
+        p *= s; 
+        return *this; 
+    }
+	MyPoint &operator=(const MyPoint& a) {
+        p = a.p; 
+        return *this; 
+    }
 
 	Vec3 p; ///< actual coordinate value
 	Vec3 n; ///< normal of this point.
@@ -91,16 +111,17 @@ public:
     /// was this point adjusted in the current subdiv iteration? - used in MyObject::subdivide()
     /// in no-subdiv meshes, did this point have a set normal? or do we need to calc it (for flat faces)
 	bool touched; 
-                   
+//    mutable uint hashv = 0;               
 
 	// managment
 	static int g_ctorCount, g_dtorCount; ///< keep bookmarking of creation and deletion for debug
 };
 
-inline MyPoint operator+(const MyPoint& a, const MyPoint& b) { MyPoint r(a); r += b; return r; }
+/*inline MyPoint operator+(const MyPoint& a, const MyPoint& b) { MyPoint r(a); r += b; return r; }
 inline MyPoint operator/(const MyPoint& a, float s) { MyPoint r(a); r /= s; return r; }
 inline MyPoint operator*(float s, const MyPoint& a) { MyPoint r(a); r *= s; return r; }
 inline MyPoint operator*(const MyPoint& a, float s) { MyPoint r(a); r *= s; return r; }
+*/
 inline bool operator==(const MyPoint &p1, const MyPoint &p2) { return (p1.p == p2.p); }
 
 

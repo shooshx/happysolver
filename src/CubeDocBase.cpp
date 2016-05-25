@@ -34,19 +34,18 @@ bool CubeDocBase::realOpen(const string& name, bool* gotSolutions)
 #endif
     bool hasSolutions = false;
 
-    BuildWorld *newbuild = new BuildWorld;
+    unique_ptr<BuildWorld> newbuild(new BuildWorld);
 
     if (!newbuild->loadFrom(&rdfl))
     { // no build, we can't do nothing.
-        delete newbuild; newbuild = nullptr;
         rdfl.close();
         m_lastMsg = "Error opening solution file.\nfile: " + name + "\n\nUnable to read shape information";
         return false;
     }
 
     // generate the shape from the build. this is the shape we're going to use in the end
-    auto_ptr<Shape> gendshape(new Shape);
-    gendshape->generate(newbuild); // get the return value? no real need to.
+    unique_ptr<Shape> gendshape(new Shape);
+    gendshape->generate(newbuild.get()); // get the return value? no real need to.
 
     unique_ptr<Solutions> newslvs;
     unique_ptr<Shape> loadedshp(new Shape);
@@ -101,8 +100,7 @@ bool CubeDocBase::realOpen(const string& name, bool* gotSolutions)
     // don't do anything before all the gui is done (messageboxes etc')
     // because a paint to the build would reveal something half baked.
 
-    delete m_build;
-    m_build = newbuild;
+    m_build.reset(newbuild.release());
 
     m_shp.reset(gendshape.release());
 
@@ -135,7 +133,7 @@ bool CubeDocBase::realOpen(const string& name, bool* gotSolutions)
 
 bool CubeDocBase::callGenerate(Shape *shape, bool bSilent)
 {
-    EGenResult ret = shape->generate(m_build);
+    EGenResult ret = shape->generate(m_build.get());
     if (ret == GEN_RESULT_OK)
         return true;
     else if (!bSilent)
@@ -196,7 +194,7 @@ void CubeDocBase::solveGo(SlvCube *starter)
     }
 
     cout << "solveGo!" << endl;
-    if ((m_shp.get() == nullptr) || (m_build->getChangedFromGen()))
+    if (m_shp.get() == nullptr || m_build->getChangedFromGen())
     {
         if (!onGenShape())
             return;
@@ -252,6 +250,8 @@ const RunStats* CubeDocBase::getRunningStats()
 
 void CubeDocBase::transferShape()
 {
+    if (m_shp.get() == nullptr)
+        return;
     shared_ptr<Shape> oldshp = m_shp; // save it so it won't be deleted yet
     GenTemplate temp;
     for (int i = 0; i < m_shp->fcn; ++i) {
@@ -478,3 +478,47 @@ bool CubeDocBase::loadMinBin(const string& s)
 }
 
 
+
+void CubeDocBase::pushState()
+{
+    auto& bucket = PicBucket::mutableInstance();
+    m_stateStack.emplace_back();
+    auto& s = m_stateStack.back();
+    s.picSelect.reserve(bucket.pdefs.size());
+    for(auto& pd: bucket.pdefs) {
+        s.picSelect.push_back(pd.getSelected());
+        pd.setSelected(0);
+    }
+    s.shape = m_shp;
+    m_shp.reset();
+
+    s.bld.reset(m_build.release());
+    m_build.reset(new BuildWorld);
+    m_build->initializeNew(true);
+
+    s.slvs.reset(m_slvs.release());
+    m_slvs.reset(new Solutions);
+    s.curSlv = m_nCurSlv;
+    m_nCurSlv = -1;
+    m_nUpToStep = -1;
+}
+
+void CubeDocBase::popState()
+{
+    M_ASSERT(m_stateStack.size() > 0);
+    auto& bucket = PicBucket::mutableInstance();
+    auto& s = m_stateStack.back();
+    for(int i = 0; i < bucket.pdefs.size(); ++i) {
+        bucket.pdefs[i].setSelected(s.picSelect[i]);
+    }
+
+    m_shp = s.shape;
+ 
+    m_build.reset(s.bld.release());
+
+    m_slvs.reset(s.slvs.release());
+    m_nCurSlv = s.curSlv;
+    m_nUpToStep = m_shp->fcn;
+
+    m_stateStack.pop_back();
+}

@@ -431,8 +431,8 @@ bool PicBucket::loadXML(const char* data)
                 txind = fill->IntAttribute("texind");
                 if (txind >= 0 && txind < texs.size()) 
                     baseTex = texs[txind];
-                else 
-                    cout << "missing texture image" << txind << endl;
+                //else 
+                //    cout << "missing texture image" << txind << endl;
 
             }
 
@@ -493,9 +493,9 @@ bool PicBucket::loadXML(const char* data)
                             ++txti;
                         }
                     }
-                    if (pdefi >= 324) {
+/*                    if (pdefi >= 324) {
                         cout << "READ " << pdefi << "  " << text << "  " <<  curdef.v.prn(true) << endl;
-                    }
+                    }*/
                     if (cgrp.isIndividual() && cgrp.gtex != nullptr)
                     {
                         curdef.xOffs = xpic->IntAttribute("x1");
@@ -592,7 +592,7 @@ void PicBucket::updateGrp(int grpi, PicArr arrs[6])
         if (add) {
             pdefi = pdefs.size();
             pdefs.push_back(PicDef());
-            cout << "Added Group " << pdefi << endl;
+            //cout << "Added Group " << pdefi << endl;
             cgrp.picsi.push_back(pdefi);
             M_ASSERT(cgrp.picsi.size() <= 6);
         }
@@ -614,12 +614,12 @@ void PicBucket::updateGrp(int grpi, PicArr arrs[6])
 
     distinctMeshes(false);
 
-    for (int i = 0; i < pdefs.size(); ++i) {
+ /*   for (int i = 0; i < pdefs.size(); ++i) {
         if (i >= 324) {
       	    const PicDef& thedef = PicBucket::instance().pdefs[i];
             cout << i << "> " << thedef.v.prn(true) << "   " << thedef.defRot << " " << thedef.dispRot << endl;
         }
-    }
+    }*/
 
     PicDisp::g_smoothAllocator.checkMaxAlloc();
 
@@ -628,7 +628,6 @@ void PicBucket::updateGrp(int grpi, PicArr arrs[6])
 
 void PicBucket::makeAllComp()
 {
-    cout << "+++ALLCOMP" << endl;
     PicsSet ps;
     for (int i = 0; i < pdefs.size(); ++i) {
         ps.add(i, true); // TBD - consider sym

@@ -29,7 +29,7 @@ class CubeDocBase
 {
 public:
     CubeDocBase() {
-        m_build = new BuildWorld;
+        m_build.reset(new BuildWorld);
         m_slvs.reset(new Solutions);
 
         M_ASSERT(s_instance == nullptr);
@@ -119,30 +119,54 @@ public:
     void addSlvMin(const vector<pair<int, int>>& sv);
 
     void openSimple(const char* str);
+
+    void pushState();
+    void popState();
+
+
 public:
     Configuration m_conf;
     string m_lastMsg;
 
     SolveContext *m_sthread;
 
-    vector<int> m_flagPiece; // int for every face in the shape, makes SlcPainter flag pieces that are going to be deleted
+    vector<int> m_flagPiece; // int for every face in the shape, makes SlvPainter flag pieces that are going to be deleted
 
     static CubeDocBase* s_instance; 
 
 protected:
 
+    struct DocState {
+        DocState() {}
+        DocState(DocState&& o) 
+            : picSelect(std::move(o.picSelect))
+            , shape(std::move(o.shape))
+            , slvs(std::move(o.slvs))
+            , bld(std::move(o.bld))
+            , curSlv(o.curSlv)
+        {}
+        vector<int> picSelect;
+        shared_ptr<Shape> shape;
+        unique_ptr<Solutions> slvs; // should actually by unique_ptr but that's too much of a hassle
+        unique_ptr<BuildWorld> bld;
+        int curSlv = -1;
+
+        DISALLOW_COPY(DocState);
+    };
+    vector<DocState> m_stateStack;
+
     shared_ptr<Shape> m_shp;
     unique_ptr<Solutions> m_slvs;
 
     /// the current design
-    BuildWorld *m_build; 
+    unique_ptr<BuildWorld> m_build; 
     
     /// the index of the current solution. -1 means there are none.
-    int m_nCurSlv;
+    int m_nCurSlv = -1;
 
     /// show solution and design up to this step. -1 mean show all.
     /// up to step, not including. the m_nUpToStep piece is not shown.
     /// to show all, m_nUpToStep should be the number of faces in the shape
-    int m_nUpToStep; 
+    int m_nUpToStep = -1; 
 
 };

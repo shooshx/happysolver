@@ -168,6 +168,8 @@ public slots:
 
     virtual void transferShape() override; // transfer the shape from the build view to the existing solutions
 
+    void testt();
+
 signals:
     void updateViews(int hint); //emitted when the attached views need to update their graphics
 

@@ -726,7 +726,7 @@ void MainWindow::connectActions()
     // status bar
     connect(m_buildGLControl, SIGNAL(changedTileHover(int, BuildGLControl::EActStatus)), this, SLOT(setStatusTextBuild(int, BuildGLControl::EActStatus)));
 
-    connect(m_transferShapeAct, SIGNAL(triggered(bool)), m_doc, SLOT(transferShape()));
+    connect(m_transferShapeAct, SIGNAL(triggered(bool)), m_doc, SLOT(testt()));
 
 }
 

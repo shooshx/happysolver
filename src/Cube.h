@@ -159,6 +159,7 @@ public:
         m_conf = conf;
         m_slvs = slvs;
         m_shp = shp;
+        M_ASSERT(m_shp != nullptr);
         m_starterSlv = starterSlv;
     }
 

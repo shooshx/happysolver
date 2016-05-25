@@ -97,6 +97,8 @@ void SlvPainter::paintLines(int f, bool singleChoise, BaseGLWidget *context, ELi
 
 void SlvPainter::paint(BaseGLWidget* context, bool fTargets, int singleChoise, int upToStep, ELinesDraw cfgLines) const
 {
+    M_ASSERT(m_scube != nullptr);
+    M_ASSERT(m_scube->shape != nullptr);
     context->model.translate(0,0,+1);
     m_scube->shape->makeTransformsMatrics(0, m_mats);
 
