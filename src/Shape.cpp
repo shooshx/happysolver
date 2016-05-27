@@ -1239,7 +1239,7 @@ void Shape::makeNeiTransforms()
 
     // move to the first face
 
-    int ang = g_testAngle[0];
+    //int ang = g_testAngle[0];
     //checkNeiTranDFS(m, start, pass, 0, ang, checkAddQuad);
 
     //g_count = 0;
@@ -1278,9 +1278,8 @@ void Shape::startNeiTransform(MatStack& m) const {
 
 void Shape::makeTransformsMatrics(float angle, vector<Mat4>& mats) const
 {
-    angle = g_testAngle[0];
-
-    mats.resize(fcn);
+    if (mats.size() != fcn)
+        mats.resize(fcn);
     MatStack m;
     startNeiTransform(m);
 

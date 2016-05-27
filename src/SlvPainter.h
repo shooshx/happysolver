@@ -52,16 +52,16 @@ class SlvPainter
 {
 public:
     // contains a pointer to its parent
-    SlvPainter(const SlvCube* _scube) :m_scube(_scube) 
-    {
+    SlvPainter(const SlvCube* _scube);
 
-    }
     void paint(BaseGLWidget* context, bool fTargets, int singleChoise, int upToStep, ELinesDraw cfgLines) const;
 
     bool exportToObj(ObjExport& oe) const;
 
     bool isNull() const { return m_scube == nullptr; }
     void setSlvCube(const SlvCube *sc) { m_scube = sc; }
+
+    void makeMats();
 
 public:
     Vec3 qmin, qmax; // 2 opposites for bounding box
@@ -76,5 +76,6 @@ private:
 
     const SlvCube* m_scube;
     mutable vector<Mat4> m_mats;
+
 };
 

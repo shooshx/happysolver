@@ -1,5 +1,6 @@
 #include <emscripten.h>
 #include <html5.h>
+#include <trace.h>
 
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
@@ -259,6 +260,11 @@ void mouseDblClick(int ctrlPressed, int x, int y) {
     bool needUpdate = g_ctrl.m_gl.mouseDoubleClick(ctrlPressed, x, y);
     if (needUpdate)
         g_ctrl.requestDraw();
+        
+#ifdef __EMSCRIPTEN_TRACING__
+    emscripten_trace_report_memory_layout();
+    emscripten_trace_report_off_heap_data();
+#endif        
 }
 void mouseWheel(int delta) {
     g_ctrl.m_gl.mouseWheelEvent(delta);
@@ -271,6 +277,9 @@ double getTms() {
 
 void cpp_start()
 {
+#ifdef __EMSCRIPTEN_TRACING__
+    emscripten_trace_configure("http://127.0.0.1:5000/", "HappyCubeSolver");
+#endif    
     EmscriptenWebGLContextAttributes attr;
     emscripten_webgl_init_context_attributes(&attr);
 //    attr.premultipliedAlpha = false;
@@ -417,9 +426,18 @@ void readCube(int grpi)
     auto& bucket = PicBucket::mutableInstance();
     bucket.updateGrp(grpi, pcs);
     
+#ifdef __EMSCRIPTEN_TRACING__
+    emscripten_trace_report_memory_layout();
+    emscripten_trace_report_off_heap_data();
+#endif
 }
 
-void textureParamCube(int grpi, float r, float g, float b)
+void freeMeshAllocator()
+{
+    PicDisp::g_smoothAllocator.clear();
+}
+
+void textureParamCube(int grpi, int dtype, float r1, float g1, float b1, float r2, float g2, float b2)
 {
     auto& bucket = PicBucket::mutableInstance();
     if (grpi < 0 || grpi >= bucket.grps.size()) {
@@ -428,7 +446,9 @@ void textureParamCube(int grpi, float r, float g, float b)
     }
 
     PicGroupDef& cgrp = bucket.grps[grpi];
-    cgrp.color = Vec3(r, g, b);
+    cgrp.color = Vec3(r1, g1, b1);
+    cgrp.exColor = Vec3(r2, g2, b2);
+    cgrp.drawtype = (EDrawType)dtype;
     g_ctrl.requestDraw();
 }
 

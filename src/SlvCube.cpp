@@ -77,6 +77,8 @@ void SlvCube::genPainter()
 	// lines
 	Cube tmpcube(shape, nullptr, nullptr);
 	tmpcube.genLinesIFS(this, painter.m_linesIFS);
+
+    painter.makeMats();
 }
 
 #define VAL_SLV_NUMD "s#%d"

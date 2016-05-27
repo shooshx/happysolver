@@ -303,7 +303,8 @@ private:
     // used for optimization of the generate process
     // an array of 3 Space3D, each for every plane
     // contains the numbers of faces present in the build.
-    Space3D<int> m_opt_facesLoc[3];
+    // face count will not be above 32000...
+    Space3D<short> m_opt_facesLoc[3];
 
 
 public:

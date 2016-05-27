@@ -7,6 +7,20 @@
 #include "OpenGL/Shaders.h"
 #include "CubeDocBase.h"
 
+extern int g_testAngle[];
+
+SlvPainter::SlvPainter(const SlvCube* _scube) :m_scube(_scube) 
+{
+}
+
+void SlvPainter::makeMats() 
+{
+    if (m_scube == nullptr)
+        return;
+    // this disables moving the angle for now. need a special event for it. don't do it every frame
+    m_scube->shape->makeTransformsMatrics(g_testAngle[0], m_mats);
+}
+
 // TBD - GLControl
 void SlvPainter::paintPiece(int f, BaseGLWidget* context, bool fTargets) const
 {
@@ -100,7 +114,6 @@ void SlvPainter::paint(BaseGLWidget* context, bool fTargets, int singleChoise, i
     M_ASSERT(m_scube != nullptr);
     M_ASSERT(m_scube->shape != nullptr);
     context->model.translate(0,0,+1);
-    m_scube->shape->makeTransformsMatrics(0, m_mats);
 
     //cout << "*****" << endl;
 

@@ -179,5 +179,6 @@ void Solutions::toNewShape(const Shape* newShp)
         }
         s->dt = newdt;
         s->shape = newShp;
+        s->painter.makeMats();
     }
 }

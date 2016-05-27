@@ -87,6 +87,7 @@ void PicsSet::add(int defInd, bool cSym)
 
 	}
 
+    //cout << "ADDED " << added.size() << endl;
     added.push_back( AddedPic(defInd, compind) );
 }
 

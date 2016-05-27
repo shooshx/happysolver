@@ -98,10 +98,11 @@ struct BoundedBlock
 	BoundedBlock() :fill(1), left(false), right(false), up(false), down(false), front(false), back(false) {}
 	BoundedBlock(int v) :fill(v), left(false), right(false), up(false), down(false), front(false), back(false) {}
 	// walls that exist
-	int fill;
-	bool left, right; ///< X axis
-	bool up, down; ///< Y axis
-	bool front, back; ///< Z axis
+
+	uchar fill:1;
+	uchar left:1, right:1; ///< X axis
+	uchar up:1, down:1; ///< Y axis
+	uchar front:1, back:1; ///< Z axis
 };
 
 /** BoundedBlockSpace3D is a 3D space of BoundedBlock elements.

@@ -29,7 +29,7 @@ var model = { vtxBuf: null }
 
 var loadSolution, resizeGl, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseWheel, cpp_draw, cpp_slvrun, getTms
 var setGrpCount, setEditAction, runningRestart, serializeCurrent, deserializeAndLoad, readCube, newRestart, conf
-var stackState, textureParamCube, getCubeTextureHandle, readCubeTexCoord, loadSlvSimple
+var stackState, textureParamCube, getCubeTextureHandle, readCubeTexCoord, loadSlvSimple, freeMeshAllocator
 var ctrlPressed = false
 var editCtx = null
 var unimesh_keys = Object.keys(unimesh) // unimesh included above
@@ -38,7 +38,7 @@ var readFrameBuf = null, readFrameView = null // buffer for selection readPixels
 var ACT_NONE = 0, ACT_ADD = 1, ACT_REMOVE = 2
     
 function start() {
-    var colors = jsColorPicker('input.color', {
+    var colors = jsColorPicker('#editBackColor', {
         customBG: '#222',
         readOnly: true,
         // patch: false,
@@ -53,6 +53,21 @@ function start() {
         appendTo: editBack,
         displayCallback:changeBackColor
       });
+    var colors = jsColorPicker('#editFrontColor', {
+        customBG: '#222',
+        readOnly: true,
+        // patch: false,
+        init: function(elm, colors) { // colors is a different instance (not connected to colorPicker)
+          elm.style.backgroundColor = elm.value;
+          elm.style.color = colors.rgbaMixCustom.luminance > 0.22 ? '#222' : '#ddd';
+        },
+        initStyle: 'display: hidden',
+        mode: 'hsv-h',
+        noAlpha: true,
+        size: 1,
+        appendTo: editBack,
+        displayCallback:changeFrontColor
+      });      
     
   /*  picsAddFamily("Happy Cube", "hc")
     picsAddCube("Blue", "hc_blue")
@@ -84,10 +99,11 @@ function start() {
     newRestart  = Module.cwrap('newRestart', null, [])
     conf = Module.cwrap('conf', null, ['number'])
     stackState = Module.cwrap('stackState', null, ['number'])
-    textureParamCube = Module.cwrap('textureParamCube', null, ['number','number','number','number'])
+    textureParamCube = Module.cwrap('textureParamCube', null, ['number','number','number','number','number','number','number','number']) // grpi,drawtype,r,g,b,r,g,b
     getCubeTextureHandle = Module.cwrap('getCubeTextureHandle', 'number', ['number', 'number', 'number'])
     readCubeTexCoord = Module.cwrap('readCubeTexCoord', null, ['number'])
     loadSlvSimple = Module.cwrap('loadSlvSimple', null, ['string'])
+    freeMeshAllocator = Module.cwrap('freeMeshAllocator', null, [])
     
     Module.ccall('cpp_start', null);
     conf(true)
@@ -602,6 +618,8 @@ var col = ['white', '#5555ff', 'red', 'yellow', 'orange', 'green', 'purple']
 var editImg = null
 var imgOffset = {x:0, y:0}
 var imgZoom = 1.0
+var drawType = 0
+var colorBack = {r:0,g:0,b:0}, colorFront = {r:0,g:0,b:0}
 
 function drawLine(x, y, w, h) {
     editCtx.beginPath()
@@ -674,7 +692,8 @@ function loadTexImage(url)
 var editingCubeId = -1
 function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
 {
-    if (v) {
+    if (v) 
+    {
         editBack.style.display = "inline"
         side_ctrl.editMode = true // for resize
         doResize()
@@ -682,6 +701,8 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
         editActionMoveCheck.checked = false
         editZoomSlider.value = 100
         editZoomText.value = "100%"
+        editFillColorRadio.checked = true
+
         setEditAction(ACT_NONE)
 
         editingCubeId = cubeId
@@ -699,6 +720,10 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
     }
     else 
     {
+        readCube(editingCubeId)
+        editingCubeId = -1
+        
+        freeMeshAllocator()
         conf(true)  // revert back to randomized
         stackState(1) // pop last
 
@@ -765,30 +790,36 @@ function checkToothClick(event)
     paintCube()
     readCube(editingCubeId)
     
-
     newRestart()
-    
-    
 }
 
 function triggerEditDone()
 {
     if (editingCubeId == -1)
         throw "Unexpected cube-id"
-        
-    readCube(editingCubeId);
 
-    editingCubeId = -1
     triggerCubeEdit(false) // remove the dialog
 }
 
-function changeBackColor(colors)
+function changeBackColor(colors) 
 {
     if (editBackColor.value == editBackColor.prevValue)
         return
     editBackColor.prevValue = editBackColor.value   
-    //console.log(editBackColor.value)
-    textureParamCube(editingCubeId, colors.rgb.r, colors.rgb.g, colors.rgb.b)
+    colorBack = colors.rgb
+    sentTexParam()
+}
+function changeFrontColor(colors)
+{
+    if (editFrontColor.value == editFrontColor.prevValue)
+        return
+    editFrontColor.prevValue = editFrontColor.value   
+    colorFront = colors.rgb
+    sentTexParam()
+}
+
+function sentTexParam() {
+    textureParamCube(editingCubeId, drawType, colorBack.r, colorBack.g, colorBack.b, colorFront.r, colorBack.g, colorBack.b)
 }
 
 function triggerEditTexture()
@@ -845,6 +876,12 @@ function changeImgZoom(widget, v)
     
     paintCube()
     sendTexCoord()
+}
+
+function changeFillSelect(dtype)
+{
+    drawType = dtype
+    sentTexParam()
 }
     
 </script>
@@ -1156,9 +1193,6 @@ h1 {
    width: 140px;
    font-family: monospace;
 }
-#editBackColor {
-    width: 60px;
-}
 
 #editTexBtn {
    width: 60px;
@@ -1179,10 +1213,18 @@ h1 {
     top: 150px;
     right: 40px
 }
-{
-  background-color: #dfdfdf;
-  background-image: linear-gradient(to bottom, #479ceb, #1067c1); 
-  color: #fff;
+
+#editBackColor {
+    position: absolute;
+    width: 60px;
+    right: 55px;
+    top: 260px;
+}
+#editFrontColor {
+    position: absolute;
+    width: 60px;
+    right: 55px;
+    top: 300px;
 }
 
 #editZoomSlider {
@@ -1250,6 +1292,7 @@ h1 {
         <label id="editDoneBtn" class="sc-btn" onclick="triggerEditDone()"/>Done</label>
         <label id="editTexBtn" class="sc-btn" onclick="triggerEditTexture()"/>Texture</label>
         <input id="editBackColor" class="color" value="#9999cc" />
+        <input id="editFrontColor" class="color" value="#cc9999" />
         
         <input id="editActionPiecesCheck" class="hidden" onclick="triggerAction(1)" type="checkbox">
         <label id="editActionPieces" class="sc-btn" for="editActionPiecesCheck"/>Edit Pieces</label>
@@ -1259,13 +1302,13 @@ h1 {
         <input id="editZoomText" type="text" oninput="changeImgZoom(2,parseFloat(editZoomText.value))"/>
         
         <br>
-        <input id="editFillColorRadio" class="hidden" type="radio" name="fill">
+        <input id="editFillColorRadio" class="hidden" type="radio" name="fill" onclick="changeFillSelect(0)">
         <label id="editFillColor" class ="sc-btn fillRadio" for="editFillColorRadio">Uniform Color</label><br>
-        <input id="editFillTextureRadio" class="hidden" type="radio" name="fill">
+        <input id="editFillTextureRadio" class="hidden" type="radio" name="fill" onclick="changeFillSelect(0x14)">
         <label id="editFillTexture" class ="sc-btn fillRadio" for="editFillTextureRadio">Texture from Image</label><br>
-        <input id="editFillMarbleRadio" class="hidden" type="radio" name="fill">
+        <input id="editFillMarbleRadio" class="hidden" type="radio" name="fill" onclick="changeFillSelect(4)">
         <label id="editFillMarble" class ="sc-btn fillRadio" for="editFillMarbleRadio">Marble Texture</label><br>
-        <input id="editFillMixRadio" class="hidden" type="radio" name="fill">
+        <input id="editFillMixRadio" class="hidden" type="radio" name="fill" onclick="changeFillSelect(2)">
         <label id="editFillMix" class ="sc-btn fillRadio" for="editFillMixRadio">Mix Texture</label><br>
     </div></div></div>
     </div>

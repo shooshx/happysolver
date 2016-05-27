@@ -24,7 +24,7 @@ public:
 	void makeRtns(PicArr rtns[8]) const;
     void makeRtnsBits(TPicBits rtbits[8]) const;
 
-	int& set(int x, int y) { 
+	char& set(int x, int y) { 
         return v[y * 5 + x]; 
     }
 	int axx(int x, int y) const { 
@@ -43,7 +43,7 @@ public:
     string prn(bool oneLine = false) const;
     void fillCenter(); // just for printing, not functional
 
-	int v[25];
+	char v[25];
 	
 	bool turned; // is this rtn turned up-side-down or not. (used in genIFS)
 	int rtnindx;	 // original rotation index, always [0,7]

@@ -34,33 +34,33 @@
 
 
 
-#define FACE_NORM		0x00000201  ///< normal white
-#define FACE_STRT		0x00000202  ///< starting, yellow
-#define FACE_NORM_SELR  0x00020201  ///< show for selected to be removed
-#define FACE_STRT_SELR  0x00020202  
+#define FACE_NORM		0x09  //0b00001001  ///< normal white
+#define FACE_STRT		0x0A  //0b00001010  ///< starting, yellow
+#define FACE_NORM_SELR  0x29 //0b00101001  ///< show for selected to be removed
+#define FACE_STRT_SELR  0x2A //0b00101010  
+                         
+#define FACE_TRANS		0x05 //0b00000101  ///< blue ones, possible to put there a tile
+#define FACE_TRANS_NONE 0x15 //0b00010101  ///< should be blue, but not shown.
+                         
+#define FACE_DONT_TRANS	0x06 //0b00000110  ///< impossible to put there
+                         
+#define FACE_TRANS_SEL  0x07 //0b00000111  ///< shown where its possible to put a new cube
+                         
+#define TYPE_REAL		0x08 //0b00001000  ///< real tiles
+#define TYPE_VIR		0x04 //0b00000100  ///< virtual tiles
+                         
+#define SHOW_REOMOVE    0x20 //0b00100000  ///< can happen only to REAL tiles
+#define SHOW_DONT		0x10 //0b00010000  ///< can happen only to TRANS tiles
 
-#define FACE_TRANS		0x00000101  ///< blue ones, possible to put there a tile
-#define FACE_TRANS_NONE 0x00010101  ///< should be blue, but not shown.
 
-#define FACE_DONT_TRANS	0x00000102  ///< impossible to put there
-
-#define FACE_TRANS_SEL  0x00000103  ///< shown where its possible to put a new cube
-
-#define TYPE_REAL		0x00000200  ///< real tiles
-#define TYPE_VIR		0x00000100  ///< virtual tiles
-
-#define SHOW_REOMOVE    0x00020000  ///< can happen only to REAL tiles
-#define SHOW_DONT		0x00010000  ///< can happen only to TRANS tiles
-#define SHOW_DO			0x00000000
-
-#define GET_TYPE(face) ((face) & 0x0000FF00) 
-#define GET_VAL(face)  ((face) & 0x0000FFFF)
-#define GET_SHOW(face) ((face) & 0x00FF0000)
-#define GET_VAL_SHOW(face) ((face) & 0x00FFFFFF)
+#define GET_TYPE(face) ((face) & 0x0C) 
+#define GET_VAL(face)  ((face) & 0x0F)
+#define GET_SHOW(face) ((face) & 0x30)
+#define GET_VAL_SHOW(face) ((face) & 0x3F)
 
 // last 8 bits are for intensity. intensity is for fading tiles in. range - 1 to 8.
-#define GET_INTENSITY(face) (((face) >> 24) & 0xFF)
-#define SET_INTENSITY(face, in) ((face & 0x00FFFFFF) | ((in) << 24))
+//#define GET_INTENSITY(face) (((face) >> 24) & 0xFF)
+//#define SET_INTENSITY(face, in) ((face & 0x00FFFFFF) | ((in) << 24))
 
 #define BUILD_START_CUBE Vec3i(24, 24, 24)
 
@@ -81,7 +81,7 @@ public:
     {
     public:
         BuildPage();
-        int fc[BUILD_SIZE][BUILD_SIZE];
+        uchar fc[BUILD_SIZE][BUILD_SIZE];
     };
     BuildDimension() {};
     BuildPage pages[BUILD_SIZE];

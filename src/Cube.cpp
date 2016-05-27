@@ -218,6 +218,7 @@ void Cube::rmvPicArr(const PicArr& pmat, const int fc)
     }
 }
 
+// TBD - make this more efficient by accessing bits directly
 TPicBits Cube::getCurrentCirc(int fc)
 {
     M_ASSERT(plc[fc].sc < 0); // -1 or -2
