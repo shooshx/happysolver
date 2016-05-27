@@ -437,6 +437,8 @@ void freeMeshAllocator()
     PicDisp::g_smoothAllocator.clear();
 }
 
+shared_ptr<GlTexture> g_lastTexture;
+
 void textureParamCube(int grpi, int dtype, float r1, float g1, float b1, float r2, float g2, float b2)
 {
     auto& bucket = PicBucket::mutableInstance();
@@ -449,6 +451,19 @@ void textureParamCube(int grpi, int dtype, float r1, float g1, float b1, float r
     cgrp.color = Vec3(r1, g1, b1);
     cgrp.exColor = Vec3(r2, g2, b2);
     cgrp.drawtype = (EDrawType)dtype;
+    
+    switch(cgrp.drawtype) {
+    case DRAW_COLOR: 
+        cgrp.gtex.reset(); break;
+    case DRAW_TEXTURE_BLEND:
+    case DRAW_TEXTURE_MARBLE: 
+        cgrp.gtex = bucket.gtexs[0]; break;
+    case DRAW_TEXTURE_INDIVIDUAL_HALF:
+        cgrp.gtex = g_lastTexture; break;
+    default:
+        cout << "Unexpected drawtype " << cgrp.drawtype << endl;    
+    }
+    
     g_ctrl.requestDraw();
 }
 
@@ -460,7 +475,7 @@ int getCubeTextureHandle(int grpi, int width, int height)
         return 0;
     }
     PicGroupDef& cgrp = bucket.grps[grpi];
-    cgrp.drawtype = DRAW_TEXTURE_INDIVIDUAL_WHOLE;
+    cgrp.drawtype = DRAW_TEXTURE_INDIVIDUAL_HALF;
     
     if (cgrp.gtex.get() != nullptr) {
         const auto& sz = cgrp.gtex->size();
@@ -469,6 +484,7 @@ int getCubeTextureHandle(int grpi, int width, int height)
         }
     }
     cgrp.gtex = make_shared<GlTexture>();
+    g_lastTexture = cgrp.gtex;
     cgrp.gtex->init(GL_TEXTURE_2D, Vec2i(width, height), 1, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, nullptr, GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE);
     g_ctrl.requestDraw();
     return cgrp.gtex->handle();  

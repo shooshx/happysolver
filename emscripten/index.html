@@ -38,7 +38,7 @@ var readFrameBuf = null, readFrameView = null // buffer for selection readPixels
 var ACT_NONE = 0, ACT_ADD = 1, ACT_REMOVE = 2
     
 function start() {
-    var colors = jsColorPicker('#editBackColor', {
+    var colors1 = jsColorPicker('input.color', {
         customBG: '#222',
         readOnly: true,
         // patch: false,
@@ -51,23 +51,9 @@ function start() {
         noAlpha: true,
         size: 1,
         appendTo: editBack,
-        displayCallback:changeBackColor
+        displayCallback:changeColor,
+        multipleInstances:true
       });
-    var colors = jsColorPicker('#editFrontColor', {
-        customBG: '#222',
-        readOnly: true,
-        // patch: false,
-        init: function(elm, colors) { // colors is a different instance (not connected to colorPicker)
-          elm.style.backgroundColor = elm.value;
-          elm.style.color = colors.rgbaMixCustom.luminance > 0.22 ? '#222' : '#ddd';
-        },
-        initStyle: 'display: hidden',
-        mode: 'hsv-h',
-        noAlpha: true,
-        size: 1,
-        appendTo: editBack,
-        displayCallback:changeFrontColor
-      });      
     
   /*  picsAddFamily("Happy Cube", "hc")
     picsAddCube("Blue", "hc_blue")
@@ -801,25 +787,20 @@ function triggerEditDone()
     triggerCubeEdit(false) // remove the dialog
 }
 
-function changeBackColor(colors) 
+function changeColor(colors, mode, options) 
 {
-    if (editBackColor.value == editBackColor.prevValue)
+    if (options.input.value == options.input.prevValue)
         return
-    editBackColor.prevValue = editBackColor.value   
-    colorBack = colors.rgb
-    sentTexParam()
-}
-function changeFrontColor(colors)
-{
-    if (editFrontColor.value == editFrontColor.prevValue)
-        return
-    editFrontColor.prevValue = editFrontColor.value   
-    colorFront = colors.rgb
+    options.input.prevValue = options.input.value
+    if (options.input == editBackColor)
+        colorBack = colors.rgb
+    else if (options.input == editFrontColor)
+        colorFront = colors.rgb
     sentTexParam()
 }
 
 function sentTexParam() {
-    textureParamCube(editingCubeId, drawType, colorBack.r, colorBack.g, colorBack.b, colorFront.r, colorBack.g, colorBack.b)
+    textureParamCube(editingCubeId, drawType, colorBack.r, colorBack.g, colorBack.b, colorFront.r, colorFront.g, colorFront.b)
 }
 
 function triggerEditTexture()
