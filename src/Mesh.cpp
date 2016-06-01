@@ -208,6 +208,7 @@ void Mesh::save(const string& path, bool asObj)
         //Vec2& t = m_mesh.m_texCoord[i];
         if (asObj) {
             f << "v " << v.x << " " << v.y << " " << v.z << "\n"; // obj
+            f << "vn " << n.x << " " << n.y << " " << n.z << "\n";
         }
         else {
             f << "v "  << v.x << " " << v.y << " " << v.z << " " << n.x << " " << n.y << " " << n.z << "\n"; // << " " << t.x << " " << t.y << "\n";
@@ -221,8 +222,9 @@ void Mesh::save(const string& path, bool asObj)
             throw HCException("bad size");
         for (int i = 0; i < m_idx.size(); i += 4) {
             if (asObj) {
-                f << "f " << m_idx[i] + 1 << " " << m_idx[i + 1] + 1 << " " << m_idx[i + 2] + 1 << "\n";  // obj
-                f << "f " << m_idx[i] + 1 << " " << m_idx[i + 2] + 1 << " " << m_idx[i + 3] + 1 << "\n"; // obj
+                f << "f " << m_idx[i] + 1 << "//" << m_idx[i] + 1 << " " << m_idx[i + 1] + 1 << "//" << m_idx[i + 1] + 1 << " " << m_idx[i + 2] + 1 << "//" << m_idx[i + 2] + 1 << "\n";  // obj
+                f << "f " << m_idx[i] + 1 << "//" << m_idx[i] + 1 << " " << m_idx[i + 2] + 1 << "//" << m_idx[i + 2] + 1 << " " << m_idx[i + 3] + 1 << "//" << m_idx[i + 3] + 1 << "\n";  // obj
+               // f << "f " << m_idx[i] + 1 << " " << m_idx[i + 2] + 1 << " " << m_idx[i + 3] + 1 << "\n"; // obj
             }
             else {
                 f << m_idx[i] << " " << m_idx[i + 1] << " " << m_idx[i + 2] << " " << m_idx[i + 3] << "\n";

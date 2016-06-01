@@ -249,16 +249,22 @@ void MyObject::clacNormals(bool vtxNorms)
 
 void MyObject::clacNormalsExceptTouched()
 {
+    for (int pn = 0; pn < nPoints; ++pn) {
+        if (points[pn]->n.x != 0.0 || points[pn]->n.y != 0.0 || points[pn]->n.z != 0.0) {
+            int x = 0;
+        }
+        //points[pn]->n.clear();
+    }
+
     for (int i = 0; i < nPolys; ++i)
     {
         poly[i]->calcNorm();
-        for(int pn = 0; pn < 4; ++pn) {
+        for(int pn = 0; pn < 4; ++pn) 
+        {
             auto* p = poly[i]->vtx[pn];
             if (!p->touched)
                 p->n += poly[i]->center;
-            else {
-                int x = 0;
-            }
+
 
         }
     }

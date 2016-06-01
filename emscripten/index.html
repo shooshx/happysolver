@@ -119,6 +119,7 @@ function start() {
     document.onkeydown = handleKeyDown
     document.onkeyup = handleKey  
 
+   
     // start drawing
     requestAnimationFrame(animProgress)
     setInterval(sampleTms, 1000)
@@ -601,7 +602,7 @@ var teeth = [
 
 var EDIT_MARGIN = 5
 var col = ['white', '#5555ff', 'red', 'yellow', 'orange', 'green', 'purple']
-var editImg = null
+var editImg = null, loadedImg = null
 var imgOffset = {x:0, y:0}
 var imgZoom = 1.0
 var drawType = 0
@@ -625,6 +626,10 @@ function paintCube()
         var cheight = cwidth * editImg.height / editImg.width  // maintain same aspect ratio as the image
         editCtx.drawImage(editImg, 0,0, editImg.width, editImg.height, 
                                    imgOffset.x + EDIT_MARGIN, imgOffset.y + EDIT_MARGIN, cwidth*imgZoom, cheight*imgZoom)
+    }
+    else if (current_src) // indicates colored_tex is on
+    {
+        editCtx.putImageData(colored_tex,EDIT_MARGIN,EDIT_MARGIN)
     }
     
     editCtx.strokeStyle = 'black' 
@@ -659,23 +664,45 @@ function paintCube()
 
 function loadTexImage(url)
 {
-    editImg = new Image()
-    editImg.onload = function() {
-        editImg.loadedOk = true
-        var obj = getCubeTextureHandle(editingCubeId, editImg.width, editImg.height)
+    loadedImg = new Image()
+    loadedImg.onload = function() {
+        loadedImg.loadedOk = true
+        var obj = getCubeTextureHandle(editingCubeId, loadedImg.width, loadedImg.height)
         if (obj == 0)
             return
         console.log("setting img to texture " + obj)
         _glBindTexture(GLctx.TEXTURE_2D, obj)
-        GLctx.texImage2D(GLctx.TEXTURE_2D, 0, GLctx.RGBA, GLctx.RGBA, GLctx.UNSIGNED_BYTE, editImg)
+        GLctx.texImage2D(GLctx.TEXTURE_2D, 0, GLctx.RGBA, GLctx.RGBA, GLctx.UNSIGNED_BYTE, loadedImg)
+        editImg = loadedImg
         sendTexCoord()
         paintCube()
     }
-    editImg.crossOrigin = ''
-    editImg.src = url
+    loadedImg.crossOrigin = ''
+    loadedImg.src = url
+    
 }
 
 var editingCubeId = -1
+var src_marble = null, src_profi = null
+var current_src = null, colored_tex = null
+
+function makeColoredTex()
+{
+    if (current_src == null)
+        return
+    var dst = colored_tex.data
+    var src = current_src.data
+    for (var i = 0; i < dst.length; i += 4) 
+    {
+        var g = src[i]
+        var rg = 255-g
+        dst[i]     = colorBack.r * g + colorFront.r * rg  // red
+        dst[i + 1] = colorBack.g * g + colorFront.g * rg // green
+        dst[i + 2] = colorBack.b * g + colorFront.b * rg // blue
+        dst[i + 3] = 255;
+    }
+}
+
 function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
 {
     if (v) 
@@ -701,6 +728,21 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
         
         editCanvas.height = 11*TSZ + 2*EDIT_MARGIN
         editCanvas.width = 15*TSZ + 2*EDIT_MARGIN
+        
+        // transfer the marble,profi images to the canvase so they could be accessed when the time comes
+        if (!colored_tex) {
+            var run_image = function(img, canvas) {
+                canvas.width = 15*TSZ
+                canvas.height = 11*TSZ
+                var ctx = canvas.getContext('2d')
+                ctx.drawImage(img, 0,0)
+                return ctx.getImageData(0,0, canvas.width,canvas.height)
+            }
+            src_marble = run_image(edit_marble, canvas_marble)
+            src_profi = run_image(edit_profi, canvas_profi)
+            colored_tex = editCtx.createImageData(15*TSZ,11*TSZ)
+        }
+        
         paintCube()   
         newRestart()        
     }
@@ -796,6 +838,9 @@ function changeColor(colors, mode, options)
         colorBack = colors.rgb
     else if (options.input == editFrontColor)
         colorFront = colors.rgb
+        
+    makeColoredTex()   
+    paintCube()
     sentTexParam()
 }
 
@@ -862,6 +907,14 @@ function changeImgZoom(widget, v)
 function changeFillSelect(dtype)
 {
     drawType = dtype
+    switch(drawType) {
+    case 0: editImg = null; current_src = null; break
+    case 2: editImg = null; current_src = src_profi; break
+    case 4: editImg = null; current_src = src_marble; break
+    case 0x14: editImg = loadedImg; current_src = null; break
+    }
+    makeColoredTex()
+    paintCube()
     sentTexParam()
 }
     
@@ -1291,6 +1344,12 @@ h1 {
         <label id="editFillMarble" class ="sc-btn fillRadio" for="editFillMarbleRadio">Marble Texture</label><br>
         <input id="editFillMixRadio" class="hidden" type="radio" name="fill" onclick="changeFillSelect(2)">
         <label id="editFillMix" class ="sc-btn fillRadio" for="editFillMixRadio">Mix Texture</label><br>
+
+        <img id="edit_marble" src="bw_marble3_sm.jpg" style="display:none;"/>
+        <img id="edit_profi" src="bw_profi2_sm.jpg" style="display:none;"/>
+        <canvas id="canvas_marble" style="display:none;"></canvas>
+        <canvas id="canvas_profi" style="display:none;"></canvas>
+
     </div></div></div>
     </div>
     <div id="urlPopup"><input id="urlEdit" type="text" onchange="urlEditChanged()"/></div>

@@ -5,6 +5,10 @@ const char *code_cubesNoise_frag_glsl = " \
    \n\
   varying float LightIntensity; \n\
   varying vec3 MCposition; \n\
+  //varying vec3 vNormal; \n\
+  //varying vec3 ECposition; \n\
+   \n\
+  //uniform vec3 lightPos; \n\
    \n\
   uniform vec3 colorA; \n\
   uniform vec3 colorB; \n\
@@ -20,6 +24,7 @@ const char *code_cubesNoise_frag_glsl = " \
   uniform vec2 texScale; // height is equal, already multiplied by 5 for MCposition [0,4] \n\
    \n\
   uniform mat2 texTrans; \n\
+   \n\
    \n\
   float mod(int x, float y){ \n\
       return float(x) - y * floor(float(x) / y); \n\
@@ -54,13 +59,15 @@ const char *code_cubesNoise_frag_glsl = " \
    \n\
   void main (void) \n\
   { \n\
-     // gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); \n\
-     // return; \n\
+   \n\
+     	//float LightIntensity  = dot(normalize(lightPos - ECposition), vNormal); // gl_LightSource[0].position.xyz \n\
+  	//LightIntensity *= 1.2; \n\
+   \n\
    \n\
       vec3 color = vec3(0.5, 0.5, 0.5); \n\
    \n\
       if (drawtype == 0) { // DRAW_COLOR \n\
-          color = colorA * LightIntensity; \n\
+          color = colorA *LightIntensity; \n\
       } \n\
       if (drawtype == 2) { // blend black \n\
           vec3 p = MCposition.yzx * 0.2; \n\

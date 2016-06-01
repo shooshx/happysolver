@@ -508,14 +508,17 @@ void PicDisp::initNoSubdiv()
     }
 
     obj.clacNormalsExceptTouched();
-    obj.toMesh(m_mesh, false);
-
-
-    //stringstream ss;
-    //ss << "c:/temp/nosub/piece_" << hex << m_arr.getBits() << "_" << rand() << ".obj";
-    //m_mesh.save(ss.str(), true);
+    obj.toMesh(m_mesh, false); // quads
 
     g_smoothAllocator.clear();
+
+
+ /*   if (i == 2) {
+        stringstream ss;
+        ss << "c:/temp/nosub/piece_" << hex << m_arr.getBits() << "_" << rand() << ".obj";
+        m_mesh.save(ss.str(), true);
+        exit(1);
+    }*/
 }
 
 #undef E

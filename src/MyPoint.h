@@ -75,7 +75,7 @@ public:
 	~MyPoint() { ++g_dtorCount; }
 	
 	void clear() { 
-        const_cast<Vec3&>(p).clear(); 
+        p.clear(); 
         n.clear(); 
     }
 	void setp(const Vec3 &c) { 
@@ -100,6 +100,8 @@ public:
     }
 	MyPoint &operator=(const MyPoint& a) {
         p = a.p; 
+        n.clear();
+        touched = false;
         return *this; 
     }
 
