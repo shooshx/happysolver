@@ -439,7 +439,7 @@ void freeMeshAllocator()
 
 shared_ptr<GlTexture> g_lastTexture;
 
-void textureParamCube(int grpi, int dtype, float r1, float g1, float b1, float r2, float g2, float b2)
+void textureParamCube(int grpi, int dtype, float r1, float g1, float b1, float r2, float g2, float b2, int isBlack)
 {
     auto& bucket = PicBucket::mutableInstance();
     if (grpi < 0 || grpi >= bucket.grps.size()) {
@@ -451,6 +451,7 @@ void textureParamCube(int grpi, int dtype, float r1, float g1, float b1, float r
     cgrp.color = Vec3(r1, g1, b1);
     cgrp.exColor = Vec3(r2, g2, b2);
     cgrp.drawtype = (EDrawType)dtype;
+    cgrp.blackness = (isBlack == 0)?BLACK_NOT:BLACK_ONE;
     
     switch(cgrp.drawtype) {
     case DRAW_COLOR: 

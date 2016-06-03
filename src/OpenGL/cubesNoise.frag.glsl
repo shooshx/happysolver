@@ -2,10 +2,7 @@ precision highp float;
 
 varying float LightIntensity;
 varying vec3 MCposition;
-//varying vec3 vNormal;
-//varying vec3 ECposition;
-
-//uniform vec3 lightPos;
+varying vec3 vNormal;
 
 uniform vec3 colorA;
 uniform vec3 colorB;
@@ -20,8 +17,9 @@ float offset2 = 0.5;
 uniform vec3 texOffset; // z non-zero means we need to invert x
 uniform vec2 texScale; // height is equal, already multiplied by 5 for MCposition [0,4]
 
-uniform mat2 texTrans;
+varying float sideLight;
 
+uniform mat2 texTrans;
 
 float mod(int x, float y){
     return float(x) - y * floor(float(x) / y);
@@ -64,7 +62,8 @@ void main (void)
     vec3 color = vec3(0.5, 0.5, 0.5);
 
     if (drawtype == 0) { // DRAW_COLOR
-        color = colorA *LightIntensity;
+        //color = colorA * LightIntensity;
+        color = colorA  * LightIntensity;
     }
     if (drawtype == 2) { // blend black
         vec3 p = MCposition.yzx * 0.2;
@@ -118,6 +117,8 @@ void main (void)
     if (drawtype == 0x100) { // flat
         color = colorA;
     }
+
+    color += vec3(1,1,1) * sideLight;
 
     if (flag != 0) {
         gl_FragColor = vec4(color.g + (0.8 - color.g)*fadeFactor, color.g - (0.3 * fadeFactor), color.b - (0.3 * fadeFactor), 1.0);

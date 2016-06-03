@@ -5,10 +5,7 @@ const char *code_cubesNoise_frag_glsl = " \
    \n\
   varying float LightIntensity; \n\
   varying vec3 MCposition; \n\
-  //varying vec3 vNormal; \n\
-  //varying vec3 ECposition; \n\
-   \n\
-  //uniform vec3 lightPos; \n\
+  varying vec3 vNormal; \n\
    \n\
   uniform vec3 colorA; \n\
   uniform vec3 colorB; \n\
@@ -23,8 +20,9 @@ const char *code_cubesNoise_frag_glsl = " \
   uniform vec3 texOffset; // z non-zero means we need to invert x \n\
   uniform vec2 texScale; // height is equal, already multiplied by 5 for MCposition [0,4] \n\
    \n\
-  uniform mat2 texTrans; \n\
+  varying float sideLight; \n\
    \n\
+  uniform mat2 texTrans; \n\
    \n\
   float mod(int x, float y){ \n\
       return float(x) - y * floor(float(x) / y); \n\
@@ -67,7 +65,8 @@ const char *code_cubesNoise_frag_glsl = " \
       vec3 color = vec3(0.5, 0.5, 0.5); \n\
    \n\
       if (drawtype == 0) { // DRAW_COLOR \n\
-          color = colorA *LightIntensity; \n\
+          //color = colorA * LightIntensity; \n\
+          color = colorA  * LightIntensity; \n\
       } \n\
       if (drawtype == 2) { // blend black \n\
           vec3 p = MCposition.yzx * 0.2; \n\
@@ -121,6 +120,8 @@ const char *code_cubesNoise_frag_glsl = " \
       if (drawtype == 0x100) { // flat \n\
           color = colorA; \n\
       } \n\
+   \n\
+      color += vec3(1,1,1) * sideLight; \n\
    \n\
       if (flag != 0) { \n\
           gl_FragColor = vec4(color.g + (0.8 - color.g)*fadeFactor, color.g - (0.3 * fadeFactor), color.b - (0.3 * fadeFactor), 1.0); \n\

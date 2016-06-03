@@ -8,13 +8,18 @@ const char *code_cubesNoise_vtx_glsl = " \
   //varying vec3  vNormal; \n\
   //varying vec3 ECposition; \n\
    \n\
+  varying float sideLight; \n\
+   \n\
   uniform vec3 lightPos; \n\
    \n\
   uniform mat4 trans; \n\
   uniform mat4 modelMat; \n\
   uniform mat3 normalMat; \n\
+  uniform bool isBlack; \n\
   attribute vec3 vtx; \n\
   attribute vec3 normal; \n\
+   \n\
+  #define SIDE_DELTA 0.07 \n\
    \n\
   void main() \n\
   { \n\
@@ -24,6 +29,16 @@ const char *code_cubesNoise_vtx_glsl = " \
       //vNormal = tnorm; \n\
   	LightIntensity  = dot(normalize(lightPos - ECposition), tnorm); // gl_LightSource[0].position.xyz \n\
   	LightIntensity *= 1.2; \n\
-  	gl_Position     = trans * vec4(vtx, 1.0); \n\
+   \n\
+      /*if (normal == vec3(0.0, 1.0, 0.0)) \n\
+          sideLight = 1.0; \n\
+      else \n\
+          sideLight = 0.0;*/ \n\
+   \n\
+      sideLight = length(normal.yz) * float(isBlack && vtx.y > SIDE_DELTA && vtx.y < 5.0-SIDE_DELTA &&  \n\
+                                            vtx.z > SIDE_DELTA && vtx.z < 5.0-SIDE_DELTA &&  \n\
+                                            vtx.x > SIDE_DELTA && vtx.x < 1.0-SIDE_DELTA ); \n\
+   \n\
+  	gl_Position = trans * vec4(vtx, 1.0); \n\
   } \n\
   ";

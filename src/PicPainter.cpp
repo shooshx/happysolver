@@ -567,7 +567,8 @@ void PicPainter::paint(bool fTargets, const Vec3& name, BaseGLWidget *context, b
             prog->modelMat.set(context->model.cur());
             prog->normalMat.set(context->model.cur().toNormalsTrans());
 
-            if (def->isIndividual()) {
+            if (def->isIndividual()) 
+            {
                 prog->texOffset.set(Vec3(m_pdef->texX, m_pdef->texY, invertTex?1.0f:0.0f));
                 prog->texScale.set(Vec2(m_pdef->texScaleX / 5.0f, m_pdef->texScaleY / 5.0f)); // div my 5 since the position coordinates are [0,4], not [0,1]
                 switch(dispRot) {
@@ -581,6 +582,8 @@ void PicPainter::paint(bool fTargets, const Vec3& name, BaseGLWidget *context, b
                 default: prog->texTrans.set(Mat2(1,0,0,1));  break;
                 }
             }
+            prog->isBlack.set(def->blackness > 0);
+
         }
         mglCheckErrorsC("x9a");
     }

@@ -163,9 +163,9 @@ private:
 */
 enum EBlackness 
 { 
-    BLACK_NOT = 0, 
-    BLACK_BOTH = 1, 
-    BLACK_ONE = 2 
+    BLACK_NOT = 0, // border of this piece should not be white line
+    BLACK_BOTH = 1, // border of this piece should be white only if both pieces on the line are black
+    BLACK_ONE = 2  // border of this piece should be white even if only one of the pieces is black
 };
 
 /**	PicGroupDef is a collection of similar looking pieces.

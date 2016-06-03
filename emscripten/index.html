@@ -15,7 +15,7 @@
 <script id="one_cube" src="one_piece_cube.js"></script>    
 <!--<script id="one_cube" src="one_marble_cube.js"></script>    -->
 
-<script type="text/javascript" src="colorPick/color.all.min.js"></script> <!--https://github.com/PitPik/colorPicker-->
+<script type="text/javascript" src="colorPick/color.all.min.js"></script> <!-- https://github.com/PitPik/colorPicker  -->
 <script type="text/javascript" src="colorPick/jsColor.js"></script>
 
 <script type="text/javascript">
@@ -36,15 +36,19 @@ var unimesh_keys = Object.keys(unimesh) // unimesh included above
 var readFrameBuf = null, readFrameView = null // buffer for selection readPixels. don't want it managed by emscripten
 
 var ACT_NONE = 0, ACT_ADD = 1, ACT_REMOVE = 2
+
+var colorPickCfg = null 
     
-function start() {
-    var colors1 = jsColorPicker('input.color', {
+function start() 
+{
+    colorPickCfg = {
         customBG: '#222',
         readOnly: true,
         // patch: false,
         init: function(elm, colors) { // colors is a different instance (not connected to colorPicker)
           elm.style.backgroundColor = elm.value;
-          elm.style.color = colors.rgbaMixCustom.luminance > 0.22 ? '#222' : '#ddd';
+          // used to be rgbaMixCustom the color mixed with the customBG color (not relevant for me since alpha is 1.0 always)
+          elm.style.color = colors.rgbaMixWhite.luminance > 0.22 ? '#222' : '#ddd';
         },
         initStyle: 'display: hidden',
         mode: 'hsv-h',
@@ -53,7 +57,8 @@ function start() {
         appendTo: editBack,
         displayCallback:changeColor,
         multipleInstances:true
-      });
+    }
+    jsColorPicker('input.color', colorPickCfg);
     
   /*  picsAddFamily("Happy Cube", "hc")
     picsAddCube("Blue", "hc_blue")
@@ -85,7 +90,7 @@ function start() {
     newRestart  = Module.cwrap('newRestart', null, [])
     conf = Module.cwrap('conf', null, ['number'])
     stackState = Module.cwrap('stackState', null, ['number'])
-    textureParamCube = Module.cwrap('textureParamCube', null, ['number','number','number','number','number','number','number','number']) // grpi,drawtype,r,g,b,r,g,b
+    textureParamCube = Module.cwrap('textureParamCube', null, ['number','number','number','number','number','number','number','number','number']) // grpi,drawtype,r,g,b,r,g,b,isBlack
     getCubeTextureHandle = Module.cwrap('getCubeTextureHandle', 'number', ['number', 'number', 'number'])
     readCubeTexCoord = Module.cwrap('readCubeTexCoord', null, ['number'])
     loadSlvSimple = Module.cwrap('loadSlvSimple', null, ['string'])
@@ -606,7 +611,9 @@ var editImg = null, loadedImg = null
 var imgOffset = {x:0, y:0}
 var imgZoom = 1.0
 var drawType = 0
-var colorBack = {r:0,g:0,b:0}, colorFront = {r:0,g:0,b:0}
+var colorBack = new Colors({color:"#ffffff"}).colors
+var colorFront = new Colors({color:"#000000"}).colors // main init setting that spreads to everywhere else
+
 
 function drawLine(x, y, w, h) {
     editCtx.beginPath()
@@ -631,8 +638,12 @@ function paintCube()
     {
         editCtx.putImageData(colored_tex,EDIT_MARGIN,EDIT_MARGIN)
     }
+    else {
+        editCtx.fillStyle = '#'+colorBack.HEX
+        editCtx.fillRect(EDIT_MARGIN, EDIT_MARGIN, 15*TSZ, 11*TSZ)
+    }
     
-    editCtx.strokeStyle = 'black' 
+    editCtx.strokeStyle = 'black'
     editCtx.lineWidth = 1
     
     // frame
@@ -645,6 +656,8 @@ function paintCube()
             editCtx.fillRect(x * TSZ, y * TSZ, TSZ, TSZ)    
         }
     }*/
+
+    editCtx.strokeStyle = isColorsBlack() ? 'white':'black'
     
     for(var x = 0; x < 15; ++x) {
         for(var y = 0; y < 11; ++y) {
@@ -683,8 +696,8 @@ function loadTexImage(url)
 }
 
 var editingCubeId = -1
-var src_marble = null, src_profi = null
-var current_src = null, colored_tex = null
+var src_marble = null, src_profi = null // ImageData of the B&W images
+var current_src = null, colored_tex = null //ImageData chosen src from the above and the resulting colored
 
 function makeColoredTex()
 {
@@ -692,13 +705,15 @@ function makeColoredTex()
         return
     var dst = colored_tex.data
     var src = current_src.data
+    var fr = colorFront.rgb.r, fg = colorFront.rgb.g, fb = colorFront.rgb.b
+    var br = colorBack.rgb.r, bg = colorBack.rgb.g, bb = colorBack.rgb.b
     for (var i = 0; i < dst.length; i += 4) 
     {
         var g = src[i]
         var rg = 255-g
-        dst[i]     = colorBack.r * g + colorFront.r * rg  // red
-        dst[i + 1] = colorBack.g * g + colorFront.g * rg // green
-        dst[i + 2] = colorBack.b * g + colorFront.b * rg // blue
+        dst[i]     = br * g + fr * rg  // red
+        dst[i + 1] = bg * g + fg * rg // green
+        dst[i + 2] = bb * g + fb * rg // blue
         dst[i + 3] = 255;
     }
 }
@@ -716,7 +731,7 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
         editZoomText.value = "100%"
         editFillColorRadio.checked = true
 
-        setEditAction(ACT_NONE)
+        setEditAction(ACT_NONE) // prevent hovering on the cube from editing
 
         editingCubeId = cubeId
 
@@ -728,6 +743,11 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
         
         editCanvas.height = 11*TSZ + 2*EDIT_MARGIN
         editCanvas.width = 15*TSZ + 2*EDIT_MARGIN
+        
+        editBackColor.value = "#"+colorBack.HEX
+        colorPickCfg.init(editBackColor, colorBack);
+        editFrontColor.value = "#"+colorFront.HEX
+        colorPickCfg.init(editFrontColor, colorFront);
         
         // transfer the marble,profi images to the canvase so they could be accessed when the time comes
         if (!colored_tex) {
@@ -835,17 +855,34 @@ function changeColor(colors, mode, options)
         return
     options.input.prevValue = options.input.value
     if (options.input == editBackColor)
-        colorBack = colors.rgb
+        colorBack = colors
     else if (options.input == editFrontColor)
-        colorFront = colors.rgb
+        colorFront = colors
         
     makeColoredTex()   
     paintCube()
     sentTexParam()
 }
 
+function isColorsBlack() {
+    if (editBlackSel.value == 'white')
+        return true
+    if (editBlackSel.value == 'normal')
+        return false
+    // 'auto'    
+    var bl = colorBack.rgbaMixWhite.luminance
+    var fl = colorFront.rgbaMixWhite.luminance
+
+    if (editFillColorRadio.checked)
+        return bl < 0.05
+    else if (editFillMarbleRadio.checked || editFillMixRadio.checked)
+        return (bl < 0.1 && fl < 0.1) || bl < 0.05 || fl < 0.05 // either one of them is really dark or both kinda dark
+    return false // in case of texture, we don't know if its black...
+}
+
 function sentTexParam() {
-    textureParamCube(editingCubeId, drawType, colorBack.r, colorBack.g, colorBack.b, colorFront.r, colorFront.g, colorFront.b)
+    textureParamCube(editingCubeId, drawType, colorBack.rgb.r, colorBack.rgb.g, colorBack.rgb.b, 
+                                              colorFront.rgb.r, colorFront.rgb.g, colorFront.rgb.b, isColorsBlack())
 }
 
 function triggerEditTexture()
@@ -914,6 +951,12 @@ function changeFillSelect(dtype)
     case 0x14: editImg = loadedImg; current_src = null; break
     }
     makeColoredTex()
+    paintCube()
+    sentTexParam()
+}
+
+function triggerBlackSel()
+{
     paintCube()
     sentTexParam()
 }
@@ -1260,6 +1303,13 @@ h1 {
     right: 55px;
     top: 300px;
 }
+#editBlackSel {
+    position: absolute;
+    width:90px;
+    right: 45px;
+    top: 340px;
+    height: 26px;
+}
 
 #editZoomSlider {
     position: absolute;
@@ -1325,8 +1375,13 @@ h1 {
         <canvas id="editCanvas" width="590", height="450"></canvas>
         <label id="editDoneBtn" class="sc-btn" onclick="triggerEditDone()"/>Done</label>
         <label id="editTexBtn" class="sc-btn" onclick="triggerEditTexture()"/>Texture</label>
-        <input id="editBackColor" class="color" value="#9999cc" />
-        <input id="editFrontColor" class="color" value="#cc9999" />
+        <input id="editBackColor" class="color" />
+        <input id="editFrontColor" class="color" />
+        <select id="editBlackSel" oninput="triggerBlackSel()">
+            <option value="auto">Auto Lines</option>
+            <option value="normal">Normal Lines</option>
+            <option value="white">White Lines</option>
+        </select>
         
         <input id="editActionPiecesCheck" class="hidden" onclick="triggerAction(1)" type="checkbox">
         <label id="editActionPieces" class="sc-btn" for="editActionPiecesCheck"/>Edit Pieces</label>

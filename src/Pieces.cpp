@@ -579,8 +579,9 @@ void PicBucket::updateGrp(int grpi, PicArr arrs[6])
     }
     PicGroupDef& cgrp = grps[grpi];
     if (add) {
-        cgrp.drawtype = DRAW_TEXTURE_INDIVIDUAL_HALF; //DRAW_COLOR;
+        cgrp.drawtype = DRAW_COLOR;
         cgrp.color = Vec3(1,1,1);
+        cgrp.exColor = Vec3(0,0,0); // TBD-take from gui
     }
 
     PicDisp::g_smoothAllocator.init(640, 640, 0);
