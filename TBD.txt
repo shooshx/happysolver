@@ -7,7 +7,7 @@ lines for black pieces
 firefox
     flicker
     zoom
-not enough pieces - show best effort, except in editor where it should show none
+not enough pieces - show best effort
     
 universal slv
     remove added array
@@ -21,8 +21,13 @@ handle lost context webgl https://www.khronos.org/webgl/wiki/HandlingContextLost
 EDITOR
 ------
 50% side should have minimum size
-BUG - texture does not rotate with piece
 
+Black Lines mis-features
+   piece that touches flat side in 90 degrees - only the non flat side is illuminated
+   touching a non-black piece still gets illuminated
+
+   
+   
 NEW DEAL - things that don't work
 -------------
 

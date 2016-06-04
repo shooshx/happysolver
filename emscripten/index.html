@@ -607,12 +607,18 @@ var teeth = [
     { x:13, y:6, p:[0,6] }, { x:13, y:7, p:[0,6] }, { x:13, y:8, p:[0,6] },    
 ]
 
+var DRAW_COLOR = 0
+var DRAW_PROFI = 2
+var DRAW_MARBLE = 4
+var DRAW_TEX = 0x14
+
 var EDIT_MARGIN = 5
+
 var col = ['white', '#5555ff', 'red', 'yellow', 'orange', 'green', 'purple']
 var editImg = null, loadedImg = null
 var imgOffset = {x:0, y:0}
 var imgZoom = 1.0
-var drawType = 0
+var drawType = DRAW_COLOR
 var colorBack = new Colors({color:"#ffffff"}).colors
 var colorFront = new Colors({color:"#000000"}).colors // main init setting that spreads to everywhere else
 
@@ -631,6 +637,9 @@ function paintCube()
     
     if (editImg && editImg.loadedOk) 
     {
+        editCtx.fillStyle = '#'+colorBack.HEX
+        editCtx.fillRect(EDIT_MARGIN, EDIT_MARGIN, 15*TSZ, 11*TSZ) // need to show up below transparent pixels
+        
         var cwidth = editCanvas.width - 2*EDIT_MARGIN
         var cheight = cwidth * editImg.height / editImg.width  // maintain same aspect ratio as the image
         editCtx.drawImage(editImg, 0,0, editImg.width, editImg.height, 
@@ -638,7 +647,7 @@ function paintCube()
     }
     else if (current_src) // indicates colored_tex is on
     {
-        editCtx.putImageData(colored_tex,EDIT_MARGIN,EDIT_MARGIN)
+        editCtx.putImageData(colored_tex, EDIT_MARGIN, EDIT_MARGIN)
     }
     else {
         editCtx.fillStyle = '#'+colorBack.HEX
@@ -884,11 +893,12 @@ function isColorsBlack() {
     var bl = colorBack.rgbaMixWhite.luminance
     var fl = colorFront.rgbaMixWhite.luminance
 
-    if (editFillColorRadio.checked)
+    // in case of textured draw, I assume the back color represents the piece color
+    if (editFillColorRadio.checked || editFillTextureRadio.checked)
         return bl < 0.05
     else if (editFillMarbleRadio.checked || editFillMixRadio.checked)
         return (bl < 0.1 && fl < 0.1) || bl < 0.05 || fl < 0.05 // either one of them is really dark or both kinda dark
-    return false // in case of texture, we don't know if its black...
+    return false // shouldn't happen
 }
 
 function sentTexParam() {
@@ -904,7 +914,7 @@ function triggerEditTexture()
     
     //loadTexImage(blank_tex)
     
-    if (drawType == 0x14)
+    if (drawType == DRAW_TEX)
         editImg = loadedImg; 
 }
 
@@ -955,22 +965,30 @@ function changeImgZoom(widget, v)
     sendTexCoord()
 }
 
+
+
 function changeFillSelect(dtype)
 {
+    if (drawType == dtype)
+        return;
     drawType = dtype
-    switch(drawType) {
-    case 0: editImg = null; current_src = null; break
-    case 2: editImg = null; current_src = src_profi; break
-    case 4: editImg = null; current_src = src_marble; break
-    case 0x14: 
+    switch(drawType) 
+    {
+    case DRAW_COLOR: editImg = null; current_src = null; break
+    case DRAW_PROFI: editImg = null; current_src = src_profi; break
+    case DRAW_MARBLE: editImg = null; current_src = src_marble; break
+    case DRAW_TEX: 
         if (loadedImg == null)
             loadTexImage(blank_tex)
         editImg = loadedImg; 
-        current_src = null; break
+        current_src = null; 
+        break
     }
     makeColoredTex()
     paintCube()
     sentTexParam()
+    if (drawType == DRAW_TEX)
+        newRestart()  // setting individual half need a new solution with all textures out
 }
 
 function triggerBlackSel()

@@ -672,7 +672,7 @@ void PicBucket::distinctMeshes(bool createDisps)
 {
     PicsSet ps;
     for(int i = 0; i < pdefs.size(); ++i) {
-        ps.add(i, false);
+        ps.add(i, false); // no need to consider syms for this
     }
     cout << ps.comp.size() << " distinct meshes out of " << pdefs.size() << " pieces meshes=" << m_meshes.size() << endl;
 

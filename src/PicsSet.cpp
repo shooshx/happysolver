@@ -51,6 +51,7 @@ void PicsSet::add(int defInd, bool cSym)
 	const PicDef& thedef = PicBucket::instance().pdefs[defInd];
 
 	bool checkSym = cSym && thedef.mygrp()->isIndividual();
+    //cout << "ADD " << defInd << " " << checkSym << " = " << cSym << " " << thedef.mygrp()->isIndividual() << endl;
 	// search if we already know a piece that looks like this
 	int ri = -1;
     int compind = -1;

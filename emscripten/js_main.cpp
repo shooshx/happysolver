@@ -448,6 +448,8 @@ void textureParamCube(int grpi, int dtype, float r1, float g1, float b1, float r
     }
 
     PicGroupDef& cgrp = bucket.grps[grpi];
+    auto prevDrawType = cgrp.drawtype;
+
     cgrp.color = Vec3(r1, g1, b1);
     cgrp.exColor = Vec3(r2, g2, b2);
     cgrp.drawtype = (EDrawType)dtype;
@@ -460,10 +462,17 @@ void textureParamCube(int grpi, int dtype, float r1, float g1, float b1, float r
     case DRAW_TEXTURE_MARBLE: 
         cgrp.gtex = bucket.gtexs[0]; break;
     case DRAW_TEXTURE_INDIVIDUAL_HALF:
-        cgrp.gtex = g_lastTexture; break;
+        cgrp.gtex = g_lastTexture; 
+        if (prevDrawType != DRAW_TEXTURE_INDIVIDUAL_HALF) {
+            bucket.makeAllComp();
+            // need to redo the compressed pics since the symmetry consideration changed for some pieces
+        }
+        break;
     default:
         cout << "Unexpected drawtype " << cgrp.drawtype << endl;    
     }
+    
+    
     
     g_ctrl.requestDraw();
 }
@@ -476,7 +485,6 @@ int getCubeTextureHandle(int grpi, int width, int height)
         return 0;
     }
     PicGroupDef& cgrp = bucket.grps[grpi];
-    cgrp.drawtype = DRAW_TEXTURE_INDIVIDUAL_HALF;
     
     if (cgrp.gtex.get() != nullptr) {
         const auto& sz = cgrp.gtex->size();
