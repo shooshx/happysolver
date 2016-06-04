@@ -135,7 +135,9 @@ function start()
     setCheck(removingCube, false)
     setEditAction(ACT_ADD) 
     
+    // editor init
     editCtx = editCanvas.getContext("2d")
+
     picsAddFamily("Test Fam", "Test Fam", true)
     picsAddCube("Test Cube", "Test Cube", -1, true)
     
@@ -675,10 +677,9 @@ function paintCube()
     }
 }
 
-function loadTexImage(url)
+function loadTexImage(urlOrImg)
 {
-    loadedImg = new Image()
-    loadedImg.onload = function() {
+    var onload = function() {
         loadedImg.loadedOk = true
         var obj = getCubeTextureHandle(editingCubeId, loadedImg.width, loadedImg.height)
         if (obj == 0)
@@ -690,8 +691,18 @@ function loadTexImage(url)
         sendTexCoord()
         paintCube()
     }
+    
+    if (typeof(urlOrImg) != "string")  // its an image
+    {
+        loadedImg = urlOrImg
+        onload()
+        return
+    }
+    // its a url
+    loadedImg = new Image()
+    loadedImg.onload = onload
     loadedImg.crossOrigin = ''
-    loadedImg.src = url
+    loadedImg.src = urlOrImg
     
 }
 
@@ -891,7 +902,10 @@ function triggerEditTexture()
     //loadTexImage("http://i.imgur.com/dPY5gPe.png") 
     //loadTexImage("http://i.imgur.com/gIcxWPI.png")    // transparent
     
+    //loadTexImage(blank_tex)
     
+    if (drawType == 0x14)
+        editImg = loadedImg; 
 }
 
 var baseFramePicPos = [ [1,1], [1,5], [5,1], [5,5], [9,1], [9,5] ]
@@ -948,7 +962,11 @@ function changeFillSelect(dtype)
     case 0: editImg = null; current_src = null; break
     case 2: editImg = null; current_src = src_profi; break
     case 4: editImg = null; current_src = src_marble; break
-    case 0x14: editImg = loadedImg; current_src = null; break
+    case 0x14: 
+        if (loadedImg == null)
+            loadTexImage(blank_tex)
+        editImg = loadedImg; 
+        current_src = null; break
     }
     makeColoredTex()
     paintCube()
@@ -1423,13 +1441,13 @@ Happy Cube, Little Genius, Profi Cube and Marble Cube are registered trademarks 
 If you have any questions concerning the usage of HAPPY materials, please send your detailed request in writing to <a href="mailto:info@happy.be" target="_blank">info@happy.be</a>. See <a href="http://www.happy.be" target="_blank">http://www.happy.be</a> for more information</h3>
     </div></div>
     
-    
     <img id="noisetex" src='cubeTex.png' style="display:none;"/>
     <img src="arrow_up.png" style="display:none;"/>
     <img src="arrow_down.png" style="display:none;"/>
     <img id="newgenious" src="../new_genious128.png" style="display:none;"/>
     <img id="genious" src="../littlegenious128_2.png" style="display:none;"/>
     <img id="dummy_check1" src="check_int.png" style="display:none;"/> <!-- avoid flicker -->
+    <img id="blank_tex" src="blank_tex.png" style="display:none;"/>
     <div id="stat"></div>
 </body>
 </html>
