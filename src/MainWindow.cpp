@@ -222,10 +222,10 @@ bool MainWindow::initialize()
     m_picsInitThread->start(); 
 
     DlgProg dlgprog(false);
- //   PicBucket::mutableInstance().buildMeshes(m_doc->m_conf.disp, &dlgprog); // creates the meshes from scratch
+    PicBucket::mutableInstance().buildMeshes(m_doc->m_conf.disp, &dlgprog); // creates the meshes from scratch
     //PicBucket::mutableInstance().loadMeshes("C:/projects/cubeGL/happysolver/small_meshes_all.txt"); // loads ununified meshes file
 
-    PicBucket::mutableInstance().loadUnified(":/unified_meshes_all.txt"); // loads unified meshes file
+//    PicBucket::mutableInstance().loadUnified(":/unified_meshes_all.txt"); // loads unified meshes file
     //PicBucket::mutableInstance().loadUnified("C:/projects/cubeGL/happysolver/no_sub_unified.txt"); // loads unified meshes file
     return true;
 }

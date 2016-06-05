@@ -105,7 +105,7 @@ public:
     /// \arg \c bTargets draw for targets, no colors.
     /// \arg invertTex true if in individual textures, we need to invert the X tex coordinates so that the texture 
     ///      be on the correct side
-    void paint(bool bTargets, const Vec3& name, BaseGLWidget *context, bool invertTex, int flag, int dispRot) const; 
+    void paint(bool bTargets, const Vec3& name, BaseGLWidget *context, bool invertTex, int flag, int dispRot, bool faceOut) const; 
 
     bool exportToObj(ObjExport& oe, const Mat4& fMatrix) const;
 

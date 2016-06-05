@@ -3,7 +3,6 @@ SINGLE-VIEW - todo
 changing pic selection in the middle
 better start tile - only tiles that were in the last solution
 illegal side cylinder
-lines for black pieces
 firefox
     flicker
     zoom
@@ -23,7 +22,6 @@ EDITOR
 50% side should have minimum size
 
 Black Lines mis-features
-   piece that touches flat side in 90 degrees - only the non flat side is illuminated
    touching a non-black piece still gets illuminated
 
    

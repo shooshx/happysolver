@@ -12,7 +12,7 @@ uniform vec3 lightPos;
 uniform mat4 trans;
 uniform mat4 modelMat;
 uniform mat3 normalMat;
-uniform bool isBlack;
+uniform float isBlackSign;
 attribute vec3 vtx;
 attribute vec3 normal;
 
@@ -27,14 +27,11 @@ void main()
 	LightIntensity  = dot(normalize(lightPos - ECposition), tnorm); // gl_LightSource[0].position.xyz
 	LightIntensity *= 1.2;
 
-    /*if (normal == vec3(0.0, 1.0, 0.0))
-        sideLight = 1.0;
-    else
-        sideLight = 0.0;*/
+    sideLight = float(isBlackSign != 0.0 && vtx.y > SIDE_DELTA && vtx.y < 5.0-SIDE_DELTA && 
+                vtx.z > SIDE_DELTA && vtx.z < 5.0-SIDE_DELTA && 
+                vtx.x > isBlackSign * SIDE_DELTA && vtx.x < 1.0 + isBlackSign * SIDE_DELTA );  
 
-    sideLight = length(normal.yz) * float(isBlack && vtx.y > SIDE_DELTA && vtx.y < 5.0-SIDE_DELTA && 
-                                          vtx.z > SIDE_DELTA && vtx.z < 5.0-SIDE_DELTA && 
-                                          vtx.x > SIDE_DELTA && vtx.x < 1.0-SIDE_DELTA );
+    // x goes to either [-0.07 to 0.93] or to [0.07 to 1.07]
 
 	gl_Position = trans * vec4(vtx, 1.0);
 }

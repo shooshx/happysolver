@@ -508,16 +508,18 @@ void PicDisp::initNoSubdiv()
     }
 
     obj.clacNormalsExceptTouched();
+    // true for saving objs
+    // false for memory vbo
     obj.toMesh(m_mesh, false); // quads
 
     g_smoothAllocator.clear();
 
-
- /*   if (i == 2) {
+  /*  static int cci = 0;
+    if (cci++ == 2) {
         stringstream ss;
         ss << "c:/temp/nosub/piece_" << hex << m_arr.getBits() << "_" << rand() << ".obj";
         m_mesh.save(ss.str(), true);
-        exit(1);
+     //   exit(1);
     }*/
 }
 
@@ -531,7 +533,7 @@ void PicDisp::initNoSubdiv()
 
 /// do the actual painting of a single piece in the actual OpenGL view.
 
-void PicPainter::paint(bool fTargets, const Vec3& name, BaseGLWidget *context, bool invertTex, int flag, int dispRot) const
+void PicPainter::paint(bool fTargets, const Vec3& name, BaseGLWidget *context, bool invertTex, int flag, int dispRot, bool faceOut) const
 {
     glPolygonOffset(1.0, 1.0); // go backward, draw polygons TBD- move to slvpainter
 
@@ -582,7 +584,10 @@ void PicPainter::paint(bool fTargets, const Vec3& name, BaseGLWidget *context, b
                 default: prog->texTrans.set(Mat2(1,0,0,1));  break;
                 }
             }
-            prog->isBlack.set(def->blackness > 0);
+
+            // 1:-1 controls if we light up the face (x axis) in addition to the side of the piece (yz)
+            prog->isBlackSign.set( (def->blackness > 0) ? (faceOut ? 1:-1) : 0 );
+           
 
         }
         mglCheckErrorsC("x9a");

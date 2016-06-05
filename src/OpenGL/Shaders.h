@@ -41,7 +41,7 @@ public:
 		:noisef("noisef", this), colorB("colorB", this), drawtype("drawtype", this)
 		,modelMat("modelMat", this), normalMat("normalMat", this), normal("normal", this)
 		,texOffset("texOffset", this), lightPos("lightPos", this), flag("flag", this)
-        ,texScale("texScale", this), texTrans("texTrans", this), isBlack("isBlack", this)
+        ,texScale("texScale", this), texTrans("texTrans", this), isBlackSign("isBlackSign", this)
 	{}
 	virtual void getCodes();
 
@@ -58,7 +58,7 @@ public:
     IntUniform flag; // mark with red for remove
     Vec2Uniform texScale;
     Mat2Uniform texTrans;
-    IntUniform isBlack;
+    FloatUniform isBlackSign; // 0 for not black, -1 or 1 depending on the side of the piece facing outside
 };
 
 

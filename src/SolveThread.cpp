@@ -38,6 +38,9 @@ void SolveThread::notifyLastSolution(bool firstInGo)
 {
     if (firstInGo)
         emit solvePopUp(m_slvs->size() - 1); // go to the last entered
+    
+    if (m_slvs->size() > 0)
+        cout << "SLV " << m_slvs->at(m_slvs->size() - 1)->debug_prn();
 
     emit slvProgUpdated(SHINT_SOLUTIONS, m_slvs->size());
     msleep(50); // to avoid starvation on the gui from outside input

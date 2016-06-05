@@ -85,7 +85,11 @@ void SlvPainter::paintPiece(int f, BaseGLWidget* context, bool fTargets) const
 
     mglCheckErrorsC("x6");
     // if dispRot >= 4 it means the real part we're drawing is inverted from the model so we need to draw the texture on the other side
-    PicPainter(pdef).paint(fTargets, name, context, (pdef->dispRot >= 4), flag, pdef->dispRot);
+    bool isFlipped = (pdef->dispRot >= 4);
+    // (for blake piece lighting) flip XOR facing out, if its flipped we want to light the other face in absolue piece coordinates
+	// need the rtnindx flip since we're rendering the unified mesh
+    bool faceOut = (rtnindx >= 4) == (face->facing == Shape::FACING_IN);
+    PicPainter(pdef).paint(fTargets, name, context, isFlipped, flag, pdef->dispRot, faceOut );
     mglCheckErrorsC("x7");
 
     model.pop();
