@@ -1,5 +1,6 @@
 <!doctype html>
 <html><head>
+<title>Happy Cube Solver Online</title>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -28,8 +29,9 @@ var prog = null
 var model = { vtxBuf: null }
 
 var loadSolution, resizeGl, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseWheel, cpp_draw, cpp_slvrun, getTms
-var setGrpCount, setEditAction, runningRestart, serializeCurrent, deserializeAndLoad, readCube, newRestart, conf
+var setGrpCount, setEditAction, runningRestart, serializeCurrent, deserializeAndLoad, readCubeFromEditor, newRestart, conf
 var stackState, textureParamCube, getCubeTextureHandle, readCubeTexCoord, loadSlvSimple, freeMeshAllocator
+var readCubeToEditor, textureParamToEditor
 var ctrlPressed = false
 var editCtx = null
 var unimesh_keys = Object.keys(unimesh) // unimesh included above
@@ -86,15 +88,19 @@ function start()
     runningRestart  = Module.cwrap('runningRestart', null, [])
     serializeCurrent  = Module.cwrap('serializeCurrent', 'number', [])
     deserializeAndLoad = Module.cwrap('deserializeAndLoad', null, ['number'])
-    readCube = Module.cwrap('readCube', null, ['number'])
+    readCubeFromEditor = Module.cwrap('readCubeFromEditor', null, ['number'])
     newRestart  = Module.cwrap('newRestart', null, [])
     conf = Module.cwrap('conf', null, ['number'])
     stackState = Module.cwrap('stackState', null, ['number'])
-    textureParamCube = Module.cwrap('textureParamCube', null, ['number','number','number','number','number','number','number','number','number']) // grpi,drawtype,r,g,b,r,g,b,isBlack
+    textureParamCube = Module.cwrap('textureParamCube', null, ['number','number','number','number','number','number','number','number','number',
+                                                                // grpi,drawtype,r,g,b,r,g,b,isBlack
+                                                               'string', 'string', 'string']) // back-hex, front-hex, black-selector 
     getCubeTextureHandle = Module.cwrap('getCubeTextureHandle', 'number', ['number', 'number', 'number'])
     readCubeTexCoord = Module.cwrap('readCubeTexCoord', null, ['number'])
     loadSlvSimple = Module.cwrap('loadSlvSimple', null, ['string'])
     freeMeshAllocator = Module.cwrap('freeMeshAllocator', null, [])
+    readCubeToEditor = Module.cwrap('readCubeToEditor', null, ['number', 'string'])
+    textureParamToEditor = Module.cwrap('textureParamToEditor', null, ['number'])
     
     Module.ccall('cpp_start', null);
     conf(true)
@@ -114,7 +120,7 @@ function start()
     
     mycanvas.onmousedown = handleMouseDown
     document.onmouseup = handleMouseUp
-    mycanvas.onmousemove = handleMouseMove
+    document.onmousemove = handleMouseMove
     mycanvas.ondblclick = handleMouseDblClick
     mycanvas.onwheel = mycanvas.onmousewheel = handleMouseWheel // second one is for internet explorer
     editCanvas.onclick = handleEditCanvasClick
@@ -144,17 +150,22 @@ function start()
     
 }
 
+var pressedInCanvas = false
 function handleMouseDown(event) {
+    pressedInCanvas = true
     mouseDown( (event.button == 2)?1:0, event.clientX, event.clientY)
     //return false
 }
 function handleMouseUp(event) {
+    pressedInCanvas = false
     mouseUp( (event.button == 2)?1:0)
     // returning false here breaks the spinbox
     //return false
 }
 var lastX = null, lastY = null
 function handleMouseMove(event) {
+    if (!pressedInCanvas)
+        return // avoid reacting to pressed move outside the canvas (editor)
     if (event.clientX == lastX && event.clientY == lastY)
         return; // for some reason this event arrives in clicks as well
     lastX = event.clientX
@@ -566,21 +577,8 @@ var cube = [
     [ 0,0,0,0,0,0,0,0,0,6,6,6,6,6,0 ], // 9
     [ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ], // 10
 ]
-var cubeX = [
-   // 0,1,2,3,4,5,6,7,8,9,1011121314
-    [ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ], // 0
-    [ 0,0,1,0,1,0,3,0,3,0,5,0,5,0,0 ], // 1
-    [ 0,1,1,1,1,1,3,3,3,3,5,5,5,5,0 ], // 2
-    [ 0,0,1,1,1,3,3,3,3,5,5,5,5,0,0 ], // 3
-    [ 0,1,1,1,1,1,3,3,3,3,5,5,5,5,0 ], // 4
-    [ 0,0,1,2,1,3,3,4,3,5,5,6,5,0,0 ], // 5
-    [ 0,2,2,2,2,2,4,4,4,4,6,6,6,6,0 ], // 6
-    [ 0,0,2,2,2,4,4,4,4,6,6,6,6,0,0 ], // 7
-    [ 0,2,2,2,2,2,4,4,4,4,6,6,6,6,0 ], // 8
-    [ 0,0,2,0,2,0,4,0,4,0,6,0,6,0,0 ], // 9
-    [ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ], // 10
-]
-var TSZ = 30
+
+
 var teeth = [
     { x:1,  y:1, p:[0,1] },   { x:2,  y:1, p:[0,1] }, { x:3,  y:1, p:[0,1] }, { x:4,  y:1, p:[0,1] }, { x:5,  y:1, p:[0,1,3] },
     { x:6,  y:1, p:[0,3] },   { x:7,  y:1, p:[0,3] }, { x:8,  y:1, p:[0,3] }, { x:9,  y:1, p:[0,3,5] },  
@@ -607,6 +605,7 @@ var teeth = [
     { x:13, y:6, p:[0,6] }, { x:13, y:7, p:[0,6] }, { x:13, y:8, p:[0,6] },    
 ]
 
+var TSZ = 30  // size in pixels of a tooth
 var DRAW_COLOR = 0
 var DRAW_PROFI = 2
 var DRAW_MARBLE = 4
@@ -614,13 +613,13 @@ var DRAW_TEX = 0x14
 
 var EDIT_MARGIN = 5
 
-var col = ['white', '#5555ff', 'red', 'yellow', 'orange', 'green', 'purple']
-var editImg = null, loadedImg = null
+//var col = ['white', '#5555ff', 'red', 'yellow', 'orange', 'green', 'purple']
+var editImg = null, loadedImg = null  // the image reference being displayed, the image loaded
 var imgOffset = {x:0, y:0}
 var imgZoom = 1.0
 var drawType = DRAW_COLOR
-var colorBack = new Colors({color:"#ffffff"}).colors
-var colorFront = new Colors({color:"#000000"}).colors // main init setting that spreads to everywhere else
+var colorBack = new Colors({color:"#ffffff"})
+var colorFront = new Colors({color:"#808080"}) // main init setting that spreads to everywhere else
 
 
 function drawLine(x, y, w, h) {
@@ -635,23 +634,29 @@ function paintCube()
     editCtx.fillStyle = '#fff'
     editCtx.fillRect(0, 0, editCanvas.width, editCanvas.height)
     
-    if (editImg && editImg.loadedOk) 
-    {
-        editCtx.fillStyle = '#'+colorBack.HEX
-        editCtx.fillRect(EDIT_MARGIN, EDIT_MARGIN, 15*TSZ, 11*TSZ) // need to show up below transparent pixels
-        
-        var cwidth = editCanvas.width - 2*EDIT_MARGIN
-        var cheight = cwidth * editImg.height / editImg.width  // maintain same aspect ratio as the image
-        editCtx.drawImage(editImg, 0,0, editImg.width, editImg.height, 
-                                   imgOffset.x + EDIT_MARGIN, imgOffset.y + EDIT_MARGIN, cwidth*imgZoom, cheight*imgZoom)
-    }
-    else if (current_src) // indicates colored_tex is on
-    {
+    switch(drawType) {
+    case DRAW_TEX:
+        if (editImg && editImg.loadedOk) 
+        {
+            editCtx.fillStyle = '#'+colorBack.colors.HEX
+            editCtx.fillRect(EDIT_MARGIN, EDIT_MARGIN, 15*TSZ, 11*TSZ) // need to show up below transparent pixels
+            
+            var cwidth = editCanvas.width - 2*EDIT_MARGIN
+            var cheight = cwidth * editImg.height / editImg.width  // maintain same aspect ratio as the image
+            editCtx.drawImage(editImg, 0,0, editImg.width, editImg.height, 
+                                       imgOffset.x + EDIT_MARGIN, imgOffset.y + EDIT_MARGIN, cwidth*imgZoom, cheight*imgZoom)
+        }
+        break
+    case DRAW_PROFI:
+    case DRAW_MARBLE:
+        if (!current_src) // indicates colored_tex is on
+            throw "missing current_src"
         editCtx.putImageData(colored_tex, EDIT_MARGIN, EDIT_MARGIN)
-    }
-    else {
-        editCtx.fillStyle = '#'+colorBack.HEX
+        break
+    case DRAW_COLOR:    
+        editCtx.fillStyle = '#'+colorBack.colors.HEX
         editCtx.fillRect(EDIT_MARGIN, EDIT_MARGIN, 15*TSZ, 11*TSZ)
+        break
     }
     
     editCtx.strokeStyle = 'black'
@@ -673,7 +678,6 @@ function paintCube()
     for(var x = 0; x < 15; ++x) {
         for(var y = 0; y < 11; ++y) {
             var v = cube[y][x]
-            editCtx.fillStyle = col[v]
             if (y < 10 && x < 14) {
                 if (v != cube[y+1][x]) {
                     drawLine(x * TSZ + EDIT_MARGIN, y * TSZ + TSZ + EDIT_MARGIN, TSZ, 0)
@@ -725,8 +729,8 @@ function makeColoredTex()
         return
     var dst = colored_tex.data
     var src = current_src.data
-    var fr = colorFront.rgb.r, fg = colorFront.rgb.g, fb = colorFront.rgb.b
-    var br = colorBack.rgb.r, bg = colorBack.rgb.g, bb = colorBack.rgb.b
+    var fr = colorFront.colors.rgb.r, fg = colorFront.colors.rgb.g, fb = colorFront.colors.rgb.b
+    var br = colorBack.colors.rgb.r, bg = colorBack.colors.rgb.g, bb = colorBack.colors.rgb.b
     for (var i = 0; i < dst.length; i += 4) 
     {
         var g = src[i]
@@ -757,17 +761,28 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
 
         stackState(0) // push and clear
         
-        readCube(editingCubeId)
+        readCubeToEditor(editingCubeId, "ab1255a96529b5522b")  // from grp or default to the editor
+        readCubeFromEditor(editingCubeId) // first update of the grp pieces (if this is the first time)
+        
         setGrpCount(editingCubeId, 1) // set it to be selected TBD - set back to what it was
         conf(false) // make it not randomized so that the solution would be more or less the same
         
         editCanvas.height = 11*TSZ + 2*EDIT_MARGIN
         editCanvas.width = 15*TSZ + 2*EDIT_MARGIN
         
-        editBackColor.value = "#"+colorBack.HEX
-        colorPickCfg.init(editBackColor, colorBack);
-        editFrontColor.value = "#"+colorFront.HEX
-        colorPickCfg.init(editFrontColor, colorFront);
+        textureParamToEditor(editingCubeId);
+        
+        if (editBackColor.value == '#')  // grp had an empty string
+            editBackColor.value = '#ffffff'
+        colorBack.setColor(editBackColor.value)
+        colorPickCfg.init(editBackColor, colorBack.colors);
+        if (editFrontColor.value == '#')
+            editFrontColor.value = '#808080'
+        colorFront.setColor(editFrontColor.value)
+        colorPickCfg.init(editFrontColor, colorFront.colors);
+        
+        if (editBlackSel.value == '')
+            editBlackSel.value = 'auto'
         
         // transfer the marble,profi images to the canvase so they could be accessed when the time comes
         if (!colored_tex) {
@@ -788,7 +803,7 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
     }
     else 
     {
-        readCube(editingCubeId)
+        readCubeFromEditor(editingCubeId)
         editingCubeId = -1
         
         freeMeshAllocator()
@@ -856,7 +871,7 @@ function checkToothClick(event)
     if (!didSomething)
         return;
     paintCube()
-    readCube(editingCubeId)
+    readCubeFromEditor(editingCubeId)
     
     newRestart()
 }
@@ -869,15 +884,16 @@ function triggerEditDone()
     triggerCubeEdit(false) // remove the dialog
 }
 
+// callback from color selector
 function changeColor(colors, mode, options) 
 {
     if (options.input.value == options.input.prevValue)
         return
     options.input.prevValue = options.input.value
     if (options.input == editBackColor)
-        colorBack = colors
+        colorBack.setColor(colors.HEX)
     else if (options.input == editFrontColor)
-        colorFront = colors
+        colorFront.setColor(colors.HEX)
         
     makeColoredTex()   
     paintCube()
@@ -890,8 +906,8 @@ function isColorsBlack() {
     if (editBlackSel.value == 'normal')
         return false
     // 'auto'    
-    var bl = colorBack.rgbaMixWhite.luminance
-    var fl = colorFront.rgbaMixWhite.luminance
+    var bl = colorBack.colors.rgbaMixWhite.luminance
+    var fl = colorFront.colors.rgbaMixWhite.luminance
 
     // in case of textured draw, I assume the back color represents the piece color
     if (editFillColorRadio.checked || editFillTextureRadio.checked)
@@ -902,8 +918,10 @@ function isColorsBlack() {
 }
 
 function sentTexParam() {
-    textureParamCube(editingCubeId, drawType, colorBack.rgb.r, colorBack.rgb.g, colorBack.rgb.b, 
-                                              colorFront.rgb.r, colorFront.rgb.g, colorFront.rgb.b, isColorsBlack())
+    textureParamCube(editingCubeId, drawType, colorBack.colors.rgb.r, colorBack.colors.rgb.g, colorBack.colors.rgb.b, 
+                                              colorFront.colors.rgb.r, colorFront.colors.rgb.g, colorFront.colors.rgb.b, 
+                                              isColorsBlack(), 
+                                              colorBack.colors.HEX, colorFront.colors.HEX, editBlackSel.value) // things saved for the editor
 }
 
 function triggerEditTexture()

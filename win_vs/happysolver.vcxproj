@@ -2914,6 +2914,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\BaseGLWidget.h" />
+    <ClInclude Include="..\src\BinWriter.h" />
     <ClInclude Include="..\src\BuildControlBase.h" />
     <ClInclude Include="..\src\CubeDocBase.h" />
     <ClInclude Include="..\src\ImgBuf.h" />

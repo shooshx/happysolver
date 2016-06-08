@@ -207,8 +207,17 @@ public:
     Vec3 color;
     Vec3 exColor;
 
-
     EBlackness blackness; // means that the color is a dark one. use white lines with this group
+
+    // data from the editor from which other data of the cube is derived from
+    struct EditorData {
+        string piecesFrame; // pieces array derive from this - 9 byte string
+        Vec2 imageOffset;   // texture coordinates derive from this
+        float imageZoom = 1.0;
+        string backHex, frontHex, blackSelect;
+    };
+
+    EditorData editorData;
 
 // 	bool isTexExist() const { 
 // 		return ((drawtype == DRAW_TEXTURE_NORM) || (drawtype == DRAW_TEXTURE_BLEND) || (drawtype == DRAW_TEXTURE_MARBLE) || isIndividual(drawtype)); 

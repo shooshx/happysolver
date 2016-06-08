@@ -12,6 +12,7 @@
 #include "../src/ModelControlBase.h"
 #include "../src/SlvCube.h"
 #include "../src/Cube.h"
+#include "../src/BinWriter.h"
 
 using namespace std;
 
@@ -384,7 +385,7 @@ int serializeCurrent()
 }
 
 // AQoAAAgAQAAAAARAAQAQAAEAEAQAAQAgCARBHXRogCOG8YptBGEKWzg=
-void deserializeAndLoad(int len)
+void deserializeAndLoad(int len) // shape and solution
 {
     string s;
     s.resize(len);
@@ -398,33 +399,81 @@ void deserializeAndLoad(int len)
     g_ctrl.requestDraw();
 }
 
+void readCubeToEditor(int grpi, const char* defaultCubeBits)
+{
+    auto& bucket = PicBucket::mutableInstance();
+    if (grpi < 0) {
+        cout << "no-such-cube(rde) " << grpi << endl;
+        return;
+    }
+    string bits;
+    BinWriter sigParse(bits);
+    
+    if (grpi >= bucket.grps.size() || bucket.grps[grpi].editorData.piecesFrame.empty()) {// wasn't created yet, use default pieces cube
+        sigParse.unrepr(defaultCubeBits);
+    }
+    else {
+        bits = bucket.grps[grpi].editorData.piecesFrame;
+    }
+    
+    cout << "GOTSIG " << sigParse.repr() << endl;
+    M_CHECK(bits.size() == 9);
+
+    int tlen = EM_ASM_INT_V(return teeth.length);
+    for(int i = 0; i < tlen; ++i) 
+    {
+        Vec2i tpos(EM_ASM_INT(return teeth[$0].x, i), EM_ASM_INT(return teeth[$0].y, i));
+        int plen = EM_ASM_INT(return teeth[$0].p.length, i);
+        uint valIndex = sigParse.readBits((plen == 2)?1:2);
+        int pp = EM_ASM_INT(return teeth[$0].p[$1], i, valIndex); 
+        EM_ASM_(cube[$0][$1] = $2, tpos.y, tpos.x, pp);
+    }    
+}
+
+
 // relates to the pieces in the js `cube` array, 0 is the frame
 Vec2i pieceOrigin[] = { Vec2i(-1,-1), Vec2i(1,1), Vec2i(1,5),
                                       Vec2i(5,1), Vec2i(5,5),
                                       Vec2i(9,1), Vec2i(9,5) };
 
 // the the current cube edit data and update PicBucket
-void readCube(int grpi)
+void readCubeFromEditor(int grpi) // fromEditor
 {
     PicArr pcs[6];
     for(int i = 0; i < 6; ++i)
         pcs[i].fillCenter(); // just for better display
+    
+    string cubeSig;
+    int countBits = 0;
+    BinWriter sigWriter(cubeSig);
+
     int tlen = EM_ASM_INT_V(return teeth.length);
-    for(int i = 0; i < tlen; ++i) {
+    for(int i = 0; i < tlen; ++i) 
+    {
         Vec2i tpos(EM_ASM_INT(return teeth[$0].x, i), EM_ASM_INT(return teeth[$0].y, i));
+        int val = EM_ASM_INT(return cube[$0][$1], tpos.y, tpos.x);
         int plen = EM_ASM_INT(return teeth[$0].p.length, i);
-        for(int pi = 0; pi < plen; ++pi) {
+        uint valIndex = 0; // what index in p was the value of this tooth found in
+        for(int pi = 0; pi < plen; ++pi) // options in this tooth
+        {
             int pp = EM_ASM_INT(return teeth[$0].p[$1], i, pi); 
+            if (val == pp)
+                valIndex = pi;
             if (pp == 0) // 1 in the cube array is piece 0, etc'
                 continue;
             Vec2i inpic = tpos - pieceOrigin[pp];
-            int val = EM_ASM_INT(return cube[$0][$1], tpos.y, tpos.x);
-            //cout << "--" << tpos.x << "," << tpos.y << "  " << inpic.x << "," << inpic.y << "  " << val << " " << ((val == pp) ? 1:0) << endl;
+            // go to the piece referenced and set the tooth in it
             pcs[pp - 1].set(inpic.x, inpic.y) = ((val == pp) ? 1:0);
         }
+        countBits += (plen == 2)?1:2;
+        sigWriter.addBits(valIndex, (plen == 2)?1:2); // there are either 2,3,4 values possible for the tooth so either 1 or 2 bits required
+        //cout << "--" << valIndex << "," << ((plen == 2)?1:2) << "  =" << hex << cubeSig << dec << endl;
     }
+    sigWriter.flush();
+    cout << countBits << " SIG=" << sigWriter.repr() << endl;
     auto& bucket = PicBucket::mutableInstance();
     bucket.updateGrp(grpi, pcs);
+    bucket.grps[grpi].editorData.piecesFrame = cubeSig;
     
 #ifdef __EMSCRIPTEN_TRACING__
     emscripten_trace_report_memory_layout();
@@ -439,11 +488,12 @@ void freeMeshAllocator()
 
 shared_ptr<GlTexture> g_lastTexture;
 
-void textureParamCube(int grpi, int dtype, float r1, float g1, float b1, float r2, float g2, float b2, int isBlack)
+void textureParamCube(int grpi, int dtype, float r1, float g1, float b1, float r2, float g2, float b2, int isBlack, 
+                      const char* backHex, const char* frontHex, const char* blackSelect)
 {
     auto& bucket = PicBucket::mutableInstance();
     if (grpi < 0 || grpi >= bucket.grps.size()) {
-        cout << "no-such-cube " << grpi << endl;
+        cout << "no-such-cube(tpc) " << grpi << endl;
         return;
     }
 
@@ -472,9 +522,25 @@ void textureParamCube(int grpi, int dtype, float r1, float g1, float b1, float r
         cout << "Unexpected drawtype " << cgrp.drawtype << endl;    
     }
     
-    
+    cgrp.editorData.backHex = backHex;
+    cgrp.editorData.frontHex = frontHex; // without #
+    cgrp.editorData.blackSelect = blackSelect; // "black", "white", "auto" from GUI
     
     g_ctrl.requestDraw();
+}
+
+void textureParamToEditor(int grpi) {
+    auto& bucket = PicBucket::mutableInstance();
+    if (grpi < 0 || grpi >= bucket.grps.size()) {
+        cout << "no-such-cube(tpe) " << grpi << endl;
+        return;
+    }
+    PicGroupDef& cgrp = bucket.grps[grpi];
+    EM_ASM_(editBackColor.value = '#'+Pointer_stringify($0), cgrp.editorData.backHex.c_str());
+    EM_ASM_(editFrontColor.value = '#'+Pointer_stringify($0), cgrp.editorData.frontHex.c_str());
+    EM_ASM_(editBlackSel.value = Pointer_stringify($0), cgrp.editorData.blackSelect.c_str());
+    EM_ASM_(drawType = $0, cgrp.drawtype);
+    
 }
 
 int getCubeTextureHandle(int grpi, int width, int height)

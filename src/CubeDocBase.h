@@ -102,7 +102,7 @@ public:
         m_nCurSlv = m_slvs->size() - 1;
         auto s = getCurrentSolve();
         if (s)
-            cout << "SLV " << s->debug_prn();
+            cout << "SLV " << s->debug_prn() << endl;
         m_nUpToStep = m_shp->fcn;
     }
 

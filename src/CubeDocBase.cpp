@@ -2,6 +2,7 @@
 #include "general.h"
 #include "Cube.h"
 #include "SlvCube.h"
+#include "BinWriter.h"
 #include <sstream>
 
 CubeDocBase* CubeDocBase::s_instance = nullptr; // singleton for use of SlvPainter access of m_flagPiece
@@ -349,70 +350,8 @@ string CubeDocBase::serializeMinText()
     return os.str();
 }
 
-//    00BBCCDD  cur=6, count=5
-// AAAAA 
-class BinWriter
-{
-public:
-    BinWriter(string& s) : m_buf(s)
-    {}
 
-    void addBits(uint8_t v, int bitCount) {
-        M_ASSERT((v & (~bitMasks[bitCount])) == 0); // check other bits not in bit count are 0
-        if (m_curShift + bitCount > 8) {
-            m_curByte |= v << m_curShift;
-            m_buf.push_back(m_curByte);
-            m_curByte = v >> (8 - m_curShift);
-            m_curShift = bitCount - 8 + m_curShift;
-        }
-        else {
-            m_curByte |= v << m_curShift;
-            m_curShift += bitCount;
-        }
-    }
-    void flush() {
-        m_buf.push_back(m_curByte);
-        m_curByte = 0;
-        m_curShift = 0;
-    }
-
-    uint8_t readBits(int bitCount)
-    {
-        uint8_t r;
-        if (m_curShift + bitCount > 8) {
-            if (rdEnd())
-                return 0;
-            r = m_curByte >> m_curShift;
-            m_curByte = m_buf[m_rdOffset++];
-            r |= m_curByte << (8 - m_curShift);
-            m_curShift = bitCount - 8 + m_curShift;
-        }
-        else {
-            if (m_rdOffset == 0) {
-                if (rdEnd())
-                    return 0;
-                m_curByte = m_buf[m_rdOffset++];
-            }
-            r = m_curByte >> m_curShift;
-            m_curShift += bitCount;
-        }
-        return r & bitMasks[bitCount];
-    }
-    bool rdEnd() {
-        m_reachedEnd = m_rdOffset >= m_buf.size();
-        return m_reachedEnd;
-    }
-
-
-    static const uint8_t bitMasks[];
-    string& m_buf;
-    int m_curShift = 0;
-    uint8_t m_curByte;
-    int m_rdOffset = 0; // next byte to read
-    bool m_reachedEnd = false;
-};
-
-const uint8_t BinWriter::bitMasks[] = { 0, 0x1, 0x3, 0x7, 0xf, 0x1f, 0x3f, 0x7f, 0xff };
+const uint8_t BinWriter::s_bitMasks[] = { 0, 0x1, 0x3, 0x7, 0xf, 0x1f, 0x3f, 0x7f, 0xff };
 
 string CubeDocBase::serializeMinBin()
 {

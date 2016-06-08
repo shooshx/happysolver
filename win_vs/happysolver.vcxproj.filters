@@ -809,5 +809,8 @@
     <ClInclude Include="..\src\ImgBuf.h">
       <Filter>Misc</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\BinWriter.h">
+      <Filter>DocView</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
