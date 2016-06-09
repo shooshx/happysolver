@@ -31,7 +31,7 @@ var model = { vtxBuf: null }
 var loadSolution, resizeGl, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseWheel, cpp_draw, cpp_slvrun, getTms
 var setGrpCount, setEditAction, runningRestart, serializeCurrent, deserializeAndLoad, readCubeFromEditor, newRestart, conf
 var stackState, textureParamCube, getCubeTextureHandle, readCubeTexCoord, loadSlvSimple, freeMeshAllocator
-var readCubeToEditor, textureParamToEditor
+var readCubeToEditor, textureParamToEditor, getToothPossibilities
 var ctrlPressed = false
 var editCtx = null
 var unimesh_keys = Object.keys(unimesh) // unimesh included above
@@ -101,6 +101,8 @@ function start()
     freeMeshAllocator = Module.cwrap('freeMeshAllocator', null, [])
     readCubeToEditor = Module.cwrap('readCubeToEditor', null, ['number', 'string'])
     textureParamToEditor = Module.cwrap('textureParamToEditor', null, ['number'])
+    getToothPossibilities = Module.cwrap('getToothPossibilities', null, ['number', 'number'])
+    
     
     Module.ccall('cpp_start', null);
     conf(true)
@@ -579,32 +581,6 @@ var cube = [
 ]
 
 
-var teeth = [
-    { x:1,  y:1, p:[0,1] },   { x:2,  y:1, p:[0,1] }, { x:3,  y:1, p:[0,1] }, { x:4,  y:1, p:[0,1] }, { x:5,  y:1, p:[0,1,3] },
-    { x:6,  y:1, p:[0,3] },   { x:7,  y:1, p:[0,3] }, { x:8,  y:1, p:[0,3] }, { x:9,  y:1, p:[0,3,5] },  
-    { x:10, y:1, p:[0,5] },   { x:11, y:1, p:[0,5] }, { x:12, y:1, p:[0,5] }, { x:13, y:1, p:[0,5] },    
-
-    { x:1,  y:5, p:[0,1,2] }, { x:2,  y:5, p:[1,2] }, { x:3,  y:5, p:[1,2] }, { x:4,  y:5, p:[1,2] }, { x:5,  y:5, p:[1,2,3,4] },
-    { x:6,  y:5, p:[3,4] },   { x:7,  y:5, p:[3,4] }, { x:8,  y:5, p:[3,4] }, { x:9,  y:5, p:[3,4,5,6] },
-    { x:10, y:5, p:[5,6] },   { x:11, y:5, p:[5,6] }, { x:12, y:5, p:[5,6] }, { x:13, y:5, p:[5,6,0] },    
-
-    { x:1,  y:9, p:[0,2] },   { x:2,  y:9, p:[0,2] }, { x:3,  y:9, p:[0,2] }, { x:4,  y:9, p:[0,2] }, { x:5,  y:9, p:[0,2,4] }, 
-    { x:6,  y:9, p:[0,4] },   { x:7,  y:9, p:[0,4] }, { x:8,  y:9, p:[0,4] }, { x:9,  y:9, p:[0,4,6] }, 
-    { x:10, y:9, p:[0,6] },   { x:11, y:9, p:[0,6] }, { x:12, y:9, p:[0,6] }, { x:13, y:9, p:[0,6] },   
-    
-    { x:1, y:2, p:[0,1] }, { x:1, y:3, p:[0,1] }, { x:1, y:4, p:[0,1] },
-    { x:1, y:6, p:[0,2] }, { x:1, y:7, p:[0,2] }, { x:1, y:8, p:[0,2] },    
-    
-    { x:5, y:2, p:[1,3] }, { x:5, y:3, p:[1,3] }, { x:5, y:4, p:[1,3] },
-    { x:5, y:6, p:[2,4] }, { x:5, y:7, p:[2,4] }, { x:5, y:8, p:[2,4] },
-
-    { x:9, y:2, p:[3,5] }, { x:9, y:3, p:[3,5] }, { x:9, y:4, p:[3,5] },
-    { x:9, y:6, p:[4,6] }, { x:9, y:7, p:[4,6] }, { x:9, y:8, p:[4,6] },
-    
-    { x:13, y:2, p:[0,5] }, { x:13, y:3, p:[0,5] }, { x:13, y:4, p:[0,5] },
-    { x:13, y:6, p:[0,6] }, { x:13, y:7, p:[0,6] }, { x:13, y:8, p:[0,6] },    
-]
-
 var TSZ = 30  // size in pixels of a tooth
 var DRAW_COLOR = 0
 var DRAW_PROFI = 2
@@ -848,28 +824,26 @@ function handleEditCanvasClick(event)
         checkToothClick(event)
 }
  
+var toothScratch = null
+ 
 function checkToothClick(event)
 { 
     var rect = editCanvas.getBoundingClientRect()
-    var x = Math.trunc((event.clientX - rect.left)/TSZ), y = Math.trunc((event.clientY - rect.top)/TSZ)
+    var x = Math.trunc((event.clientX - rect.left - EDIT_MARGIN)/TSZ), y = Math.trunc((event.clientY - rect.top - EDIT_MARGIN)/TSZ)
     //console.log(x + " " + y)
     
     var hasSameNei = function(v, x, y) { // don't allow isolated tooth of a color
         return cube[y][x-1] == v || cube[y][x+1] == v || cube[y-1][x] == v || cube[y+1][x] == v
     }
     var didSomething = false;
-    for(var ti in teeth) {
-        var t = teeth[ti]
-        if (x == t.x && y == t.y) {
-            do {
-                cube[y][x] = (cube[y][x] + 1) % 7
-            } while(!t.p.includes(cube[y][x]) || !hasSameNei(cube[y][x], x, y))
-            didSomething = true;
-            break
-        }
-    }
-    if (!didSomething)
+    toothScratch = []
+    getToothPossibilities(x, y); //  writes toothScratch
+    if (toothScratch.length == 0) // didn't find
         return;
+    do {
+        cube[y][x] = (cube[y][x] + 1) % 7
+    } while(!toothScratch.includes(cube[y][x]) || !hasSameNei(cube[y][x], x, y))
+
     paintCube()
     readCubeFromEditor(editingCubeId)
     

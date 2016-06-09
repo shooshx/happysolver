@@ -399,6 +399,60 @@ void deserializeAndLoad(int len) // shape and solution
     g_ctrl.requestDraw();
 }
 
+struct Tooth {
+    Tooth(uint8_t _x, uint8_t _y, int8_t p0, int8_t p1, int8_t p2=-1, int8_t p3=-1) 
+        :x(_x), y(_y), plen(0)
+    {
+        p[plen++] = p0; p[plen++] = p1;
+        if (p2 != -1)
+            p[plen++] = p2;
+        if (p3 != -1)
+            p[plen++] = p3;            
+    }
+    uint8_t x, y, plen;
+    int8_t p[4];
+} teeth[] = {
+    Tooth(1, 1, 0,1),   Tooth(2, 1, 0,1), Tooth(3, 1, 0,1), Tooth(4, 1, 0,1), Tooth(5,1, 0,1,3),
+    Tooth(6, 1, 0,3),   Tooth(7, 1, 0,3), Tooth(8, 1, 0,3), Tooth(9, 1, 0,3,5),  
+    Tooth(10,1, 0,5),   Tooth(11,1, 0,5), Tooth(12,1, 0,5), Tooth(13,1, 0,5),    
+                                                            
+    Tooth(1, 5, 0,1,2), Tooth(2, 5, 1,2), Tooth(3, 5, 1,2), Tooth(4, 5, 1,2), Tooth(5,5, 1,2,3,4),
+    Tooth(6, 5, 3,4),   Tooth(7, 5, 3,4), Tooth(8, 5, 3,4), Tooth(9, 5, 3,4,5,6),
+    Tooth(10,5, 5,6),   Tooth(11,5, 5,6), Tooth(12,5, 5,6), Tooth(13,5, 5,6,0),    
+                                                           
+    Tooth(1, 9, 0,2),   Tooth(2, 9, 0,2), Tooth(3, 9, 0,2), Tooth(4, 9, 0,2), Tooth(5,9, 0,2,4), 
+    Tooth(6, 9, 0,4),   Tooth(7, 9, 0,4), Tooth(8, 9, 0,4), Tooth(9, 9, 0,4,6), 
+    Tooth(10,9, 0,6),   Tooth(11,9, 0,6), Tooth(12,9, 0,6), Tooth(13,9, 0,6),   
+                                         
+    Tooth(1, 2, 0,1),   Tooth(1, 3, 0,1), Tooth(1, 4, 0,1),
+    Tooth(1, 6, 0,2),   Tooth(1, 7, 0,2), Tooth(1, 8, 0,2),    
+                                         
+    Tooth(5, 2, 1,3),   Tooth(5, 3, 1,3), Tooth(5, 4, 1,3),
+    Tooth(5, 6, 2,4),   Tooth(5, 7, 2,4), Tooth(5, 8, 2,4),
+                                         
+    Tooth(9, 2, 3,5),   Tooth(9, 3, 3,5), Tooth(9, 4, 3,5),
+    Tooth(9, 6, 4,6),   Tooth(9, 7, 4,6), Tooth(9, 8, 4,6),
+                                         
+    Tooth(13,2, 0,5),   Tooth(13,3, 0,5), Tooth(13,4, 0,5),
+    Tooth(13,6, 0,6),   Tooth(13,7, 0,6), Tooth(13,8, 0,6),    
+};
+
+#define ARRAY_SIZE(array) (sizeof((array))/sizeof((array[0])))
+
+void getToothPossibilities(int x, int y)
+{
+    int tlen = ARRAY_SIZE(teeth);
+    for(int i = 0; i < tlen; ++i) 
+    {
+        if (teeth[i].x == x && teeth[i].y == y) {
+            for(int j = 0; j < teeth[i].plen; ++j) {
+                EM_ASM_(toothScratch.push($0), teeth[i].p[j]);
+            }
+            return;
+        }
+    }
+}
+
 void readCubeToEditor(int grpi, const char* defaultCubeBits)
 {
     auto& bucket = PicBucket::mutableInstance();
@@ -419,13 +473,13 @@ void readCubeToEditor(int grpi, const char* defaultCubeBits)
     cout << "GOTSIG " << sigParse.repr() << endl;
     M_CHECK(bits.size() == 9);
 
-    int tlen = EM_ASM_INT_V(return teeth.length);
+    int tlen = ARRAY_SIZE(teeth);
     for(int i = 0; i < tlen; ++i) 
     {
-        Vec2i tpos(EM_ASM_INT(return teeth[$0].x, i), EM_ASM_INT(return teeth[$0].y, i));
-        int plen = EM_ASM_INT(return teeth[$0].p.length, i);
+        Vec2i tpos(teeth[i].x, teeth[i].y);
+        int plen = teeth[i].plen;
         uint valIndex = sigParse.readBits((plen == 2)?1:2);
-        int pp = EM_ASM_INT(return teeth[$0].p[$1], i, valIndex); 
+        int pp = teeth[i].p[valIndex]; 
         EM_ASM_(cube[$0][$1] = $2, tpos.y, tpos.x, pp);
     }    
 }
@@ -447,23 +501,28 @@ void readCubeFromEditor(int grpi) // fromEditor
     int countBits = 0;
     BinWriter sigWriter(cubeSig);
 
-    int tlen = EM_ASM_INT_V(return teeth.length);
+    int tlen = ARRAY_SIZE(teeth);
     for(int i = 0; i < tlen; ++i) 
     {
-        Vec2i tpos(EM_ASM_INT(return teeth[$0].x, i), EM_ASM_INT(return teeth[$0].y, i));
+        Vec2i tpos(teeth[i].x, teeth[i].y);
         int val = EM_ASM_INT(return cube[$0][$1], tpos.y, tpos.x);
-        int plen = EM_ASM_INT(return teeth[$0].p.length, i);
+        int plen = teeth[i].plen;
         uint valIndex = 0; // what index in p was the value of this tooth found in
+        int pp = -1;
+        // search of the option we found in the cube among the options of the tooth
         for(int pi = 0; pi < plen; ++pi) // options in this tooth
         {
-            int pp = EM_ASM_INT(return teeth[$0].p[$1], i, pi); 
+            pp = teeth[i].p[pi]; 
+            valIndex = pi;
             if (val == pp)
-                valIndex = pi;
-            if (pp == 0) // 1 in the cube array is piece 0, etc'
-                continue;
+                break;
+        }
+        M_CHECK(pp != -1); // found it, otherwise its missing from teeth?
+        if (pp != 0) // 1 in the cube array is piece 0, etc', 0 means its the frame
+        {
             Vec2i inpic = tpos - pieceOrigin[pp];
             // go to the piece referenced and set the tooth in it
-            pcs[pp - 1].set(inpic.x, inpic.y) = ((val == pp) ? 1:0);
+            pcs[pp - 1].set(inpic.x, inpic.y) = 1;
         }
         countBits += (plen == 2)?1:2;
         sigWriter.addBits(valIndex, (plen == 2)?1:2); // there are either 2,3,4 values possible for the tooth so either 1 or 2 bits required
