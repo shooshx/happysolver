@@ -212,7 +212,7 @@ public:
     // data from the editor from which other data of the cube is derived from
     struct EditorData {
         string piecesFrame; // pieces array derive from this - 9 byte string
-        Vec2 imageOffset;   // texture coordinates derive from this
+        Vec2i imageOffset;   // texture coordinates derive from this, in pixels
         float imageZoom = 1.0;
         string backHex, frontHex, blackSelect;
     };

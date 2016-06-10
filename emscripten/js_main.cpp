@@ -624,14 +624,28 @@ int getCubeTextureHandle(int grpi, int width, int height)
     return cgrp.gtex->handle();  
 }
 
+void texCoordToEditor(int grpi)
+{
+    auto& bucket = PicBucket::mutableInstance();
+    if (grpi < 0 || grpi >= bucket.grps.size()) {
+        cout << "no-such-cube (cte)" << grpi << endl;
+        return;
+    }
+    PicGroupDef& cgrp = bucket.grps[grpi];
+    EM_ASM_(imgOffset.x = $0; imgOffset.y=$1, cgrp.editorData.imageOffset.x, cgrp.editorData.imageOffset.y);
+    EM_ASM_(imgZoom = $0, cgrp.editorData.imageZoom);
+}
+
 void readCubeTexCoord(int grpi)
 {
     auto& bucket = PicBucket::mutableInstance();
     if (grpi < 0 || grpi >= bucket.grps.size()) {
-        cout << "no-such-cube " << grpi << endl;
+        cout << "no-such-cube (ctc)" << grpi << endl;
         return;
     }
     PicGroupDef& cgrp = bucket.grps[grpi];
+    cgrp.editorData.imageOffset = Vec2i(EM_ASM_INT_V(return imgOffset.x), EM_ASM_INT_V(return imgOffset.y));
+    cgrp.editorData.imageZoom = EM_ASM_DOUBLE_V(return imgZoom);
     for(int i = 0; i < 6; ++i) {
         auto& pic = cgrp.getPic(i);
  

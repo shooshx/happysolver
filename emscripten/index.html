@@ -31,7 +31,7 @@ var model = { vtxBuf: null }
 var loadSolution, resizeGl, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseWheel, cpp_draw, cpp_slvrun, getTms
 var setGrpCount, setEditAction, runningRestart, serializeCurrent, deserializeAndLoad, readCubeFromEditor, newRestart, conf
 var stackState, textureParamCube, getCubeTextureHandle, readCubeTexCoord, loadSlvSimple, freeMeshAllocator
-var readCubeToEditor, textureParamToEditor, getToothPossibilities
+var readCubeToEditor, textureParamToEditor, getToothPossibilities, texCoordToEditor
 var ctrlPressed = false
 var editCtx = null
 var unimesh_keys = Object.keys(unimesh) // unimesh included above
@@ -102,7 +102,7 @@ function start()
     readCubeToEditor = Module.cwrap('readCubeToEditor', null, ['number', 'string'])
     textureParamToEditor = Module.cwrap('textureParamToEditor', null, ['number'])
     getToothPossibilities = Module.cwrap('getToothPossibilities', null, ['number', 'number'])
-    
+    texCoordToEditor = Module.cwrap('texCoordToEditor', null, ['number'])
     
     Module.ccall('cpp_start', null);
     conf(true)
@@ -166,8 +166,6 @@ function handleMouseUp(event) {
 }
 var lastX = null, lastY = null
 function handleMouseMove(event) {
-    if (!pressedInCanvas)
-        return // avoid reacting to pressed move outside the canvas (editor)
     if (event.clientX == lastX && event.clientY == lastY)
         return; // for some reason this event arrives in clicks as well
     lastX = event.clientX
@@ -175,6 +173,10 @@ function handleMouseMove(event) {
     var but = event.buttons
     if (but === undefined)
         but = event.which // for safari
+
+    if (but != 0 && !pressedInCanvas)
+        return // if pressed, avoid reacting to pressed move outside the canvas (editor)
+        
     mouseMove(but, ctrlPressed?1:0, event.clientX, event.clientY)
     return false
 }
@@ -247,6 +249,7 @@ function picsAddCube(cubeName, id, grpi, editable) {
     <input class="cube_count" id="ID_ccount" type="number" min="0" onchange="on_cube_count(\'ID\', INDEX)">\
     </div>'.replace(/EDITSTART/g, editStart).replace(/EDITEND/g, editEnd).replace(/ID/g, id).replace(/LABEL/g, cubeName).replace(/INDEX/g, grpi)
     
+    var dummy = document.createElement("DIV")
     document.getElementById(lastFamAdded + "_famframe").innerHTML += txt
     pics_families[lastFamAdded].cubes.push( { cid: id, grpi: grpi})
     pics_cubes[id] = { famid: lastFamAdded }
@@ -591,7 +594,7 @@ var EDIT_MARGIN = 5
 
 //var col = ['white', '#5555ff', 'red', 'yellow', 'orange', 'green', 'purple']
 var editImg = null, loadedImg = null  // the image reference being displayed, the image loaded
-var imgOffset = {x:0, y:0}
+var imgOffset = {x:0, y:0} // in pixels
 var imgZoom = 1.0
 var drawType = DRAW_COLOR
 var colorBack = new Colors({color:"#ffffff"})
@@ -718,6 +721,7 @@ function makeColoredTex()
     }
 }
 
+
 function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
 {
     if (v) 
@@ -727,28 +731,32 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
         doResize()
         editActionPiecesCheck.checked = true
         editActionMoveCheck.checked = false
-        editZoomSlider.value = 100
-        editZoomText.value = "100%"
-        editFillColorRadio.checked = true
-
-        setEditAction(ACT_NONE) // prevent hovering on the cube from editing
-
-        editingCubeId = cubeId
-
-        stackState(0) // push and clear
         
-        readCubeToEditor(editingCubeId, "ab1255a96529b5522b")  // from grp or default to the editor
-        readCubeFromEditor(editingCubeId) // first update of the grp pieces (if this is the first time)
-        
-        setGrpCount(editingCubeId, 1) // set it to be selected TBD - set back to what it was
-        conf(false) // make it not randomized so that the solution would be more or less the same
-        
+
         editCanvas.height = 11*TSZ + 2*EDIT_MARGIN
         editCanvas.width = 15*TSZ + 2*EDIT_MARGIN
         
-        textureParamToEditor(editingCubeId);
+        setEditAction(ACT_NONE) // prevent hovering on the cube from editing
+
+        editingCubeId = cubeId
+        stackState(0) // push and clear
+        conf(false) // make it not randomized so that the solution would be more or less the same
         
-        if (editBackColor.value == '#')  // grp had an empty string
+        readCubeToEditor(editingCubeId, "ab1255a96529b5522b")  // from grp or default to the editor
+        readCubeFromEditor(editingCubeId) // first update of the grp pieces (if this is the first time)
+
+        setGrpCount(editingCubeId, 1) // set it to be selected, need to be here after the parts were added from the editor
+
+        // read from grp color, drawType, black select
+        textureParamToEditor(editingCubeId);
+        switch(drawType) {
+        case DRAW_TEX: editFillTextureRadio.checked = true; break;
+        case DRAW_PROFI: editFillMixRadio.checked = true; break
+        case DRAW_MARBLE: editFillMarbleRadio.checked = true; break
+        case DRAW_COLOR: editFillColorRadio.checked = true; break    
+        }
+        
+        if (editBackColor.value == '#')  // grp had an empty string for color, take the default
             editBackColor.value = '#ffffff'
         colorBack.setColor(editBackColor.value)
         colorPickCfg.init(editBackColor, colorBack.colors);
@@ -759,6 +767,13 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
         
         if (editBlackSel.value == '')
             editBlackSel.value = 'auto'
+            
+        // read from grp image offset and zoom
+        texCoordToEditor(editingCubeId);
+        editZoomSlider.value = imgZoom * 100
+        editZoomText.value = imgZoom * 100 + "%"
+        
+        loadedImg = null; // reset the last image loaded
         
         // transfer the marble,profi images to the canvase so they could be accessed when the time comes
         if (!colored_tex) {
@@ -911,7 +926,7 @@ function triggerEditTexture()
 }
 
 var baseFramePicPos = [ [1,1], [1,5], [5,1], [5,5], [9,1], [9,5] ]
-var cubeTexInfo = []
+var cubeTexInfo = [] // read from c++
 
 function sendTexCoord()
 {

@@ -17,14 +17,15 @@ fix tranparents - depth pass
     https://docs.google.com/presentation/d/12AGAUmElB0oOBgbEEBfhABkIMCL3CUX7kdAPLuwZ964/edit#slide=id.i158
 handle lost context webgl https://www.khronos.org/webgl/wiki/HandlingContextLost
 
+display selected pieces count
+
 EDITOR
 ------
-50% side should have minimum size
 
 Black Lines mis-features
    touching a non-black piece still gets illuminated
 
-   
+flip colors back and front button
    
 NEW DEAL - things that don't work
 -------------
