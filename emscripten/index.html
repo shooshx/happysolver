@@ -216,7 +216,7 @@ function picsAddFamily(famName, id, editable) {
     id = id.replace(/[-\. ]/g, '_')
     var editTag = ''
     if (editable) {
-        editTag = '<label class="addCubeBtn sc-btn"  onclick="triggerAddCube(\'ID\')"/></label>'
+        editTag = '<label class="addCubeBtn sc-btn" title="Add Cube" onclick="triggerAddCube(\'ID\')"/><span class="addCubeBtnIn"></span></label>'
     }
     var picsCtrl = '<div id="ID_frame" class="toppic"><div class="famtitle">\
     <input class="fam_check_box hidden mycheck" id="ID_fcheck" type="checkbox" onchange="on_fam_check(\'ID\', ID_fcheck.checked, true);setCheck(ID_fcheck_label, ID_fcheck.checked)" />\
@@ -565,6 +565,8 @@ function triggerAddFam() {
 
 function triggerAddCube(intoFam) {
     var cubeName = window.prompt("Cube Name?","");
+    if (cubeName == null || cubeName == "")
+        return
     picsAddCube(cubeName, cubeName, -1, true)
 }
 
@@ -755,6 +757,7 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
         case DRAW_MARBLE: editFillMarbleRadio.checked = true; break
         case DRAW_COLOR: editFillColorRadio.checked = true; break    
         }
+        updateTexDisabledWidgets()
         
         if (editBackColor.value == '#')  // grp had an empty string for color, take the default
             editBackColor.value = '#ffffff'
@@ -915,14 +918,62 @@ function sentTexParam() {
 
 function triggerEditTexture()
 {
-    loadTexImage("http://localhost:8000/emscripten/test_texture3.png")
+    var file = editFileInput.files[0]
+    var reader = new FileReader();
+    reader.onload = function(e) 
+    { 
+        var req = new XMLHttpRequest();
+        req.open("POST", 'https://api.imgur.com/3/image', true)
+        req.setRequestHeader("Authorization", "Client-ID 559401233d3e1e6")
+        req.setRequestHeader("Accept", 'application/json')
+        req.setRequestHeader("Content-Type", file.type)
+        req.onreadystatechange = function () {
+            if (req.readyState != 4) {
+                console.log("XHR " + req.readyState)
+                return
+            }
+            if (req.status != 200) {
+                console.log("XHR Failed to open " + req.status)
+                return 
+            }
+            console.log(req.responseText)
+            var re = JSON.parse(req.responseText)
+            editFileName.value = re.data.link
+        }
+        
+        req.send(e.target.result)
+    
+    
+        //loadTexImage(e.target.result) 
+    }
+    reader.onerror = function(e) {
+        console.log("READER-ERR" + e)
+    }
+    
+    reader.readAsArrayBuffer(file)
+
+
+    
+    //loadTexImage("http://localhost:8000/emscripten/test_texture3.png")
     //loadTexImage("http://i.imgur.com/dPY5gPe.png") 
     //loadTexImage("http://i.imgur.com/gIcxWPI.png")    // transparent
     
     //loadTexImage(blank_tex)
     
-    if (drawType == DRAW_TEX)
-        editImg = loadedImg; 
+
+}
+
+function triggerFileChanged(file)
+{
+    var reader = new FileReader();
+    reader.onload = function(e) { 
+        loadTexImage(e.target.result) 
+    }
+    reader.onerror = function(e) {
+        console.log(e)
+    }
+    reader.readAsDataURL(file);
+    editFileName.value = file.name
 }
 
 var baseFramePicPos = [ [1,1], [1,5], [5,1], [5,5], [9,1], [9,5] ]
@@ -972,7 +1023,27 @@ function changeImgZoom(widget, v)
     sendTexCoord()
 }
 
+function updateTexDisabledWidgets()
+{
+    var d = drawType != DRAW_TEX
+    editFileButton.disabled = d
+    editFileInput.disabled = d
+    editFileName.disabled = d;
 
+    editTexBtnIn.style.opacity = d?0.3:1
+    editActionMoveCheck.disabled = d
+    if (editActionMoveCheck.checked) {
+        editActionMoveCheck.checked = false
+        editActionPiecesCheck.checked = true
+    }
+
+
+    editZoomSlider.disabled = d
+    editZoomSlider.style.opacity = d?0.4:1
+    editZoomText.disabled = d
+    
+    
+}
 
 function changeFillSelect(dtype)
 {
@@ -991,6 +1062,7 @@ function changeFillSelect(dtype)
         current_src = null; 
         break
     }
+    updateTexDisabledWidgets()
     makeColoredTex()
     paintCube()
     sentTexParam()
@@ -1003,6 +1075,7 @@ function triggerBlackSel()
     paintCube()
     sentTexParam()
 }
+
     
 </script>
 <script src="js_main.js"></script>
@@ -1183,7 +1256,20 @@ body {
   background-color: #dfdfdf;
   background-image: linear-gradient(to bottom, #479ceb, #1067c1); 
 }
+.sc-btn:disabled {
+   color: #ddd;
+}
 
+input:disabled + .sc-btn,
+input:disabled + .sc-btn:hover
+input:disabled + .sc-btn:active{
+  color:#ddd;
+  background-image: linear-gradient(to bottom, white, #ebebeb);
+  box-shadow: initial;
+}
+.sc-btn:disabled + span {
+  opacity:0.6
+}
 
 
 #addingCube {
@@ -1280,14 +1366,19 @@ h1 {
     width: 34px;
     height: 34px;
     margin: 0 7px 7px 7px;
-    background: url(plus.png) #ebebeb center no-repeat;
 }
 .addCubeBtn {
     width: 34px;
     height: 25px;
     left: 150px;
-    background: url(plus.png) #ebebeb center no-repeat;
     margin: 0;
+}
+.addCubeBtnIn {
+    background: url(plus.png) center no-repeat; 
+    display: inline-block;
+    width: 34px;
+    height: 24px;
+    vertical-align: top;
 }
 .linklike {
     cursor: pointer;
@@ -1312,14 +1403,22 @@ h1 {
    border-radius: 3px;
    width: 140px;
    font-family: monospace;
+   font-size: 110%;
 }
 
 #editTexBtn {
-   width: 60px;
-   
+   width: 40px;
+   margin: 0 0 0 10px;
+}
+#editTexBtnIn {
+   background: url(upload.png) center no-repeat; 
+   display: inline-block; 
+   width: 40px; 
+   height: 36px;
+
 }
 #editActionPieces {
-    top: 100px;
+    top: 20px;
     right: 40px
 }
 #editActionPieces:active, #editActionPiecesCheck:checked + #editActionPieces,
@@ -1330,28 +1429,29 @@ h1 {
 }
 
 #editActionMove {
-    top: 150px;
+    top: 70px;
     right: 40px
 }
 
 #editBackColor {
     position: absolute;
     width: 60px;
-    right: 55px;
+    right: 65px;
     top: 260px;
 }
 #editFrontColor {
     position: absolute;
     width: 60px;
-    right: 55px;
+    right: 65px;
     top: 300px;
 }
 #editBlackSel {
     position: absolute;
     width:90px;
-    right: 45px;
+    right: 55px;
     top: 340px;
     height: 26px;
+    border-radius: 4px;
 }
 
 #editZoomSlider {
@@ -1378,14 +1478,14 @@ h1 {
     margin: 6px;
 }
 #editFillColor {
-    top: 400px;
+
 }
 #editFillTexture {
-    top: 420px;
+
 }
 .fillRadio {
     height: 40px;
-    width: 180px;
+    width: 150px;
     position: static;
     margin: 1px;
     text-align: left;
@@ -1400,6 +1500,34 @@ h1 {
   color: #fff;
 }
 
+#editFileButton {
+    position: static;
+    height: 40px;
+    margin: 1px 1px 1px 10px;
+    width: 70px;
+}
+
+.editText:disabled {
+    color: #b0b0b0;
+    background-color: #ececec;
+    border: #b0b0b0 solid 1px;
+}
+.editText {
+    border: #7c7c7c solid 1px;
+    border-radius: 4px;
+}
+
+#editFileName {
+    height: 24px;
+    margin: 7px 1px 7px 10px;
+    width: 250px;
+    text-indent: 5px;
+    vertical-align: top; 
+}
+
+
+
+
 </style>
 </head>
 <body onload="start()" onresize="doResize()" >
@@ -1412,12 +1540,12 @@ h1 {
     <label id="urlBtn" class="sc-btn" onclick="triggerUrl(true)"/></label>
     <div id="side_rel" class="in_rel">
       <div id="fams_cont"></div>
-      <label id="addFamBtn" class="sc-btn" onclick="triggerAddFam()"/></label>
+      <label id="addFamBtn" class="sc-btn" onclick="triggerAddFam()"/>
+      <span style="background: url(plus.png) center no-repeat; display: inline-block; width: 34px; height: 33px;"></span></label>
     </div>
     <div id="editBack" class="popupBack"><div id="picEditWin" class="popupWin">
         <canvas id="editCanvas" width="590", height="450"></canvas>
         <label id="editDoneBtn" class="sc-btn" onclick="triggerEditDone()"/>Done</label>
-        <label id="editTexBtn" class="sc-btn" onclick="triggerEditTexture()"/>Texture</label>
         <input id="editBackColor" class="color" />
         <input id="editFrontColor" class="color" />
         <select id="editBlackSel" oninput="triggerBlackSel()">
@@ -1431,17 +1559,24 @@ h1 {
         <input id="editActionMoveCheck" class="hidden" onclick="triggerAction(2)" type="checkbox">
         <label id="editActionMove" class="sc-btn" for="editActionMoveCheck"/>Move Image</label>
         <input id="editZoomSlider" type="range" orient="vertical" min="20" max="200" step="1" oninput="changeImgZoom(1,editZoomSlider.value)"/>
-        <input id="editZoomText" type="text" oninput="changeImgZoom(2,parseFloat(editZoomText.value))"/>
+        <input id="editZoomText" type="text" class="editText" oninput="changeImgZoom(2,parseFloat(editZoomText.value))"/>
         
         <br>
         <input id="editFillColorRadio" class="hidden" type="radio" name="fill" onclick="changeFillSelect(0)">
         <label id="editFillColor" class ="sc-btn fillRadio" for="editFillColorRadio">Uniform Color</label><br>
         <input id="editFillTextureRadio" class="hidden" type="radio" name="fill" onclick="changeFillSelect(0x14)">
-        <label id="editFillTexture" class ="sc-btn fillRadio" for="editFillTextureRadio">Texture from Image</label><br>
+        <label id="editFillTexture" class ="sc-btn fillRadio" for="editFillTextureRadio">From Image</label>
+          <input id="editFileInput" type="file" class="hidden" onchange="triggerFileChanged(this.files[0])">
+          <label id="editFileButton" class="sc-btn" for="editFileInput">File...</label>
+          <input id="editFileName" class="editText" type="text" value="Bla Bla">
+          <label id="editTexBtn" class="sc-btn" onclick="triggerEditTexture()"/>
+            <span id="editTexBtnIn" title="Upload Now"></span></label>
+          <br>
         <input id="editFillMarbleRadio" class="hidden" type="radio" name="fill" onclick="changeFillSelect(4)">
-        <label id="editFillMarble" class ="sc-btn fillRadio" for="editFillMarbleRadio">Marble Texture</label><br>
+        <label id="editFillMarble" class ="sc-btn fillRadio" for="editFillMarbleRadio">Marble Mix</label><br>
         <input id="editFillMixRadio" class="hidden" type="radio" name="fill" onclick="changeFillSelect(2)">
-        <label id="editFillMix" class ="sc-btn fillRadio" for="editFillMixRadio">Mix Texture</label><br>
+        <label id="editFillMix" class ="sc-btn fillRadio" for="editFillMixRadio">Color Mix</label><br>
+        
 
         <img id="edit_marble" src="bw_marble3_sm.jpg" style="display:none;"/>
         <img id="edit_profi" src="bw_profi2_sm.jpg" style="display:none;"/>
