@@ -75,6 +75,7 @@ void GlTexture::destroy()
 {
     //if (m_fromContext != nullptr)
 //		m_fromContext->deleteTexture(m_obj);
+    //cout << "Del-Tex " << m_obj << endl;
     if (m_obj != -1)
         glDeleteTextures(1, &m_obj);
     m_obj = -1;

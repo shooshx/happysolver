@@ -548,7 +548,7 @@ void freeMeshAllocator()
 shared_ptr<GlTexture> g_lastTexture;
 
 void textureParamCube(int grpi, int dtype, float r1, float g1, float b1, float r2, float g2, float b2, int isBlack, 
-                      const char* backHex, const char* frontHex, const char* blackSelect)
+                      const char* backHex, const char* frontHex, const char* blackSelect, int rotate)
 {
     auto& bucket = PicBucket::mutableInstance();
     if (grpi < 0 || grpi >= bucket.grps.size()) {
@@ -581,9 +581,11 @@ void textureParamCube(int grpi, int dtype, float r1, float g1, float b1, float r
         cout << "Unexpected drawtype " << cgrp.drawtype << endl;    
     }
     
-    cgrp.editorData.backHex = backHex;
-    cgrp.editorData.frontHex = frontHex; // without #
-    cgrp.editorData.blackSelect = blackSelect; // "black", "white", "auto" from GUI
+    
+    ed.backHex = backHex;
+    ed.frontHex = frontHex; // without #
+    ed.blackSelect = blackSelect; // "black", "white", "auto" from GUI
+    ed.rotate = rotate;
     
     g_ctrl.requestDraw();
 }
@@ -595,10 +597,12 @@ void textureParamToEditor(int grpi) {
         return;
     }
     PicGroupDef& cgrp = bucket.grps[grpi];
-    EM_ASM_(editBackColor.value = '#'+Pointer_stringify($0), cgrp.editorData.backHex.c_str());
-    EM_ASM_(editFrontColor.value = '#'+Pointer_stringify($0), cgrp.editorData.frontHex.c_str());
-    EM_ASM_(editBlackSel.value = Pointer_stringify($0), cgrp.editorData.blackSelect.c_str());
+    auto& ed = cgrp.editorData;
+    EM_ASM_(editBackColor.value = '#'+Pointer_stringify($0), ed.backHex.c_str());
+    EM_ASM_(editFrontColor.value = '#'+Pointer_stringify($0), ed.frontHex.c_str());
+    EM_ASM_(editBlackSel.value = Pointer_stringify($0), ed.blackSelect.c_str());
     EM_ASM_(drawType = $0, cgrp.drawtype);
+    EM_ASM_(rotAngle = $0, ed.rotate);
     
 }
 
@@ -617,6 +621,7 @@ int getCubeTextureHandle(int grpi, int width, int height)
             return cgrp.gtex->handle();
         }
     }
+    cout << "creating New-Tex " << grpi << " " << cgrp.gtex.get() << endl;
     cgrp.gtex = make_shared<GlTexture>();
     g_lastTexture = cgrp.gtex;
     cgrp.gtex->init(GL_TEXTURE_2D, Vec2i(width, height), 1, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, nullptr, GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE);

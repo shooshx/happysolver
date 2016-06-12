@@ -96,7 +96,7 @@ function start()
     stackState = Module.cwrap('stackState', null, ['number'])
     textureParamCube = Module.cwrap('textureParamCube', null, ['number','number','number','number','number','number','number','number','number',
                                                                 // grpi,drawtype,r,g,b,r,g,b,isBlack
-                                                               'string', 'string', 'string']) // back-hex, front-hex, black-selector 
+                                                               'string', 'string', 'string', 'number']) // back-hex, front-hex, black-selector, rot-angle 
     getCubeTextureHandle = Module.cwrap('getCubeTextureHandle', 'number', ['number', 'number', 'number'])
     readCubeTexCoord = Module.cwrap('readCubeTexCoord', null, ['number'])
     loadSlvSimple = Module.cwrap('loadSlvSimple', null, ['string'])
@@ -599,7 +599,7 @@ var DRAW_TEX = 0x14
 var EDIT_MARGIN = 5
 
 //var col = ['white', '#5555ff', 'red', 'yellow', 'orange', 'green', 'purple']
-var editImg = null, loadedImg = null  // the image reference being displayed, the image loaded
+var loadedImg = null  // the image reference being displayed, the image loaded
 var imgOffset = {x:0, y:0} // in pixels
 var imgZoom = 1.0
 var drawType = DRAW_COLOR
@@ -607,6 +607,8 @@ var colorBack = new Colors({color:"#ffffff"})
 var colorFront = new Colors({color:"#808080"}) // main init setting that spreads to everywhere else
 var fileOpenedButNotUploaded = false
 var lastFile = null
+var rotAngle = 0;
+var origLoadedImg = null
 
 function drawLine(x, y, w, h) {
     editCtx.beginPath()
@@ -622,14 +624,14 @@ function paintCube()
     
     switch(drawType) {
     case DRAW_TEX:
-        if (editImg && editImg.loadedOk) 
+        if (loadedImg && loadedImg.loadedOk) 
         {
             editCtx.fillStyle = '#'+colorBack.colors.HEX
             editCtx.fillRect(EDIT_MARGIN, EDIT_MARGIN, 15*TSZ, 11*TSZ) // need to show up below transparent pixels
             
             var cwidth = editCanvas.width - 2*EDIT_MARGIN
-            var cheight = cwidth * editImg.height / editImg.width  // maintain same aspect ratio as the image
-            editCtx.drawImage(editImg, 0,0, editImg.width, editImg.height, 
+            var cheight = cwidth * loadedImg.height / loadedImg.width  // maintain same aspect ratio as the image
+            editCtx.drawImage(loadedImg, 0,0, loadedImg.width, loadedImg.height, 
                                        imgOffset.x + EDIT_MARGIN, imgOffset.y + EDIT_MARGIN, cwidth*imgZoom, cheight*imgZoom)
         }
         break
@@ -684,7 +686,6 @@ function setGlTexture()
     console.log("setting img to texture " + obj)
     _glBindTexture(GLctx.TEXTURE_2D, obj)
     GLctx.texImage2D(GLctx.TEXTURE_2D, 0, GLctx.RGBA, GLctx.RGBA, GLctx.UNSIGNED_BYTE, loadedImg)
-    editImg = loadedImg
     
     // loaded a new image, reset the img position
     imgOffset = {x:0, y:0}
@@ -697,7 +698,7 @@ function setGlTexture()
 
 
 // called with the default image on initialization
-function loadTexImage(url)
+function loadTexImage(url, keepOrig)
 {
     var onload = function() {
         loadedImg.loadedOk = true
@@ -721,6 +722,8 @@ function loadTexImage(url)
     
 
     loadedImg = new Image()
+    if (!keepOrig)
+        origLoadedImg = loadedImg
     loadedImg.onload = onload
     loadedImg.onerror = function(e) {
         console.log("IMAGE-LOAD-ERR")
@@ -787,7 +790,8 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
         case DRAW_MARBLE: editFillMarbleRadio.checked = true; break
         case DRAW_COLOR: editFillColorRadio.checked = true; break    
         }
-        updateTexDisabledWidgets()
+        updateForDrawType()
+        makeTransformedImg() // takes rotAngle
         
         if (editBackColor.value == '#')  // grp had an empty string for color, take the default
             editBackColor.value = '#ffffff'
@@ -805,19 +809,20 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
         texCoordToEditor(editingCubeId);
         updateZoomValue()
         
-        loadedImg = null; // reset the last image loaded
+        loadedImg = null // reset the last image loaded
+        origLoadedImg = null
         
         // transfer the marble,profi images to the canvase so they could be accessed when the time comes
         if (!colored_tex) {
-            var run_image = function(img, canvas) {
-                canvas.width = 15*TSZ
-                canvas.height = 11*TSZ
-                var ctx = canvas.getContext('2d')
+            var run_image = function(img) {
+                canvas_scratch.width = 15*TSZ
+                canvas_scratch.height = 11*TSZ
+                var ctx = canvas_scratch.getContext('2d')
                 ctx.drawImage(img, 0,0)
-                return ctx.getImageData(0,0, canvas.width,canvas.height)
+                return ctx.getImageData(0,0, canvas_scratch.width, canvas_scratch.height)
             }
-            src_marble = run_image(edit_marble, canvas_marble)
-            src_profi = run_image(edit_profi, canvas_profi)
+            src_marble = run_image(edit_marble)
+            src_profi = run_image(edit_profi)
             colored_tex = editCtx.createImageData(15*TSZ,11*TSZ)
         }
         
@@ -942,7 +947,7 @@ function sentTexParam() {
     textureParamCube(editingCubeId, drawType, colorBack.colors.rgb.r, colorBack.colors.rgb.g, colorBack.colors.rgb.b, 
                                               colorFront.colors.rgb.r, colorFront.colors.rgb.g, colorFront.colors.rgb.b, 
                                               isColorsBlack(), 
-                                              colorBack.colors.HEX, colorFront.colors.HEX, editBlackSel.value) // things saved for the editor
+                                              colorBack.colors.HEX, colorFront.colors.HEX, editBlackSel.value, rotAngle) // things saved for the editor
 }
 
 // a minimal 1x1 SVG file 
@@ -1067,6 +1072,7 @@ function loadTexImageBlob(blob)
 {    
     var reader = new FileReader();
     reader.onload = function(e) { 
+        rotAngle = 0 // new image loaded, reset the rotation
         loadTexImage(e.target.result) 
     }
     reader.onerror = function(e) {
@@ -1097,9 +1103,9 @@ var cubeTexInfo = [] // read from c++
 
 function sendTexCoord()
 {
-    if (editImg === null)
+    if (loadedImg === null)
         return
-    var imgRatio = (editImg.height/editImg.width) / ((editCanvas.height- 2*EDIT_MARGIN)/(editCanvas.width- 2*EDIT_MARGIN))
+    var imgRatio = (loadedImg.height/loadedImg.width) / ((editCanvas.height- 2*EDIT_MARGIN)/(editCanvas.width- 2*EDIT_MARGIN))
 
     cubeTexInfo = []
     for(var i = 0; i < 6; ++i) {
@@ -1160,6 +1166,9 @@ function updateTexDisabledWidgets()
 
     editZoomSlider.disabled = d
     editZoomText.disabled = d
+    
+    editRotR.setAttribute("disabled", d)
+    editRotL.setAttribute("disabled", d)
 }
 
 function updateZoomValue() {
@@ -1172,18 +1181,23 @@ function changeFillSelect(dtype)
     if (drawType == dtype)
         return;
     drawType = dtype
+    updateForDrawType()
+}
+    
+function updateForDrawType()
+{    
     switch(drawType) 
     {
-    case DRAW_COLOR: editImg = null; current_src = null; break
-    case DRAW_PROFI: editImg = null; current_src = src_profi; break
-    case DRAW_MARBLE: editImg = null; current_src = src_marble; break
+    case DRAW_COLOR: current_src = null; break
+    case DRAW_PROFI: current_src = src_profi; break
+    case DRAW_MARBLE: current_src = src_marble; break
     case DRAW_TEX: 
         if (loadedImg == null) {
             blank_tex.loadedOk = true
             loadedImg = blank_tex
+            origLoadedImg = loadedImg
             setGlTexture()
         }
-        editImg = loadedImg; 
         current_src = null; 
         break
     }
@@ -1208,6 +1222,42 @@ function triggerEditChanged()
     updateUploadBtnDisabled()
 }
 
+
+
+function triggerRotate(dir)
+{
+    rotAngle = (rotAngle + dir + 4) % 4; // don't allow it to go negative
+    makeTransformedImg()
+}
+    
+function makeTransformedImg()
+{    
+    if (loadedImg == null)
+        return
+    if (rotAngle == 0) {
+        loadedImg = origLoadedImg
+        setGlTexture()
+        return
+    }
+    
+    if (rotAngle == 1 || rotAngle == 3) {
+        canvas_scratch.width = origLoadedImg.height
+        canvas_scratch.height = origLoadedImg.width
+    }
+    else {
+        canvas_scratch.width = origLoadedImg.width
+        canvas_scratch.height = origLoadedImg.height
+    }
+    var ctx = canvas_scratch.getContext('2d')
+    ctx.setTransform(1,0, 0,1, 0,0)
+    ctx.translate(canvas_scratch.width/2, canvas_scratch.height/2);
+    ctx.rotate(rotAngle * Math.PI/2);
+    ctx.drawImage(origLoadedImg, -origLoadedImg.width/2, -origLoadedImg.height/2);
+    
+    var url = canvas_scratch.toDataURL("image/png")
+    loadTexImage(url, true)
+
+}
     
 </script>
 <script src="js_main.js"></script>
@@ -1580,6 +1630,30 @@ input:checked + .sc-btn
     right: 40px
 }
 
+#editRotL {
+    top: 120px;
+    right: 45px;
+    width: 40px;
+}
+#editRotR {
+    top: 120px;
+    right: 95px;
+    width: 40px;
+}
+#editRotLIn {
+    background: url(rot_left.png) center no-repeat;
+    display: inline-block;
+    width: 40px;
+    height: 38px;
+}
+#editRotRIn {
+    background: url(rot_right.png) center no-repeat;
+    display: inline-block;
+    width: 40px;
+    height: 38px;    
+}
+
+
 #editBackColor {
     position: absolute;
     width: 60px;
@@ -1707,6 +1781,10 @@ input:checked + .sc-btn
         <label id="editActionMove" class="sc-btn" for="editActionMoveCheck"/>Move Image</label>
         <input id="editZoomSlider" type="range" orient="vertical" min="20" max="200" step="1" oninput="changeImgZoom(1,editZoomSlider.value)"/>
         <input id="editZoomText" type="text" class="editText" oninput="changeImgZoom(2,parseFloat(editZoomText.value))"/>
+        <label id="editRotL" class="sc-btn" onclick="triggerRotate(-1)">
+            <span id="editRotLIn" class="sc-span"></span></label>
+        <label id="editRotR" class="sc-btn" onclick="triggerRotate(1)">
+            <span id="editRotRIn" class="sc-span"></span></label>
         
         <br>
         <input id="editFillColorRadio" class="hidden" type="radio" name="fill" onclick="changeFillSelect(0)">
@@ -1728,8 +1806,8 @@ input:checked + .sc-btn
 
         <img id="edit_marble" src="bw_marble3_sm.jpg" style="display:none;"/>
         <img id="edit_profi" src="bw_profi2_sm.jpg" style="display:none;"/>
-        <canvas id="canvas_marble" style="display:none;"></canvas>
-        <canvas id="canvas_profi" style="display:none;"></canvas>
+
+        <canvas id="canvas_scratch" style="display:none;"></canvas>
 
     </div></div></div>
     </div>

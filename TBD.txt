@@ -27,9 +27,9 @@ Black Lines mis-features
    touching a non-black piece still gets illuminated
 
 flip colors back and front button
-rotate?
 
-loading the same file reloads it
+save url to cgrp
+save all params to an object
 
    
 NEW DEAL - things that don't work
