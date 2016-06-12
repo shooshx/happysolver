@@ -19,6 +19,7 @@ handle lost context webgl https://www.khronos.org/webgl/wiki/HandlingContextLost
 
 display selected pieces count
 
+
 EDITOR
 ------
 
@@ -26,6 +27,10 @@ Black Lines mis-features
    touching a non-black piece still gets illuminated
 
 flip colors back and front button
+rotate?
+
+loading the same file reloads it
+
    
 NEW DEAL - things that don't work
 -------------

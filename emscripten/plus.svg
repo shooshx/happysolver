@@ -14,7 +14,7 @@
    viewBox="0 0 744.09448819 1052.3622047"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.4 r9939"
+   inkscape:version="0.91 r13725"
    inkscape:export-filename="C:\projects\cubeGL\happysolver\emscripten\plus.png"
    inkscape:export-xdpi="8.503171"
    inkscape:export-ydpi="8.503171"
@@ -28,17 +28,17 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4"
-     inkscape:cx="-107.90394"
-     inkscape:cy="537.06792"
+     inkscape:zoom="0.49497475"
+     inkscape:cx="196.34202"
+     inkscape:cy="794.18374"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1920"
-     inkscape:window-height="1028"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
-     inkscape:window-maximized="1" />
+     inkscape:window-width="1202"
+     inkscape:window-height="905"
+     inkscape:window-x="111"
+     inkscape:window-y="30"
+     inkscape:window-maximized="0" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -47,7 +47,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -86,6 +86,14 @@
        d="M 232.09375 295.21875 C 227.88335 295.21875 224.5 298.6021 224.5 302.8125 L 224.5 357.5625 L 169.75 357.5625 C 165.5396 357.5625 162.15625 360.94585 162.15625 365.15625 L 162.15625 419.5625 C 162.15625 423.7729 165.5396 427.15625 169.75 427.15625 L 224.5 427.15625 L 224.5 481.90625 C 224.5 486.11665 227.88335 489.5 232.09375 489.5 L 286.5 489.5 C 290.7104 489.5 294.09375 486.11665 294.09375 481.90625 L 294.09375 427.15625 L 348.84375 427.15625 C 353.05415 427.15625 356.4375 423.7729 356.4375 419.5625 L 356.4375 365.15625 C 356.4375 360.94585 353.05415 357.5625 348.84375 357.5625 L 294.09375 357.5625 L 294.09375 302.8125 C 294.09375 298.6021 290.7104 295.21875 286.5 295.21875 L 232.09375 295.21875 z "
        transform="translate(-4.9229925e-6,0)"
        id="rect4136-6-1"
+       inkscape:export-filename="C:\projects\cubeGL\happysolver\emscripten\pluss.png"
+       inkscape:export-xdpi="7.7480612"
+       inkscape:export-ydpi="7.7480612" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#bb4b89;fill-opacity:1;stroke:#484848;stroke-width:3.20000005;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 376.85789,486.5108 c -4.2104,0 -7.59375,3.38335 -7.59375,7.59375 l 0,54.75 -54.75,0 c -4.2104,0 -7.59375,3.38335 -7.59375,7.59375 l 0,54.40625 c 0,4.2104 3.38335,7.59375 7.59375,7.59375 l 54.75,0 0,54.75 c 0,4.2104 3.38335,7.59375 7.59375,7.59375 l 54.40625,0 c 4.2104,0 7.59375,-3.38335 7.59375,-7.59375 l 0,-54.75 54.75,0 c 4.2104,0 7.59375,-3.38335 7.59375,-7.59375 l 0,-54.40625 c 0,-4.2104 -3.38335,-7.59375 -7.59375,-7.59375 l -54.75,0 0,-54.75 c 0,-4.2104 -3.38335,-7.59375 -7.59375,-7.59375 l -54.40625,0 z"
+       id="rect4136-6-1-0"
        inkscape:export-filename="C:\projects\cubeGL\happysolver\emscripten\pluss.png"
        inkscape:export-xdpi="7.7480612"
        inkscape:export-ydpi="7.7480612" />

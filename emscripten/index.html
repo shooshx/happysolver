@@ -1,13 +1,14 @@
 <!doctype html>
 <html><head>
+<meta charset="UTF-8">
 <title>Happy Cube Solver Online</title>
 <script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+ /* (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
   ga('create', 'UA-2231125-5', 'auto');
-  ga('send', 'pageview');
+  ga('send', 'pageview');*/
 </script>
 
 <link rel="icon" href="favicon.ico" type="image/x-icon"/>
@@ -20,6 +21,7 @@
 <script type="text/javascript" src="colorPick/jsColor.js"></script>
 
 <script type="text/javascript">
+"use strict"
 
 // unified_mesh.js
 // j_unified_meshes_all.txt
@@ -31,7 +33,7 @@ var model = { vtxBuf: null }
 var loadSolution, resizeGl, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseWheel, cpp_draw, cpp_slvrun, getTms
 var setGrpCount, setEditAction, runningRestart, serializeCurrent, deserializeAndLoad, readCubeFromEditor, newRestart, conf
 var stackState, textureParamCube, getCubeTextureHandle, readCubeTexCoord, loadSlvSimple, freeMeshAllocator
-var readCubeToEditor, textureParamToEditor, getToothPossibilities, texCoordToEditor
+var readCubeToEditor, textureParamToEditor, getToothPossibilities, texCoordToEditor, solveGo
 var ctrlPressed = false
 var editCtx = null
 var unimesh_keys = Object.keys(unimesh) // unimesh included above
@@ -132,6 +134,8 @@ function start()
     document.onkeydown = handleKeyDown
     document.onkeyup = handleKey  
 
+    editFileInput.value = "" // firefox retains the value from last session
+    editFileName.value = ""
    
     // start drawing
     requestAnimationFrame(animProgress)
@@ -601,7 +605,8 @@ var imgZoom = 1.0
 var drawType = DRAW_COLOR
 var colorBack = new Colors({color:"#ffffff"})
 var colorFront = new Colors({color:"#808080"}) // main init setting that spreads to everywhere else
-
+var fileOpenedButNotUploaded = false
+var lastFile = null
 
 function drawLine(x, y, w, h) {
     editCtx.beginPath()
@@ -671,32 +676,57 @@ function paintCube()
     }
 }
 
-function loadTexImage(urlOrImg)
+function setGlTexture() 
+{
+    var obj = getCubeTextureHandle(editingCubeId, loadedImg.width, loadedImg.height)
+    if (obj == 0)
+        return
+    console.log("setting img to texture " + obj)
+    _glBindTexture(GLctx.TEXTURE_2D, obj)
+    GLctx.texImage2D(GLctx.TEXTURE_2D, 0, GLctx.RGBA, GLctx.RGBA, GLctx.UNSIGNED_BYTE, loadedImg)
+    editImg = loadedImg
+    
+    // loaded a new image, reset the img position
+    imgOffset = {x:0, y:0}
+    imgZoom = 1
+    updateZoomValue()
+
+    sendTexCoord()
+    paintCube()
+}
+
+
+// called with the default image on initialization
+function loadTexImage(url)
 {
     var onload = function() {
         loadedImg.loadedOk = true
-        var obj = getCubeTextureHandle(editingCubeId, loadedImg.width, loadedImg.height)
-        if (obj == 0)
-            return
-        console.log("setting img to texture " + obj)
-        _glBindTexture(GLctx.TEXTURE_2D, obj)
-        GLctx.texImage2D(GLctx.TEXTURE_2D, 0, GLctx.RGBA, GLctx.RGBA, GLctx.UNSIGNED_BYTE, loadedImg)
-        editImg = loadedImg
-        sendTexCoord()
-        paintCube()
+        if (loadedImg.width == 1 && loadedImg.height == 1) 
+        { // indicates its an SVG
+            // get it again, now as a blob
+            var oReq = new XMLHttpRequest();
+            oReq.open("GET", url, true);
+            oReq.responseType = "arraybuffer";
+            oReq.onload = function(oEvent) 
+            {
+                var blob = new Blob([new Uint8Array(oReq.response, minimalPng.length)], {type: "image/svg+xml"});
+                loadTexImageBlob_checkSvg(blob)
+            };
+            oReq.send();
+            return;
+        }
+        
+        setGlTexture()
     }
     
-    if (typeof(urlOrImg) != "string")  // its an image
-    {
-        loadedImg = urlOrImg
-        onload()
-        return
-    }
-    // its a url
+
     loadedImg = new Image()
     loadedImg.onload = onload
+    loadedImg.onerror = function(e) {
+        console.log("IMAGE-LOAD-ERR")
+    }
     loadedImg.crossOrigin = ''
-    loadedImg.src = urlOrImg
+    loadedImg.src = url
     
 }
 
@@ -773,8 +803,7 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
             
         // read from grp image offset and zoom
         texCoordToEditor(editingCubeId);
-        editZoomSlider.value = imgZoom * 100
-        editZoomText.value = imgZoom * 100 + "%"
+        updateZoomValue()
         
         loadedImg = null; // reset the last image loaded
         
@@ -916,40 +945,75 @@ function sentTexParam() {
                                               colorBack.colors.HEX, colorFront.colors.HEX, editBlackSel.value) // things saved for the editor
 }
 
-function triggerEditTexture()
+// a minimal 1x1 SVG file 
+var minimalPng = new Uint8Array([
+	0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D,
+	0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
+	0x08, 0x06, 0x00, 0x00, 0x00, 0x1F, 0x15, 0xC4, 0x89, 0x00, 0x00, 0x00,
+	0x13, 0x49, 0x44, 0x41, 0x54, 0x78, 0xDA, 0x62, 0xF8, 0xFF, 0xFF, 0x3F,
+	0x03, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0x03, 0x00, 0x08, 0xFC, 0x02, 0xFE,
+	0xD3, 0xA5, 0x75, 0x61, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44,
+	0xAE, 0x42, 0x60, 0x82])
+    
+// imgur doesn't support svg so I hide the svg in a png by simply concatenating it to its end
+function encodePng(ba)
 {
-    var file = editFileInput.files[0]
+    var tmp = new Uint8Array(ba.byteLength + minimalPng.length)
+    tmp.set(minimalPng, 0)
+    tmp.set(new Uint8Array(ba), minimalPng.length)
+    return tmp
+}
+
+
+
+function triggerEditUpload()
+{
+    if (editUploadBtn.disabled || !lastFile)
+        return;
+    var file = lastFile
     var reader = new FileReader();
     reader.onload = function(e) 
     { 
         var req = new XMLHttpRequest();
+        
+        req.onload = function () {
+            console.log(req.responseText)
+            var re = JSON.parse(req.responseText)
+            editFileName.value = re.data.link
+            editUploadProgress.style.visibility = "hidden"
+            fileOpenedButNotUploaded = false
+            updateUploadBtnDisabled()
+        }
+        req.onprogress = function(e) {
+            if (e.total == 0)
+                return
+            var percentComplete = (e.loaded / e.total)*100; 
+            //console.log(percentComplete + "  " + e.loaded + "/" + e.total)
+            editUploadProgress.value = percentComplete
+        }
+        if (req.upload)
+            req.upload.onprogress = req.onprogress
+        req.onerror = function(e) {
+            console.log(e)
+            editUploadProgress.style.visibility = "hidden"
+        }
+    
         req.open("POST", 'https://api.imgur.com/3/image', true)
         req.setRequestHeader("Authorization", "Client-ID 559401233d3e1e6")
         req.setRequestHeader("Accept", 'application/json')
         req.setRequestHeader("Content-Type", file.type)
-        req.onreadystatechange = function () {
-            if (req.readyState != 4) {
-                console.log("XHR " + req.readyState)
-                return
-            }
-            if (req.status != 200) {
-                console.log("XHR Failed to open " + req.status)
-                return 
-            }
-            console.log(req.responseText)
-            var re = JSON.parse(req.responseText)
-            editFileName.value = re.data.link
-        }
         
-        req.send(e.target.result)
+        var buf = e.target.result
+        if (file.type == "image/svg+xml")
+            buf = encodePng(buf)
+        req.send(buf)
     
-    
-        //loadTexImage(e.target.result) 
     }
     reader.onerror = function(e) {
         console.log("READER-ERR" + e)
     }
     
+    editUploadProgress.style.visibility = "visible"
     reader.readAsArrayBuffer(file)
 
 
@@ -958,13 +1022,49 @@ function triggerEditTexture()
     //loadTexImage("http://i.imgur.com/dPY5gPe.png") 
     //loadTexImage("http://i.imgur.com/gIcxWPI.png")    // transparent
     
-    //loadTexImage(blank_tex)
+    //http://i.imgur.com/P1ecEyR.png  - svg plus
+    //http://i.imgur.com/Yjr8XdH.png - svg too small
     
-
+    //loadTexImage(blank_tex)
 }
 
-function triggerFileChanged(file)
+function loadTexImageBlob_checkSvg(blob)
 {
+    if (blob.type == "image/svg+xml") 
+    { // check its size
+        var reader = new FileReader();
+        reader.onload = function(e) { 
+            try {
+                // if the SVG main size is too small, it would look pixelated in the 3D view
+                // so I try to resize it to a decent size
+                var dummy = document.createElement("DIV")
+                dummy.innerHTML = e.target.result
+                var svgWidth = dummy.firstElementChild.width.baseVal.value
+                var f = 1500 / svgWidth // how far it is from 1500 pixels
+                if (f > 1) {
+                    console.log("Changing SVG size " + f)
+                    dummy.firstElementChild.width.baseVal.value *= f
+                    dummy.firstElementChild.height.baseVal.value *= f
+                    blob = new Blob([dummy.innerHTML], {type:"image/svg+xml"})
+                }
+            }
+            catch(err) {
+                console.log("failed parsing svg")
+            }
+            loadTexImageBlob(blob)
+        }
+        reader.onerror = function(e) {
+            console.log("READ-TEXT-ERR")
+        }
+        reader.readAsText(blob); // read it as text since we want to put in an element
+    }
+    else {
+        loadTexImageBlob(blob)
+    }    
+ }
+
+function loadTexImageBlob(blob)
+{    
     var reader = new FileReader();
     reader.onload = function(e) { 
         loadTexImage(e.target.result) 
@@ -972,8 +1072,24 @@ function triggerFileChanged(file)
     reader.onerror = function(e) {
         console.log(e)
     }
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(blob); // read as data URL since we want to put it in an img src
+}
+
+function triggerFileChanged()
+{
+    if (editFileInput.files.length == 0)
+        return
+    var file = editFileInput.files[0]
+    editFileInput.value = null
+    lastFile = file
+
+    loadTexImageBlob_checkSvg(file)
+    
     editFileName.value = file.name
+    fileOpenedButNotUploaded = true
+
+    updateUploadBtnDisabled()
+    return false
 }
 
 var baseFramePicPos = [ [1,1], [1,5], [5,1], [5,5], [9,1], [9,5] ]
@@ -1023,26 +1139,32 @@ function changeImgZoom(widget, v)
     sendTexCoord()
 }
 
+function updateUploadBtnDisabled() {
+    var d = drawType != DRAW_TEX || !lastFile || !fileOpenedButNotUploaded
+    editUploadBtn.setAttribute("disabled", d) // custom attribute
+}
+
 function updateTexDisabledWidgets()
 {
     var d = drawType != DRAW_TEX
     editFileButton.disabled = d
     editFileInput.disabled = d
-    editFileName.disabled = d;
+    editFileName.disabled = d
 
-    editTexBtnIn.style.opacity = d?0.3:1
+    updateUploadBtnDisabled(d)
     editActionMoveCheck.disabled = d
     if (editActionMoveCheck.checked) {
         editActionMoveCheck.checked = false
         editActionPiecesCheck.checked = true
     }
 
-
     editZoomSlider.disabled = d
-    editZoomSlider.style.opacity = d?0.4:1
     editZoomText.disabled = d
-    
-    
+}
+
+function updateZoomValue() {
+    editZoomSlider.value = imgZoom * 100
+    editZoomText.value = imgZoom * 100 + "%"
 }
 
 function changeFillSelect(dtype)
@@ -1056,8 +1178,11 @@ function changeFillSelect(dtype)
     case DRAW_PROFI: editImg = null; current_src = src_profi; break
     case DRAW_MARBLE: editImg = null; current_src = src_marble; break
     case DRAW_TEX: 
-        if (loadedImg == null)
-            loadTexImage(blank_tex)
+        if (loadedImg == null) {
+            blank_tex.loadedOk = true
+            loadedImg = blank_tex
+            setGlTexture()
+        }
         editImg = loadedImg; 
         current_src = null; 
         break
@@ -1074,6 +1199,13 @@ function triggerBlackSel()
 {
     paintCube()
     sentTexParam()
+}
+
+function triggerEditChanged()
+{
+    loadTexImage(editFileName.value)
+    lastFile = null
+    updateUploadBtnDisabled()
 }
 
     
@@ -1260,9 +1392,22 @@ body {
    color: #ddd;
 }
 
+.sc-btn[disabled="true"] {
+    box-shadow: initial;
+}
+.sc-btn[disabled="true"] > .sc-span {
+    opacity: 0.3; // for buttons with image
+}
+
+input[type="range"]:disabled {
+    opacity: 0.4;
+}
+
+
 input:disabled + .sc-btn,
-input:disabled + .sc-btn:hover
-input:disabled + .sc-btn:active{
+input:disabled + .sc-btn:hover,
+input:disabled + .sc-btn:active, 
+.sc-btn[disabled="true"] {
   color:#ddd;
   background-image: linear-gradient(to bottom, white, #ebebeb);
   box-shadow: initial;
@@ -1406,11 +1551,11 @@ h1 {
    font-size: 110%;
 }
 
-#editTexBtn {
+#editUploadBtn {
    width: 40px;
    margin: 0 0 0 10px;
 }
-#editTexBtnIn {
+#editUploadBtnIn {
    background: url(upload.png) center no-repeat; 
    display: inline-block; 
    width: 40px; 
@@ -1421,8 +1566,10 @@ h1 {
     top: 20px;
     right: 40px
 }
-#editActionPieces:active, #editActionPiecesCheck:checked + #editActionPieces,
-#editActionMove:active, #editActionMoveCheck:checked + #editActionMove {
+
+
+input:checked + .sc-btn
+{
   background-color: #dfdfdf;
   background-image: linear-gradient(to bottom, #479ceb, #1067c1); 
   color: #fff;
@@ -1437,19 +1584,19 @@ h1 {
     position: absolute;
     width: 60px;
     right: 65px;
-    top: 260px;
+    top: 240px;
 }
 #editFrontColor {
     position: absolute;
     width: 60px;
     right: 65px;
-    top: 300px;
+    top: 285px;
 }
 #editBlackSel {
     position: absolute;
     width:90px;
-    right: 55px;
-    top: 340px;
+    right: 57px;
+    top: 330px;
     height: 26px;
     border-radius: 4px;
 }
@@ -1491,14 +1638,7 @@ h1 {
     text-align: left;
     text-indent: 10px;
 }
-#editFillColor:active,   #editFillColorRadio:checked +   #editFillColor,
-#editFillTexture:active, #editFillTextureRadio:checked + #editFillTexture,
-#editFillMarble:active,  #editFillMarbleRadio:checked +  #editFillMarble,
-#editFillMix:active,     #editFillMixRadio:checked +     #editFillMix {
-  background-color: #dfdfdf;
-  background-image: linear-gradient(to bottom, #479ceb, #1067c1); 
-  color: #fff;
-}
+
 
 #editFileButton {
     position: static;
@@ -1525,7 +1665,14 @@ h1 {
     vertical-align: top; 
 }
 
-
+#editUploadProgress {
+    position: absolute;
+    top: 470px;
+    left: 185px;
+    width: 338px;
+    height: 25px;
+    visibility: hidden;
+}
 
 
 </style>
@@ -1566,12 +1713,13 @@ h1 {
         <label id="editFillColor" class ="sc-btn fillRadio" for="editFillColorRadio">Uniform Color</label><br>
         <input id="editFillTextureRadio" class="hidden" type="radio" name="fill" onclick="changeFillSelect(0x14)">
         <label id="editFillTexture" class ="sc-btn fillRadio" for="editFillTextureRadio">From Image</label>
-          <input id="editFileInput" type="file" class="hidden" onchange="triggerFileChanged(this.files[0])">
+          <input id="editFileInput" type="file" class="hidden" onchange="return triggerFileChanged()">
           <label id="editFileButton" class="sc-btn" for="editFileInput">File...</label>
-          <input id="editFileName" class="editText" type="text" value="Bla Bla">
-          <label id="editTexBtn" class="sc-btn" onclick="triggerEditTexture()"/>
-            <span id="editTexBtnIn" title="Upload Now"></span></label>
+          <input id="editFileName" class="editText" type="text" value="" oninput="triggerEditChanged()">
+          <label id="editUploadBtn" class="sc-btn" onclick="triggerEditUpload()"/>
+            <span id="editUploadBtnIn" title="Upload Now" class="sc-span"></span></label>
           <br>
+          <progress id="editUploadProgress" max="100" value="0"></progress>
         <input id="editFillMarbleRadio" class="hidden" type="radio" name="fill" onclick="changeFillSelect(4)">
         <label id="editFillMarble" class ="sc-btn fillRadio" for="editFillMarbleRadio">Marble Mix</label><br>
         <input id="editFillMixRadio" class="hidden" type="radio" name="fill" onclick="changeFillSelect(2)">
