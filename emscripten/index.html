@@ -33,7 +33,7 @@ var model = { vtxBuf: null }
 var loadSolution, resizeGl, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseWheel, cpp_draw, cpp_slvrun, getTms
 var setGrpCount, setEditAction, runningRestart, serializeCurrent, deserializeAndLoad, readCubeFromEditor, newRestart, conf
 var stackState, textureParamCube, getCubeTextureHandle, readCubeTexCoord, loadSlvSimple, freeMeshAllocator
-var readCubeToEditor, textureParamToEditor, getToothPossibilities, texCoordToEditor, solveGo
+var readCubeToEditor, textureParamToEditor, getToothPossibilities, solveGo
 var ctrlPressed = false
 var editCtx = null
 var unimesh_keys = Object.keys(unimesh) // unimesh included above
@@ -96,7 +96,8 @@ function start()
     stackState = Module.cwrap('stackState', null, ['number'])
     textureParamCube = Module.cwrap('textureParamCube', null, ['number','number','number','number','number','number','number','number','number',
                                                                 // grpi,drawtype,r,g,b,r,g,b,isBlack
-                                                               'string', 'string', 'string', 'number']) // back-hex, front-hex, black-selector, rot-angle 
+                                                               'string', 'string', 'string', 'number', 'string']) 
+                                                               // back-hex, front-hex, black-selector, rot-angle, url
     getCubeTextureHandle = Module.cwrap('getCubeTextureHandle', 'number', ['number', 'number', 'number'])
     readCubeTexCoord = Module.cwrap('readCubeTexCoord', null, ['number'])
     loadSlvSimple = Module.cwrap('loadSlvSimple', null, ['string'])
@@ -104,8 +105,9 @@ function start()
     readCubeToEditor = Module.cwrap('readCubeToEditor', null, ['number', 'string'])
     textureParamToEditor = Module.cwrap('textureParamToEditor', null, ['number'])
     getToothPossibilities = Module.cwrap('getToothPossibilities', null, ['number', 'number'])
-    texCoordToEditor = Module.cwrap('texCoordToEditor', null, ['number'])
+
     
+   
     Module.ccall('cpp_start', null);
     conf(true)
     Module.ccall('initCubeEngine', 'boolean', ['string', 'number'], [stdpcs_text, 0])
@@ -128,7 +130,7 @@ function start()
     mycanvas.ondblclick = handleMouseDblClick
     mycanvas.onwheel = mycanvas.onmousewheel = handleMouseWheel // second one is for internet explorer
     editCanvas.onclick = handleEditCanvasClick
-    editCanvas.onmousemove = handleEditCanvasMove
+    //editCanvas.onmousemove = handleEditCanvasMove
     editCanvas.onmousedown = handleEditCanvasDown
     
     document.onkeydown = handleKeyDown
@@ -149,6 +151,8 @@ function start()
     
     // editor init
     editCtx = editCanvas.getContext("2d")
+    blank_tex.loadedOk = true
+
 
     picsAddFamily("Test Fam", "Test Fam", true)
     picsAddCube("Test Cube", "Test Cube", -1, true)
@@ -170,8 +174,10 @@ function handleMouseUp(event) {
 }
 var lastX = null, lastY = null
 function handleMouseMove(event) {
+    if (lastEditDrag)
+        return handleEditCanvasMove(event)
     if (event.clientX == lastX && event.clientY == lastY)
-        return; // for some reason this event arrives in clicks as well
+        return false; // for some reason this event arrives in clicks as well
     lastX = event.clientX
     lastY = event.clientY
     var but = event.buttons
@@ -179,7 +185,7 @@ function handleMouseMove(event) {
         but = event.which // for safari
 
     if (but != 0 && !pressedInCanvas)
-        return // if pressed, avoid reacting to pressed move outside the canvas (editor)
+        return true// if pressed, avoid reacting to pressed move outside the canvas (editor)
         
     mouseMove(but, ctrlPressed?1:0, event.clientX, event.clientY)
     return false
@@ -606,7 +612,8 @@ var drawType = DRAW_COLOR
 var colorBack = new Colors({color:"#ffffff"})
 var colorFront = new Colors({color:"#808080"}) // main init setting that spreads to everywhere else
 var fileOpenedButNotUploaded = false
-var lastFile = null
+var lastFile = null // file object of the last file that was selected by the user
+var lastUrl = null // string the last url that was uploaded or entered by the user
 var rotAngle = 0;
 var origLoadedImg = null
 
@@ -624,7 +631,7 @@ function paintCube()
     
     switch(drawType) {
     case DRAW_TEX:
-        if (loadedImg && loadedImg.loadedOk) 
+        if (loadedImg) 
         {
             editCtx.fillStyle = '#'+colorBack.colors.HEX
             editCtx.fillRect(EDIT_MARGIN, EDIT_MARGIN, 15*TSZ, 11*TSZ) // need to show up below transparent pixels
@@ -687,55 +694,77 @@ function setGlTexture()
     _glBindTexture(GLctx.TEXTURE_2D, obj)
     GLctx.texImage2D(GLctx.TEXTURE_2D, 0, GLctx.RGBA, GLctx.RGBA, GLctx.UNSIGNED_BYTE, loadedImg)
     
-    // loaded a new image, reset the img position
-    imgOffset = {x:0, y:0}
-    imgZoom = 1
-    updateZoomValue()
-
+    // need to setTexCoord here since the width and height might have changed and we need to recalculate them
     sendTexCoord()
     paintCube()
 }
 
 
 // called with the default image on initialization
-function loadTexImage(url, keepOrig)
-{
+function loadTexImage(url, type, opt)
+{   
+    if (!opt) // keepOrig, ondone, onerr, 
+        opt = {}
+    if (url.length == 0)
+        return
     var onload = function() {
-        loadedImg.loadedOk = true
-        if (loadedImg.width == 1 && loadedImg.height == 1) 
+       // loadedImg.loadedOk = true
+        if (newImg.width == 1 && newImg.height == 1) 
         { // indicates its an SVG
-            // get it again, now as a blob
+            // get it again, now as a blob (should come from cache and should not fail)
             var oReq = new XMLHttpRequest();
             oReq.open("GET", url, true);
             oReq.responseType = "arraybuffer";
             oReq.onload = function(oEvent) 
             {
                 var blob = new Blob([new Uint8Array(oReq.response, minimalPng.length)], {type: "image/svg+xml"});
-                loadTexImageBlob_checkSvg(blob)
+                loadTexImageBlob(blob, opt)
             };
-            oReq.send();
-            return;
+            oReq.send()
+            return
         }
         
-        setGlTexture()
+        // if an SVG is smaller than 1500px, draw it on the scratch canvas to scale it and take that as the image
+        var f = 1500 / newImg.width
+        if (type == "image/svg+xml" && f > 1) 
+        {
+            canvas_scratch.width = 1500
+            canvas_scratch.height = newImg.height/newImg.width*1500
+            var ctx = canvas_scratch.getContext('2d')
+            ctx.drawImage(newImg, 0, 0, canvas_scratch.width, canvas_scratch.height)
+            var durl = canvas_scratch.toDataURL("image/png")
+            loadTexImage(durl, "image/png", opt)            
+            return
+        }
+        
+        if (!opt.noCommit) {
+            loadedImg = newImg // switch to the new image
+            setGlTexture()
+        }
+        if (!opt.keepOrig) // default is false, don't keep the original (only needed on rotate)
+            origLoadedImg = newImg
+        if (opt.ondone)
+            opt.ondone()
     }
-    
 
-    loadedImg = new Image()
-    if (!keepOrig)
-        origLoadedImg = loadedImg
-    loadedImg.onload = onload
-    loadedImg.onerror = function(e) {
+    var newImg = new Image()
+
+    newImg.onload = onload
+    newImg.onerror = function(e) {
+        if (opt.onerr)
+            opt.onerr()
         console.log("IMAGE-LOAD-ERR")
+        resetErrMsg("Failed loading image")
     }
-    loadedImg.crossOrigin = ''
-    loadedImg.src = url
+    newImg.crossOrigin = ''
+    newImg.src = url
     
 }
 
 var editingCubeId = -1
 var src_marble = null, src_profi = null // ImageData of the B&W images
-var current_src = null, colored_tex = null //ImageData chosen src from the above and the resulting colored
+var current_src = null // select between src_marble or src_profi or null
+var colored_tex = null // resulting colored image that will be displayed (tinted in makeColoredTex)
 
 function makeColoredTex()
 {
@@ -784,14 +813,30 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
 
         // read from grp color, drawType, black select
         textureParamToEditor(editingCubeId);
-        switch(drawType) {
-        case DRAW_TEX: editFillTextureRadio.checked = true; break;
-        case DRAW_PROFI: editFillMixRadio.checked = true; break
+        editFileName.value = lastUrl
+        
+        switch(drawType) { // needs to be before doing any paintCube because that would fail about current_src
+        case DRAW_TEX:    editFillTextureRadio.checked = true; break;
+        case DRAW_PROFI:  editFillMixRadio.checked = true; break
         case DRAW_MARBLE: editFillMarbleRadio.checked = true; break
-        case DRAW_COLOR: editFillColorRadio.checked = true; break    
+        case DRAW_COLOR:  editFillColorRadio.checked = true;  break    
         }
         updateForDrawType()
-        makeTransformedImg() // takes rotAngle
+        
+        // something to show in the mean time while the url is downloading
+        // do the texture loading anyway no depending on drawType since we might return to textur any time
+        loadedImg = blank_tex
+        origLoadedImg = loadedImg 
+        setGlTexture()            
+        var mtype = mimeTypeByExt(lastUrl)
+        loadTexImage(lastUrl, mtype, { noCommit: true, ondone: function() { // lastUrl was set by the above call
+            makeTransformedImg() // takes rotAngle, sets the image and gl instead of loadTexImage which has noCommit
+        }}) 
+            
+
+
+            
+
         
         if (editBackColor.value == '#')  // grp had an empty string for color, take the default
             editBackColor.value = '#ffffff'
@@ -806,14 +851,15 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
             editBlackSel.value = 'auto'
             
         // read from grp image offset and zoom
-        texCoordToEditor(editingCubeId);
-        updateZoomValue()
+        //texCoordToEditor(editingCubeId)
+        sendTexCoord() // need to actually create the texture coordinates from the imgOffset and imgZoom
+        updateZoomValue() 
         
-        loadedImg = null // reset the last image loaded
-        origLoadedImg = null
+        //loadedImg = null // reset the last image loaded
+        //origLoadedImg = null
         
         // transfer the marble,profi images to the canvase so they could be accessed when the time comes
-        if (!colored_tex) {
+        if (!colored_tex) { // happen only in the first time the dialog opens  - TBD needs to be HIGHER
             var run_image = function(img) {
                 canvas_scratch.width = 15*TSZ
                 canvas_scratch.height = 11*TSZ
@@ -849,25 +895,29 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
     }
 }
 
-var lastDrag = null
+var lastEditDrag = null
 function handleEditCanvasDown(event)
 {
-    lastDrag = {x:event.clientX, y:event.clientY}
+    lastEditDrag = {x:event.clientX, y:event.clientY}
 }
 
 function handleEditCanvasMove(event)
 {
+    var curDrag = lastEditDrag
+    lastEditDrag = null // manage move selection
     if (!editActionMoveCheck.checked)
-        return
-    if (event.buttons != 1 || lastDrag == null) // left mouse button
-        return
+        return true
+    if (event.buttons != 1 || curDrag == null) // left mouse button
+        return true
 
-    imgOffset.x += event.clientX - lastDrag.x
-    imgOffset.y += event.clientY - lastDrag.y
-    lastDrag = {x:event.clientX, y:event.clientY}
+        
+    imgOffset.x += event.clientX - curDrag.x
+    imgOffset.y += event.clientY - curDrag.y
+    lastEditDrag = {x:event.clientX, y:event.clientY}
     
     paintCube()
     sendTexCoord()
+    return false
 }
 
 function handleEditCanvasClick(event)
@@ -947,7 +997,7 @@ function sentTexParam() {
     textureParamCube(editingCubeId, drawType, colorBack.colors.rgb.r, colorBack.colors.rgb.g, colorBack.colors.rgb.b, 
                                               colorFront.colors.rgb.r, colorFront.colors.rgb.g, colorFront.colors.rgb.b, 
                                               isColorsBlack(), 
-                                              colorBack.colors.HEX, colorFront.colors.HEX, editBlackSel.value, rotAngle) // things saved for the editor
+                                              colorBack.colors.HEX, colorFront.colors.HEX, editBlackSel.value, rotAngle, lastUrl) // things saved for the editor
 }
 
 // a minimal 1x1 SVG file 
@@ -973,8 +1023,9 @@ function encodePng(ba)
 
 function triggerEditUpload()
 {
-    if (editUploadBtn.disabled || !lastFile)
+    if (editUploadBtn.getAttribute("disabled") == "true" || !lastFile)
         return;
+    resetErrMsg()
     var file = lastFile
     var reader = new FileReader();
     reader.onload = function(e) 
@@ -985,6 +1036,8 @@ function triggerEditUpload()
             console.log(req.responseText)
             var re = JSON.parse(req.responseText)
             editFileName.value = re.data.link
+            lastUrl = re.data.link
+            sentTexParam() // save that url
             editUploadProgress.style.visibility = "hidden"
             fileOpenedButNotUploaded = false
             updateUploadBtnDisabled()
@@ -1016,8 +1069,10 @@ function triggerEditUpload()
     }
     reader.onerror = function(e) {
         console.log("READER-ERR" + e)
+        resetErrMsg("Failed Upload!")
     }
     
+    editUploadProgress.value = 0
     editUploadProgress.style.visibility = "visible"
     reader.readAsArrayBuffer(file)
 
@@ -1027,53 +1082,19 @@ function triggerEditUpload()
     //loadTexImage("http://i.imgur.com/dPY5gPe.png") 
     //loadTexImage("http://i.imgur.com/gIcxWPI.png")    // transparent
     
+    // imgur.com/gDXDY67.png  - noise
     //http://i.imgur.com/P1ecEyR.png  - svg plus
     //http://i.imgur.com/Yjr8XdH.png - svg too small
     
     //loadTexImage(blank_tex)
 }
 
-function loadTexImageBlob_checkSvg(blob)
-{
-    if (blob.type == "image/svg+xml") 
-    { // check its size
-        var reader = new FileReader();
-        reader.onload = function(e) { 
-            try {
-                // if the SVG main size is too small, it would look pixelated in the 3D view
-                // so I try to resize it to a decent size
-                var dummy = document.createElement("DIV")
-                dummy.innerHTML = e.target.result
-                var svgWidth = dummy.firstElementChild.width.baseVal.value
-                var f = 1500 / svgWidth // how far it is from 1500 pixels
-                if (f > 1) {
-                    console.log("Changing SVG size " + f)
-                    dummy.firstElementChild.width.baseVal.value *= f
-                    dummy.firstElementChild.height.baseVal.value *= f
-                    blob = new Blob([dummy.innerHTML], {type:"image/svg+xml"})
-                }
-            }
-            catch(err) {
-                console.log("failed parsing svg")
-            }
-            loadTexImageBlob(blob)
-        }
-        reader.onerror = function(e) {
-            console.log("READ-TEXT-ERR")
-        }
-        reader.readAsText(blob); // read it as text since we want to put in an element
-    }
-    else {
-        loadTexImageBlob(blob)
-    }    
- }
 
-function loadTexImageBlob(blob)
+function loadTexImageBlob(blob, opt)
 {    
     var reader = new FileReader();
     reader.onload = function(e) { 
-        rotAngle = 0 // new image loaded, reset the rotation
-        loadTexImage(e.target.result) 
+        loadTexImage(e.target.result, blob.type, opt) 
     }
     reader.onerror = function(e) {
         console.log(e)
@@ -1089,7 +1110,13 @@ function triggerFileChanged()
     editFileInput.value = null
     lastFile = file
 
-    loadTexImageBlob_checkSvg(file)
+    loadTexImageBlob(file, { ondone:function() {
+        // new image from the user - reset parameters
+        imgOffset = {x:0, y:0}
+        imgZoom = 1
+        rotAngle = 0 
+        updateZoomValue()
+    }})
     
     editFileName.value = file.name
     fileOpenedButNotUploaded = true
@@ -1173,7 +1200,7 @@ function updateTexDisabledWidgets()
 
 function updateZoomValue() {
     editZoomSlider.value = imgZoom * 100
-    editZoomText.value = imgZoom * 100 + "%"
+    editZoomText.value = Math.round(imgZoom * 100) + "%"
 }
 
 function changeFillSelect(dtype)
@@ -1181,32 +1208,26 @@ function changeFillSelect(dtype)
     if (drawType == dtype)
         return;
     drawType = dtype
+    sentTexParam() // send it to grp first so that the following will be able to take care of the tex-coordinates
     updateForDrawType()
+
+    resetErrMsg() // don't want this to stick around after we changed the type
+    paintCube()
+    if (drawType == DRAW_TEX)
+        newRestart()  // setting individual half need a new solution with all textures out
 }
     
 function updateForDrawType()
 {    
     switch(drawType) 
     {
-    case DRAW_COLOR: current_src = null; break
     case DRAW_PROFI: current_src = src_profi; break
     case DRAW_MARBLE: current_src = src_marble; break
-    case DRAW_TEX: 
-        if (loadedImg == null) {
-            blank_tex.loadedOk = true
-            loadedImg = blank_tex
-            origLoadedImg = loadedImg
-            setGlTexture()
-        }
-        current_src = null; 
-        break
+    case DRAW_COLOR:
+    case DRAW_TEX:   current_src = null; break
     }
     updateTexDisabledWidgets()
     makeColoredTex()
-    paintCube()
-    sentTexParam()
-    if (drawType == DRAW_TEX)
-        newRestart()  // setting individual half need a new solution with all textures out
 }
 
 function triggerBlackSel()
@@ -1215,9 +1236,42 @@ function triggerBlackSel()
     sentTexParam()
 }
 
+function mimeTypeByExt(fileName) {
+    var ext = fileName.substr(fileName.lastIndexOf('.') + 1).toLowerCase();
+    var type = ""
+    switch (ext) {
+    case "png": return "image/png";
+    case "jpg": 
+    case "jpeg": return "image/jpeg"; 
+    case "svg": return "image/svg+xml"; 
+    }
+    return ""
+}
+
+function resetErrMsg(msg) {
+    if (msg)
+        editErrMsg.innerHTML = msg
+    else
+        editErrMsg.innerHTML = ""
+}
+
 function triggerEditChanged()
 {
-    loadTexImage(editFileName.value)
+    var fileName = editFileName.value
+    var lowName = fileName.toLowerCase()
+    if (!lowName.startsWith("http://") && !lowName.startsWith("https://")) {
+        resetErrMsg("Not a well formed URL")
+        return
+    }
+    resetErrMsg()
+    var type = mimeTypeByExt(fileName)
+    loadTexImage(fileName, type, {ondone:function() {
+        lastUrl = fileName // on success, save the entered url
+        sentTexParam() // save url
+    }, 
+    onerr:function() {
+        resetErrMsg("Failed Loading")
+    }})
     lastFile = null
     updateUploadBtnDisabled()
 }
@@ -1227,13 +1281,12 @@ function triggerEditChanged()
 function triggerRotate(dir)
 {
     rotAngle = (rotAngle + dir + 4) % 4; // don't allow it to go negative
+    sentTexParam()
     makeTransformedImg()
 }
     
 function makeTransformedImg()
 {    
-    if (loadedImg == null)
-        return
     if (rotAngle == 0) {
         loadedImg = origLoadedImg
         setGlTexture()
@@ -1255,7 +1308,7 @@ function makeTransformedImg()
     ctx.drawImage(origLoadedImg, -origLoadedImg.width/2, -origLoadedImg.height/2);
     
     var url = canvas_scratch.toDataURL("image/png")
-    loadTexImage(url, true)
+    loadTexImage(url, "image/png", {keepOrig:true})
 
 }
     
@@ -1747,7 +1800,14 @@ input:checked + .sc-btn
     height: 25px;
     visibility: hidden;
 }
-
+#editErrMsg {
+position: absolute;
+    top: 460px;
+    left: 280px;
+    color: red;
+    font-family: tahoma;
+    font-weight: bold;
+}
 
 </style>
 </head>
@@ -1798,6 +1858,7 @@ input:checked + .sc-btn
             <span id="editUploadBtnIn" title="Upload Now" class="sc-span"></span></label>
           <br>
           <progress id="editUploadProgress" max="100" value="0"></progress>
+          <span id="editErrMsg"></span>
         <input id="editFillMarbleRadio" class="hidden" type="radio" name="fill" onclick="changeFillSelect(4)">
         <label id="editFillMarble" class ="sc-btn fillRadio" for="editFillMarbleRadio">Marble Mix</label><br>
         <input id="editFillMixRadio" class="hidden" type="radio" name="fill" onclick="changeFillSelect(2)">

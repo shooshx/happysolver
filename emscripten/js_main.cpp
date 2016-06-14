@@ -548,7 +548,7 @@ void freeMeshAllocator()
 shared_ptr<GlTexture> g_lastTexture;
 
 void textureParamCube(int grpi, int dtype, float r1, float g1, float b1, float r2, float g2, float b2, int isBlack, 
-                      const char* backHex, const char* frontHex, const char* blackSelect, int rotate)
+                      const char* backHex, const char* frontHex, const char* blackSelect, int rotate, const char* url)
 {
     auto& bucket = PicBucket::mutableInstance();
     if (grpi < 0 || grpi >= bucket.grps.size()) {
@@ -563,7 +563,8 @@ void textureParamCube(int grpi, int dtype, float r1, float g1, float b1, float r
     cgrp.exColor = Vec3(r2, g2, b2);
     cgrp.drawtype = (EDrawType)dtype;
     cgrp.blackness = (isBlack == 0)?BLACK_NOT:BLACK_ONE;
-    
+    auto& ed = cgrp.editorData;
+
     switch(cgrp.drawtype) {
     case DRAW_COLOR: 
         cgrp.gtex.reset(); break;
@@ -581,11 +582,12 @@ void textureParamCube(int grpi, int dtype, float r1, float g1, float b1, float r
         cout << "Unexpected drawtype " << cgrp.drawtype << endl;    
     }
     
-    
+    ed.url = url; // save these even though drawType is not texture since we might get back to texture later
+    ed.rotate = rotate;
     ed.backHex = backHex;
     ed.frontHex = frontHex; // without #
     ed.blackSelect = blackSelect; // "black", "white", "auto" from GUI
-    ed.rotate = rotate;
+    
     
     g_ctrl.requestDraw();
 }
@@ -603,7 +605,10 @@ void textureParamToEditor(int grpi) {
     EM_ASM_(editBlackSel.value = Pointer_stringify($0), ed.blackSelect.c_str());
     EM_ASM_(drawType = $0, cgrp.drawtype);
     EM_ASM_(rotAngle = $0, ed.rotate);
+    EM_ASM_(lastUrl = Pointer_stringify($0), ed.url.c_str());
     
+    EM_ASM_(imgOffset.x = $0; imgOffset.y=$1, cgrp.editorData.imageOffset.x, cgrp.editorData.imageOffset.y);
+    EM_ASM_(imgZoom = $0, cgrp.editorData.imageZoom);    
 }
 
 int getCubeTextureHandle(int grpi, int width, int height)
@@ -629,17 +634,6 @@ int getCubeTextureHandle(int grpi, int width, int height)
     return cgrp.gtex->handle();  
 }
 
-void texCoordToEditor(int grpi)
-{
-    auto& bucket = PicBucket::mutableInstance();
-    if (grpi < 0 || grpi >= bucket.grps.size()) {
-        cout << "no-such-cube (cte)" << grpi << endl;
-        return;
-    }
-    PicGroupDef& cgrp = bucket.grps[grpi];
-    EM_ASM_(imgOffset.x = $0; imgOffset.y=$1, cgrp.editorData.imageOffset.x, cgrp.editorData.imageOffset.y);
-    EM_ASM_(imgZoom = $0, cgrp.editorData.imageZoom);
-}
 
 void readCubeTexCoord(int grpi)
 {
@@ -649,8 +643,10 @@ void readCubeTexCoord(int grpi)
         return;
     }
     PicGroupDef& cgrp = bucket.grps[grpi];
-    cgrp.editorData.imageOffset = Vec2i(EM_ASM_INT_V(return imgOffset.x), EM_ASM_INT_V(return imgOffset.y));
-    cgrp.editorData.imageZoom = EM_ASM_DOUBLE_V(return imgZoom);
+    auto& ed = cgrp.editorData;
+
+    ed.imageOffset = Vec2i(EM_ASM_INT_V(return imgOffset.x), EM_ASM_INT_V(return imgOffset.y));
+    ed.imageZoom = EM_ASM_DOUBLE_V(return imgZoom);
     for(int i = 0; i < 6; ++i) {
         auto& pic = cgrp.getPic(i);
  
