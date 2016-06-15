@@ -600,8 +600,8 @@ void textureParamToEditor(int grpi) {
     }
     PicGroupDef& cgrp = bucket.grps[grpi];
     auto& ed = cgrp.editorData;
-    EM_ASM_(editBackColor.value = '#'+Pointer_stringify($0), ed.backHex.c_str());
-    EM_ASM_(editFrontColor.value = '#'+Pointer_stringify($0), ed.frontHex.c_str());
+    EM_ASM_(colorBack.setColor('#'+Pointer_stringify($0)), ed.backHex.c_str());
+    EM_ASM_(colorFront.setColor('#'+Pointer_stringify($0)), ed.frontHex.c_str());
     EM_ASM_(editBlackSel.value = Pointer_stringify($0), ed.blackSelect.c_str());
     EM_ASM_(drawType = $0, cgrp.drawtype);
     EM_ASM_(rotAngle = $0, ed.rotate);
@@ -626,12 +626,15 @@ int getCubeTextureHandle(int grpi, int width, int height)
             return cgrp.gtex->handle();
         }
     }
-    cout << "creating New-Tex " << grpi << " " << cgrp.gtex.get() << endl;
-    cgrp.gtex = make_shared<GlTexture>();
-    g_lastTexture = cgrp.gtex;
-    cgrp.gtex->init(GL_TEXTURE_2D, Vec2i(width, height), 1, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, nullptr, GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE);
+    cout << "creating New-Tex " << grpi << " " << cgrp.gtex.get() << " drawType=" << cgrp.drawtype << endl;
+    auto curTex = make_shared<GlTexture>();
+    g_lastTexture = curTex;
+    curTex->init(GL_TEXTURE_2D, Vec2i(width, height), 1, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, nullptr, GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE);
+
+    if (cgrp.drawtype == DRAW_TEXTURE_INDIVIDUAL_HALF)
+        cgrp.gtex = curTex; // we might be updating it in the editor start but the drawType is something else
     g_ctrl.requestDraw();
-    return cgrp.gtex->handle();  
+    return curTex->handle();  
 }
 
 

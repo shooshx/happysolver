@@ -215,7 +215,8 @@ public:
         Vec2i imageOffset;   // texture coordinates derive from this, in pixels
         float imageZoom = 1.0;
         string backHex, frontHex, blackSelect;
-        int rotate = 0; // 0,1,2,3 * 90 degrees  -rotate the image
+        int rotate = 0; // 0,1,2,3 * 90 degrees  -rotate the image - only for texture drawType
+        string url; // url for the image download in case of texture drawType, otherwise, empty string
     };
 
     EditorData editorData;

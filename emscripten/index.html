@@ -821,7 +821,21 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
         case DRAW_MARBLE: editFillMarbleRadio.checked = true; break
         case DRAW_COLOR:  editFillColorRadio.checked = true;  break    
         }
-        updateForDrawType()
+        
+        var doColor = function(c, ed, def, idx) {
+            if (isNaN(c.colors.rgb.r))  // grp had an empty string for color, take the default
+                c.setColor(def)
+            ed.value = '#' + c.colors.HEX
+            colorPickCfg.init(ed, c.colors);
+            if (window.jsColorPicker.colorPickers[idx]) // set the picker popup to the right position according to the color
+                window.jsColorPicker.colorPickers[idx].setColor(c.colors.HEX, undefined, undefined, true) // forceRender
+        }
+        
+        doColor(colorBack, editBackColor, '#ffffff', 0)
+        doColor(colorFront, editFrontColor, '#808080', 1)
+       
+        
+        updateForDrawType() // needs to be after the setting of the colors (going to mix them) but before loadTexImage
         
         // something to show in the mean time while the url is downloading
         // do the texture loading anyway no depending on drawType since we might return to textur any time
@@ -833,19 +847,6 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
             makeTransformedImg() // takes rotAngle, sets the image and gl instead of loadTexImage which has noCommit
         }}) 
             
-
-
-            
-
-        
-        if (editBackColor.value == '#')  // grp had an empty string for color, take the default
-            editBackColor.value = '#ffffff'
-        colorBack.setColor(editBackColor.value)
-        colorPickCfg.init(editBackColor, colorBack.colors);
-        if (editFrontColor.value == '#')
-            editFrontColor.value = '#808080'
-        colorFront.setColor(editFrontColor.value)
-        colorPickCfg.init(editFrontColor, colorFront.colors);
         
         if (editBlackSel.value == '')
             editBlackSel.value = 'auto'
