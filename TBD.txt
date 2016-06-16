@@ -28,7 +28,7 @@ Black Lines mis-features
 
 flip colors back and front button
 
-save url to cgrp
+
 save all params to an object
 
    

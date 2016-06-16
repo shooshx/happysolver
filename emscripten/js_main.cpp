@@ -600,15 +600,15 @@ void textureParamToEditor(int grpi) {
     }
     PicGroupDef& cgrp = bucket.grps[grpi];
     auto& ed = cgrp.editorData;
-    EM_ASM_(colorBack.setColor('#'+Pointer_stringify($0)), ed.backHex.c_str());
-    EM_ASM_(colorFront.setColor('#'+Pointer_stringify($0)), ed.frontHex.c_str());
+    EM_ASM_(jsgrp.colorBack.setColor('#'+Pointer_stringify($0)), ed.backHex.c_str());
+    EM_ASM_(jsgrp.colorFront.setColor('#'+Pointer_stringify($0)), ed.frontHex.c_str());
     EM_ASM_(editBlackSel.value = Pointer_stringify($0), ed.blackSelect.c_str());
-    EM_ASM_(drawType = $0, cgrp.drawtype);
-    EM_ASM_(rotAngle = $0, ed.rotate);
-    EM_ASM_(lastUrl = Pointer_stringify($0), ed.url.c_str());
+    EM_ASM_(jsgrp.drawType = $0, cgrp.drawtype);
+    EM_ASM_(jsgrp.rotAngle = $0, ed.rotate);
+    EM_ASM_(jsgrp.lastUrl = Pointer_stringify($0), ed.url.c_str());
     
-    EM_ASM_(imgOffset.x = $0; imgOffset.y=$1, cgrp.editorData.imageOffset.x, cgrp.editorData.imageOffset.y);
-    EM_ASM_(imgZoom = $0, cgrp.editorData.imageZoom);    
+    EM_ASM_(jsgrp.imgOffset.x = $0; jsgrp.imgOffset.y=$1, cgrp.editorData.imageOffset.x, cgrp.editorData.imageOffset.y);
+    EM_ASM_(jsgrp.imgZoom = $0, cgrp.editorData.imageZoom);    
 }
 
 int getCubeTextureHandle(int grpi, int width, int height)
@@ -648,8 +648,8 @@ void readCubeTexCoord(int grpi)
     PicGroupDef& cgrp = bucket.grps[grpi];
     auto& ed = cgrp.editorData;
 
-    ed.imageOffset = Vec2i(EM_ASM_INT_V(return imgOffset.x), EM_ASM_INT_V(return imgOffset.y));
-    ed.imageZoom = EM_ASM_DOUBLE_V(return imgZoom);
+    ed.imageOffset = Vec2i(EM_ASM_INT_V(return jsgrp.imgOffset.x), EM_ASM_INT_V(return jsgrp.imgOffset.y));
+    ed.imageZoom = EM_ASM_DOUBLE_V(return jsgrp.imgZoom);
     for(int i = 0; i < 6; ++i) {
         auto& pic = cgrp.getPic(i);
  

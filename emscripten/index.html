@@ -604,18 +604,12 @@ var DRAW_TEX = 0x14
 
 var EDIT_MARGIN = 5
 
-//var col = ['white', '#5555ff', 'red', 'yellow', 'orange', 'green', 'purple']
 var loadedImg = null  // the image reference being displayed, the image loaded
-var imgOffset = {x:0, y:0} // in pixels
-var imgZoom = 1.0
-var drawType = DRAW_COLOR
-var colorBack = new Colors({color:"#ffffff"})
-var colorFront = new Colors({color:"#808080"}) // main init setting that spreads to everywhere else
-var fileOpenedButNotUploaded = false
+var origLoadedImg = null // original before rotation
+var fileOpenedButNotUploaded = false  // used for enable of the upload button
 var lastFile = null // file object of the last file that was selected by the user
-var lastUrl = null // string the last url that was uploaded or entered by the user
-var rotAngle = 0;
-var origLoadedImg = null
+
+var jsgrp = null; // parameters of the currently edited cube
 
 function drawLine(x, y, w, h) {
     editCtx.beginPath()
@@ -629,17 +623,17 @@ function paintCube()
     editCtx.fillStyle = '#fff'
     editCtx.fillRect(0, 0, editCanvas.width, editCanvas.height)
     
-    switch(drawType) {
+    switch(jsgrp.drawType) {
     case DRAW_TEX:
         if (loadedImg) 
         {
-            editCtx.fillStyle = '#'+colorBack.colors.HEX
+            editCtx.fillStyle = '#'+jsgrp.colorBack.colors.HEX
             editCtx.fillRect(EDIT_MARGIN, EDIT_MARGIN, 15*TSZ, 11*TSZ) // need to show up below transparent pixels
             
             var cwidth = editCanvas.width - 2*EDIT_MARGIN
             var cheight = cwidth * loadedImg.height / loadedImg.width  // maintain same aspect ratio as the image
             editCtx.drawImage(loadedImg, 0,0, loadedImg.width, loadedImg.height, 
-                                       imgOffset.x + EDIT_MARGIN, imgOffset.y + EDIT_MARGIN, cwidth*imgZoom, cheight*imgZoom)
+                                       jsgrp.imgOffset.x + EDIT_MARGIN, jsgrp.imgOffset.y + EDIT_MARGIN, cwidth*jsgrp.imgZoom, cheight*jsgrp.imgZoom)
         }
         break
     case DRAW_PROFI:
@@ -649,7 +643,7 @@ function paintCube()
         editCtx.putImageData(colored_tex, EDIT_MARGIN, EDIT_MARGIN)
         break
     case DRAW_COLOR:    
-        editCtx.fillStyle = '#'+colorBack.colors.HEX
+        editCtx.fillStyle = '#'+jsgrp.colorBack.colors.HEX
         editCtx.fillRect(EDIT_MARGIN, EDIT_MARGIN, 15*TSZ, 11*TSZ)
         break
     }
@@ -772,8 +766,8 @@ function makeColoredTex()
         return
     var dst = colored_tex.data
     var src = current_src.data
-    var fr = colorFront.colors.rgb.r, fg = colorFront.colors.rgb.g, fb = colorFront.colors.rgb.b
-    var br = colorBack.colors.rgb.r, bg = colorBack.colors.rgb.g, bb = colorBack.colors.rgb.b
+    var fr = jsgrp.colorFront.colors.rgb.r, fg = jsgrp.colorFront.colors.rgb.g, fb = jsgrp.colorFront.colors.rgb.b
+    var br = jsgrp.colorBack.colors.rgb.r, bg = jsgrp.colorBack.colors.rgb.g, bb = jsgrp.colorBack.colors.rgb.b
     for (var i = 0; i < dst.length; i += 4) 
     {
         var g = src[i]
@@ -795,7 +789,6 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
         doResize()
         editActionPiecesCheck.checked = true
         editActionMoveCheck.checked = false
-        
 
         editCanvas.height = 11*TSZ + 2*EDIT_MARGIN
         editCanvas.width = 15*TSZ + 2*EDIT_MARGIN
@@ -811,11 +804,20 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
 
         setGrpCount(editingCubeId, 1) // set it to be selected, need to be here after the parts were added from the editor
 
+        jsgrp = { colorBack: new Colors({color:"#ffffff"}),
+                 colorFront: new Colors({color:"#808080"}),
+                 drawType: DRAW_COLOR,
+                 rotAngle: 0,
+                 lastUrl: null,
+                 imgOffset: {x:0, y:0},
+                 imgZoom: 1
+                 }        
+        
         // read from grp color, drawType, black select
         textureParamToEditor(editingCubeId);
-        editFileName.value = lastUrl
+        editFileName.value = jsgrp.lastUrl
         
-        switch(drawType) { // needs to be before doing any paintCube because that would fail about current_src
+        switch(jsgrp.drawType) { // needs to be before doing any paintCube because that would fail about current_src
         case DRAW_TEX:    editFillTextureRadio.checked = true; break;
         case DRAW_PROFI:  editFillMixRadio.checked = true; break
         case DRAW_MARBLE: editFillMarbleRadio.checked = true; break
@@ -831,8 +833,8 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
                 window.jsColorPicker.colorPickers[idx].setColor(c.colors.HEX, undefined, undefined, true) // forceRender
         }
         
-        doColor(colorBack, editBackColor, '#ffffff', 0)
-        doColor(colorFront, editFrontColor, '#808080', 1)
+        doColor(jsgrp.colorBack, editBackColor, '#ffffff', 0)
+        doColor(jsgrp.colorFront, editFrontColor, '#808080', 1)
        
         
         updateForDrawType() // needs to be after the setting of the colors (going to mix them) but before loadTexImage
@@ -842,8 +844,8 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
         loadedImg = blank_tex
         origLoadedImg = loadedImg 
         setGlTexture()            
-        var mtype = mimeTypeByExt(lastUrl)
-        loadTexImage(lastUrl, mtype, { noCommit: true, ondone: function() { // lastUrl was set by the above call
+        var mtype = mimeTypeByExt(jsgrp.lastUrl)
+        loadTexImage(jsgrp.lastUrl, mtype, { noCommit: true, ondone: function() { // lastUrl was set by the above call
             makeTransformedImg() // takes rotAngle, sets the image and gl instead of loadTexImage which has noCommit
         }}) 
             
@@ -852,12 +854,8 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
             editBlackSel.value = 'auto'
             
         // read from grp image offset and zoom
-        //texCoordToEditor(editingCubeId)
         sendTexCoord() // need to actually create the texture coordinates from the imgOffset and imgZoom
         updateZoomValue() 
-        
-        //loadedImg = null // reset the last image loaded
-        //origLoadedImg = null
         
         // transfer the marble,profi images to the canvase so they could be accessed when the time comes
         if (!colored_tex) { // happen only in the first time the dialog opens  - TBD needs to be HIGHER
@@ -878,8 +876,15 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
     }
     else 
     {
+        if (!uploadDisabled()) {
+            triggerEditUpload(function() {
+                triggerCubeEdit(false);
+            })
+            return
+        }
         readCubeFromEditor(editingCubeId)
         editingCubeId = -1
+        jsgrp = null
         
         freeMeshAllocator()
         conf(true)  // revert back to randomized
@@ -912,8 +917,8 @@ function handleEditCanvasMove(event)
         return true
 
         
-    imgOffset.x += event.clientX - curDrag.x
-    imgOffset.y += event.clientY - curDrag.y
+    jsgrp.imgOffset.x += event.clientX - curDrag.x
+    jsgrp.imgOffset.y += event.clientY - curDrag.y
     lastEditDrag = {x:event.clientX, y:event.clientY}
     
     paintCube()
@@ -968,9 +973,9 @@ function changeColor(colors, mode, options)
         return
     options.input.prevValue = options.input.value
     if (options.input == editBackColor)
-        colorBack.setColor(colors.HEX)
+        jsgrp.colorBack.setColor(colors.HEX)
     else if (options.input == editFrontColor)
-        colorFront.setColor(colors.HEX)
+        jsgrp.colorFront.setColor(colors.HEX)
         
     makeColoredTex()   
     paintCube()
@@ -983,8 +988,8 @@ function isColorsBlack() {
     if (editBlackSel.value == 'normal')
         return false
     // 'auto'    
-    var bl = colorBack.colors.rgbaMixWhite.luminance
-    var fl = colorFront.colors.rgbaMixWhite.luminance
+    var bl = jsgrp.colorBack.colors.rgbaMixWhite.luminance
+    var fl = jsgrp.colorFront.colors.rgbaMixWhite.luminance
 
     // in case of textured draw, I assume the back color represents the piece color
     if (editFillColorRadio.checked || editFillTextureRadio.checked)
@@ -995,10 +1000,11 @@ function isColorsBlack() {
 }
 
 function sentTexParam() {
-    textureParamCube(editingCubeId, drawType, colorBack.colors.rgb.r, colorBack.colors.rgb.g, colorBack.colors.rgb.b, 
-                                              colorFront.colors.rgb.r, colorFront.colors.rgb.g, colorFront.colors.rgb.b, 
-                                              isColorsBlack(), 
-                                              colorBack.colors.HEX, colorFront.colors.HEX, editBlackSel.value, rotAngle, lastUrl) // things saved for the editor
+    textureParamCube(editingCubeId, jsgrp.drawType, 
+                     jsgrp.colorBack.colors.rgb.r, jsgrp.colorBack.colors.rgb.g, jsgrp.colorBack.colors.rgb.b, 
+                     jsgrp.colorFront.colors.rgb.r, jsgrp.colorFront.colors.rgb.g, jsgrp.colorFront.colors.rgb.b, 
+                     isColorsBlack(), 
+                     jsgrp.colorBack.colors.HEX, jsgrp.colorFront.colors.HEX, editBlackSel.value, jsgrp.rotAngle, jsgrp.lastUrl) // things saved for the editor
 }
 
 // a minimal 1x1 SVG file 
@@ -1022,9 +1028,9 @@ function encodePng(ba)
 
 
 
-function triggerEditUpload()
+function triggerEditUpload(ondone)
 {
-    if (editUploadBtn.getAttribute("disabled") == "true" || !lastFile)
+    if (uploadDisabled())
         return;
     resetErrMsg()
     var file = lastFile
@@ -1036,12 +1042,18 @@ function triggerEditUpload()
         req.onload = function () {
             console.log(req.responseText)
             var re = JSON.parse(req.responseText)
+            if (re.success != true || re.status != 200) {
+                resetErrMsg("Failed upload, " + re.status)
+                return
+            }
             editFileName.value = re.data.link
-            lastUrl = re.data.link
+            jsgrp.lastUrl = re.data.link
             sentTexParam() // save that url
             editUploadProgress.style.visibility = "hidden"
             fileOpenedButNotUploaded = false
             updateUploadBtnDisabled()
+            if (ondone)
+                ondone()
         }
         req.onprogress = function(e) {
             if (e.total == 0)
@@ -1050,7 +1062,7 @@ function triggerEditUpload()
             //console.log(percentComplete + "  " + e.loaded + "/" + e.total)
             editUploadProgress.value = percentComplete
         }
-        if (req.upload)
+        if (req.upload) // in chrome there's a different progress listener
             req.upload.onprogress = req.onprogress
         req.onerror = function(e) {
             console.log(e)
@@ -1113,10 +1125,12 @@ function triggerFileChanged()
 
     loadTexImageBlob(file, { ondone:function() {
         // new image from the user - reset parameters
-        imgOffset = {x:0, y:0}
-        imgZoom = 1
-        rotAngle = 0 
+        jsgrp.imgOffset = {x:0, y:0}
+        jsgrp.imgZoom = 1
+        jsgrp.rotAngle = 0 
         updateZoomValue()
+        paintCube()
+        sendTexCoord()
     }})
     
     editFileName.value = file.name
@@ -1137,10 +1151,10 @@ function sendTexCoord()
 
     cubeTexInfo = []
     for(var i = 0; i < 6; ++i) {
-        var x = baseFramePicPos[i][0] / (15*imgZoom)  - imgOffset.x / ((editCanvas.width - 2*EDIT_MARGIN)*imgZoom)
-        var y = baseFramePicPos[i][1] / (11 * imgRatio*imgZoom) - imgOffset.y / ((editCanvas.height - 2*EDIT_MARGIN) * imgRatio*imgZoom)
+        var x = baseFramePicPos[i][0] / (15 * jsgrp.imgZoom) - jsgrp.imgOffset.x / ((editCanvas.width - 2*EDIT_MARGIN) * jsgrp.imgZoom)
+        var y = baseFramePicPos[i][1] / (11 * imgRatio*jsgrp.imgZoom) - jsgrp.imgOffset.y / ((editCanvas.height - 2*EDIT_MARGIN) * imgRatio*jsgrp.imgZoom)
         
-        cubeTexInfo.push({x:x, y:y, scaleX:5/(15*imgZoom), scaleY:5/(11*imgRatio*imgZoom) })
+        cubeTexInfo.push({x:x, y:y, scaleX:5/(15*jsgrp.imgZoom), scaleY:5/(11*imgRatio*jsgrp.imgZoom) })
     }
     readCubeTexCoord(editingCubeId) // reads from cubeTexInfo
 }
@@ -1167,20 +1181,24 @@ function changeImgZoom(widget, v)
     else { // edit changed
         editZoomSlider.value = v
     }
-    imgZoom = v / 100.0
+    jsgrp.imgZoom = v / 100.0
     
     paintCube()
     sendTexCoord()
 }
 
+function uploadDisabled() {
+    return jsgrp.drawType != DRAW_TEX || !lastFile || !fileOpenedButNotUploaded
+}
+
 function updateUploadBtnDisabled() {
-    var d = drawType != DRAW_TEX || !lastFile || !fileOpenedButNotUploaded
+    var d = uploadDisabled()
     editUploadBtn.setAttribute("disabled", d) // custom attribute
 }
 
 function updateTexDisabledWidgets()
 {
-    var d = drawType != DRAW_TEX
+    var d = jsgrp.drawType != DRAW_TEX
     editFileButton.disabled = d
     editFileInput.disabled = d
     editFileName.disabled = d
@@ -1200,27 +1218,27 @@ function updateTexDisabledWidgets()
 }
 
 function updateZoomValue() {
-    editZoomSlider.value = imgZoom * 100
-    editZoomText.value = Math.round(imgZoom * 100) + "%"
+    editZoomSlider.value = jsgrp.imgZoom * 100
+    editZoomText.value = Math.round(jsgrp.imgZoom * 100) + "%"
 }
 
 function changeFillSelect(dtype)
 {
-    if (drawType == dtype)
+    if (jsgrp.drawType == dtype)
         return;
-    drawType = dtype
+    jsgrp.drawType = dtype
     sentTexParam() // send it to grp first so that the following will be able to take care of the tex-coordinates
     updateForDrawType()
 
     resetErrMsg() // don't want this to stick around after we changed the type
     paintCube()
-    if (drawType == DRAW_TEX)
+    if (jsgrp.drawType == DRAW_TEX)
         newRestart()  // setting individual half need a new solution with all textures out
 }
     
 function updateForDrawType()
 {    
-    switch(drawType) 
+    switch(jsgrp.drawType) 
     {
     case DRAW_PROFI: current_src = src_profi; break
     case DRAW_MARBLE: current_src = src_marble; break
@@ -1267,7 +1285,7 @@ function triggerEditChanged()
     resetErrMsg()
     var type = mimeTypeByExt(fileName)
     loadTexImage(fileName, type, {ondone:function() {
-        lastUrl = fileName // on success, save the entered url
+        jsgrp.lastUrl = fileName // on success, save the entered url
         sentTexParam() // save url
     }, 
     onerr:function() {
@@ -1281,20 +1299,20 @@ function triggerEditChanged()
 
 function triggerRotate(dir)
 {
-    rotAngle = (rotAngle + dir + 4) % 4; // don't allow it to go negative
+    jsgrp.rotAngle = (jsgrp.rotAngle + dir + 4) % 4; // don't allow it to go negative
     sentTexParam()
     makeTransformedImg()
 }
     
 function makeTransformedImg()
 {    
-    if (rotAngle == 0) {
+    if (jsgrp.rotAngle == 0) {
         loadedImg = origLoadedImg
         setGlTexture()
         return
     }
     
-    if (rotAngle == 1 || rotAngle == 3) {
+    if (jsgrp.rotAngle == 1 || jsgrp.rotAngle == 3) {
         canvas_scratch.width = origLoadedImg.height
         canvas_scratch.height = origLoadedImg.width
     }
@@ -1305,7 +1323,7 @@ function makeTransformedImg()
     var ctx = canvas_scratch.getContext('2d')
     ctx.setTransform(1,0, 0,1, 0,0)
     ctx.translate(canvas_scratch.width/2, canvas_scratch.height/2);
-    ctx.rotate(rotAngle * Math.PI/2);
+    ctx.rotate(jsgrp.rotAngle * Math.PI/2);
     ctx.drawImage(origLoadedImg, -origLoadedImg.width/2, -origLoadedImg.height/2);
     
     var url = canvas_scratch.toDataURL("image/png")
