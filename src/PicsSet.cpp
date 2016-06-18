@@ -15,6 +15,9 @@ void PicType::load(const PicDef& thedef, bool cSym)
 	isSym = cSym;
 	rtnnum = 8;
 
+    for(int i = 0; i < 8; ++i)
+        rtnsAbsMap[i] = i;
+
 	// should delete rtn?
 	bool dflag[8] = { 0 };
 	for(int i = 0; i < 7; ++i)
@@ -30,20 +33,31 @@ void PicType::load(const PicDef& thedef, bool cSym)
 		if (dflag[i]) 
 		{
 			rtnnum--;
-			for(int j = i; j < 7; j++)
+			for(int j = i; j < 7; j++) {
 				rtns[j + 1].copyTo(rtns[j]);
+                rtnsAbsMap[j] = rtnsAbsMap[j+1];
+            }
 		}
 	}
 
 	for(int i = 0; i < 8; ++i) {
 		bits[i] = 0;
-        
-		if (i < rtnnum) {
+		if (i < rtnnum) 
 			bits[i] = rtns[i].getBits();
-        }
-        else
+        else {
             rtns[i].clear();
+            rtnsAbsMap[i] = -1;
+        }
 	}
+
+    // detect pieces where the later rtns come to the front
+    for(int i = 0; i < rtnnum; ++i) {
+        if (rtnsAbsMap[i] != i) {
+            cout << "Late RTN " << bits[0] << endl;
+            break;
+        }
+    }
+
 }
 
 void PicsSet::add(int defInd, bool cSym) 

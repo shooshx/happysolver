@@ -88,6 +88,7 @@ void PicDef::makeBoundingPath()
         PathPoint &ppdnx = pathway[step + 1];
         if (v.axx(ppd.pnt.x, ppd.pnt.y) == 1)
         {
+  
             // frame
             if (ppd.frm.both) // this can actually be (step%4 == 0) but more coherent this way
             {
@@ -568,12 +569,16 @@ bool PicBucket::loadXML(const char* data)
 }
 
 // update existing or add new (editor)
-void PicBucket::updateGrp(int grpi, PicArr arrs[6])
+int PicBucket::updateGrp(int grpi, PicArr arrs[6])
 {
-    M_ASSERT(grpi >= 0 && grpi <= grps.size());
+    M_ASSERT(grpi >= -1 && grpi <= (int)grps.size());
     bool add = false;
     //cout << "GRP " << grpi << " " << grps.size() << endl;
-    if (grpi == grps.size()) {
+    if (grpi == grps.size() || grpi == -1) {
+        grpi = grps.size();
+        if (grpi > grps.capacity()) {
+            cout << "Reallocating grps, this is slow " << grpi << endl;
+        }
         grps.push_back(PicGroupDef());
         add = true;
     }
@@ -615,15 +620,8 @@ void PicBucket::updateGrp(int grpi, PicArr arrs[6])
 
     distinctMeshes(false);
 
- /*   for (int i = 0; i < pdefs.size(); ++i) {
-        if (i >= 324) {
-      	    const PicDef& thedef = PicBucket::instance().pdefs[i];
-            cout << i << "> " << thedef.v.prn(true) << "   " << thedef.defRot << " " << thedef.dispRot << endl;
-        }
-    }*/
-
     PicDisp::g_smoothAllocator.checkMaxAlloc();
-
+    return grpi;
 }
 
 
@@ -667,7 +665,7 @@ void PicBucket::setToFamResetSel()
 }
 
 // prepares PicDisps for all pdefs with the correct roatation configured and corrolate pdefs to the disps
-// - createDisps - should we create the disps or are they already created
+// - createDisps - should we create the disps (but not generate mesh) or are they already created
 void PicBucket::distinctMeshes(bool createDisps)
 {
     PicsSet ps;
@@ -682,16 +680,29 @@ void PicBucket::distinctMeshes(bool createDisps)
     for(int i = 0; i < ps.comp.size(); ++i) 
     {
         auto comp = ps.comp[i];
-        auto sig = comp.rtns[0].getBits();
-        PicDisp* pd;
-        if (createDisps) {
+        auto sig = comp.bits[0];
+        PicDisp* pd = nullptr;
+        int sigAbsRot = 0;
+        if (createDisps) { // TBD remove this
             pd = new PicDisp(PicArr(sig));
             m_meshes[sig].reset(pd);
         }
         else {
-            //cout << "sig " << hex << sig << dec << endl;
-            auto it = m_meshes.find(sig);
-            if (it == m_meshes.end()) { // did not find signatutre in preloaded meshes
+            // search if any of the piece signatures appear in the meshe repository
+            int sigRt = 0;
+            while (sigRt < comp.rtnnum ) {
+                auto rsig = comp.bits[sigRt];
+                auto it = m_meshes.find(rsig);
+                if (it != m_meshes.end()) {
+                    pd = it->second.get();
+                    sigAbsRot = comp.rtnsAbsMap[sigRt];
+                   // cout << "Found mesh for " << hex << rsig << "(" << sig << dec << ") rt=" << sigRt << "," << sigAbsRot << "/" << comp.rtnnum << endl;
+                    break;
+                }
+                ++sigRt;
+            }
+            
+            if (pd == nullptr) { // did not find signatutre in preloaded meshes
                 pd = new PicDisp(PicArr(sig));
                 cout << "Generating mesh for " << hex << sig << dec << endl;
                 pd->initNoSubdiv();
@@ -699,14 +710,13 @@ void PicBucket::distinctMeshes(bool createDisps)
 
                 m_meshes[sig].reset(pd);
             }
-            else
-                pd = it->second.get();
+   
         }
 
         for(int j = 0; j < comp.addedInds.size(); ++j) 
         {
             auto added = comp.addedInds[j];
-            pdefs[added.addedInd].dispRot = added.defRot; // TBD - this is not duplicated in allComp
+            pdefs[added.addedInd].dispRot = rotationAdd( added.defRot, sigAbsRot); 
            // cout << "PDEF " << &pdefs[added.addedInd] << "  DISP=" << pd << endl;
             pdefs[added.addedInd].disp = pd;
         }
@@ -804,6 +814,7 @@ void PicBucket::buildMeshes(const DisplayConf& dpc, ProgressCallback* prog)
     int cnt = 0;
     bool cancel = false;
 
+    // strange - this is duplicated in distinctMeshes but without the progress
     for (auto& disp: m_meshes)
     {
         if (prog && !prog->setValue(cnt++)) // progress
@@ -998,6 +1009,7 @@ bool PicBucket::loadUnifiedJs()
         d->m_mesh.m_hasIdx = d->m_mesh.m_hasNormals = true;
         d->m_mesh.m_common = cd;
     }
+    cout << "Loaded " << m_meshes.size() << " meshes" <<endl;
     distinctMeshes(false);
 
     return true;

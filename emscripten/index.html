@@ -12,7 +12,8 @@
 </script>
 
 <link rel="icon" href="favicon.ico" type="image/x-icon"/>
-<script id="stdpcs" src="stdpcs.js"></script>  
+<!--<script id="stdpcs" src="stdpcs.js"></script>  -->
+<script id="stdpcs" src="stdpcs_uni.js"></script>  
 <script id="unimesh2" src="unified_mesh.js"></script>  
 <script id="one_cube" src="one_piece_cube.js"></script>    
 <!--<script id="one_cube" src="one_marble_cube.js"></script>    -->
@@ -33,7 +34,7 @@ var model = { vtxBuf: null }
 var loadSolution, resizeGl, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseWheel, cpp_draw, cpp_slvrun, getTms
 var setGrpCount, setEditAction, runningRestart, serializeCurrent, deserializeAndLoad, readCubeFromEditor, newRestart, conf
 var stackState, textureParamCube, getCubeTextureHandle, readCubeTexCoord, loadSlvSimple, freeMeshAllocator
-var readCubeToEditor, textureParamToEditor, getToothPossibilities, solveGo
+var readCubeToEditor, textureParamToEditor, getToothPossibilities, solveGo, readCubeFromSig, bucketAddFam
 var ctrlPressed = false
 var editCtx = null
 var unimesh_keys = Object.keys(unimesh) // unimesh included above
@@ -47,12 +48,13 @@ function start()
 {
     colorPickCfg = {
         customBG: '#222',
-        readOnly: true,
+        readOnly: false,
         // patch: false,
         init: function(elm, colors) { // colors is a different instance (not connected to colorPicker)
           elm.style.backgroundColor = elm.value;
           // used to be rgbaMixCustom the color mixed with the customBG color (not relevant for me since alpha is 1.0 always)
-          elm.style.color = colors.rgbaMixWhite.luminance > 0.22 ? '#222' : '#ddd';
+          // if it is NaN, the check is false and the default is the 
+          elm.style.color = colors.rgbaMixWhite.luminance <= 0.22 ? '#ddd' : '#222';
         },
         initStyle: 'display: hidden',
         mode: 'hsv-h',
@@ -63,6 +65,10 @@ function start()
         multipleInstances:true
     }
     jsColorPicker('input.color', colorPickCfg);
+    editBackColor.addEventListener("focus", function() { changedColFocus(editBackColor, true, 0) })
+    editFrontColor.addEventListener("focus", function() { changedColFocus(editFrontColor, true, 1) })
+    editBackColor.addEventListener("blur", function() { changedColFocus(editBackColor, false, 0) })
+    editFrontColor.addEventListener("blur", function() { changedColFocus(editFrontColor, false, 1) })
     
   /*  picsAddFamily("Happy Cube", "hc")
     picsAddCube("Blue", "hc_blue")
@@ -99,18 +105,21 @@ function start()
                                                                'string', 'string', 'string', 'number', 'string']) 
                                                                // back-hex, front-hex, black-selector, rot-angle, url
     getCubeTextureHandle = Module.cwrap('getCubeTextureHandle', 'number', ['number', 'number', 'number'])
-    readCubeTexCoord = Module.cwrap('readCubeTexCoord', null, ['number'])
+    readCubeTexCoord = Module.cwrap('readCubeTexCoord', null, ['number','number','number','number','number','number','number'])
     loadSlvSimple = Module.cwrap('loadSlvSimple', null, ['string'])
     freeMeshAllocator = Module.cwrap('freeMeshAllocator', null, [])
     readCubeToEditor = Module.cwrap('readCubeToEditor', null, ['number', 'string'])
     textureParamToEditor = Module.cwrap('textureParamToEditor', null, ['number'])
     getToothPossibilities = Module.cwrap('getToothPossibilities', null, ['number', 'number'])
-
-    
+    readCubeFromSig = Module.cwrap('readCubeFromSig', 'number', ['number', 'string', 'string'])
+    bucketAddFam = Module.cwrap('bucketAddFam', null, ['string', 'number', 'number', 'number'])
    
     Module.ccall('cpp_start', null);
     conf(true)
-    Module.ccall('initCubeEngine', 'boolean', ['string', 'number'], [stdpcs_text, 0])
+    
+    loadStdPieces(uni_pcs)
+    
+    Module.ccall('initCubeEngine', 'boolean', ['string', 'number'], ["", 0])
     
     loadSolution(one_piece_cube_text)
     //loadSolution(one_marble_cube_text)
@@ -157,8 +166,66 @@ function start()
     picsAddFamily("Test Fam", "Test Fam", true)
     picsAddCube("Test Cube", "Test Cube", -1, true)
     
-    
 }
+
+function loadStdPieces(pcs)
+{
+    var drawTypeFromStr = function(s) {
+        switch(s) {
+        case "color": return DRAW_COLOR
+        case "mix": return DRAW_PROFI
+        case "marble": return DRAW_MARBLE
+        case "tex": return DRAW_TEX
+        default: throw "Unknown drawType " + s
+        }
+    }
+    
+    var objGet = function(o, key, defVal, makeVal) {
+        if (typeof(o[key]) !== 'undefined') {
+            if (makeVal)
+                return makeVal(o[key])
+            else
+                return o[key]
+        }
+        return defVal
+    }
+
+    var defBack = (new Colors({color:COLOR_BACK_DEFAULT})).colors
+    var defFront = (new Colors({color:COLOR_FRONT_DEFAULT})).colors
+    
+    for(var fami in uni_pcs) 
+    {
+        var fam = uni_pcs[fami]
+        var famDrawType = drawTypeFromStr(fam.drawType)
+        var onResetSel = objGet(fam, 'onResetSel', 1)
+        var first = true
+        for(var pi in fam.p) 
+        {
+            var p = fam.p[pi]
+            var grpi = readCubeFromSig(-1, p.sig, p.name) 
+            if (first) {
+                bucketAddFam(fam.famName, grpi, fam.p.length, onResetSel)
+                first = false
+            }
+            
+            p.drawType = objGet(p, 'drawType', famDrawType, drawTypeFromStr)
+            p.cb = objGet(p, 'cb', defBack, function(s) { return (new Colors({color:s})).colors })
+            p.cf = objGet(p, 'cf', defFront, function(s) { return (new Colors({color:s})).colors })
+            p.lines = objGet(p, 'lines', 'auto')
+            p.rotate = objGet(p, 'rotate', 0)
+            p.img = objGet(p, 'img', "")
+            
+            textureParamCube(grpi, p.drawType, 
+                     p.cb.rgb.r, p.cb.rgb.g, p.cb.rgb.b, 
+                     p.cf.rgb.r, p.cf.rgb.g, p.cf.rgb.b, 
+                     isColorsBlack(p.lines, p.cb, p.cf, p.drawType), 
+                     p.cb.HEX, p.cb.HEX, p.lines, p.rotate, p.img) 
+
+        }
+        
+    }
+}
+
 
 var pressedInCanvas = false
 function handleMouseDown(event) {
@@ -630,7 +697,7 @@ function paintCube()
             editCtx.fillStyle = '#'+jsgrp.colorBack.colors.HEX
             editCtx.fillRect(EDIT_MARGIN, EDIT_MARGIN, 15*TSZ, 11*TSZ) // need to show up below transparent pixels
             
-            var cwidth = editCanvas.width - 2*EDIT_MARGIN
+            var cwidth = 15*TSZ //editCanvas.width - 2*EDIT_MARGIN
             var cheight = cwidth * loadedImg.height / loadedImg.width  // maintain same aspect ratio as the image
             editCtx.drawImage(loadedImg, 0,0, loadedImg.width, loadedImg.height, 
                                        jsgrp.imgOffset.x + EDIT_MARGIN, jsgrp.imgOffset.y + EDIT_MARGIN, cwidth*jsgrp.imgZoom, cheight*jsgrp.imgZoom)
@@ -662,7 +729,7 @@ function paintCube()
         }
     }*/
 
-    editCtx.strokeStyle = isColorsBlack() ? 'white':'black'
+    editCtx.strokeStyle = isColorsBlack(editBlackSel.value, jsgrp.colorBack.colors, jsgrp.colorFront.colors, jsgrp.drawType) ? 'white':'black'
     
     for(var x = 0; x < 15; ++x) {
         for(var y = 0; y < 11; ++y) {
@@ -780,6 +847,38 @@ function makeColoredTex()
 }
 
 
+function updateColorWidget(c, ed, def, idx, skipText) 
+// color object to update, edit tag to update, default value, index in pickers (0=back, 1=front), skipText if we just update the text
+{
+    if (isNaN(c.colors.rgb.r)) {  // grp had an empty string for color, take the default
+        if (typeof(def) === 'undefined')
+            return
+        c.setColor(def)
+    }
+    if (!skipText)    
+        ed.value = '#' + c.colors.HEX
+    else
+        ed.beingEditedNow = true
+    colorPickCfg.init(ed, c.colors);
+    if (window.jsColorPicker.colorPickers[idx]) 
+    {// set the picker popup to the right position according to the color
+        window.jsColorPicker.colorPickers[idx].setColor(c.colors.HEX, undefined, undefined, true) // forceRender
+    }
+    
+}
+
+function changedColFocus(ed, v, idx) {
+    ed.beingEditedNow = v
+    // selects the window of the picker
+    window.jsColorPicker.colorPickers[idx].nodes.colorPicker.onmousedown = function() {
+        // simulate out of focus in case we just edited the text and are now moving the knob
+        ed.beingEditedNow = false
+    }
+}
+
+var COLOR_BACK_DEFAULT = "#ffffff"
+var COLOR_FRONT_DEFAULT = "#808080"
+
 function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
 {
     if (v) 
@@ -804,8 +903,8 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
 
         setGrpCount(editingCubeId, 1) // set it to be selected, need to be here after the parts were added from the editor
 
-        jsgrp = { colorBack: new Colors({color:"#ffffff"}),
-                 colorFront: new Colors({color:"#808080"}),
+        jsgrp = { colorBack: new Colors({color:COLOR_BACK_DEFAULT}),
+                 colorFront: new Colors({color:COLOR_FRONT_DEFAULT}),
                  drawType: DRAW_COLOR,
                  rotAngle: 0,
                  lastUrl: null,
@@ -824,17 +923,8 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
         case DRAW_COLOR:  editFillColorRadio.checked = true;  break    
         }
         
-        var doColor = function(c, ed, def, idx) {
-            if (isNaN(c.colors.rgb.r))  // grp had an empty string for color, take the default
-                c.setColor(def)
-            ed.value = '#' + c.colors.HEX
-            colorPickCfg.init(ed, c.colors);
-            if (window.jsColorPicker.colorPickers[idx]) // set the picker popup to the right position according to the color
-                window.jsColorPicker.colorPickers[idx].setColor(c.colors.HEX, undefined, undefined, true) // forceRender
-        }
-        
-        doColor(jsgrp.colorBack, editBackColor, '#ffffff', 0)
-        doColor(jsgrp.colorFront, editFrontColor, '#808080', 1)
+        updateColorWidget(jsgrp.colorBack, editBackColor, COLOR_BACK_DEFAULT, 0)
+        updateColorWidget(jsgrp.colorFront, editFrontColor, COLOR_FRONT_DEFAULT, 1)
        
         
         updateForDrawType() // needs to be after the setting of the colors (going to mix them) but before loadTexImage
@@ -966,6 +1056,8 @@ function triggerEditDone()
     triggerCubeEdit(false) // remove the dialog
 }
 
+
+
 // callback from color selector
 function changeColor(colors, mode, options) 
 {
@@ -982,29 +1074,44 @@ function changeColor(colors, mode, options)
     sentTexParam()
 }
 
-function isColorsBlack() {
-    if (editBlackSel.value == 'white')
+
+function changedColorText(which, txt)
+{
+    if (which == 0) {
+        jsgrp.colorBack.setColor(txt)
+        updateColorWidget(jsgrp.colorBack, editBackColor, undefined, 0, true)
+    }
+    else {
+        jsgrp.colorFront.setColor(txt)
+        updateColorWidget(jsgrp.colorFront, editFrontColor, undefined, 1, true)
+    }
+}
+
+function isColorsBlack(linesSel, backColors, frontColors, drawType) {
+    if (linesSel == 'white')
         return true
-    if (editBlackSel.value == 'normal')
+    if (linesSel == 'normal')
         return false
     // 'auto'    
-    var bl = jsgrp.colorBack.colors.rgbaMixWhite.luminance
-    var fl = jsgrp.colorFront.colors.rgbaMixWhite.luminance
+    var bl = backColors.rgbaMixWhite.luminance
+    var fl = frontColors.rgbaMixWhite.luminance
 
     // in case of textured draw, I assume the back color represents the piece color
-    if (editFillColorRadio.checked || editFillTextureRadio.checked)
+    if (drawType == DRAW_COLOR || drawType == DRAW_TEX)
         return bl < 0.05
-    else if (editFillMarbleRadio.checked || editFillMixRadio.checked)
+    else if (drawType == DRAW_MARBLE || drawType == DRAW_PROFI)
         return (bl < 0.1 && fl < 0.1) || bl < 0.05 || fl < 0.05 // either one of them is really dark or both kinda dark
     return false // shouldn't happen
 }
 
 function sentTexParam() {
+    var bc = jsgrp.colorBack.colors
+    var fc = jsgrp.colorFront.colors
     textureParamCube(editingCubeId, jsgrp.drawType, 
-                     jsgrp.colorBack.colors.rgb.r, jsgrp.colorBack.colors.rgb.g, jsgrp.colorBack.colors.rgb.b, 
-                     jsgrp.colorFront.colors.rgb.r, jsgrp.colorFront.colors.rgb.g, jsgrp.colorFront.colors.rgb.b, 
-                     isColorsBlack(), 
-                     jsgrp.colorBack.colors.HEX, jsgrp.colorFront.colors.HEX, editBlackSel.value, jsgrp.rotAngle, jsgrp.lastUrl) // things saved for the editor
+                     bc.rgb.r, bc.rgb.g, bc.rgb.b, 
+                     fc.rgb.r, fc.rgb.g, fc.rgb.b, 
+                     isColorsBlack(editBlackSel.value, bc, fc, jsgrp.drawType), 
+                     bc.HEX, fc.HEX, editBlackSel.value, jsgrp.rotAngle, jsgrp.lastUrl) // things saved for the editor
 }
 
 // a minimal 1x1 SVG file 
@@ -1140,23 +1247,13 @@ function triggerFileChanged()
     return false
 }
 
-var baseFramePicPos = [ [1,1], [1,5], [5,1], [5,5], [9,1], [9,5] ]
-var cubeTexInfo = [] // read from c++
 
 function sendTexCoord()
 {
     if (loadedImg === null)
         return
-    var imgRatio = (loadedImg.height/loadedImg.width) / ((editCanvas.height- 2*EDIT_MARGIN)/(editCanvas.width- 2*EDIT_MARGIN))
 
-    cubeTexInfo = []
-    for(var i = 0; i < 6; ++i) {
-        var x = baseFramePicPos[i][0] / (15 * jsgrp.imgZoom) - jsgrp.imgOffset.x / ((editCanvas.width - 2*EDIT_MARGIN) * jsgrp.imgZoom)
-        var y = baseFramePicPos[i][1] / (11 * imgRatio*jsgrp.imgZoom) - jsgrp.imgOffset.y / ((editCanvas.height - 2*EDIT_MARGIN) * imgRatio*jsgrp.imgZoom)
-        
-        cubeTexInfo.push({x:x, y:y, scaleX:5/(15*jsgrp.imgZoom), scaleY:5/(11*imgRatio*jsgrp.imgZoom) })
-    }
-    readCubeTexCoord(editingCubeId) // reads from cubeTexInfo
+    readCubeTexCoord(editingCubeId, jsgrp.imgOffset.x, jsgrp.imgOffset.y, jsgrp.imgZoom, loadedImg.width, loadedImg.height, TSZ) 
 }
 
 function triggerAction(bpr)
@@ -1846,8 +1943,8 @@ position: absolute;
     <div id="editBack" class="popupBack"><div id="picEditWin" class="popupWin">
         <canvas id="editCanvas" width="590", height="450"></canvas>
         <label id="editDoneBtn" class="sc-btn" onclick="triggerEditDone()"/>Done</label>
-        <input id="editBackColor" class="color" />
-        <input id="editFrontColor" class="color" />
+        <input id="editBackColor" class="color" oninput="changedColorText(0, this.value)"/>
+        <input id="editFrontColor" class="color" oninput="changedColorText(1, this.value)"/>
         <select id="editBlackSel" oninput="triggerBlackSel()">
             <option value="auto">Auto Lines</option>
             <option value="normal">Normal Lines</option>

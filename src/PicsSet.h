@@ -29,6 +29,7 @@ public:
 	int rtnnum; // how many rtns we actually have
 	PicArr rtns[8];
 	TPicBits bits[8];
+    int rtnsAbsMap[8]; // for each rtn under rtnnum, the original index of the rtn in [0,7]
 	// does this type represent a non symmetric piece.
 	// normal pieces and non-symmetric pieces are represented by different types even though with the same shape
 	bool isSym; 

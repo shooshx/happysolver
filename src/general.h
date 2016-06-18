@@ -110,7 +110,7 @@ inline float mRound(float x) {
 class HCException : public std::exception {
 public:
     HCException(const char* msg) : m_msg(msg) {
-        cout << "EXCEPTION: " << msg;
+        cout << "EXCEPTION: " << msg << endl;
     }
     virtual const char* what() const throw() {
         return m_msg;

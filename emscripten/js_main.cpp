@@ -212,16 +212,16 @@ void populatePicsSide(PicBucket& bucket)
 bool initCubeEngine(const char* stdpcs, const char* unimesh)
 {
     try {
-        auto& bucket = PicBucket::createSingleton();
+        auto& bucket = PicBucket::mutableInstance();
     
-        g_ctrl.m_modelGl.initTex();
+      //  g_ctrl.m_modelGl.initTex();
            
-        if (!bucket.loadXML(stdpcs))
-            return false;
+      //  if (!bucket.loadXML(stdpcs))
+      //      return false;
 
         populatePicsSide(bucket);
             
-        bucket.loadUnifiedJs();    
+            
         return true;
     }
     catch(const std::exception& e) {
@@ -291,6 +291,10 @@ void cpp_start()
     try {
         g_ctrl.m_gl.m_cullFace = false;
         g_ctrl.m_gl.init();
+        
+        auto& bucket = PicBucket::createSingleton();
+        bucket.pdefs.reserve(20); // TBD
+        bucket.loadUnifiedJs();
     }
     catch(const std::exception& e) {
         cout << "START_GOT-EXCEPTION " << e.what() << endl;
@@ -463,7 +467,8 @@ void readCubeToEditor(int grpi, const char* defaultCubeBits)
     string bits;
     BinWriter sigParse(bits);
     
-    if (grpi >= bucket.grps.size() || bucket.grps[grpi].editorData.piecesFrame.empty()) {// wasn't created yet, use default pieces cube
+    if (grpi >= bucket.grps.size() || bucket.grps[grpi].editorData.piecesFrame.empty()) 
+    {// wasn't created yet, use default pieces cube
         sigParse.unrepr(defaultCubeBits);
     }
     else {
@@ -490,7 +495,7 @@ Vec2i pieceOrigin[] = { Vec2i(-1,-1), Vec2i(1,1), Vec2i(1,5),
                                       Vec2i(5,1), Vec2i(5,5),
                                       Vec2i(9,1), Vec2i(9,5) };
 
-// the the current cube edit data and update PicBucket
+// take the current cube edit data and update PicBucket
 void readCubeFromEditor(int grpi) // fromEditor
 {
     PicArr pcs[6];
@@ -539,6 +544,54 @@ void readCubeFromEditor(int grpi) // fromEditor
     emscripten_trace_report_off_heap_data();
 #endif
 }
+
+int readCubeFromSig(int grpi, const char* sig, const char* name)
+{
+    PicArr pcs[6];
+    for(int i = 0; i < 6; ++i)
+        pcs[i].fillCenter(); // just for better display
+        
+    string bits;
+    BinWriter sigParse(bits);
+    cout << "READ " << grpi << " " << sig << endl;
+    sigParse.unrepr(sig);    
+
+    M_CHECK(bits.size() == 9);
+
+    int tlen = ARRAY_SIZE(teeth);
+    for(int i = 0; i < tlen; ++i) 
+    {
+        Vec2i tpos(teeth[i].x, teeth[i].y);
+        int plen = teeth[i].plen;
+        uint valIndex = sigParse.readBits((plen == 2)?1:2);
+        int pp = teeth[i].p[valIndex]; 
+        if (pp != 0) // 1 in the cube array is piece 0, etc', 0 means its the frame
+        {
+            Vec2i inpic = tpos - pieceOrigin[pp];
+            // go to the piece referenced and set the tooth in it
+            pcs[pp - 1].set(inpic.x, inpic.y) = 1;
+        }
+    }   
+    
+    auto& bucket = PicBucket::mutableInstance();
+    grpi = bucket.updateGrp(grpi, pcs);
+    bucket.grps[grpi].editorData.piecesFrame = sig;
+    bucket.grps[grpi].name = name;
+    
+    return grpi;
+}
+
+void bucketAddFam(const char* name, int startDefi, int count, int resetSelCount)
+{
+    auto& bucket = PicBucket::mutableInstance();
+    bucket.families.resize(bucket.families.size() + 1);
+    PicFamily& f = bucket.families.back();
+    f.name = name;
+    f.startIndex = startDefi;
+    f.numGroups = count;
+    f.onResetSetCount = resetSelCount;
+}
+
 
 void freeMeshAllocator()
 {
@@ -637,8 +690,9 @@ int getCubeTextureHandle(int grpi, int width, int height)
     return curTex->handle();  
 }
 
+Vec2 baseFramePicPos[] = { {1,1}, {1,5}, {5,1}, {5,5}, {9,1}, {9,5} };
 
-void readCubeTexCoord(int grpi)
+void readCubeTexCoord(int grpi, int imgOffsetX, int imgOffsetY, double imgZoom, int imgWidth, int imgHeight, int TSZ)
 {
     auto& bucket = PicBucket::mutableInstance();
     if (grpi < 0 || grpi >= bucket.grps.size()) {
@@ -648,15 +702,19 @@ void readCubeTexCoord(int grpi)
     PicGroupDef& cgrp = bucket.grps[grpi];
     auto& ed = cgrp.editorData;
 
-    ed.imageOffset = Vec2i(EM_ASM_INT_V(return jsgrp.imgOffset.x), EM_ASM_INT_V(return jsgrp.imgOffset.y));
-    ed.imageZoom = EM_ASM_DOUBLE_V(return jsgrp.imgZoom);
+    ed.imageOffset = Vec2i(imgOffsetX, imgOffsetY);
+    ed.imageZoom = imgZoom;
+
+    double imgRatio = ((double)imgHeight/(double)imgWidth) / (11.0/15.0);
+
     for(int i = 0; i < 6; ++i) {
         auto& pic = cgrp.getPic(i);
- 
-        pic.texX = EM_ASM_DOUBLE(return cubeTexInfo[$0].x, i);
-        pic.texY = EM_ASM_DOUBLE(return cubeTexInfo[$0].y, i);
-        pic.texScaleX = EM_ASM_DOUBLE(return cubeTexInfo[$0].scaleX, i);
-        pic.texScaleY = EM_ASM_DOUBLE(return cubeTexInfo[$0].scaleY, i);
+
+        pic.texX = baseFramePicPos[i].x / (15.0 * imgZoom) - imgOffsetX / ((15.0*TSZ) * imgZoom);
+        pic.texY = baseFramePicPos[i].y / (11.0 * imgRatio*imgZoom) - imgOffsetY / ((11.0*TSZ) * imgRatio*imgZoom);
+            
+        pic.texScaleX = 5.0/(15.0*imgZoom);
+        pic.texScaleY = 5.0/(11.0*imgRatio*imgZoom); 
     }
     g_ctrl.requestDraw();
 }

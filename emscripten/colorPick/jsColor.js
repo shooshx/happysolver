@@ -14,17 +14,19 @@
 					colorMode = input.getAttribute('data-colorMode');
 
 				patch.style.cssText =
-					'color:' + (colors.rgbaMixCustom.luminance > 0.22 ? '#222' : '#ddd') + ';' + // Black...???
+					'color:' + (colors.rgbaMixCustom.luminance <= 0.22 ? '#ddd' : '#222') + ';' + // Black...???
 					'background-color:' + RGBAText + ';' +
 					'filter:' + (options.isIE8 ? 'progid:DXImageTransform.Microsoft.gradient(' + // IE<9
 						'startColorstr=#' + AHEX + ',' + 'endColorstr=#' + AHEX + ')' : '');
 
-				input.value = (colorMode === 'HEX' && !isAlpha ? '#' + (options.isIE8 ? AHEX : colors.HEX) :
-					colorMode === 'rgb' || (colorMode === 'HEX' && isAlpha) ?
-					(!isAlpha ? 'rgb(' + RGBInnerText + ')' : RGBAText) :
-					('hsl' + (isAlpha ? 'a(' : '(') + HSL.h + ', ' + HSL.s + '%, ' + HSL.l + '%' +
-						(isAlpha ? ', ' + colors.alpha : '') + ')')
-				);
+                if (!input.beingEditedNow) {  // added by Shy     
+                    input.value = (colorMode === 'HEX' && !isAlpha ? '#' + (options.isIE8 ? AHEX : colors.HEX) :
+                        colorMode === 'rgb' || (colorMode === 'HEX' && isAlpha) ?
+                        (!isAlpha ? 'rgb(' + RGBInnerText + ')' : RGBAText) :
+                        ('hsl' + (isAlpha ? 'a(' : '(') + HSL.h + ', ' + HSL.s + '%, ' + HSL.l + '%' +
+                            (isAlpha ? ', ' + colors.alpha : '') + ')')
+                    );
+                }
 
 				if (options.displayCallback) {
 					options.displayCallback(colors, mode, options);

@@ -240,17 +240,15 @@ public:
 */
 struct PicFamily
 {
-    PicFamily() :startIndex(-1), numGroups(-1), onResetSetCount(0), nSetsSelected(0), nSelected(0) {}
-
     string name;
-    int startIndex; // index of the first cube (picgroup) in the family in the groups array
-    int numGroups; // number of groups in this family;
-    int onResetSetCount; // number of instances of this family upon reset
+    int startIndex = -1; // index of the first cube (picgroup) in the family in the groups array
+    int numGroups = -1; // number of groups in this family;
+    int onResetSetCount = 0; // number of instances of this family upon reset
     string iconFilename;
     string ctrlId; // for html
 
-    mutable int nSetsSelected; // number of selected sets of this family. updated for gui
-    mutable int nSelected; // number of pieces selected. updated for gui.
+    mutable int nSetsSelected = 0; // number of selected sets of this family. updated for gui
+    mutable int nSelected = 0; // number of pieces selected. updated for gui.
 };
 
 class DisplayConf;
@@ -317,7 +315,8 @@ public:
 
     static void buildAllMeshes();
 
-    void updateGrp(int grpi, PicArr arrs[6]);
+    // returns the grpi (userful if given -1)
+    int updateGrp(int grpi, PicArr arrs[6]);
 
 public:
     int sumPics; ///< how many cubes, how many pics in total
