@@ -28,7 +28,8 @@ Black Lines mis-features
 
 flip colors back and front button
 
-
+read stdpcs js
+    count change from 20
 save all params to an object
 
    

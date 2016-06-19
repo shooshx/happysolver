@@ -153,15 +153,17 @@ function start()
     setInterval(sampleTms, 1000)
     
     addingCubeCheck.checked = true
-    setCheck(addingCube, true)
+
     removingCubeCheck.checked = false
-    setCheck(removingCube, false)
+
     setEditAction(ACT_ADD) 
     
     // editor init
     editCtx = editCanvas.getContext("2d")
     blank_tex.loadedOk = true
 
+    ipicCanvas.height = 11*IPIC_TSZ + 2*EDIT_MARGIN
+    ipicCanvas.width = 15*IPIC_TSZ + 2*EDIT_MARGIN
 
     picsAddFamily("Test Fam", "Test Fam", true)
     picsAddCube("Test Cube", "Test Cube", -1, true)
@@ -286,8 +288,9 @@ function handleKey(event) {
 
 var lastFamAdded = ''
 var pics_families = {} // make family id to { cubes: list of { cid: cube-id, grpi: group-index } }
-var pics_cubes = {} // make cube id to { famid }
+var pics_cubes = {} // make cube id to { famid, picSel: array of 6 booleans for each piece (count is same as grp) }
 var max_grpi = 0; // the largest cube number we've seen. used for adding more cubes in the ui
+var currentOpenGrpPicsId = null; // the id of the grp of the currently open individual pics selection or null if it's not open
 
 function picsAddFamily(famName, id, editable) {
     id = id.replace(/[-\. ]/g, '_')
@@ -296,7 +299,7 @@ function picsAddFamily(famName, id, editable) {
         editTag = '<label class="addCubeBtn sc-btn" title="Add Cube" onclick="triggerAddCube(\'ID\')"/><span class="addCubeBtnIn"></span></label>'
     }
     var picsCtrl = '<div id="ID_frame" class="toppic"><div class="famtitle">\
-    <input class="fam_check_box hidden mycheck" id="ID_fcheck" type="checkbox" onchange="on_fam_check(\'ID\', ID_fcheck.checked, true);setCheck(ID_fcheck_label, ID_fcheck.checked)" />\
+    <input class="fam_check_box hidden mycheck" id="ID_fcheck" type="checkbox" onchange="on_fam_check(\'ID\', ID_fcheck.checked, true);" />\
     <label class="fam_check mycheck_label" id="ID_fcheck_label" for="ID_fcheck" ></label>ADDEDIT\
     <div class="fam_label" onclick="pic_rolldown(\'ID\')">LABEL</div>\
     <img class="toppic_icon" id="ID_img" src="arrow_up.png" onclick="pic_rolldown(\'ID\')"></div> \
@@ -315,21 +318,22 @@ function picsAddCube(cubeName, id, grpi, editable) {
     if (grpi == -1)
         grpi = max_grpi + 1
     id = id.replace(/[-\. ]/g, '_')
-    var editStart = '', editEnd = ''
+    var editClass = '', editCall = 'triggerPicSel'
     if (editable) {
-        editStart = "<span class='linklike' onclick=triggerCubeEdit(true,INDEX)>"
-        editEnd= "</span>"
+        editClass = "linklike"
+        editCall = "triggerCubeEdit"
     }
     var txt = '<div id="ID_inframe" class="piccube">\
-    <input class="cube_check_box hidden mycheck" id="ID_ccheck" type="checkbox" onchange="on_cube_check(\'ID\', ID_ccheck.checked, INDEX);setCheck(ID_ccheck_label, ID_ccheck.checked)"/>\
-    <label class="cube_check mycheck_label" id="ID_ccheck_label" for="ID_ccheck" ></label>EDITSTARTLABELEDITEND\
+    <input class="cube_check_box hidden mycheck" id="ID_ccheck" type="checkbox" onchange="on_cube_check(\'ID\', ID_ccheck.checked, INDEX);"/>\
+    <label class="cube_check mycheck_label" id="ID_ccheck_label" for="ID_ccheck" ></label>\
+    <span class="EDITCLASS" onclick="EDITCALL(true,INDEX,\'ID\')">LABEL</span>\
     <input class="cube_count" id="ID_ccount" type="number" min="0" onchange="on_cube_count(\'ID\', INDEX)">\
-    </div>'.replace(/EDITSTART/g, editStart).replace(/EDITEND/g, editEnd).replace(/ID/g, id).replace(/LABEL/g, cubeName).replace(/INDEX/g, grpi)
+    </div>'.replace(/EDITCLASS/g, editClass).replace(/EDITCALL/g,editCall).replace(/ID/g, id).replace(/LABEL/g, cubeName).replace(/INDEX/g, grpi)
     
     var dummy = document.createElement("DIV")
     document.getElementById(lastFamAdded + "_famframe").innerHTML += txt
     pics_families[lastFamAdded].cubes.push( { cid: id, grpi: grpi})
-    pics_cubes[id] = { famid: lastFamAdded }
+    pics_cubes[id] = { famid: lastFamAdded, picSel:[true,true,true,true,true,true] }
     
     if (grpi > max_grpi)
         max_grpi = grpi
@@ -348,20 +352,6 @@ function dispCCount(id, v, gind) {
         setGrpCount(gind, 0)
 }
 
-function setCheck(idlabel, v) {
-    idlabel.classList.remove('mycheck_inter')
-    if (v === true)
-        idlabel.classList.add('mycheck_checked')
-    else if (v === false)
-        idlabel.classList.remove('mycheck_checked')
-    
-}
-function setIntermediate(idlabel, v) {
-    if (v === true)
-        idlabel.classList.add('mycheck_inter')
-    else if (v === false)
-        idlabel.classList.remove('mycheck_inter')
-}
 
 
 function on_fam_check(id, v, doSolve) {
@@ -369,7 +359,6 @@ function on_fam_check(id, v, doSolve) {
     for(var i in fcubes) {
         var c = fcubes[i]
         document.getElementById(c.cid + "_ccheck").checked = v
-        setCheck(document.getElementById(c.cid + "_ccheck_label"), v)
         dispCCount(c.cid, v, c.grpi)
     }
     if (doSolve) // on inialization select, don't want to do this
@@ -379,7 +368,6 @@ function on_fam_check(id, v, doSolve) {
 // from C++ on initialization. just need to take care of the checkboxes and count display. the counts are already there
 function setFamCheck(id, v) {
     document.getElementById(id + "_fcheck").checked = v
-    setCheck(document.getElementById(id + "_fcheck_label"), v)
     on_fam_check(id, v, false)
 }
 
@@ -399,18 +387,12 @@ function picFamCheck(id) {
     famCheck.indeterminate = false
     if (allTrue) {
         famCheck.checked = true
-        setIntermediate(famLabel, false)
-        setCheck(famLabel, true)
     }
     else if (allFalse) {
         famCheck.checked = false
-        setIntermediate(famLabel, false)
-        setCheck(famLabel, false)
     }
     else {
         famCheck.indeterminate = true   
-        setCheck(famLabel, false)
-        setIntermediate(famLabel, true)
     }
 }
 
@@ -428,12 +410,13 @@ function on_cube_count(id, gind) {
     //console.log("COUNT " + prevCh + " " + newCh)
     if (prevCh != newCh) {
         ccheck.checked = newCh
-        setCheck(clabel, newCh)
         picFamCheck(id)
     }
     setGrpCount(gind, ccount.value)
     runningRestart()
 }
+
+
 
 // obj is the int handle of the opengl object
 function registerTexBind(imgname, obj) {
@@ -484,7 +467,7 @@ function sampleTms() {
 }
 
 
-
+// opening the family arrow
 function pic_rolldown(id) {
     var outframe = document.getElementById(id + '_frame')
     var elem = document.getElementById(id + '_famframe')
@@ -647,6 +630,42 @@ function triggerAddCube(intoFam) {
     picsAddCube(cubeName, cubeName, -1, true)
 }
 
+var IPIC_TSZ = 15
+
+function triggerPicSel(v, index, id) 
+{
+    ipicWin.style.visibility = 'visible'
+    var rect = document.getElementById(id + "_inframe").getBoundingClientRect()
+    ipicWin.style.top = rect.top + "px"
+    readCubeToEditor(index)
+    jsgrp = defaultJsGrp()
+    paintCubeSpec(ipicCanvas, ipicCanvas.getContext('2d'), IPIC_TSZ)
+    var ipicRect = ipicWin.getBoundingClientRect()
+    currentOpenGrpPicsId = id
+    
+    // set the current state values
+    for(var i = 0;i < 6; ++i) {
+        document.getElementById("ipic" + (i+1)).checked = pics_cubes[currentOpenGrpPicsId].picSel[i]
+    }
+    
+    var mouseHandler = function(e) {
+        var cx = e.clientX, cy = e.clientY
+        if (cx > ipicRect.left && cx < ipicRect.right && cy > ipicRect.top && cy < ipicRect.bottom)
+            return true; // inside the ipicWin, let it do its jon
+        // otherwise, dismiss the ipinWin
+        ipicWin.style.visibility = 'hidden'
+        document.removeEventListener("mousedown", mouseHandler)
+        currentOpenGrpPicsId = null
+        return false
+    }
+    document.addEventListener("mousedown", mouseHandler)
+}
+
+function on_pic_check(rel_index, v)
+{ // rel_index is the number from the cube - [1-6]
+    pics_cubes[currentOpenGrpPicsId].picSel[rel_index-1] = v
+}
+
 var cube = [
    // 0,1,2,3,4,5,6,7,8,9,1011121314
     [ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ], // 0
@@ -663,7 +682,7 @@ var cube = [
 ]
 
 
-var TSZ = 30  // size in pixels of a tooth
+var EDIT_TSZ = 30  // size in pixels of a tooth
 var DRAW_COLOR = 0
 var DRAW_PROFI = 2
 var DRAW_MARBLE = 4
@@ -678,28 +697,32 @@ var lastFile = null // file object of the last file that was selected by the use
 
 var jsgrp = null; // parameters of the currently edited cube
 
-function drawLine(x, y, w, h) {
-    editCtx.beginPath()
-    editCtx.moveTo(x, y)
-    editCtx.lineTo(x + w, y + h);
-    editCtx.stroke();
+function drawLine(ctx, x, y, w, h) {
+    ctx.beginPath()
+    ctx.moveTo(x, y)
+    ctx.lineTo(x + w, y + h);
+    ctx.stroke();
 }
 
-function paintCube()
+function paintCube() {
+    paintCubeSpec(editCanvas, editCtx, EDIT_TSZ)
+}
+
+function paintCubeSpec(cnvs, ctx, TSZ)
 {
-    editCtx.fillStyle = '#fff'
-    editCtx.fillRect(0, 0, editCanvas.width, editCanvas.height)
+    ctx.fillStyle = '#fff'
+    ctx.fillRect(0, 0, cnvs.width, cnvs.height)
     
     switch(jsgrp.drawType) {
     case DRAW_TEX:
         if (loadedImg) 
         {
-            editCtx.fillStyle = '#'+jsgrp.colorBack.colors.HEX
-            editCtx.fillRect(EDIT_MARGIN, EDIT_MARGIN, 15*TSZ, 11*TSZ) // need to show up below transparent pixels
+            ctx.fillStyle = '#'+jsgrp.colorBack.colors.HEX
+            ctx.fillRect(EDIT_MARGIN, EDIT_MARGIN, 15*TSZ, 11*TSZ) // need to show up below transparent pixels
             
-            var cwidth = 15*TSZ //editCanvas.width - 2*EDIT_MARGIN
+            var cwidth = 15*TSZ 
             var cheight = cwidth * loadedImg.height / loadedImg.width  // maintain same aspect ratio as the image
-            editCtx.drawImage(loadedImg, 0,0, loadedImg.width, loadedImg.height, 
+            ctx.drawImage(loadedImg, 0,0, loadedImg.width, loadedImg.height, 
                                        jsgrp.imgOffset.x + EDIT_MARGIN, jsgrp.imgOffset.y + EDIT_MARGIN, cwidth*jsgrp.imgZoom, cheight*jsgrp.imgZoom)
         }
         break
@@ -707,39 +730,31 @@ function paintCube()
     case DRAW_MARBLE:
         if (!current_src) // indicates colored_tex is on
             throw "missing current_src"
-        editCtx.putImageData(colored_tex, EDIT_MARGIN, EDIT_MARGIN)
+        ctx.putImageData(colored_tex, EDIT_MARGIN, EDIT_MARGIN)
         break
     case DRAW_COLOR:    
-        editCtx.fillStyle = '#'+jsgrp.colorBack.colors.HEX
-        editCtx.fillRect(EDIT_MARGIN, EDIT_MARGIN, 15*TSZ, 11*TSZ)
+        ctx.fillStyle = '#'+jsgrp.colorBack.colors.HEX
+        ctx.fillRect(EDIT_MARGIN, EDIT_MARGIN, 15*TSZ, 11*TSZ)
         break
     }
     
-    editCtx.strokeStyle = 'black'
-    editCtx.lineWidth = 1
+    ctx.strokeStyle = 'black'
+    ctx.lineWidth = 1
     
     // frame
-    editCtx.strokeRect(EDIT_MARGIN, EDIT_MARGIN, 15*TSZ, 11*TSZ)
+    ctx.strokeRect(EDIT_MARGIN, EDIT_MARGIN, 15*TSZ, 11*TSZ)
 
-   /* for(var x = 0; x < 15; ++x) {
-        for(var y = 0; y < 11; ++y) {
-            var v = cube[y][x]
-            editCtx.fillStyle = col[v]
-            editCtx.fillRect(x * TSZ, y * TSZ, TSZ, TSZ)    
-        }
-    }*/
-
-    editCtx.strokeStyle = isColorsBlack(editBlackSel.value, jsgrp.colorBack.colors, jsgrp.colorFront.colors, jsgrp.drawType) ? 'white':'black'
+    ctx.strokeStyle = isColorsBlack(editBlackSel.value, jsgrp.colorBack.colors, jsgrp.colorFront.colors, jsgrp.drawType) ? 'white':'black'
     
     for(var x = 0; x < 15; ++x) {
         for(var y = 0; y < 11; ++y) {
             var v = cube[y][x]
             if (y < 10 && x < 14) {
                 if (v != cube[y+1][x]) {
-                    drawLine(x * TSZ + EDIT_MARGIN, y * TSZ + TSZ + EDIT_MARGIN, TSZ, 0)
+                    drawLine(ctx, x * TSZ + EDIT_MARGIN, y * TSZ + TSZ + EDIT_MARGIN, TSZ, 0)
                 }
                 if (v != cube[y][x+1]) {
-                    drawLine(x * TSZ + TSZ + EDIT_MARGIN, y * TSZ + EDIT_MARGIN, 0, TSZ)
+                    drawLine(ctx, x * TSZ + TSZ + EDIT_MARGIN, y * TSZ + EDIT_MARGIN, 0, TSZ)
                 }                
             }
         }
@@ -879,6 +894,17 @@ function changedColFocus(ed, v, idx) {
 var COLOR_BACK_DEFAULT = "#ffffff"
 var COLOR_FRONT_DEFAULT = "#808080"
 
+function defaultJsGrp() {
+    return { colorBack: new Colors({color:COLOR_BACK_DEFAULT}),
+             colorFront: new Colors({color:COLOR_FRONT_DEFAULT}),
+             drawType: DRAW_COLOR,
+             rotAngle: 0,
+             lastUrl: null,
+             imgOffset: {x:0, y:0},
+             imgZoom: 1
+             }  
+}
+
 function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
 {
     if (v) 
@@ -889,8 +915,8 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
         editActionPiecesCheck.checked = true
         editActionMoveCheck.checked = false
 
-        editCanvas.height = 11*TSZ + 2*EDIT_MARGIN
-        editCanvas.width = 15*TSZ + 2*EDIT_MARGIN
+        editCanvas.height = 11*EDIT_TSZ + 2*EDIT_MARGIN
+        editCanvas.width = 15*EDIT_TSZ + 2*EDIT_MARGIN
         
         setEditAction(ACT_NONE) // prevent hovering on the cube from editing
 
@@ -903,14 +929,7 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
 
         setGrpCount(editingCubeId, 1) // set it to be selected, need to be here after the parts were added from the editor
 
-        jsgrp = { colorBack: new Colors({color:COLOR_BACK_DEFAULT}),
-                 colorFront: new Colors({color:COLOR_FRONT_DEFAULT}),
-                 drawType: DRAW_COLOR,
-                 rotAngle: 0,
-                 lastUrl: null,
-                 imgOffset: {x:0, y:0},
-                 imgZoom: 1
-                 }        
+        jsgrp = defaultJsGrp()      
         
         // read from grp color, drawType, black select
         textureParamToEditor(editingCubeId);
@@ -950,15 +969,15 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
         // transfer the marble,profi images to the canvase so they could be accessed when the time comes
         if (!colored_tex) { // happen only in the first time the dialog opens  - TBD needs to be HIGHER
             var run_image = function(img) {
-                canvas_scratch.width = 15*TSZ
-                canvas_scratch.height = 11*TSZ
+                canvas_scratch.width = 15*EDIT_TSZ
+                canvas_scratch.height = 11*EDIT_TSZ
                 var ctx = canvas_scratch.getContext('2d')
                 ctx.drawImage(img, 0,0)
                 return ctx.getImageData(0,0, canvas_scratch.width, canvas_scratch.height)
             }
             src_marble = run_image(edit_marble)
             src_profi = run_image(edit_profi)
-            colored_tex = editCtx.createImageData(15*TSZ,11*TSZ)
+            colored_tex = editCtx.createImageData(15*EDIT_TSZ, 11*EDIT_TSZ)
         }
         
         paintCube()   
@@ -1027,7 +1046,7 @@ var toothScratch = null
 function checkToothClick(event)
 { 
     var rect = editCanvas.getBoundingClientRect()
-    var x = Math.trunc((event.clientX - rect.left - EDIT_MARGIN)/TSZ), y = Math.trunc((event.clientY - rect.top - EDIT_MARGIN)/TSZ)
+    var x = Math.trunc((event.clientX - rect.left - EDIT_MARGIN)/EDIT_TSZ), y = Math.trunc((event.clientY - rect.top - EDIT_MARGIN)/EDIT_TSZ)
     //console.log(x + " " + y)
     
     var hasSameNei = function(v, x, y) { // don't allow isolated tooth of a color
@@ -1253,7 +1272,7 @@ function sendTexCoord()
     if (loadedImg === null)
         return
 
-    readCubeTexCoord(editingCubeId, jsgrp.imgOffset.x, jsgrp.imgOffset.y, jsgrp.imgZoom, loadedImg.width, loadedImg.height, TSZ) 
+    readCubeTexCoord(editingCubeId, jsgrp.imgOffset.x, jsgrp.imgOffset.y, jsgrp.imgZoom, loadedImg.width, loadedImg.height, EDIT_TSZ) 
 }
 
 function triggerAction(bpr)
@@ -1547,14 +1566,14 @@ body {
     left: 8px;
 }
 
-.mycheck_label {
-    background-image: url(check_none.png);
+.mycheck + .mycheck_label {
+    background: url(check_none.png) no-repeat;
     display: inline-block;
 }
-.mycheck_checked {
+.mycheck:checked + .mycheck_label {
     background-image: url(check_checked.png);
 }
-.mycheck_inter {
+.mycheck:indeterminate + .mycheck_label {
     background-image: url(check_int.png);
 }
 
@@ -1749,6 +1768,9 @@ h1 {
     color: blue;
     text-decoration: underline;
 }
+
+/* ------------ editor stuff */
+
 #picEditWin {
     height: 550px;
 }
@@ -1917,13 +1939,47 @@ input:checked + .sc-btn
     visibility: hidden;
 }
 #editErrMsg {
-position: absolute;
+    position: absolute;
     top: 460px;
     left: 280px;
     color: red;
     font-family: tahoma;
     font-weight: bold;
 }
+
+/*--------------- ipic (single piece picker)*/
+
+#ipicWin {
+    position: absolute;
+    width: 235px;
+    height: 175px; 
+    border-radius: 7px;
+    right: 220px;
+    top: 100px;   
+    background: #fff;
+    visibility: hidden;
+}
+#ipicCanvas {
+    position: absolute;
+    border-radius: 7px;
+}
+#inputsContainer {
+    position: relative;
+}
+.ipic_check {
+    position: absolute;
+    width: 17px;
+    height: 17px;
+    z-index: 2;
+}
+#ipic1Lbl { left: 50px;  top: 50px; }
+#ipic2Lbl { left: 50px;  top: 110px;}
+#ipic3Lbl { left: 110px; top: 50px; }
+#ipic4Lbl { left: 110px; top: 110px;}
+#ipic5Lbl { left: 170px; top: 50px; }
+#ipic6Lbl { left: 170px; top: 110px;}
+
+
 
 </style>
 </head>
@@ -1940,6 +1996,7 @@ position: absolute;
       <label id="addFamBtn" class="sc-btn" onclick="triggerAddFam()"/>
       <span style="background: url(plus.png) center no-repeat; display: inline-block; width: 34px; height: 33px;"></span></label>
     </div>
+
     <div id="editBack" class="popupBack"><div id="picEditWin" class="popupWin">
         <canvas id="editCanvas" width="590", height="450"></canvas>
         <label id="editDoneBtn" class="sc-btn" onclick="triggerEditDone()"/>Done</label>
@@ -1987,7 +2044,26 @@ position: absolute;
         <canvas id="canvas_scratch" style="display:none;"></canvas>
 
     </div></div></div>
+
+    <div id="ipicWin">
+        <div id="inputsContainer">
+        <input id="ipic1" type="checkbox" class="mycheck hidden" onchange="on_pic_check(1,this.checked)">
+        <label id="ipic1Lbl" for="ipic1" class="mycheck_label ipic_check" ></label>
+        <input id="ipic2" type="checkbox" class="mycheck hidden" onchange="on_pic_check(2,this.checked)">
+        <label id="ipic2Lbl" for="ipic2" class="mycheck_label ipic_check" ></label>
+        <input id="ipic3" type="checkbox" class="mycheck hidden" onchange="on_pic_check(3,this.checked)">
+        <label id="ipic3Lbl" for="ipic3" class="mycheck_label ipic_check" ></label>
+        <input id="ipic4" type="checkbox" class="mycheck hidden" onchange="on_pic_check(4,this.checked)">
+        <label id="ipic4Lbl" for="ipic4" class="mycheck_label ipic_check" ></label>
+        <input id="ipic5" type="checkbox" class="mycheck hidden" onchange="on_pic_check(5,this.checked)">
+        <label id="ipic5Lbl" for="ipic5" class="mycheck_label ipic_check" ></label>
+        <input id="ipic6" type="checkbox" class="mycheck hidden" onchange="on_pic_check(6,this.checked)">
+        <label id="ipic6Lbl" for="ipic6" class="mycheck_label ipic_check" ></label>
+        
+        </div>
+        <canvas id="ipicCanvas"></canvas>
     </div>
+    
     <div id="urlPopup"><input id="urlEdit" type="text" onchange="urlEditChanged()"/></div>
     
     <canvas id="mycanvas" width="800" height="700"></canvas>

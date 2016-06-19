@@ -469,7 +469,9 @@ void readCubeToEditor(int grpi, const char* defaultCubeBits)
     
     if (grpi >= bucket.grps.size() || bucket.grps[grpi].editorData.piecesFrame.empty()) 
     {// wasn't created yet, use default pieces cube
-        sigParse.unrepr(defaultCubeBits);
+        string sbits(defaultCubeBits);
+        M_CHECK(!sbits.empty());
+        sigParse.unrepr(sbits);
     }
     else {
         bits = bucket.grps[grpi].editorData.piecesFrame;
@@ -575,7 +577,7 @@ int readCubeFromSig(int grpi, const char* sig, const char* name)
     
     auto& bucket = PicBucket::mutableInstance();
     grpi = bucket.updateGrp(grpi, pcs);
-    bucket.grps[grpi].editorData.piecesFrame = sig;
+    bucket.grps[grpi].editorData.piecesFrame = bits;
     bucket.grps[grpi].name = name;
     
     return grpi;
