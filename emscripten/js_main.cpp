@@ -337,6 +337,20 @@ void setGrpCount(int grpi, int count)
     }
 }
 
+void setPicCount(int grpi, int relIndex, int count)
+{
+    auto& bucket = PicBucket::mutableInstance();
+    if (grpi < 0 || grpi >= bucket.grps.size()) {
+        cout << "no-such-cube(sp) " << grpi << endl;
+        return;
+    }
+    auto& grp = bucket.grps[grpi];
+    if (relIndex > grp.picsi.size()) {
+        cout << "relIndex too big " << relIndex << " " << grpi << endl;
+        return;
+    }
+    bucket.pdefs[grp.picsi[relIndex]].setSelected(count);
+}
 
 
 // a stack of pushd vectors, each the size of pdefs that holds the info about the pieces selection

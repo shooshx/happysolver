@@ -327,7 +327,7 @@ function picsAddCube(cubeName, id, grpi, editable) {
     <input class="cube_check_box hidden mycheck" id="ID_ccheck" type="checkbox" onchange="on_cube_check(\'ID\', ID_ccheck.checked, INDEX);"/>\
     <label class="cube_check mycheck_label" id="ID_ccheck_label" for="ID_ccheck" ></label>\
     <span class="EDITCLASS" onclick="EDITCALL(true,INDEX,\'ID\')">LABEL</span>\
-    <input class="cube_count" id="ID_ccount" type="number" min="0" onchange="on_cube_count(\'ID\', INDEX)">\
+    <input class="cube_count" id="ID_ccount" type="number" min="0" oninput="on_cube_count(\'ID\', INDEX)">\
     </div>'.replace(/EDITCLASS/g, editClass).replace(/EDITCALL/g,editCall).replace(/ID/g, id).replace(/LABEL/g, cubeName).replace(/INDEX/g, grpi)
     
     var dummy = document.createElement("DIV")
@@ -335,17 +335,24 @@ function picsAddCube(cubeName, id, grpi, editable) {
     pics_families[lastFamAdded].cubes.push( { cid: id, grpi: grpi})
     pics_cubes[id] = { famid: lastFamAdded, picSel:[true,true,true,true,true,true] }
     
+    
+    
     if (grpi > max_grpi)
         max_grpi = grpi
 }
 
 // update the cube count after a check is changed. v is boolean for the value of the check
-function dispCCount(id, v, gind) {
+// ccount - cube count display
+function dispCCount(id, v) {
     var ccount = document.getElementById(id + "_ccount")
     ccount.style.display = (v ? "inline":"none")
     if (v && ccount.value <= 0)
         ccount.value = 1
-    
+}
+
+// send the count of an entire cube to c++, v is checke, count is the number, only if v is true
+function sendGrpCount(id, v, gind) {
+    var ccount = document.getElementById(id + "_ccount")
     if (v)
         setGrpCount(gind, ccount.value)
     else
@@ -353,13 +360,14 @@ function dispCCount(id, v, gind) {
 }
 
 
-
 function on_fam_check(id, v, doSolve) {
     var fcubes = pics_families[id].cubes;
     for(var i in fcubes) {
         var c = fcubes[i]
         document.getElementById(c.cid + "_ccheck").checked = v
-        dispCCount(c.cid, v, c.grpi)
+        dispCCount(c.cid, v)
+        sendGrpCount(c.cid, v, c.grpi)
+        resetPicSel(c.cid, v)
     }
     if (doSolve) // on inialization select, don't want to do this
         runningRestart()
@@ -371,6 +379,22 @@ function setFamCheck(id, v) {
     on_fam_check(id, v, false)
 }
 
+function triState(elem, allTrue, allFalse)
+{
+    elem.indeterminate = false
+    if (allTrue) {
+        elem.checked = true
+    }
+    else if (allFalse) {
+        elem.checked = false
+    }
+    else {
+        elem.indeterminate = true   
+        elem.checked = false
+    }
+}
+
+// set the state of the family checkbox according the the selection
 function picFamCheck(id) {
     var famid = pics_cubes[id].famid
     var fcubes = pics_families[famid].cubes;
@@ -384,39 +408,67 @@ function picFamCheck(id) {
     }
     var famCheck = document.getElementById(famid + "_fcheck")
     var famLabel = document.getElementById(famid + "_fcheck_label")
-    famCheck.indeterminate = false
-    if (allTrue) {
-        famCheck.checked = true
-    }
-    else if (allFalse) {
-        famCheck.checked = false
-    }
-    else {
-        famCheck.indeterminate = true   
-    }
+    
+    triState(famCheck, allTrue, allFalse)
 }
 
 function on_cube_check(id, v, gind) {
-    dispCCount(id, v, gind)
+    dispCCount(id, v) // also sends to c++
+    sendGrpCount(id, v, gind)
     picFamCheck(id)
+    resetPicSel(id, v)
     runningRestart()
 }
 
+// set a value to all of the individual booleans
+function resetPicSel(id, v)
+{
+    var picSel = pics_cubes[id].picSel
+    for(var i in picSel) { // go over the 6 pieces
+        picSel[i] = v
+    }
+}
+
+// id - of the cube
 function on_cube_count(id, gind) {
     var ccount = document.getElementById(id + "_ccount")
     var ccheck = document.getElementById(id + "_ccheck")
-    var clabel = document.getElementById(id + "_ccheck_label")
-    var prevCh = ccheck.checked, newCh = (ccount.value > 0)
+
+    var prevCh = ccheck.checked || ccheck.indeterminate
+    var newCh = (ccount.value > 0)
     //console.log("COUNT " + prevCh + " " + newCh)
     if (prevCh != newCh) {
         ccheck.checked = newCh
+        ccheck.indeterminate = false // changing the checkbox or count resets the individual selection so no indeterminate
         picFamCheck(id)
     }
     setGrpCount(gind, ccount.value)
+    
+    // set the individual booleans
+    resetPicSel(id, newCh)
     runningRestart()
 }
 
-
+// individual piece selected in the ipicWin
+function on_pic_check(rel_index, v)
+{ // rel_index is the number from the cube - [1-6]
+    var picSel = pics_cubes[currentOpenGrpPicsId].picSel
+    picSel[rel_index-1] = v
+    
+    // calc the state of the grp
+    var allTrue = true, allFalse = true
+    for(var i in picSel) { // go over the 6 pieces
+        var iv = picSel[i]
+        allTrue = allTrue && iv
+        allFalse = allFalse && !iv        
+    }
+    var ccheck = document.getElementById(currentOpenGrpPicsId + "_ccheck")
+    triState(ccheck, allTrue, allFalse)
+    
+    picFamCheck(currentOpenGrpPicsId)
+    dispCCount(currentOpenGrpPicsId, !allFalse) // as long as it's not all turned off, we still want the count to be visible
+    runningRestart()
+}
 
 // obj is the int handle of the opengl object
 function registerTexBind(imgname, obj) {
@@ -661,10 +713,7 @@ function triggerPicSel(v, index, id)
     document.addEventListener("mousedown", mouseHandler)
 }
 
-function on_pic_check(rel_index, v)
-{ // rel_index is the number from the cube - [1-6]
-    pics_cubes[currentOpenGrpPicsId].picSel[rel_index-1] = v
-}
+
 
 var cube = [
    // 0,1,2,3,4,5,6,7,8,9,1011121314
