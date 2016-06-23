@@ -610,7 +610,9 @@ void Cube::puttgr(Solutions *slvs, SolveContext *thread, SlvCube* starter, int d
     }
 
     if (p == -1 && thread->goSlvNum == 0) {
-        slvs->addBackCommon(thread->m_stats.maxpSlv.release());
+        if (thread->m_stats.maxpSlv.get() != nullptr) { // in case there's 0 pieces, there won't be a maxSlv
+            slvs->addBackCommon(thread->m_stats.maxpSlv.release());
+        }
         thread->notifyFullEnum();
         thread->selfExit = true;
     }

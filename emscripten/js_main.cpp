@@ -341,14 +341,15 @@ void setPicCount(int grpi, int relIndex, int count)
 {
     auto& bucket = PicBucket::mutableInstance();
     if (grpi < 0 || grpi >= bucket.grps.size()) {
-        cout << "no-such-cube(sp) " << grpi << endl;
+        cout << "ERR no-such-cube(sp) " << grpi << endl;
         return;
     }
     auto& grp = bucket.grps[grpi];
     if (relIndex > grp.picsi.size()) {
-        cout << "relIndex too big " << relIndex << " " << grpi << endl;
+        cout << "ERR relIndex too big " << relIndex << " " << grpi << endl;
         return;
     }
+    cout << "SET-PIC grp=" << grpi << " defi=" << grp.picsi[relIndex] << " = " << count << endl;
     bucket.pdefs[grp.picsi[relIndex]].setSelected(count);
 }
 

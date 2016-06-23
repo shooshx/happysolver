@@ -34,7 +34,7 @@ var model = { vtxBuf: null }
 var loadSolution, resizeGl, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseWheel, cpp_draw, cpp_slvrun, getTms
 var setGrpCount, setEditAction, runningRestart, serializeCurrent, deserializeAndLoad, readCubeFromEditor, newRestart, conf
 var stackState, textureParamCube, getCubeTextureHandle, readCubeTexCoord, loadSlvSimple, freeMeshAllocator
-var readCubeToEditor, textureParamToEditor, getToothPossibilities, solveGo, readCubeFromSig, bucketAddFam
+var readCubeToEditor, textureParamToEditor, getToothPossibilities, solveGo, readCubeFromSig, bucketAddFam, setPicCount
 var ctrlPressed = false
 var editCtx = null
 var unimesh_keys = Object.keys(unimesh) // unimesh included above
@@ -113,6 +113,7 @@ function start()
     getToothPossibilities = Module.cwrap('getToothPossibilities', null, ['number', 'number'])
     readCubeFromSig = Module.cwrap('readCubeFromSig', 'number', ['number', 'string', 'string'])
     bucketAddFam = Module.cwrap('bucketAddFam', null, ['string', 'number', 'number', 'number'])
+    setPicCount = Module.cwrap('setPicCount', null, ['number', 'number', 'number'])
    
     Module.ccall('cpp_start', null);
     conf(true)
@@ -290,7 +291,7 @@ var lastFamAdded = ''
 var pics_families = {} // make family id to { cubes: list of { cid: cube-id, grpi: group-index } }
 var pics_cubes = {} // make cube id to { famid, picSel: array of 6 booleans for each piece (count is same as grp) }
 var max_grpi = 0; // the largest cube number we've seen. used for adding more cubes in the ui
-var currentOpenGrpPicsId = null; // the id of the grp of the currently open individual pics selection or null if it's not open
+var currentOpenGrpPics = null; // the {id:str in html,index:int grpi} of the grp of the currently open individual pics selection or null if it's not open
 
 function picsAddFamily(famName, id, editable) {
     id = id.replace(/[-\. ]/g, '_')
@@ -435,7 +436,7 @@ function on_cube_count(id, gind) {
     var ccheck = document.getElementById(id + "_ccheck")
 
     var prevCh = ccheck.checked || ccheck.indeterminate
-    var newCh = (ccount.value > 0)
+    var newCh = (parseInt(ccount.value) > 0)
     //console.log("COUNT " + prevCh + " " + newCh)
     if (prevCh != newCh) {
         ccheck.checked = newCh
@@ -452,7 +453,7 @@ function on_cube_count(id, gind) {
 // individual piece selected in the ipicWin
 function on_pic_check(rel_index, v)
 { // rel_index is the number from the cube - [1-6]
-    var picSel = pics_cubes[currentOpenGrpPicsId].picSel
+    var picSel = pics_cubes[currentOpenGrpPics.id].picSel
     picSel[rel_index-1] = v
     
     // calc the state of the grp
@@ -462,11 +463,14 @@ function on_pic_check(rel_index, v)
         allTrue = allTrue && iv
         allFalse = allFalse && !iv        
     }
-    var ccheck = document.getElementById(currentOpenGrpPicsId + "_ccheck")
+    var ccheck = document.getElementById(currentOpenGrpPics.id + "_ccheck")
+    var ccount = document.getElementById(currentOpenGrpPics.id + "_ccount")
     triState(ccheck, allTrue, allFalse)
     
-    picFamCheck(currentOpenGrpPicsId)
-    dispCCount(currentOpenGrpPicsId, !allFalse) // as long as it's not all turned off, we still want the count to be visible
+    picFamCheck(currentOpenGrpPics.id)
+    dispCCount(currentOpenGrpPics.id, !allFalse) // as long as it's not all turned off, we still want the count to be visible
+    var send_count = v ? parseInt(ccount.value) : 0
+    setPicCount(currentOpenGrpPics.index, rel_index-1, send_count)
     runningRestart()
 }
 
@@ -693,11 +697,11 @@ function triggerPicSel(v, index, id)
     jsgrp = defaultJsGrp()
     paintCubeSpec(ipicCanvas, ipicCanvas.getContext('2d'), IPIC_TSZ)
     var ipicRect = ipicWin.getBoundingClientRect()
-    currentOpenGrpPicsId = id
+    currentOpenGrpPics = {id:id, index:index}
     
     // set the current state values
     for(var i = 0;i < 6; ++i) {
-        document.getElementById("ipic" + (i+1)).checked = pics_cubes[currentOpenGrpPicsId].picSel[i]
+        document.getElementById("ipic" + (i+1)).checked = pics_cubes[currentOpenGrpPics.id].picSel[i]
     }
     
     var mouseHandler = function(e) {
@@ -707,7 +711,7 @@ function triggerPicSel(v, index, id)
         // otherwise, dismiss the ipinWin
         ipicWin.style.visibility = 'hidden'
         document.removeEventListener("mousedown", mouseHandler)
-        currentOpenGrpPicsId = null
+        currentOpenGrpPics = null
         return false
     }
     document.addEventListener("mousedown", mouseHandler)

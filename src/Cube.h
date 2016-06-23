@@ -135,17 +135,17 @@ private:
 struct RunStats
 {
 public:
-	RunStats() : tms(0), lucky(false), maxp(0) {}
 	void reset() 
 	{
 		tms = 0;
 		lucky = false;
 		maxp = 0;
+        maxpSlv.reset();
 	}
 
-	volatile mint64 tms; ///< number of piece changes
-	volatile bool lucky; ///< luck state of the engine.
-	volatile int maxp;  ///< the maximal place reached on the shape
+	volatile mint64 tms = 0; ///< number of piece changes
+	volatile bool lucky = false; ///< luck state of the engine.
+	volatile int maxp = 0;  ///< the maximal place reached on the shape
     unique_ptr<SlvCube> maxpSlv; ///< a solution with the maximum place reached
 };
 
