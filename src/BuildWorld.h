@@ -172,7 +172,7 @@ public:
     static void getBuildCoords(Vec3i g, CoordBuild b[6]);
     int getTestShapeFcInd(CoordBuild s) const;
 
-    void unGenerate(const Shape *shp);
+    void unGenerate(const Shape *shp, SqrLimits *bound);
 
     enum ECleanMethod 
     {

@@ -214,7 +214,7 @@ bool initCubeEngine(const char* stdpcs, const char* unimesh)
     try {
         auto& bucket = PicBucket::mutableInstance();
     
-      //  g_ctrl.m_modelGl.initTex();
+        g_ctrl.m_modelGl.initTex();
            
       //  if (!bucket.loadXML(stdpcs))
       //      return false;
@@ -394,9 +394,9 @@ int serializeCurrent()
 {
     static string s;
     s = g_ctrl.m_doc.serializeMinBin();
-    cout << "**** " << s.size() << "::";
+    //cout << "**** " << s.size() << "::";
     for(int i = 0;i < s.size(); ++i) {
-        cout << (uint32_t)(uint8_t)s[i] << " ";
+        //cout << (uint32_t)(uint8_t)s[i] << " ";
         EM_ASM_( scratchArr.push($0), (uint8_t)s[i] );
     }
     cout << endl;
@@ -415,6 +415,7 @@ void deserializeAndLoad(int len) // shape and solution
     g_ctrl.m_modelGl.m_buildCtrl.reloadWorld();
     
     g_ctrl.m_doc.setCurSlvToLast();
+    dispFirstSlv();
     g_ctrl.requestDraw();
 }
 

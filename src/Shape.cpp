@@ -458,38 +458,51 @@ void Shape::initSizeAndBounds(const SqrLimits& bounds)
     size.z = bounds.maxpage - bounds.minpage + 4 + 1; // page plays z
 }
 
+
 EGenResult Shape::readWorld(const BuildWorld *build, int* reqf)
 {
-    Vec3i fcSize(build->size);
-    SqrLimits bounds; //page plays z
-    bounds.Inverse(BUILD_SIZE * 4);
+    *reqf = -1;
+    if (m_orderTemplate == nullptr)
+    {
+        Vec3i fcSize(build->size);
+        SqrLimits bounds; //page plays z
+        bounds.Inverse(BUILD_SIZE * 4);
 
-    ///////// BUILD FACES ///
-    list<FaceDef> flst;
+        ///////// BUILD FACES ///
+        list<FaceDef> flst;
 
+        readAxis(build, fcSize.y, fcSize.z, fcSize.x, YZ_PLANE, flst, reqf, bounds);
+        readAxis(build, fcSize.x, fcSize.z, fcSize.y, XZ_PLANE, flst, reqf, bounds);
+        readAxis(build, fcSize.x, fcSize.y, fcSize.z, XY_PLANE, flst, reqf, bounds);
+        build->m_gen_bounds = bounds; // save the bounds of the last generate
+        initSizeAndBounds(bounds);
 
-    readAxis(build, fcSize.y, fcSize.z, fcSize.x, YZ_PLANE, flst, reqf, bounds);
-    readAxis(build, fcSize.x, fcSize.z, fcSize.y, XZ_PLANE, flst, reqf, bounds);
-    readAxis(build, fcSize.x, fcSize.y, fcSize.z, XY_PLANE, flst, reqf, bounds);
-    build->m_gen_bounds = bounds; // save the bounds of the last generate
-    initSizeAndBounds(bounds);
+        faces = new FaceDef[fcn];
+        auto faceit = flst.cbegin();
+        for (int i = 0; i < fcn; ++i)
+        {	// convert the linked list to an array, NORMAIZE the coodrinates to the size of the array, and dispose of the list
+            faces[i].dr = faceit->dr;
+            faces[i].ex = Vec3i(faceit->ex.x - bounds.minx, faceit->ex.y - bounds.miny, faceit->ex.z - bounds.minpage);
+            ++faceit;
+        }
+        flst.clear();
+        // first some sanity check needed for generating the face sequences later
+        if (*reqf == -1)
+            return GEN_RESULT_NO_START; // no start found
+        *reqf = fcn - *reqf - 1; // order is upsidedown (list to vector)
 
-    faces = new FaceDef[fcn];
-    auto faceit = flst.cbegin();
-    for (int i = 0; i < fcn; ++i)
-    {	// convert the linked list to an array, NORMAIZE the coodrinates to the size of the array, and dispose of the list
-        faces[i].dr = faceit->dr;
-        faces[i].ex = Vec3i(faceit->ex.x - bounds.minx, faceit->ex.y - bounds.miny, faceit->ex.z - bounds.minpage);
-        m_opt_facesLoc[faces[i].dr].axx(faces[i].ex, 4) = i; // build face optimizing array
-
-        ++faceit;
     }
-    flst.clear();
+    else { // have m_orderTemplate
+        faces = m_orderTemplate->faceDefs;
+        fcn = m_orderTemplate->faces.size();
+        initSizeAndBounds(m_orderTemplate->bounds);
+        *reqf = 0;
+    }
 
-    // first some sanity check needed for generating the face sequences later
-    if (*reqf == -1)
-        return GEN_RESULT_NO_START; // no start found
-    *reqf = fcn - *reqf - 1; // order is upsidedown (list to vector)
+    for (int i = 0; i < fcn; ++i) {
+        m_opt_facesLoc[faces[i].dr].axx(faces[i].ex, 4) = i; // build face optimizing array
+    }
+
     return GEN_RESULT_OK;
 }
 
@@ -600,17 +613,21 @@ EGenResult Shape::generate(const BuildWorld *build)
     if (gret != GEN_RESULT_OK)
         return gret;
 
+
+
     gret = buildSidesAndCorners();
     if (gret != GEN_RESULT_OK)
         return gret;
 
     makeVolumeAndFacing(); // need this now because the template is indexed with EFacing
     
-    // transform faces order for a building sequence (so far the order was what was read from the world
-
-    gret = orderFacesInSequence(reqf);
-    if (gret != GEN_RESULT_OK)
-        return gret;
+    if (m_orderTemplate == nullptr) {
+        // transform faces order for a building sequence (so far the order was what was read from the world
+        // unless we have an order from a loaded shape
+        gret = orderFacesInSequence(reqf);
+        if (gret != GEN_RESULT_OK)
+            return gret;
+    }
 
     // some additional tasks
     makeReverseNei();

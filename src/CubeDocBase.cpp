@@ -160,13 +160,15 @@ bool CubeDocBase::callGenerate(Shape *shape, bool bSilent)
     return false;
 }
 
-bool CubeDocBase::onGenShape(bool resetSlv, GenTemplate* temp)
+bool CubeDocBase::onGenShape(bool resetSlv, const GenTemplate* temp, const OrderTemplate* orderTemp)
 {
     unique_ptr<Shape> newshp(new Shape);
     // the generate process first fills as much of the template as possible, then new tiles
     newshp->m_genTemplate = temp; 
+    newshp->m_orderTemplate = orderTemp;
     bool ret = callGenerate(newshp.get(), false);
     newshp->m_genTemplate = nullptr;
+    newshp->m_orderTemplate = nullptr;
 
     if (ret)
     {
@@ -267,24 +269,30 @@ void CubeDocBase::transferShape()
     m_slvs->toNewShape(m_shp.get());
 }
 
-
-void CubeDocBase::generateFromFaces(const vector<tuple<Vec3i, int>>& faces)
+// new shape would have the same faces order as the given vector, even thought this might 
+// not be the natural order of the shape if it as generated from scratch
+// the difference is due to accumulated generation of the original shape
+void CubeDocBase::generateFromFaces(OrderTemplate& ort)
 {
-    SqrLimits bounds;
-    bounds.Inverse(BUILD_SIZE * 4);
+    SqrLimits ldBounds; // loaded bounds, not centered in the world
+    ldBounds.Inverse(BUILD_SIZE * 4);
     Shape tmp;
-    tmp.faces = new Shape::FaceDef[faces.size()];
-    tmp.fcn = faces.size();
-    for(int i = 0; i < faces.size(); ++i) {
-        const auto& t = faces[i];
+    tmp.faces = new Shape::FaceDef[ort.faces.size()];
+    tmp.fcn = ort.faces.size();
+    for(int i = 0; i < ort.faces.size(); ++i) {
+        const auto& t = ort.faces[i];
         auto& f = tmp.faces[i];
-        f.ex = get<0>(t);
-        f.dr = (EPlane)get<1>(t);
-        bounds.MaxMin(f.ex.z, f.ex.x, f.ex.y);
+        f.ex = t.ex;
+        f.dr = t.dr;
+        ldBounds.MaxMin(f.ex.z, f.ex.x, f.ex.y);
     }
-    tmp.initSizeAndBounds(bounds);
-    m_build->unGenerate(&tmp);
-    onGenShape();
+    tmp.initSizeAndBounds(ldBounds); // needed for unGenerate
+    ort.bounds.Inverse(BUILD_SIZE * 4);
+    m_build->unGenerate(&tmp, &ort.bounds); // ort.bounds is centered in the world properly
+    
+    ort.faceDefs = tmp.faces; // will move it to the new shape
+    tmp.faces = nullptr; // prevent it from deallocating
+    onGenShape(true, nullptr, &ort);
 }
 
 void CubeDocBase::addSlvMin(const vector<pair<int, int>>& sv)
@@ -307,14 +315,15 @@ void CubeDocBase::loadMinText(const string& s)
     istringstream is(s);
     int fcn = 0, x, y, z, dr, sc, rt;
     is >> fcn;
-    vector<tuple<Vec3i, int>> faces;
+    OrderTemplate ort;
+    //vector<tuple<Vec3i, int>> faces;
     for(int i = 0; i < fcn; ++i) {
         is >> x >> y >> z >> dr;
         if (!is.good()) {
             cout << "unexpected end read faces " << i << endl;
             return;
         }
-        faces.push_back(make_tuple(Vec3i(x, y, z), dr));
+        ort.faces.push_back(OrderTemplate::LoadedFace(Vec3i(x, y, z), (EPlane)dr));
     }
     vector<pair<int, int>> slv; // sc, dt
     for(int i = 0; i < fcn; ++i) {
@@ -326,7 +335,7 @@ void CubeDocBase::loadMinText(const string& s)
         slv.push_back(make_pair(sc, rt));
     }
 
-    generateFromFaces(faces);
+    generateFromFaces(ort);
     addSlvMin(slv);
 }
 
@@ -387,7 +396,8 @@ bool CubeDocBase::loadMinBin(const string& s)
         return false;
     int fcn = rd.readBits(8);
     int x, y, z, dr, sc, rt;
-    vector<tuple<Vec3i, int>> faces;
+    OrderTemplate ort;
+    //vector<tuple<Vec3i, int>> faces;
     for (int i = 0; i < fcn; ++i) {
         x = rd.readBits(6) * 4;
         y = rd.readBits(6) * 4;
@@ -397,7 +407,7 @@ bool CubeDocBase::loadMinBin(const string& s)
             cout << "unexpected end reading faces " << i << endl;
             return false;
         }
-        faces.push_back(make_tuple(Vec3i(x, y, z), dr));
+        ort.faces.push_back(OrderTemplate::LoadedFace(Vec3i(x, y, z), (EPlane)dr));
     }
 
     vector<pair<int, int>> slv; // sc, dt
@@ -411,7 +421,7 @@ bool CubeDocBase::loadMinBin(const string& s)
         slv.push_back(make_pair(sc, rt));
     }
 
-    generateFromFaces(faces);
+    generateFromFaces(ort);
     addSlvMin(slv);
     return true;
 }

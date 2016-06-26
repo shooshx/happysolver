@@ -148,7 +148,7 @@ public slots:
 
     void OnFileResetsolves();
     void OnFileOpen();
-    virtual bool onGenShape(bool resetSlv = true, GenTemplate* temp = nullptr) override;
+    virtual bool onGenShape(bool resetSlv = true, const GenTemplate* temp = nullptr, const OrderTemplate* orderTemp = nullptr) override;
     void OnFileSave(); 
     void OnFileExport(); 
 

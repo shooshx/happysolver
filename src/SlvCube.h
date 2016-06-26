@@ -29,9 +29,9 @@ public:
         SlvPiece(int _abs_sc, int _abs_rt) 
             : abs_sc(_abs_sc), abs_rt(_abs_rt)
         {}
-		SlvPiece(int _abs_sc, int _abs_rt, int _comp_sc, int _comp_rt) 
-			: abs_sc(_abs_sc), abs_rt(_abs_rt), comp_sc(_comp_sc), comp_rt(_comp_rt)
-		{}
+		//SlvPiece(int _abs_sc, int _abs_rt, int _comp_sc, int _comp_rt) 
+		//	: abs_sc(_abs_sc), abs_rt(_abs_rt), comp_sc(_comp_sc), comp_rt(_comp_rt)
+		//{}
 		// loaded data
 
 		int abs_sc = -1; ///< the piece, from the Bucket's pdef
@@ -39,8 +39,8 @@ public:
 
 		const PicDef* sdef() const;
 
-        int comp_sc = -1; ///< the piece fromt he 'comp' pics set TBD-REMOVE
-        int comp_rt = -1; ///< rotation of the comp piece (index in rtns, not absolute)
+        //int comp_sc = -1; ///< the piece fromt he 'comp' pics set TBD-REMOVE
+        //int comp_rt = -1; ///< rotation of the comp piece (index in rtns, not absolute)
 	};
 
 	/// SlvPic holds the data of a single piece that was selected when the solution was generated.

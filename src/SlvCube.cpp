@@ -15,7 +15,7 @@ SlvCube::SlvCube(const vector<ShapePlace>& plc, const vector<ShapePlace>& abs_pl
 		// sc is the index in the added array of the set
 		// rt is the absolute [0,7] rotation index
         //cout << abs_plc[j].sc << "  " << abs_plc[j].rt << endl;
-		dt.push_back(SlvPiece(abs_plc[j].sc, abs_plc[j].rt, plc[j].sc, plc[j].rt));
+		dt.push_back(SlvPiece(abs_plc[j].sc, abs_plc[j].rt));//, plc[j].sc, plc[j].rt));
 	}
 	
 	for(int j = 0; j < picset->added.size(); ++j)
@@ -198,7 +198,7 @@ string SlvCube::debug_prn() const
     ss << dt.size() << ":";
     for(int i = 0; i < dt.size(); ++i)
 	{
-		ss << dt[i].abs_sc << "," << dt[i].abs_rt << ",";
+		ss << dt[i].abs_sc << "," << dt[i].abs_rt << ":["  << shape->faces[i].ex << ":" << shape->faces[i].dr << "]  " ;
 	}
     return ss.str();
 }

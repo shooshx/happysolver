@@ -87,7 +87,7 @@ public:
     bool realOpen(const string& name, bool* gotSolutions);
 
     virtual void transferShape();
-    virtual bool onGenShape(bool resetSlv = true, GenTemplate* temp = nullptr);
+    virtual bool onGenShape(bool resetSlv = true, const GenTemplate* temp = nullptr, const OrderTemplate* orderTemp = nullptr);
     bool callGenerate(Shape *shape, bool bSilent);
 
     bool isSlvEngineRunning();
@@ -115,7 +115,7 @@ public:
     string serializeMinBin();
     bool loadMinBin(const string& s);
 
-    void generateFromFaces(const vector<tuple<Vec3i, int>>& faces);
+    void generateFromFaces(OrderTemplate& ort);
     void addSlvMin(const vector<pair<int, int>>& sv);
 
     void openSimple(const char* str);

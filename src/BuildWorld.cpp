@@ -638,7 +638,7 @@ EGenResult BuildWorld::testShape()
 /// Do the opposite action to generate(). take the shape and make a build from it.
 /// currently not in use.
 /// \see Shape::generate()
-void BuildWorld::unGenerate(const Shape *shp)
+void BuildWorld::unGenerate(const Shape *shp, SqrLimits *bound)
 {
     clean(BuildWorld::CLEAN_CLEAR);
 
@@ -663,6 +663,9 @@ void BuildWorld::unGenerate(const Shape *shp)
         case XY_PLANE: set(f.dr, ex.z, ex.x, ex.y, s); break;
         }
         s = FACE_NORM;
+
+        Vec3i bex = ex * 4;
+        bound->MaxMin(bex.z, bex.x, bex.y); // page plays z;
     }
 
     reClacLimits();

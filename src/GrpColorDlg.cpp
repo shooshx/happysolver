@@ -48,6 +48,8 @@ void GrpColorDlg::update()
 	}
 
 	SlvCube *slv = m_doc->getCurrentSolve();
+    if (slv->picdt.size() == 0)
+        return; // no pieces selected in this solution
 	m_gind = slv->picdt[0].gind;
 	m_grp = &PicBucket::mutableInstance().grps[m_gind];
 

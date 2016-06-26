@@ -91,6 +91,7 @@ enum EGenResult
 };
 
 class GenTemplate;
+class OrderTemplate;
 
 /** Shape holds the definition of a structure design which can be built using happy cube pieces.
     The basic foundations of the design are the faces it is made of
@@ -147,15 +148,15 @@ public:
     */
     struct FaceDef
     {
-        FaceDef() :dr(PLANE_NONE), facing(FACING_UNKNOWN) {}
-        FaceDef(EPlane setdr, Vec3i setex) :dr(setdr), ex(setex), facing(FACING_UNKNOWN) {}
+        FaceDef() {}
+        FaceDef(EPlane setdr, Vec3i setex) :dr(setdr), ex(setex) {}
 
-        EPlane dr;		///< directions of the face	
+        EPlane dr = PLANE_NONE;		///< directions of the face	
         Vec3i ex;		///< start point of the face
 
-        EFacing facing;
-        int index; // of this face in the shape faces array
-        TPicBits fmask; // what bits to check when placing this piece, depending on what pieces came before it
+        EFacing facing = FACING_UNKNOWN;
+        int index = -1; // of this face in the shape faces array. used when making the fmask
+        TPicBits fmask = 0; // what bits to check when placing this piece, depending on what pieces came before it
 
         // corners and sides of this face, reverse neibours
         int corners[4]; 
@@ -316,16 +317,17 @@ public:
         int x,y,z;
     };
 
-    GenTemplate* m_genTemplate = nullptr; // for use when generating according to a previous shape 
-
+    const GenTemplate* m_genTemplate = nullptr; // for use when generating according to a previous shape 
+    const OrderTemplate* m_orderTemplate = nullptr; // for loading saved faces in the correct order while generating a shape
 };
 
 
 // used for generating the shape according to a previous shape
+// don't care about order, just if a face was in the old shape or not
 class GenTemplate
 {
 public:
-    bool contains(const Vec3i ex, EPlane dr, Shape::EFacing facing) {
+    bool contains(const Vec3i ex, EPlane dr, Shape::EFacing facing) const {
         return faces.find(make_tuple(ex.x, ex.y, ex.z, dr, facing)) != faces.end();
     }
     void add(const Vec3i ex, EPlane dr, Shape::EFacing facing) {
@@ -334,6 +336,19 @@ public:
 
     // x,y,z of ex, dr, facing
     set< tuple<int, int, int, EPlane, Shape::EFacing> > faces;
+};
+
+class OrderTemplate
+{
+public:
+    struct LoadedFace { 
+        LoadedFace(const Vec3i& e, EPlane d) :ex(e), dr(d) {}
+        Vec3i ex;
+        EPlane dr = PLANE_NONE;
+    };
+    vector<LoadedFace> faces;
+    Shape::FaceDef *faceDefs = nullptr;
+    SqrLimits bounds;
 };
 
 

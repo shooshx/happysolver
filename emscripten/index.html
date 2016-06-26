@@ -15,7 +15,7 @@
 <!--<script id="stdpcs" src="stdpcs.js"></script>  -->
 <script id="stdpcs" src="stdpcs_uni.js"></script>  
 <script id="unimesh2" src="unified_mesh.js"></script>  
-<script id="one_cube" src="one_piece_cube.js"></script>    
+<!--<script id="one_cube" src="one_piece_cube.js"></script>     -->
 <!--<script id="one_cube" src="one_marble_cube.js"></script>    -->
 
 <script type="text/javascript" src="colorPick/color.all.min.js"></script> <!-- https://github.com/PitPik/colorPicker  -->
@@ -122,11 +122,14 @@ function start()
     
     Module.ccall('initCubeEngine', 'boolean', ['string', 'number'], ["", 0])
     
-    loadSolution(one_piece_cube_text)
+    //loadSolution(one_piece_cube_text)
     //loadSolution(one_marble_cube_text)
 
     if (window.location.search.length > 0) {
         loadUrl(window.location.toString())
+    }
+    else { // load single cube of 1 happy cube piece on each face
+        loadUrl("AQYAAAAAQAAQCARAAQAAAIAQC5gFRI4hAwA=")
     }
 
     //solveGo()
@@ -170,6 +173,7 @@ function start()
     picsAddCube("Test Cube", "Test Cube", -1, true)
     
 }
+
 
 function loadStdPieces(pcs)
 {
@@ -425,8 +429,13 @@ function on_cube_check(id, v, gind) {
 function resetPicSel(id, v)
 {
     var picSel = pics_cubes[id].picSel
-    for(var i in picSel) { // go over the 6 pieces
+    for(var i = 0; i < 6; ++i) { // go over the 6 pieces
         picSel[i] = v
+    }
+    if (currentOpenGrpPics != null && id == currentOpenGrpPics.id) {
+        for(var i = 0; i < 6; ++i) { 
+            document.getElementById("ipic" + (i+1)).checked = v
+        }
     }
 }
 
@@ -688,15 +697,24 @@ function triggerAddCube(intoFam) {
 
 var IPIC_TSZ = 15
 
+function eventInElement(ev, elem)
+{
+    var elemRect = elem.getBoundingClientRect()
+    var cx = ev.clientX, cy = ev.clientY
+    if (cx > elemRect.left && cx < elemRect.right && cy > elemRect.top && cy < elemRect.bottom)
+        return true
+    return false
+}
+
 function triggerPicSel(v, index, id) 
 {
     ipicWin.style.visibility = 'visible'
-    var rect = document.getElementById(id + "_inframe").getBoundingClientRect()
+    var inframe = document.getElementById(id + "_inframe")
+    var rect = inframe.getBoundingClientRect()
     ipicWin.style.top = rect.top + "px"
     readCubeToEditor(index)
     jsgrp = defaultJsGrp()
     paintCubeSpec(ipicCanvas, ipicCanvas.getContext('2d'), IPIC_TSZ)
-    var ipicRect = ipicWin.getBoundingClientRect()
     currentOpenGrpPics = {id:id, index:index}
     
     // set the current state values
@@ -705,8 +723,7 @@ function triggerPicSel(v, index, id)
     }
     
     var mouseHandler = function(e) {
-        var cx = e.clientX, cy = e.clientY
-        if (cx > ipicRect.left && cx < ipicRect.right && cy > ipicRect.top && cy < ipicRect.bottom)
+        if (eventInElement(e, ipicWin) || eventInElement(e, inframe))
             return true; // inside the ipicWin, let it do its jon
         // otherwise, dismiss the ipinWin
         ipicWin.style.visibility = 'hidden'
@@ -1149,6 +1166,8 @@ function changeColor(colors, mode, options)
 
 function changedColorText(which, txt)
 {
+    if (txt == "")
+        return
     if (which == 0) {
         jsgrp.colorBack.setColor(txt)
         updateColorWidget(jsgrp.colorBack, editBackColor, undefined, 0, true)

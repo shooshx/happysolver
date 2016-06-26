@@ -273,7 +273,7 @@ bool CubeDoc::checkUnsaved(int types)
 
 
 
-bool CubeDoc::onGenShape(bool resetSlv, GenTemplate* temp) // not called by GUI
+bool CubeDoc::onGenShape(bool resetSlv, const GenTemplate* temp, const OrderTemplate* orderTemp) // not called by GUI
 {
 	if (!checkWhileRunning("Cannot process shape while running"))
 		return false;
@@ -284,7 +284,7 @@ bool CubeDoc::onGenShape(bool resetSlv, GenTemplate* temp) // not called by GUI
 			return false;
 	}*/
 
-    bool ret = CubeDocBase::onGenShape(resetSlv, temp);
+    bool ret = CubeDocBase::onGenShape(resetSlv, temp, orderTemp);
 
 	if (ret) 
 	{
@@ -455,7 +455,8 @@ bool CubeDoc::realSave(int unGenSlvAnswer)
 	{
         ungenned.reset(new BuildWorld);
 		savebuild = ungenned.get();
-		savebuild->unGenerate(m_shp.get());
+        SqrLimits bounds;
+		savebuild->unGenerate(m_shp.get(), &bounds);
 	}
 	if (!savebuild->saveTo(&wrfl))
 	{
