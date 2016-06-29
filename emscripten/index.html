@@ -148,6 +148,9 @@ function start()
     
     document.onkeydown = handleKeyDown
     document.onkeyup = handleKey  
+    
+    editBackColor.onkeydown = function(ev) { colKey(ev, 0) }
+    editFrontColor.onkeydown = function(ev) { colKey(ev, 1) }
 
     editFileInput.value = "" // firefox retains the value from last session
     editFileName.value = ""
@@ -275,10 +278,12 @@ function handleMouseWheel(event) {
 }
 
 function handleKeyDown(event) {
-    if (event.keyCode == '65' && event.ctrlKey) {
+    if (event.keyCode == '65' && event.ctrlKey) { //ctrl+A
         var s = window.prompt("slv data")
-        loadSlvSimple(s)
-        return
+        if (s != "") {
+            loadSlvSimple(s)
+            return
+        }
     }
     handleKey(event)
 }
@@ -1163,18 +1168,26 @@ function changeColor(colors, mode, options)
     sentTexParam()
 }
 
-
-function changedColorText(which, txt)
+function colKey(ev, which)
 {
-    if (txt == "")
-        return
+    if (ev.keyCode == 13) {// enter
+        changedColorText(which, false) // skipText false makes the edit change the text to hex
+    }
+}
+
+function changedColorText(which, skipText)
+{
     if (which == 0) {
-        jsgrp.colorBack.setColor(txt)
-        updateColorWidget(jsgrp.colorBack, editBackColor, undefined, 0, true)
+        if (editBackColor.value == "")
+            return
+        jsgrp.colorBack.setColor(editBackColor.value)
+        updateColorWidget(jsgrp.colorBack, editBackColor, undefined, 0, skipText)
     }
     else {
-        jsgrp.colorFront.setColor(txt)
-        updateColorWidget(jsgrp.colorFront, editFrontColor, undefined, 1, true)
+        if (editFrontColor.value == "")
+            return    
+        jsgrp.colorFront.setColor(editFrontColor.value)
+        updateColorWidget(jsgrp.colorFront, editFrontColor, undefined, 1, skipText)
     }
 }
 
@@ -2072,8 +2085,8 @@ input:checked + .sc-btn
     <div id="editBack" class="popupBack"><div id="picEditWin" class="popupWin">
         <canvas id="editCanvas" width="590", height="450"></canvas>
         <label id="editDoneBtn" class="sc-btn" onclick="triggerEditDone()"/>Done</label>
-        <input id="editBackColor" class="color" oninput="changedColorText(0, this.value)"/>
-        <input id="editFrontColor" class="color" oninput="changedColorText(1, this.value)"/>
+        <input id="editBackColor" class="color" oninput="changedColorText(0, true)"/>
+        <input id="editFrontColor" class="color" oninput="changedColorText(1, true)"/>
         <select id="editBlackSel" oninput="triggerBlackSel()">
             <option value="auto">Auto Lines</option>
             <option value="normal">Normal Lines</option>

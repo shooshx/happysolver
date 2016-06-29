@@ -147,6 +147,9 @@
 								// ...
 							}
 						} else if (inputIndex !== -1) {
+                            if (colorPickerUI) {
+                                colorPickerUI.style.display = 'none';
+                            }
 							// ...
 						} else if (colorPickerUI) {
 							colorPickerUI.style.display = 'none';
