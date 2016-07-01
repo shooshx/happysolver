@@ -63,6 +63,7 @@ public:
     }
 };
 
+
 class MainCtrl
 {
 public:
@@ -71,6 +72,8 @@ public:
         m_gl.m_handlers.push_back(&m_modelGl);
         m_handler = &m_modelGl;
         m_doc.m_sthread = &m_runctx;
+        //cout << "mainctrl ctor" << endl;
+        //cout << "SSS0 " << this << " " << &m_doc.m_stateStack << " " << m_doc.m_stateStack.size() << "," << m_doc.m_stateStack.capacity() << endl;
     }
     CubeDocBase m_doc;
     BaseGLWidget m_gl;
@@ -106,25 +109,25 @@ public:
     }
 };
 
-MainCtrl g_ctrl;
+MainCtrl *g_ctrl = nullptr;
 
 void RunContext::notifyLastSolution(bool firstInGo)
 {
     //cout << "Slv-notify" << endl;
-    g_ctrl.m_doc.setCurSlvToLast();
-    g_ctrl.requestDraw();
+    g_ctrl->m_doc.setCurSlvToLast();
+    g_ctrl->requestDraw();
 }
 
 void RunContext::notifyFullEnum() { 
     cout << "Full-enum" << endl;
-    g_ctrl.m_doc.setCurSlvToLast();
-    //g_ctrl.m_doc.clearSlvs();
-    g_ctrl.requestDraw();
+    g_ctrl->m_doc.setCurSlvToLast();
+    //g_ctrl->m_doc.clearSlvs();
+    g_ctrl->requestDraw();
 }
 void RunContext::notifyNotEnoughPieces() {
     cout << "Not enough pieces" << endl;
-    g_ctrl.m_doc.clearSlvs();
-    g_ctrl.requestDraw();
+    g_ctrl->m_doc.clearSlvs();
+    g_ctrl->requestDraw();
 }
 
 extern "C" { // ----------------------- interface to js -------------------------
@@ -134,17 +137,17 @@ int attrVtx = 0;
 
 void dispFirstSlv()
 {
-    g_ctrl.slvReady();
-    g_ctrl.m_gl.switchHandler(&g_ctrl.m_modelGl);
-    g_ctrl.m_gl.reset();
-    g_ctrl.requestDraw();
+    g_ctrl->slvReady();
+    g_ctrl->m_gl.switchHandler(&g_ctrl->m_modelGl);
+    g_ctrl->m_gl.reset();
+    g_ctrl->requestDraw();
 }
 
 void loadSolution(const char* buf) {
     try {
         bool hasSlv = false;
-        if (!g_ctrl.m_doc.realOpen(buf, &hasSlv)) {
-            cout << "error: " << g_ctrl.m_doc.m_lastMsg << endl;
+        if (!g_ctrl->m_doc.realOpen(buf, &hasSlv)) {
+            cout << "error: " << g_ctrl->m_doc.m_lastMsg << endl;
             cout << "doc realOpen failed" << endl;
         }
         
@@ -158,17 +161,17 @@ void loadSolution(const char* buf) {
 // read a string with just sc,rt for th
 void loadSlvSimple(const char* str)
 {
-    g_ctrl.m_doc.openSimple(str);
+    g_ctrl->m_doc.openSimple(str);
 
-    g_ctrl.m_doc.setCurSlvToLast();
-    //g_ctrl.slvReady();
-    g_ctrl.requestDraw();
+    g_ctrl->m_doc.setCurSlvToLast();
+    //g_ctrl->slvReady();
+    g_ctrl->requestDraw();
 }
 
 void solveGo() {
     try {
-        g_ctrl.m_doc.solveGo();
-        g_ctrl.m_runctx.runAll(); // find first solution
+        g_ctrl->m_doc.solveGo();
+        g_ctrl->m_runctx.runAll(); // find first solution
         dispFirstSlv();
     }
     catch(const std::exception& e) {
@@ -212,10 +215,9 @@ void populatePicsSide(PicBucket& bucket)
 bool initCubeEngine(const char* stdpcs, const char* unimesh)
 {
     try {
+
         auto& bucket = PicBucket::mutableInstance();
-    
-        g_ctrl.m_modelGl.initTex();
-           
+
       //  if (!bucket.loadXML(stdpcs))
       //      return false;
 
@@ -232,35 +234,35 @@ bool initCubeEngine(const char* stdpcs, const char* unimesh)
 
 void resizeGl(int width, int height) 
 {
-    g_ctrl.m_gl.resize(width, height);
-    g_ctrl.m_gl.invalidateChoice();
-    g_ctrl.requestDraw();
+    g_ctrl->m_gl.resize(width, height);
+    g_ctrl->m_gl.invalidateChoice();
+    g_ctrl->requestDraw();
 }
 
 bool cpp_draw(float deltaSec);
 
 void mouseDown(int rightButton, int x, int y) {
-    g_ctrl.m_gl.mousePress(rightButton, x, y);
-    g_ctrl.requestDraw();
+    g_ctrl->m_gl.mousePress(rightButton, x, y);
+    g_ctrl->requestDraw();
 }
 void mouseUp(int rightButton) {
-    g_ctrl.m_gl.mouseRelease(rightButton);
-    g_ctrl.requestDraw();
+    g_ctrl->m_gl.mouseRelease(rightButton);
+    g_ctrl->requestDraw();
 }
 void mouseMove(int buttons, int ctrlPressed, int x, int y) {
 
-    bool needUpdate = g_ctrl.m_gl.mouseMove(buttons, ctrlPressed, x, y);
+    bool needUpdate = g_ctrl->m_gl.mouseMove(buttons, ctrlPressed, x, y);
     // always need draw since swapBuffers is automatic and doChoise clears the view
-    if (needUpdate || g_ctrl.m_gl.m_screenNeedUpdate) {
-        g_ctrl.requestDraw();
+    if (needUpdate || g_ctrl->m_gl.m_screenNeedUpdate) {
+        g_ctrl->requestDraw();
         cpp_draw(0);
-        g_ctrl.m_gl.m_screenNeedUpdate = false;
+        g_ctrl->m_gl.m_screenNeedUpdate = false;
     }
 }
 void mouseDblClick(int ctrlPressed, int x, int y) {
-    bool needUpdate = g_ctrl.m_gl.mouseDoubleClick(ctrlPressed, x, y);
+    bool needUpdate = g_ctrl->m_gl.mouseDoubleClick(ctrlPressed, x, y);
     if (needUpdate)
-        g_ctrl.requestDraw();
+        g_ctrl->requestDraw();
         
 #ifdef __EMSCRIPTEN_TRACING__
     emscripten_trace_report_memory_layout();
@@ -268,17 +270,21 @@ void mouseDblClick(int ctrlPressed, int x, int y) {
 #endif        
 }
 void mouseWheel(int delta) {
-    g_ctrl.m_gl.mouseWheelEvent(delta);
-    g_ctrl.requestDraw();
+    g_ctrl->m_gl.mouseWheelEvent(delta);
+    g_ctrl->requestDraw();
 }
 
 double getTms() {
-    return (double)g_ctrl.m_runctx.m_stats.tms;
+    return (double)g_ctrl->m_runctx.m_stats.tms;
 }
 
-void cpp_start()
+
+void cpp_start(int pcsCount)
 {
+    g_ctrl = new MainCtrl;
+ 
 #ifdef __EMSCRIPTEN_TRACING__
+    // C:\lib\Emscripten\emscripten-trace-collector-master
     emscripten_trace_configure("http://127.0.0.1:5000/", "HappyCubeSolver");
 #endif    
     EmscriptenWebGLContextAttributes attr;
@@ -287,14 +293,19 @@ void cpp_start()
     attr.alpha = false;
     auto ctx = emscripten_webgl_create_context("mycanvas", &attr);
     auto ret = emscripten_webgl_make_context_current(ctx);
+
     
     try {
-        g_ctrl.m_gl.m_cullFace = false;
-        g_ctrl.m_gl.init();
+        g_ctrl->m_gl.m_cullFace = false;
+        g_ctrl->m_gl.init();
+
         
         auto& bucket = PicBucket::createSingleton();
-        bucket.pdefs.reserve(20); // TBD
+        bucket.pdefs.reserve(pcsCount);
         bucket.loadUnifiedJs();
+        
+        g_ctrl->m_modelGl.initTex();        
+        
     }
     catch(const std::exception& e) {
         cout << "START_GOT-EXCEPTION " << e.what() << endl;
@@ -303,21 +314,21 @@ void cpp_start()
 
 void conf(bool rand) 
 {
-    g_ctrl.m_doc.m_conf.engine.fRand = rand;
-    g_ctrl.m_doc.m_conf.engine.nPersist = PERSIST_ONLY_ONE; // otherwise solutions just stores past solutions which we don't care about
+    g_ctrl->m_doc.m_conf.engine.fRand = rand;
+    g_ctrl->m_doc.m_conf.engine.nPersist = PERSIST_ONLY_ONE; // otherwise solutions just stores past solutions which we don't care about
 }
 
 bool cpp_draw(float deltaSec) 
 {
-    if (g_ctrl.m_requested)
-        g_ctrl.draw(deltaSec);
-    return g_ctrl.m_requested;
+    if (g_ctrl->m_requested)
+        g_ctrl->draw(deltaSec);
+    return g_ctrl->m_requested;
 }
 
 bool cpp_slvrun()
 {
-    if (g_ctrl.m_runctx.fRunning) {
-        bool again = g_ctrl.m_runctx.runSome();  
+    if (g_ctrl->m_runctx.fRunning) {
+        bool again = g_ctrl->m_runctx.runSome();  
         return again;
     }
     return false;
@@ -360,40 +371,40 @@ void setPicCount(int grpi, int relIndex, int count)
 void stackState(int op) 
 {
     if (op == 0) {
-        g_ctrl.m_doc.pushState();
+        g_ctrl->m_doc.pushState();
     }
     else {
-        g_ctrl.m_doc.popState();
-        g_ctrl.requestDraw();
+        g_ctrl->m_doc.popState();
+        g_ctrl->requestDraw();
     }
-    g_ctrl.m_modelGl.m_buildCtrl.reloadWorld();
+    g_ctrl->m_modelGl.m_buildCtrl.reloadWorld();
     
 }
 
 void setEditAction(int a)
 {
     //cout << "EDIT "  << a << endl;
-    g_ctrl.m_modelGl.m_buildCtrl.m_bEditEnabled = (a != 0);
-    g_ctrl.m_modelGl.m_buildCtrl.m_bBoxRemove = (a == 2);
+    g_ctrl->m_modelGl.m_buildCtrl.m_bEditEnabled = (a != 0);
+    g_ctrl->m_modelGl.m_buildCtrl.m_bBoxRemove = (a == 2);
 }
 
 void runningRestart()
 {
     // if its running it means it still did not find a solution
-    if (g_ctrl.m_doc.isSlvEngineRunning()) {
-        g_ctrl.m_modelGl.restartSolve(true); // with starter
+    if (g_ctrl->m_doc.isSlvEngineRunning()) {
+        g_ctrl->m_modelGl.restartSolve(true); // with starter
     }
 }
 
 void newRestart() 
 {
-    g_ctrl.m_modelGl.restartSolve(false); // without starter
+    g_ctrl->m_modelGl.restartSolve(false); // without starter
 }
 
 int serializeCurrent()
 {
     static string s;
-    s = g_ctrl.m_doc.serializeMinBin();
+    s = g_ctrl->m_doc.serializeMinBin();
     //cout << "**** " << s.size() << "::";
     for(int i = 0;i < s.size(); ++i) {
         //cout << (uint32_t)(uint8_t)s[i] << " ";
@@ -411,12 +422,12 @@ void deserializeAndLoad(int len) // shape and solution
     for(int i = 0; i < s.size(); ++i) {
         s[i] = EM_ASM_INT( return scratchArr[$0], i);
     }
-    g_ctrl.m_doc.loadMinBin(s);
-    g_ctrl.m_modelGl.m_buildCtrl.reloadWorld();
+    g_ctrl->m_doc.loadMinBin(s);
+    g_ctrl->m_modelGl.m_buildCtrl.reloadWorld();
     
-    g_ctrl.m_doc.setCurSlvToLast();
+    g_ctrl->m_doc.setCurSlvToLast();
     dispFirstSlv();
-    g_ctrl.requestDraw();
+    g_ctrl->requestDraw();
 }
 
 struct Tooth {
@@ -554,7 +565,7 @@ void readCubeFromEditor(int grpi) // fromEditor
     sigWriter.flush();
     cout << countBits << " SIG=" << sigWriter.repr() << endl;
     auto& bucket = PicBucket::mutableInstance();
-    bucket.updateGrp(grpi, pcs);
+    bucket.updateGrp(grpi, pcs, true); // from editor, we want to reCompress every time so that we'll have a working set
     bucket.grps[grpi].editorData.piecesFrame = cubeSig;
     
 #ifdef __EMSCRIPTEN_TRACING__
@@ -592,11 +603,17 @@ int readCubeFromSig(int grpi, const char* sig, const char* name)
     }   
     
     auto& bucket = PicBucket::mutableInstance();
-    grpi = bucket.updateGrp(grpi, pcs);
+    grpi = bucket.updateGrp(grpi, pcs, false); // do the meshes and compress only on the last one (no need to do each time)
     bucket.grps[grpi].editorData.piecesFrame = bits;
     bucket.grps[grpi].name = name;
     
     return grpi;
+}
+
+void postReadAllPics()
+{
+    auto& bucket = PicBucket::mutableInstance();
+    bucket.doReCompress();
 }
 
 void bucketAddFam(const char* name, int startDefi, int count, int resetSelCount)
@@ -641,6 +658,7 @@ void textureParamCube(int grpi, int dtype, float r1, float g1, float b1, float r
         cgrp.gtex.reset(); break;
     case DRAW_TEXTURE_BLEND:
     case DRAW_TEXTURE_MARBLE: 
+        M_CHECK(bucket.gtexs.size() > 0);
         cgrp.gtex = bucket.gtexs[0]; break;
     case DRAW_TEXTURE_INDIVIDUAL_HALF:
         cgrp.gtex = g_lastTexture; 
@@ -660,7 +678,7 @@ void textureParamCube(int grpi, int dtype, float r1, float g1, float b1, float r
     ed.blackSelect = blackSelect; // "black", "white", "auto" from GUI
     
     
-    g_ctrl.requestDraw();
+    g_ctrl->requestDraw();
 }
 
 void textureParamToEditor(int grpi) {
@@ -704,7 +722,7 @@ int getCubeTextureHandle(int grpi, int width, int height)
 
     if (cgrp.drawtype == DRAW_TEXTURE_INDIVIDUAL_HALF)
         cgrp.gtex = curTex; // we might be updating it in the editor start but the drawType is something else
-    g_ctrl.requestDraw();
+    g_ctrl->requestDraw();
     return curTex->handle();  
 }
 
@@ -734,7 +752,7 @@ void readCubeTexCoord(int grpi, int imgOffsetX, int imgOffsetY, double imgZoom, 
         pic.texScaleX = 5.0/(15.0*imgZoom);
         pic.texScaleY = 5.0/(11.0*imgRatio*imgZoom); 
     }
-    g_ctrl.requestDraw();
+    g_ctrl->requestDraw();
 }
 
 } // extern "C"

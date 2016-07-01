@@ -431,6 +431,7 @@ bool CubeDocBase::loadMinBin(const string& s)
 void CubeDocBase::pushState()
 {
     auto& bucket = PicBucket::mutableInstance();
+    cout << "SSS " << &m_stateStack << " " << m_stateStack.size() << "," << m_stateStack.capacity() << endl;
     m_stateStack.emplace_back();
     auto& s = m_stateStack.back();
     s.picSelect.reserve(bucket.pdefs.size());
@@ -458,7 +459,10 @@ void CubeDocBase::popState()
     auto& bucket = PicBucket::mutableInstance();
     auto& s = m_stateStack.back();
     for(int i = 0; i < bucket.pdefs.size(); ++i) {
-        bucket.pdefs[i].setSelected(s.picSelect[i]);
+        int count = 0;
+        if (i < s.picSelect.size())
+            count = s.picSelect[i]; // the new pdefs may be bigger than the old
+        bucket.pdefs[i].setSelected(count);
     }
 
     m_shp = s.shape;

@@ -35,6 +35,8 @@ var loadSolution, resizeGl, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseW
 var setGrpCount, setEditAction, runningRestart, serializeCurrent, deserializeAndLoad, readCubeFromEditor, newRestart, conf
 var stackState, textureParamCube, getCubeTextureHandle, readCubeTexCoord, loadSlvSimple, freeMeshAllocator
 var readCubeToEditor, textureParamToEditor, getToothPossibilities, solveGo, readCubeFromSig, bucketAddFam, setPicCount
+var postReadAllPics
+
 var ctrlPressed = false
 var editCtx = null
 var unimesh_keys = Object.keys(unimesh) // unimesh included above
@@ -114,8 +116,10 @@ function start()
     readCubeFromSig = Module.cwrap('readCubeFromSig', 'number', ['number', 'string', 'string'])
     bucketAddFam = Module.cwrap('bucketAddFam', null, ['string', 'number', 'number', 'number'])
     setPicCount = Module.cwrap('setPicCount', null, ['number', 'number', 'number'])
+    postReadAllPics = Module.cwrap('postReadAllPics', null, [])
    
-    Module.ccall('cpp_start', null);
+    var pcsNum = countPcs(uni_pcs)     
+    Module.ccall('cpp_start', null, ['number'], [(pcsNum + 12)*6]); // add 12 for possible additions using editor
     conf(true)
     
     loadStdPieces(uni_pcs)
@@ -177,6 +181,14 @@ function start()
     
 }
 
+function countPcs(pcs)
+{
+    var c = 0;
+    for(var fami in pcs) {
+        c += pcs[fami].p.length
+    }
+    return c;   
+}
 
 function loadStdPieces(pcs)
 {
@@ -203,11 +215,11 @@ function loadStdPieces(pcs)
     var defBack = (new Colors({color:COLOR_BACK_DEFAULT})).colors
     var defFront = (new Colors({color:COLOR_FRONT_DEFAULT})).colors
     
-    for(var fami in uni_pcs) 
+    for(var fami in pcs) 
     {
-        var fam = uni_pcs[fami]
+        var fam = pcs[fami]
         var famDrawType = drawTypeFromStr(fam.drawType)
-        var onResetSel = objGet(fam, 'onResetSel', 1)
+        var onResetSel = objGet(fam, 'onResetSel', 0)
         var first = true
         for(var pi in fam.p) 
         {
@@ -234,6 +246,8 @@ function loadStdPieces(pcs)
         }
         
     }
+    
+    postReadAllPics();
 }
 
 

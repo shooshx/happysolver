@@ -51,12 +51,12 @@ void PicType::load(const PicDef& thedef, bool cSym)
 	}
 
     // detect pieces where the later rtns come to the front
-    for(int i = 0; i < rtnnum; ++i) {
+ /*   for(int i = 0; i < rtnnum; ++i) {
         if (rtnsAbsMap[i] != i) {
-            cout << "Late RTN " << bits[0] << endl;
+            cout << "Late RTN " << thedef.mygrpi << "," << thedef.indexInGroup << "  " << hex << bits[0] << dec << endl;
             break;
         }
-    }
+    }*/
 
 }
 
@@ -140,8 +140,9 @@ PicsSet::PicsSet(bool cSym)
 		// if the piece is selected a number of times, load it that number of times in to the set.
 		for (int i = 0; i < bucket.pdefs[idef].getSelected(); ++i)
 		{
+           // cout << "-- " << picCount << " -- " << idef << "," << i << "/" << bucket.pdefs[idef].getSelected() << "  comp " << comp.size() << ":" << comp.capacity() << endl;
 			add(idef, cSym);
-            addRef(idef);
+            addRef(idef); //  this can be done better - by saving the count of each piece and not adding it again and again
             ++picCount;
         }
 	}

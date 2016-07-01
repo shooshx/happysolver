@@ -147,7 +147,7 @@
 								// ...
 							}
 						} else if (inputIndex !== -1) {
-                            if (colorPickerUI) {
+                            if (colorPickerUI) { // Shy - closes the other open window, if its open
                                 colorPickerUI.style.display = 'none';
                             }
 							// ...

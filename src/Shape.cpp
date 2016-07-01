@@ -478,9 +478,10 @@ EGenResult Shape::readWorld(const BuildWorld *build, int* reqf)
         initSizeAndBounds(bounds);
 
         faces = new FaceDef[fcn];
-        auto faceit = flst.cbegin();
+        auto faceit = flst.begin();
         for (int i = 0; i < fcn; ++i)
         {	// convert the linked list to an array, NORMAIZE the coodrinates to the size of the array, and dispose of the list
+            M_ASSERT(faceit != flst.end());
             faces[i].dr = faceit->dr;
             faces[i].ex = Vec3i(faceit->ex.x - bounds.minx, faceit->ex.y - bounds.miny, faceit->ex.z - bounds.minpage);
             ++faceit;

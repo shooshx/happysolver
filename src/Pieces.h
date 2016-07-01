@@ -263,6 +263,7 @@ public:
     virtual void init(int maxv) = 0;
     // return false if need to cancel
     virtual bool setValue(int v) = 0;
+
 };
 
 /**	PicBucket is the main repository where all the data about all the pieces resides.
@@ -309,14 +310,15 @@ public:
 
     //int numDefs() const { return defs.size(); }
     void setToFamResetSel(); ///< reset the selected count to the reset number from the config
-    void distinctMeshes(bool createDisps);
+    void distinctMeshes(ProgressCallback* progress = nullptr);
 
     void makeAllComp();
 
     static void buildAllMeshes();
 
     // returns the grpi (userful if given -1)
-    int updateGrp(int grpi, PicArr arrs[6]);
+    int updateGrp(int grpi, PicArr arrs[6], bool reCompress = true);
+    void doReCompress();
 
 public:
     int sumPics; ///< how many cubes, how many pics in total

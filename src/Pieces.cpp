@@ -569,7 +569,7 @@ bool PicBucket::loadXML(const char* data)
 }
 
 // update existing or add new (editor)
-int PicBucket::updateGrp(int grpi, PicArr arrs[6])
+int PicBucket::updateGrp(int grpi, PicArr arrs[6], bool reCompress)
 {
     M_ASSERT(grpi >= -1 && grpi <= (int)grps.size());
     bool add = false;
@@ -589,8 +589,6 @@ int PicBucket::updateGrp(int grpi, PicArr arrs[6])
         cgrp.exColor = Vec3(0,0,0); // TBD-take from gui
     }
 
-    PicDisp::g_smoothAllocator.init(640, 640, 0);
-    PicDisp::g_smoothAllocator.clearMaxAlloc();
 
 
     for(int i = 0; i < 6; ++i) {
@@ -616,12 +614,21 @@ int PicBucket::updateGrp(int grpi, PicArr arrs[6])
         
     }
 
-    makeAllComp();
+    if (reCompress)
+    {
+        doReCompress();
+    }
 
-    distinctMeshes(false);
-
-    PicDisp::g_smoothAllocator.checkMaxAlloc();
     return grpi;
+}
+
+void PicBucket::doReCompress()
+{
+    PicDisp::g_smoothAllocator.init(640, 640, 0);
+    PicDisp::g_smoothAllocator.clearMaxAlloc();
+    makeAllComp();
+    distinctMeshes();
+    PicDisp::g_smoothAllocator.checkMaxAlloc();
 }
 
 
@@ -643,7 +650,7 @@ void PicBucket::makeAllComp()
     }
 
 
-    cout << "Compressed " << ps.comp.size() << " shapes" << endl;
+    cout << "Compressed " << pdefs.size() << " into " << ps.comp.size() << " shapes" << endl;
 }
 
 
@@ -666,7 +673,7 @@ void PicBucket::setToFamResetSel()
 
 // prepares PicDisps for all pdefs with the correct roatation configured and corrolate pdefs to the disps
 // - createDisps - should we create the disps (but not generate mesh) or are they already created
-void PicBucket::distinctMeshes(bool createDisps)
+void PicBucket::distinctMeshes(ProgressCallback* progress)
 {
     PicsSet ps;
     for(int i = 0; i < pdefs.size(); ++i) {
@@ -674,44 +681,42 @@ void PicBucket::distinctMeshes(bool createDisps)
     }
     cout << ps.comp.size() << " distinct meshes out of " << pdefs.size() << " pieces meshes=" << m_meshes.size() << endl;
 
-    if (createDisps)
-        m_meshes.clear();
+    if (progress)
+        progress->init(ps.comp.size());
 
     for(int i = 0; i < ps.comp.size(); ++i) 
     {
+        if (progress && !progress->setValue(i)) // progress
+            break;
+
         auto comp = ps.comp[i];
         auto sig = comp.bits[0];
         PicDisp* pd = nullptr;
         int sigAbsRot = 0;
-        if (createDisps) { // TBD remove this
+
+        // search if any of the piece signatures appear in the meshe repository
+        int sigRt = 0;
+        while (sigRt < comp.rtnnum ) {
+            auto rsig = comp.bits[sigRt];
+            auto it = m_meshes.find(rsig);
+            if (it != m_meshes.end()) {
+                pd = it->second.get();
+                sigAbsRot = comp.rtnsAbsMap[sigRt];
+                // cout << "Found mesh for " << hex << rsig << "(" << sig << dec << ") rt=" << sigRt << "," << sigAbsRot << "/" << comp.rtnnum << endl;
+                break;
+            }
+            ++sigRt;
+        }
+            
+        if (pd == nullptr) { // did not find signatutre in preloaded meshes
             pd = new PicDisp(PicArr(sig));
+            cout << "Generating mesh for " << hex << sig << dec << endl;
+            pd->initNoSubdiv();
+            pd->m_mesh.makeSelfBos(true);
+
             m_meshes[sig].reset(pd);
         }
-        else {
-            // search if any of the piece signatures appear in the meshe repository
-            int sigRt = 0;
-            while (sigRt < comp.rtnnum ) {
-                auto rsig = comp.bits[sigRt];
-                auto it = m_meshes.find(rsig);
-                if (it != m_meshes.end()) {
-                    pd = it->second.get();
-                    sigAbsRot = comp.rtnsAbsMap[sigRt];
-                   // cout << "Found mesh for " << hex << rsig << "(" << sig << dec << ") rt=" << sigRt << "," << sigAbsRot << "/" << comp.rtnnum << endl;
-                    break;
-                }
-                ++sigRt;
-            }
-            
-            if (pd == nullptr) { // did not find signatutre in preloaded meshes
-                pd = new PicDisp(PicArr(sig));
-                cout << "Generating mesh for " << hex << sig << dec << endl;
-                pd->initNoSubdiv();
-                pd->m_mesh.makeSelfBos(true);
-
-                m_meshes[sig].reset(pd);
-            }
    
-        }
 
         for(int j = 0; j < comp.addedInds.size(); ++j) 
         {
@@ -722,7 +727,9 @@ void PicBucket::distinctMeshes(bool createDisps)
         }
     }
 
-   // cout << "BLAT" << endl;
+    if (progress)
+        progress->setValue(ps.comp.size());
+
 
 }
 
@@ -798,39 +805,16 @@ void MeshUnifier::save(const char* path)
 
 void PicBucket::buildMeshes(const DisplayConf& dpc, ProgressCallback* prog)
 {
-    // fill meshes
-    distinctMeshes(true);
-
-    if (prog)
-        prog->init(m_meshes.size());
-
     // grows if needed, never shrinks.
     PoolStats& ps = poolStats[dpc.numberOfPasses];
     PicDisp::g_smoothAllocator.init(ps.points, ps.poly, ps.he);
     PicDisp::g_smoothAllocator.clearMaxAlloc();
 
-    //MeshUnifier muni;
+    m_meshes.clear();
+    distinctMeshes(prog);
 
-    int cnt = 0;
-    bool cancel = false;
-
-    // strange - this is duplicated in distinctMeshes but without the progress
-    for (auto& disp: m_meshes)
-    {
-        if (prog && !prog->setValue(cnt++)) // progress
-            break;
-        //disp.second->init(); // full subdivision
-        disp.second->initNoSubdiv();
-        disp.second->m_mesh.makeSelfBos(true);
-        //muni.add(disp->m_mesh, disp->bits());
-    }
-
-    if (prog)
-        prog->setValue(m_meshes.size());
     PicDisp::g_smoothAllocator.checkMaxAlloc();
 
-    //muni.save("c:/temp/no_sub_unified.txt");
-    //exit(1);
 }
 
 
@@ -969,7 +953,7 @@ bool PicBucket::loadUnified(const char* s)
 
     cout << "Unified Mesh read " << vtxCount << " vtx " << meshCount << " meshes" << endl;
 
-    distinctMeshes(false);
+    distinctMeshes();
 
     return true;
 }
@@ -1010,7 +994,7 @@ bool PicBucket::loadUnifiedJs()
         d->m_mesh.m_common = cd;
     }
     cout << "Loaded " << m_meshes.size() << " meshes" <<endl;
-    distinctMeshes(false);
+    distinctMeshes();
 
     return true;
 }
