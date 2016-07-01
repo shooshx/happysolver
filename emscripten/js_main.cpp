@@ -143,6 +143,7 @@ void dispFirstSlv()
     g_ctrl->requestDraw();
 }
 
+#if 0 // superceded by deserializeAndLoad
 void loadSolution(const char* buf) {
     try {
         bool hasSlv = false;
@@ -157,6 +158,7 @@ void loadSolution(const char* buf) {
         cout << "LOAD-GOT-EXCEPTION " << e.what() << endl;
     }        
 }
+#endif
 
 // read a string with just sc,rt for th
 void loadSlvSimple(const char* str)

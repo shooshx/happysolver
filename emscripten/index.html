@@ -31,7 +31,7 @@ var gl = null
 var prog = null
 var model = { vtxBuf: null }
 
-var loadSolution, resizeGl, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseWheel, cpp_draw, cpp_slvrun, getTms
+var resizeGl, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseWheel, cpp_draw, cpp_slvrun, getTms
 var setGrpCount, setEditAction, runningRestart, serializeCurrent, deserializeAndLoad, readCubeFromEditor, newRestart, conf
 var stackState, textureParamCube, getCubeTextureHandle, readCubeTexCoord, loadSlvSimple, freeMeshAllocator
 var readCubeToEditor, textureParamToEditor, getToothPossibilities, solveGo, readCubeFromSig, bucketAddFam, setPicCount
@@ -82,7 +82,6 @@ function start()
     //return
 */
 
-    loadSolution = Module.cwrap('loadSolution', null, ['string'])
     resizeGl = Module.cwrap('resizeGl', null, ['number', 'number'])
     mouseDown = Module.cwrap('mouseDown', null, ['number', 'number', 'number'])
     mouseUp = Module.cwrap('mouseUp', null, ['number'])
