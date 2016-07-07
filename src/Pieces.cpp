@@ -323,7 +323,7 @@ const PicGroupDef* PicDef::mygrp() const {
 }
 
 
-
+#ifndef EMSCRIPTEN // loaded from js
 bool PicBucket::loadXML(const char* data)
 {
     //QDomDocument doc;
@@ -567,6 +567,8 @@ bool PicBucket::loadXML(const char* data)
     return true;
 
 }
+#endif
+
 
 // update existing or add new (editor)
 int PicBucket::updateGrp(int grpi, PicArr arrs[6], bool reCompress)

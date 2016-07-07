@@ -182,6 +182,9 @@ public:
     {}
 
 public:
+    // config
+    bool m_keepPrevSlvs = false;
+
     // runtime environment
     PicsSet *m_pics = nullptr;
     Solutions *m_slvs = nullptr;

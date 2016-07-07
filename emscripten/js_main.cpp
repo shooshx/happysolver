@@ -38,6 +38,7 @@ int makeShader(int type, const char* text)
 void complain(const char* msg) {
     cout << "ERROR: " << msg << endl;
 }
+void sendIsRunning();
 
 class RunContext : public SolveContext
 {
@@ -46,8 +47,10 @@ public:
     virtual void notifyFullEnum() override;
     virtual void notifyNotEnoughPieces() override;
 
+    // called from CubeDocBase::solveGo
     virtual void doStart() override {
         init();
+        sendIsRunning(); // was set in init above
         EM_ASM(requestSlvRun());
     }
     virtual void doWait() override {
@@ -109,24 +112,35 @@ public:
     }
 };
 
+
 MainCtrl *g_ctrl = nullptr;
+
+void sendSlvStat() {
+    EM_ASM_( slvStat($0, $1), g_ctrl->m_doc.getCurrentSolveIndex(), g_ctrl->m_doc.getSolvesNumber());
+}
+void sendIsRunning() {
+    EM_ASM_( updateIsRunning($0), g_ctrl->m_runctx.fRunning);
+}
 
 void RunContext::notifyLastSolution(bool firstInGo)
 {
     //cout << "Slv-notify" << endl;
     g_ctrl->m_doc.setCurSlvToLast();
+    sendSlvStat();
     g_ctrl->requestDraw();
 }
 
 void RunContext::notifyFullEnum() { 
     cout << "Full-enum" << endl;
     g_ctrl->m_doc.setCurSlvToLast();
-    //g_ctrl->m_doc.clearSlvs();
+
+    sendSlvStat();
     g_ctrl->requestDraw();
 }
 void RunContext::notifyNotEnoughPieces() {
     cout << "Not enough pieces" << endl;
     g_ctrl->m_doc.clearSlvs();
+    sendSlvStat();
     g_ctrl->requestDraw();
 }
 
@@ -140,6 +154,7 @@ void dispFirstSlv()
     g_ctrl->slvReady();
     g_ctrl->m_gl.switchHandler(&g_ctrl->m_modelGl);
     g_ctrl->m_gl.reset();
+    sendSlvStat();
     g_ctrl->requestDraw();
 }
 
@@ -153,6 +168,7 @@ void loadSolution(const char* buf) {
         }
         
         dispFirstSlv();
+
     }
     catch(const std::exception& e) {
         cout << "LOAD-GOT-EXCEPTION " << e.what() << endl;
@@ -263,6 +279,7 @@ void mouseMove(int buttons, int ctrlPressed, int x, int y) {
 }
 void mouseDblClick(int ctrlPressed, int x, int y) {
     bool needUpdate = g_ctrl->m_gl.mouseDoubleClick(ctrlPressed, x, y);
+    sendIsRunning();
     if (needUpdate)
         g_ctrl->requestDraw();
         
@@ -327,13 +344,16 @@ bool cpp_draw(float deltaSec)
     return g_ctrl->m_requested;
 }
 
+// after restartSolve
 bool cpp_slvrun()
 {
+    sendIsRunning();
+    bool again = false;
     if (g_ctrl->m_runctx.fRunning) {
-        bool again = g_ctrl->m_runctx.runSome();  
-        return again;
+        again = g_ctrl->m_runctx.runSome();  
     }
-    return false;
+    sendIsRunning();
+    return again;
 }
 
 void setGrpCount(int grpi, int count)
@@ -398,9 +418,16 @@ void runningRestart()
     }
 }
 
-void newRestart() 
+#define NR_KEEP_PREV 1
+
+void newRestart(int flags) 
 {
-    g_ctrl->m_modelGl.restartSolve(false); // without starter
+    g_ctrl->m_runctx.m_keepPrevSlvs = (flags & NR_KEEP_PREV) != 0;
+    g_ctrl->m_modelGl.restartSolve(false); // without starter template solution
+}
+void stopSlvRun() 
+{
+    g_ctrl->m_doc.solveStop();
 }
 
 int serializeCurrent()
@@ -756,6 +783,13 @@ void readCubeTexCoord(int grpi, int imgOffsetX, int imgOffsetY, double imgZoom, 
     }
     g_ctrl->requestDraw();
 }
+
+void goToSlv(int n) {
+    g_ctrl->m_doc.setCurSlvTo(n);
+    sendSlvStat();
+    g_ctrl->requestDraw();
+}
+
 
 } // extern "C"
 

@@ -35,7 +35,7 @@ var resizeGl, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseWheel, cpp_draw
 var setGrpCount, setEditAction, runningRestart, serializeCurrent, deserializeAndLoad, readCubeFromEditor, newRestart, conf
 var stackState, textureParamCube, getCubeTextureHandle, readCubeTexCoord, loadSlvSimple, freeMeshAllocator
 var readCubeToEditor, textureParamToEditor, getToothPossibilities, solveGo, readCubeFromSig, bucketAddFam, setPicCount
-var postReadAllPics
+var postReadAllPics, goToSlv, stopSlvRun
 
 var ctrlPressed = false
 var editCtx = null
@@ -43,6 +43,7 @@ var unimesh_keys = Object.keys(unimesh) // unimesh included above
 var readFrameBuf = null, readFrameView = null // buffer for selection readPixels. don't want it managed by emscripten
 
 var ACT_NONE = 0, ACT_ADD = 1, ACT_REMOVE = 2
+var NR_KEEP_PREV = 1 // for newRestart
 
 var colorPickCfg = null 
     
@@ -98,7 +99,7 @@ function start()
     serializeCurrent  = Module.cwrap('serializeCurrent', 'number', [])
     deserializeAndLoad = Module.cwrap('deserializeAndLoad', null, ['number'])
     readCubeFromEditor = Module.cwrap('readCubeFromEditor', null, ['number'])
-    newRestart  = Module.cwrap('newRestart', null, [])
+    newRestart  = Module.cwrap('newRestart', null, ['number'])
     conf = Module.cwrap('conf', null, ['number'])
     stackState = Module.cwrap('stackState', null, ['number'])
     textureParamCube = Module.cwrap('textureParamCube', null, ['number','number','number','number','number','number','number','number','number',
@@ -116,6 +117,8 @@ function start()
     bucketAddFam = Module.cwrap('bucketAddFam', null, ['string', 'number', 'number', 'number'])
     setPicCount = Module.cwrap('setPicCount', null, ['number', 'number', 'number'])
     postReadAllPics = Module.cwrap('postReadAllPics', null, [])
+    goToSlv = Module.cwrap('goToSlv', null, ['number'])
+    stopSlvRun = Module.cwrap('stopSlvRun', null)
    
     var pcsNum = countPcs(uni_pcs)     
     Module.ccall('cpp_start', null, ['number'], [(pcsNum + 12)*6]); // add 12 for possible additions using editor
@@ -522,22 +525,17 @@ function animProgress() {
 }
 
 var enterSlv = false
-
+// called from cpp when the solve is started 
 function requestSlvRun() {
     setTimeout(slvRun, 0)
     enterSlv = true
 }
-
-
 
 function slvRun() {
     if (!enterSlv)
         return
     setTimeout(slvRun, 0)  // pre-schedule the next time to avoid delay
     enterSlv = cpp_slvrun()
-    //if (again)
-    //    setTimeout(slvRun, 0)
-    
 }
 
 var lastTms = 0
@@ -645,7 +643,7 @@ function triggerAbout(v) {
 }
 
 
-var scratchArr = []
+var scratchArr = [] // used from cpp by serialize, deserialize
 
 function bufferToBase64(buf) {
     var binstr = Array.prototype.map.call(buf, function (ch) {
@@ -752,7 +750,57 @@ function triggerPicSel(v, index, id)
     document.addEventListener("mousedown", mouseHandler)
 }
 
+var countSlvs = 0 // number of solutions in the document, same as m_slvs.size()
+var nCurSlv = 0  // same as m_nCurSlv from CubeDocBase
+var isRunning = false; // same as fRunning in RunContext
 
+// from c++
+function slvStat(cur, sz) {
+    nCurSlv = cur
+    countSlvs = sz
+    prevBtn.setAttribute('disabled', nCurSlv <= 0)
+    slvNum.innerHTML = "" + (cur+1) + "/" + sz
+    nextBtnIn.style.visibility = (nCurSlv < countSlvs - 1)?'hidden':'visible'
+
+}
+// from c++
+function updateIsRunning(v) {
+    if (v == isRunning)
+        return;
+    isRunning = v;    
+    if (isRunning) {
+        nextBtnIn.style.backgroundImage = "url(gears/gear_anim.gif)"
+        nextBtnIn2.style.backgroundImage = "url(pause.png)"
+    }
+    else {
+        nextBtnIn.style.backgroundImage = "url(gears/g1_light.png)" 
+        nextBtnIn2.style.backgroundImage = "url(forward_arrow.png)"
+    }
+}
+
+function triggerPrev()
+{
+    if (isRunning) {
+        stopSlvRun()
+    }
+    if (prevBtn.getAttribute('disabled') == 'true')
+        return;
+    goToSlv(nCurSlv - 1) // calls back to slvStat
+}
+
+function triggerNext()
+{
+    if (isRunning) {
+        stopSlvRun()
+        return;
+    }
+    if (nCurSlv < countSlvs - 1)
+        goToSlv(nCurSlv + 1)
+    else
+        newRestart(NR_KEEP_PREV)
+}
+
+//--------------------------------------------------------------------------------------
 
 var cube = [
    // 0,1,2,3,4,5,6,7,8,9,1011121314
@@ -1069,7 +1117,7 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
         }
         
         paintCube()   
-        newRestart()        
+        newRestart(0)        
     }
     else 
     {
@@ -1152,7 +1200,7 @@ function checkToothClick(event)
     paintCube()
     readCubeFromEditor(editingCubeId)
     
-    newRestart()
+    newRestart(0)
 }
 
 function triggerEditDone()
@@ -1447,7 +1495,7 @@ function changeFillSelect(dtype)
     resetErrMsg() // don't want this to stick around after we changed the type
     paintCube()
     if (jsgrp.drawType == DRAW_TEX)
-        newRestart()  // setting individual half need a new solution with all textures out
+        newRestart(0)  // setting individual half need a new solution with all textures out
 }
     
 function updateForDrawType()
@@ -1731,7 +1779,7 @@ body {
 .sc-btn[disabled="true"] {
     box-shadow: initial;
 }
-.sc-btn[disabled="true"] > .sc-span {
+.sc-btn[disabled="true"] > .sc-span { /* comes after */
     opacity: 0.3; // for buttons with image
 }
 
@@ -1775,14 +1823,58 @@ input:disabled + .sc-btn:active,
    right: 8px;
    width: 40px;
    bottom: 8px;
+   height: 30px;
+   line-height: 30px;
 }
 
 #urlBtn {
-   right: 8px;
+   right: 50px;
+   bottom: 8px;
    width: 40px;
-   bottom: 55px;
    height: 30px;
-   background: url(url-icon_s3.png) #ebebeb center no-repeat;
+}
+
+#prevBtn {
+   width: 50px;
+   height: 60px;
+   bottom: 50px;
+   left: 10px;
+}
+#prevBtnIn {
+    background: url(back_arrow.png) center no-repeat; 
+    display: inline-block; 
+    width:50px;
+    height:60px; 
+}
+#nextBtn {
+   width: 120px;
+   height: 60px;
+   bottom: 50px;
+   left: 65px;
+}
+#nextBtnIn {
+   /* background: url(gears/gear_anim.gif) left no-repeat; */
+    background: url(gears/g1_light.png) left no-repeat; 
+    display: inline-block; 
+    width: 70px;
+    height: 60px;
+    margin: 0 0 0 5px;
+}
+#nextBtnIn2 {
+    background: url(forward_arrow.png) left no-repeat;
+    display: inline-block; 
+    height: 60px;
+    width: 31px;
+}
+
+#slvNum {
+    position: absolute;
+    bottom: 24px;
+    width: 100px;
+    font-family: monospace;
+    left: 24px;
+    font-size: 16pt;
+    color: #666;
 }
 
 
@@ -2086,9 +2178,20 @@ input:checked + .sc-btn
     <input id="addingCubeCheck" class="hidden" onclick="triggerAdd()" type="checkbox">
     <label id="addingCube" class="sc-btn" for="addingCubeCheck" >Add</label>
     <input id="removingCubeCheck" class="hidden" onclick="triggerRemove()" type="checkbox"/>
-    <label id="removingCube" class="sc-btn" for="removingCubeCheck"/>Remove</label>
-    <label id="aboutBtn" class="sc-btn" onclick="triggerAbout(true)"/>?</label>
-    <label id="urlBtn" class="sc-btn" onclick="triggerUrl(true)"/></label>
+    <label id="removingCube" class="sc-btn" for="removingCubeCheck">Remove</label>
+    <label id="aboutBtn" class="sc-btn" onclick="triggerAbout(true)">?</label>
+    <label id="urlBtn" class="sc-btn" onclick="triggerUrl(true)">
+        <span style="background: url(url-icon_s3.png) center no-repeat; display: inline-block; width: 30px; height: 30px;"></span>
+    </label>
+    <label id="prevBtn" class="sc-btn" onclick="triggerPrev()">
+        <span id="prevBtnIn" class="sc-span"></span>
+    </label>
+    <label id="nextBtn" class="sc-btn" onclick="triggerNext()">
+        <span id="nextBtnIn" class="sc-span"></span>
+        <span id="nextBtnIn2" class="sc-span"></span>
+    </label>
+    <div id="slvNum"></div>
+    
     <div id="side_rel" class="in_rel">
       <div id="fams_cont"></div>
       <label id="addFamBtn" class="sc-btn" onclick="triggerAddFam()"/>
@@ -2116,7 +2219,6 @@ input:checked + .sc-btn
             <span id="editRotLIn" class="sc-span"></span></label>
         <label id="editRotR" class="sc-btn" onclick="triggerRotate(1)">
             <span id="editRotRIn" class="sc-span"></span></label>
-        
         <br>
         <input id="editFillColorRadio" class="hidden" type="radio" name="fill" onclick="changeFillSelect(0)">
         <label id="editFillColor" class ="sc-btn fillRadio" for="editFillColorRadio">Uniform Color</label><br>
@@ -2185,6 +2287,8 @@ If you have any questions concerning the usage of HAPPY materials, please send y
     <img id="genious" src="../littlegenious128_2.png" style="display:none;"/>
     <img id="dummy_check1" src="check_int.png" style="display:none;"/> <!-- avoid flicker -->
     <img id="blank_tex" src="blank_tex.png" style="display:none;"/>
+    <img id="dummy_anim" src="gears/gear_anim.gif" style="display:none;"/>
+    <img id="dummy_pause" src="pause.png" style="display:none;"/>
     <div id="stat"></div>
 </body>
 </html>

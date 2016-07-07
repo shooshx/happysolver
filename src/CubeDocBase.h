@@ -106,6 +106,14 @@ public:
         m_nUpToStep = m_shp->fcn;
     }
 
+    void setCurSlvTo(int i) {
+        if (i < 0 || i >= m_slvs->size()) {
+            cout << "Wrong SLV index " << i << endl;
+            return;
+        }
+        m_nCurSlv = i;
+    }
+
     void clearRemoveFlags() {
         fill(m_flagPiece.begin(), m_flagPiece.end(), 0);
     }

@@ -19,6 +19,9 @@ handle lost context webgl https://www.khronos.org/webgl/wiki/HandlingContextLost
 
 display selected pieces count
 
+buttons
+    accumulating solutions?
+    in full enum, error?
 
 EDITOR
 ------

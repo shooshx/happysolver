@@ -554,7 +554,7 @@ void Cube::puttgr(Solutions *slvs, SolveContext *thread, SlvCube* starter, int d
         if (p == shape->fcn) //solution found
         {
             SlvCube *curslv = generateConcreteSlv(starter);
-            slvs->addBackCommon(curslv, lconf.nPersist == PERSIST_ONLY_ONE);
+            slvs->addBackCommon(curslv, !thread->m_keepPrevSlvs); //lconf.nPersist == PERSIST_ONLY_ONE);
             ++thread->goSlvNum;
 
             thread->notifyLastSolution(thread->goSlvNum == 1);
@@ -609,7 +609,8 @@ void Cube::puttgr(Solutions *slvs, SolveContext *thread, SlvCube* starter, int d
         }
     }
 
-    if (p == -1 && thread->goSlvNum == 0) {
+    if (p == -1 && thread->goSlvNum == 0)
+    { // in case of full-enum, put the best one we have (TBD - do this intermitently during a long run)
         if (thread->m_stats.maxpSlv.get() != nullptr) { // in case there's 0 pieces, there won't be a maxSlv
             slvs->addBackCommon(thread->m_stats.maxpSlv.release());
         }
