@@ -160,6 +160,11 @@ struct Vec3
         v[0] += a.v[0]; v[1] += a.v[1]; v[2] += a.v[2];
         return *this;
     }
+    Vec3& operator-=(const Vec3& a)
+    {
+        v[0] -= a.v[0]; v[1] -= a.v[1]; v[2] -= a.v[2];
+        return *this;
+    }
     Vec3& operator-=(float v)
     {
         x -= v; y -= v; z -= v;

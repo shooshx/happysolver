@@ -10,12 +10,7 @@ using namespace std;
 #include "GLTexture.h"
 #include "../Mat.h"
 
-enum EProgType
-{
-    PTYPE_NOLIMIT,
-    PTYPE_POINTS,
-    PTYPE_TRIANGLES
-};
+
 
 class ProgCompileConf
 {
@@ -111,7 +106,7 @@ void shadersInit();
 class ShaderProgram
 {
 public:
-    ShaderProgram() : m_progId(0), m_type(PTYPE_NOLIMIT), m_isOk(false)
+    ShaderProgram() : m_progId(0), m_isOk(false)
     {}
     virtual ~ShaderProgram() 
     {
@@ -119,9 +114,7 @@ public:
     }
 
     virtual void clear();
-    
-    //bool isCurrent() const { return g_current == this; }
-    virtual int type() const { return m_type; }
+    virtual int getClass() const = 0; // used for avoiding dynamic_cast
 
     static bool hasCurrent() { return g_current != nullptr; }
     static ShaderProgram* current() { return g_current; };
@@ -129,19 +122,19 @@ public:
     static T* currentt() { 
         if (g_current == nullptr)
             return nullptr;
-        T* c = dynamic_cast<T*>(g_current);
-        if (c == nullptr) {
+        //T* c = dynamic_cast<T*>(g_current);
+        if (g_current->getClass() != T::tClass()) {
             cout << "ERROR: Wrong program type!" << endl;
             //DebugBreak();
             throw HCException("Wrong program type");
         }
-        return c; 
+        return static_cast<T*>(g_current); 
     };
     template<typename T>
     static T* currenttTry() { 
-        if (g_current == nullptr)
+        if (g_current == nullptr || g_current->getClass() != T::tClass())
             return nullptr;
-        T* c = dynamic_cast<T*>(g_current);
+        T* c = static_cast<T*>(g_current);
         return c; 
     };
 
@@ -175,7 +168,7 @@ protected:
     static bool printProgramInfoLog(uint obj);
 
     uint m_progId;
-    EProgType m_type;
+
     TCodesList m_vtxprog, m_geomprog, m_fragprog;
     bool m_isOk;
     vector<uint> m_createdShaders; // for later deletion.

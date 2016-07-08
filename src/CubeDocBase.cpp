@@ -188,7 +188,7 @@ bool CubeDocBase::onGenShape(bool resetSlv, const GenTemplate* temp, const Order
 }
 
 
-void CubeDocBase::solveGo(SlvCube *starter)
+void CubeDocBase::solveGo(SlvCube *starter, bool keepPrev)
 {
     if (isSlvEngineRunning())	
     {
@@ -197,6 +197,9 @@ void CubeDocBase::solveGo(SlvCube *starter)
     }
 
     cout << "solveGo!" << endl;
+
+    m_sthread->m_keepPrevSlvs = keepPrev;
+
     if (m_shp.get() == nullptr || m_build->getChangedFromGen())
     {
         if (!onGenShape())

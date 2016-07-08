@@ -540,8 +540,7 @@ void PicPainter::paint(bool fTargets, const Vec3& name, BaseGLWidget *context, b
     const PicGroupDef *def = m_pdef->mygrp();
     //bool hasTex = def->isTexExist();
 
-    BaseProgram* bprog = ShaderProgram::currentt<BaseProgram>();
-    M_ASSERT(bprog != nullptr);
+    BaseProgram* bprog = static_cast<BaseProgram*>(ShaderProgram::current());
 
     auto tm = context->transformMat();
 

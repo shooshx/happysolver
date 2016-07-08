@@ -59,8 +59,9 @@ const PicGroupDef* SlvCube::getPieceGrpDef(int n) const
 
 void SlvCube::genPainter()
 {
-	if (!painter.isNull())
+	if (!painter.isNull()) {
 		return;
+    }
 
 	painter.setSlvCube(this); // make it not nullptr only now.
 	//PicsSet pics(this);  // this ctor takes from the bucket only the data, not the selection
@@ -73,13 +74,16 @@ void SlvCube::genPainter()
 	{
 		painter.qmax.pmax(Vec3(shape->faces[i].ex + shape->faces[i].size()));
 	}
+    //cout << "GEN-PAINTER " << painter.qmax << endl;
 
-	// lines
-	Cube tmpcube(shape, nullptr, nullptr);
-	tmpcube.genLinesIFS(this, painter.m_linesIFS);
+	// lines - not needed anymore, using shader
+//	Cube tmpcube(shape, nullptr, nullptr);
+//	tmpcube.genLinesIFS(this, painter.m_linesIFS);
 
     painter.makeMats();
 }
+
+#ifndef EMSCRIPTEN
 
 #define VAL_SLV_NUMD "s#%d"
 #define VAL1_SLV_SC "sc"
@@ -179,7 +183,7 @@ bool SlvCube::readFrom(MyFile *rdfl, int slvsz)
 	return true;
 
 }
-
+#endif
 					  
 
 void SlvCube::transform(const TTransformVec &moveTo)

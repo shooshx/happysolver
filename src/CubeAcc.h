@@ -242,12 +242,6 @@ class ShapePlace
 public:
 	ShapePlace(int useSize = 0) :sc(-1), rt(0) {}
 
-	/*void clear() {
-		sc = -1;
-		rt = 0;
-		tryd.clear();
-	}*/
-
 	inline void mclear() {
 		sc = -1;
 		rt = 0;

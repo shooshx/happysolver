@@ -16,7 +16,7 @@ public:
     void reCalcSlvMinMax();
     virtual void switchIn() override;
 
-    void restartSolve(bool withCurrentAsStarter);
+    void restartSolve(bool withCurrentAsStarter, bool keepPrev);
 
 protected:
     CubeDocBase *m_doc;
@@ -27,6 +27,7 @@ protected:
     NoiseSlvProgram m_progNoise;
     FlatProgram m_progFlat; // for choice selection
     Vec3 m_modelmin, m_modelmax;
+    Vec3 m_bldDiff;
 
     SlvCube* m_lastSlv = nullptr; // for knowing if we need to invalidate the choise
     int m_lastUpTo = -1;

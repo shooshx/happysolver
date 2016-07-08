@@ -94,15 +94,15 @@ public:
     const RunStats* getRunningStats();
 
     /// starts and stops the solution engine thread.
-    virtual void solveGo(SlvCube* starter = nullptr);
+    virtual void solveGo(SlvCube* starter = nullptr, bool keepPrev = false);
     /// stops the solve thread if its running. return only after it is stopped.
     virtual void solveStop();
 
     void setCurSlvToLast() {
         m_nCurSlv = m_slvs->size() - 1;
         auto s = getCurrentSolve();
-        if (s)
-            cout << "SLV " << s->debug_prn() << endl;
+    //    if (s)
+    //        cout << "SLV " << s->debug_prn() << endl;
         m_nUpToStep = m_shp->fcn;
     }
 

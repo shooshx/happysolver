@@ -597,12 +597,13 @@ void Cube::puttgr(Solutions *slvs, SolveContext *thread, SlvCube* starter, int d
 
             if (interval >= lconf.nRestart) 
             {
-                if ( ((lconf.fLuck) && (!thread->m_stats.lucky)) || (!lconf.fLuck) )
-                {
+                cout << "slv-restart!" << endl;
+                //if ( ((lconf.fLuck) && (!thread->m_stats.lucky)) || (!lconf.fLuck) )
+                //{
                     clear();
                     p = 0;
                     thread->sessionSlvNum = 0;
-                }
+                //}
                 thread->m_stats.lucky = false;
                 thread->lastRestart = curtime;
             }

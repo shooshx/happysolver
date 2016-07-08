@@ -105,11 +105,11 @@ public:
         }    
     }
     
-    void slvReady()
+    /*void slvReady()
     {
-        m_doc.getCurrentSolve()->genPainter();
+        //m_doc.getCurrentSolve()->genPainter();
         m_modelGl.reCalcSlvMinMax();
-    }
+    }*/
 };
 
 
@@ -122,10 +122,24 @@ void sendIsRunning() {
     EM_ASM_( updateIsRunning($0), g_ctrl->m_runctx.fRunning);
 }
 
+void dispFirstSlv()
+{
+   // g_ctrl->slvReady();
+    g_ctrl->m_doc.getCurrentSolve()->genPainter(); // needed for minMax
+    g_ctrl->m_modelGl.reCalcSlvMinMax();
+    
+    g_ctrl->m_gl.switchHandler(&g_ctrl->m_modelGl);
+    g_ctrl->m_gl.reset();
+    sendSlvStat();
+    g_ctrl->requestDraw();
+}
+
+
 void RunContext::notifyLastSolution(bool firstInGo)
 {
     //cout << "Slv-notify" << endl;
     g_ctrl->m_doc.setCurSlvToLast();
+    //dispFirstSlv(); resets the view
     sendSlvStat();
     g_ctrl->requestDraw();
 }
@@ -146,35 +160,8 @@ void RunContext::notifyNotEnoughPieces() {
 
 extern "C" { // ----------------------- interface to js -------------------------
 
-unsigned int vtxBuf = 0;
-int attrVtx = 0;
 
-void dispFirstSlv()
-{
-    g_ctrl->slvReady();
-    g_ctrl->m_gl.switchHandler(&g_ctrl->m_modelGl);
-    g_ctrl->m_gl.reset();
-    sendSlvStat();
-    g_ctrl->requestDraw();
-}
 
-#if 0 // superceded by deserializeAndLoad
-void loadSolution(const char* buf) {
-    try {
-        bool hasSlv = false;
-        if (!g_ctrl->m_doc.realOpen(buf, &hasSlv)) {
-            cout << "error: " << g_ctrl->m_doc.m_lastMsg << endl;
-            cout << "doc realOpen failed" << endl;
-        }
-        
-        dispFirstSlv();
-
-    }
-    catch(const std::exception& e) {
-        cout << "LOAD-GOT-EXCEPTION " << e.what() << endl;
-    }        
-}
-#endif
 
 // read a string with just sc,rt for th
 void loadSlvSimple(const char* str)
@@ -414,7 +401,7 @@ void runningRestart()
 {
     // if its running it means it still did not find a solution
     if (g_ctrl->m_doc.isSlvEngineRunning()) {
-        g_ctrl->m_modelGl.restartSolve(true); // with starter
+        g_ctrl->m_modelGl.restartSolve(true, false); // with starter
     }
 }
 
@@ -422,8 +409,7 @@ void runningRestart()
 
 void newRestart(int flags) 
 {
-    g_ctrl->m_runctx.m_keepPrevSlvs = (flags & NR_KEEP_PREV) != 0;
-    g_ctrl->m_modelGl.restartSolve(false); // without starter template solution
+    g_ctrl->m_modelGl.restartSolve(false, (flags & NR_KEEP_PREV) != 0); // without starter template solution
 }
 void stopSlvRun() 
 {
@@ -456,6 +442,7 @@ void deserializeAndLoad(int len) // shape and solution
     
     g_ctrl->m_doc.setCurSlvToLast();
     dispFirstSlv();
+    g_ctrl->m_gl.reCalcProj(true);
     g_ctrl->requestDraw();
 }
 
@@ -611,7 +598,7 @@ int readCubeFromSig(int grpi, const char* sig, const char* name)
         
     string bits;
     BinWriter sigParse(bits);
-    cout << "READ " << grpi << " " << sig << endl;
+  //  cout << "READ " << grpi << " " << sig << endl;
     sigParse.unrepr(sig);    
 
     M_CHECK(bits.size() == 9);

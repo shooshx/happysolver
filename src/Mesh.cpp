@@ -98,7 +98,7 @@ void Mesh::paint(bool names) const
         return;
     }
 
-    BaseProgram* bprog = ShaderProgram::currentt<BaseProgram>();
+    BaseProgram* bprog = static_cast<BaseProgram*>(ShaderProgram::current());
     NoiseSlvProgram* nprog = ShaderProgram::currenttTry<NoiseSlvProgram>();
     BuildProgram* lprog = ShaderProgram::currenttTry<BuildProgram>(); 
 

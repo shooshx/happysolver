@@ -24,7 +24,7 @@
 
 #include <set>
 
-
+#define SHOW_START false //true
 
 
 static void makeCylinder(Mesh& mesh, int slices, float radius, float length);
@@ -348,7 +348,7 @@ void BuildControlBase::makeBuffers()
                             color = Vec4(0.0f, 0.25f, 0.25f, 0.0f); // red (real color is 1-this, in shader
                             tag = 2;
                         }
-                        else if (valshow == FACE_STRT && m_fSetStrtMode) 
+                        else if (valshow == FACE_STRT && (m_fSetStrtMode || SHOW_START)) 
                             color = Vec4(1.0f, 1.0f, 0.0f, 1.0f); // yellow start tile
                         else
                             color = Vec4(1.0f, 1.0f, 1.0f, 1.0f); // normal white 

@@ -4,6 +4,16 @@
 
 #include "ShaderProgram.h"
 
+enum ProgClass {
+    PCLS_BUILD = 1,
+    PCLS_FLAT = 2,
+    PCLS_NOISE = 3
+};
+#define DEF_CLASS(c) \
+    virtual int getClass() const override { return c; } \
+    static int tClass() { return c; } \
+    
+
 
 class BaseProgram : public ShaderProgram {
 public:
@@ -24,7 +34,8 @@ public:
 	BuildProgram()
 		:tag("tag", this)
 	{}
-	virtual void getCodes();
+	virtual void getCodes() override;
+    DEF_CLASS(PCLS_BUILD);
 
 	FloatAttrib tag;
 	
@@ -32,7 +43,9 @@ public:
 
 class FlatProgram : public BaseProgram {
 public:
-	virtual void getCodes();
+	virtual void getCodes() override;
+    DEF_CLASS(PCLS_FLAT);
+    
 };
 
 class NoiseSlvProgram : public BaseProgram {
@@ -43,7 +56,9 @@ public:
 		,texOffset("texOffset", this), lightPos("lightPos", this), flag("flag", this)
         ,texScale("texScale", this), texTrans("texTrans", this), isBlackSign("isBlackSign", this)
 	{}
-	virtual void getCodes();
+	virtual void getCodes() override;
+    DEF_CLASS(PCLS_NOISE);
+
 
 	IntUniform noisef; 
 

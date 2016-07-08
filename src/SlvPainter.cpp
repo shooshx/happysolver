@@ -40,38 +40,19 @@ void SlvPainter::paintPiece(int f, BaseGLWidget* context, bool fTargets) const
     //cout << "START-MODEL " << model.cur() << endl;
 
     model.push();
-/*    if (false) { // old way, before matrics 
-        model.translate(face->ex.x, face->ex.y, face->ex.z);
-        switch (face->dr)
-        {
-        case XY_PLANE: 
-            model.translate(0, 0, 1);
-            model.rotate(90, 0, 1, 0); 
-            break;
-        case XZ_PLANE: 
-            model.rotate(90, 0, 1, 0);
-            model.rotate(90, 0, 0, 1); 
-            break;
-        case YZ_PLANE: 
-            break;
-        }
-    }
-    else {*/
+
     model.translate(0.5,0.5,-0.5);
     model.cur().mult(m_mats[f]);
     model.translate(-0.5,-0.5,0.5);
     model.rotate(90, 0, 1, 0);
-    //}
+
 
     model.translate(0.5, 2.5, 2.5);
-
     model.rotate(rtnindx * -90, 1, 0, 0);
-
     if (rtnindx >= 4) {
         model.rotate(180, 0, 0, 1);
         model.rotate(90, 1, 0, 0);
     }
-
     model.translate(-0.5, -2.5, -2.5);
 
 

@@ -156,7 +156,7 @@ public slots:
     void slvSetIndex(int ind);
 
     void solveGo() { // make them slots
-        CubeDocBase::solveGo(nullptr);
+        CubeDocBase::solveGo(nullptr, false);
     }
     virtual void solveStop() override {
         CubeDocBase::solveStop();

@@ -26,17 +26,27 @@ void ModelControlBase::switchIn() {
 
 void ModelControlBase::reCalcSlvMinMax()
 {
+#ifndef EMSCRIPTEN
     static bool did = false;
     if (did)
-        return; // HACK, don't want to recenter each time so that the build and model would be in sync
+        return; // HACK, don't want to recenter each time so that the build and model would be in sync (in js, I take of not to call this func when not needed)
     did = true;  // don't recenter every time TBD hack
+#endif
     auto slv = m_doc->getCurrentSolve();
     if (slv == nullptr)
         return;
     SlvPainter &pnt = slv->painter;
 
-    m_bgl->aqmin = m_modelmin = pnt.qmin;
+    m_bgl->aqmin = m_modelmin = pnt.qmin; // always 0,0,0 from genPainter
     m_bgl->aqmax = m_modelmax = pnt.qmax;
+
+    //cout << "MIN-MAX " << m_bgl->aqmin << " : " << m_bgl->aqmax << endl;
+
+    m_buildCtrl.reCalcBldMinMax();
+    m_bldDiff = (Vec3(23, 23, 23) - m_buildCtrl.m_buildmin) * 4;
+    // this accounts for the difference in coordinates between the build and the generated shape
+
+    //cout << "DFF " << m_modelmin << "  " << m_bldDiff << endl;
 }
 
 
@@ -111,7 +121,9 @@ void ModelControlBase::myPaintGL(bool inChoise)
 
     m_bgl->model.push();
     m_bgl->model.scale(zv, zv, zv);
+    m_bgl->model.translate(m_bldDiff.x, m_bldDiff.y, m_bldDiff.z);
     m_bgl->modelMinMax(m_modelmin, m_modelmax);
+    //cout << "PAINT " << m_modelmin << " : " << m_modelmax << endl;
     drawTargets(inChoise);
     m_bgl->model.pop();
 
@@ -276,11 +288,11 @@ bool ModelControlBase::scrDblClick(bool hasCtrl, int x, int y)
             return false;
     }
 
-    restartSolve(true);
+    restartSolve(true, false);
     return true;
 }
 
-void ModelControlBase::restartSolve(bool withCurrentAsStarter)
+void ModelControlBase::restartSolve(bool withCurrentAsStarter, bool keepPrev)
 {
     if (m_doc->isSlvEngineRunning()) {
         m_doc->solveStop();
@@ -291,6 +303,6 @@ void ModelControlBase::restartSolve(bool withCurrentAsStarter)
         m_doc->transferShape(); // does generate
         starter = m_doc->getCurrentSolve();
     }
-    m_doc->solveGo(starter);
+    m_doc->solveGo(starter, keepPrev);
 
 }

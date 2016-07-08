@@ -183,6 +183,7 @@ double BaseGLWidget::zoomFactor()
 
 void BaseGLWidget::modelMinMax(const Vec3& mqmin, const Vec3& mqmax)
 {
+    //cout << "MMM " << mqmin << " : " << mqmax << endl;
     model.translate(-(mqmax[0] + mqmin[0])/2, -(mqmax[1] + mqmin[1])/2, -(mqmax[2] + mqmin[2])/2);
 }
 
