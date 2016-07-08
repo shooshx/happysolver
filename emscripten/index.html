@@ -20,6 +20,7 @@
 
 <script type="text/javascript" src="colorPick/color.all.min.js"></script> <!-- https://github.com/PitPik/colorPicker  -->
 <script type="text/javascript" src="colorPick/jsColor.js"></script>
+<script type="text/javascript" src="sha1.js"></script>
 
 <script type="text/javascript">
 "use strict"
@@ -35,7 +36,7 @@ var resizeGl, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseWheel, cpp_draw
 var setGrpCount, setEditAction, runningRestart, serializeCurrent, deserializeAndLoad, readCubeFromEditor, newRestart, conf
 var stackState, textureParamCube, getCubeTextureHandle, readCubeTexCoord, loadSlvSimple, freeMeshAllocator
 var readCubeToEditor, textureParamToEditor, getToothPossibilities, solveGo, readCubeFromSig, bucketAddFam, setPicCount
-var postReadAllPics, goToSlv, stopSlvRun
+var postReadAllPics, goToSlv, stopSlvRun, aboutClick
 
 var ctrlPressed = false
 var editCtx = null
@@ -119,6 +120,7 @@ function start()
     postReadAllPics = Module.cwrap('postReadAllPics', null, [])
     goToSlv = Module.cwrap('goToSlv', null, ['number'])
     stopSlvRun = Module.cwrap('stopSlvRun', null)
+    aboutClick = Module.cwrap('aboutClick', null, ['number', 'number'])
    
     var pcsNum = countPcs(uni_pcs)     
     Module.ccall('cpp_start', null, ['number'], [(pcsNum + 12)*6]); // add 12 for possible additions using editor
@@ -128,21 +130,16 @@ function start()
     
     Module.ccall('initCubeEngine', 'boolean', ['string', 'number'], ["", 0])
     
-    //loadSolution(one_piece_cube_text)
-    //loadSolution(one_marble_cube_text)
-
     if (window.location.search.length > 0) {
         loadUrl(window.location.toString())
     }
     else { // load single cube of 1 happy cube piece on each face
-        loadUrl("AQYAAAAAQAAQCARAAQAAAIAQC5gFRI4hAwA=")
+        loadUrl("AQYAAAAAQAAQCARAAQAAAIAiNwjGLBIwCAA=")
     }
 
-    //solveGo()
-    
+
     doResize();
-    //resize(mycanvas.width, mycanvas.height)
-    
+
     mycanvas.onmousedown = handleMouseDown
     document.onmouseup = handleMouseUp
     document.onmousemove = handleMouseMove
@@ -157,6 +154,7 @@ function start()
     
     editBackColor.onkeydown = function(ev) { colKey(ev, 0) }
     editFrontColor.onkeydown = function(ev) { colKey(ev, 1) }
+    aboutBack.onclick = function(ev) { triggerAbout(false, ev) }
 
     editFileInput.value = "" // firefox retains the value from last session
     editFileName.value = ""
@@ -178,8 +176,8 @@ function start()
     ipicCanvas.height = 11*IPIC_TSZ + 2*EDIT_MARGIN
     ipicCanvas.width = 15*IPIC_TSZ + 2*EDIT_MARGIN
 
-    picsAddFamily("Test Fam", "Test Fam", true)
-    picsAddCube("Test Cube", "Test Cube", -1, true)
+ //   var fid = picsAddFamily("Test Fam", "Test Fam", true)
+ //   picsAddCube("Test Cube", "Test Cube", -1, true, fid)
     
 }
 
@@ -318,7 +316,14 @@ var pics_cubes = {} // make cube id to { famid, picSel: array of 6 booleans for 
 var max_grpi = 0; // the largest cube number we've seen. used for adding more cubes in the ui
 var currentOpenGrpPics = null; // the {id:str in html,index:int grpi} of the grp of the currently open individual pics selection or null if it's not open
 
+function addTextChild(elem, txt) {
+    var dummy = document.createElement("DIV")
+    dummy.innerHTML = txt
+    elem.appendChild(dummy.firstChild)
+}
+
 function picsAddFamily(famName, id, editable) {
+    
     id = id.replace(/[-\. ]/g, '_')
     var editTag = ''
     if (editable) {
@@ -332,17 +337,22 @@ function picsAddFamily(famName, id, editable) {
     <div id="ID_famframe" class="inframe"></div> \
     </div>'.replace(/ADDEDIT/g, editTag).replace(/ID/g, id).replace(/LABEL/g, famName)
 
-    var dummy = document.createElement("DIV")
-    dummy.innerHTML = picsCtrl;
-    fams_cont.appendChild(dummy.firstChild) // this way I avoid recreating the whole panel each time and making the selection invalid (as opposed to .innerHTML +=)
+    addTextChild(fams_cont, picsCtrl) // this way I avoid recreating the whole panel each time and making the selection invalid (as opposed to .innerHTML +=)
     
-    lastFamAdded = id
     pics_families[id] = { cubes: []}
+    //lastFamAdded = id
+    return id
     
 }
-function picsAddCube(cubeName, id, grpi, editable) {
+
+function picsAddCube(cubeName, id, grpi, editable, intoFam) 
+{
     if (grpi == -1)
         grpi = max_grpi + 1
+    if (pics_families[intoFam].cubes.length == 6) {
+        alert("Can't add more than 6 cubes to a family")
+        return;
+    }
     id = id.replace(/[-\. ]/g, '_')
     var editClass = '', editCall = 'triggerPicSel'
     if (editable) {
@@ -356,12 +366,11 @@ function picsAddCube(cubeName, id, grpi, editable) {
     <input class="cube_count" id="ID_ccount" type="number" min="0" oninput="on_cube_count(\'ID\', INDEX)">\
     </div>'.replace(/EDITCLASS/g, editClass).replace(/EDITCALL/g,editCall).replace(/ID/g, id).replace(/LABEL/g, cubeName).replace(/INDEX/g, grpi)
     
-    var dummy = document.createElement("DIV")
-    document.getElementById(lastFamAdded + "_famframe").innerHTML += txt
-    pics_families[lastFamAdded].cubes.push( { cid: id, grpi: grpi})
-    pics_cubes[id] = { famid: lastFamAdded, picSel:[true,true,true,true,true,true] }
+    addTextChild( document.getElementById(intoFam + "_famframe"), txt)
     
-    
+    pics_families[intoFam].cubes.push( { cid: id, grpi: grpi})
+    pics_cubes[id] = { famid: intoFam, picSel:[true,true,true,true,true,true] }
+    picFamCheck(id) // check if this changes the family checkbox
     
     if (grpi > max_grpi)
         max_grpi = grpi
@@ -421,8 +430,8 @@ function triState(elem, allTrue, allFalse)
 }
 
 // set the state of the family checkbox according the the selection
-function picFamCheck(id) {
-    var famid = pics_cubes[id].famid
+function picFamCheck(cubeId) {
+    var famid = pics_cubes[cubeId].famid
     var fcubes = pics_families[famid].cubes;
     var allTrue = true, allFalse = true
     for(var i in fcubes) {
@@ -628,12 +637,13 @@ function triggerRemove() {
 
 }
 
-function triggerAbout(v) {
+function triggerAbout(v, ev) {
     aboutBtn.checked = v
     if (v) {
         aboutBack.style.display = "inline"
     }
     else {
+        aboutClick(ev.clientX, ev.clientY)
         aboutBack.style.display = "none"
     }
     
@@ -701,6 +711,8 @@ function urlEditChanged() {
 
 function triggerAddFam() {
     var famName = window.prompt("Family Name?","");
+    if (famName == null)
+        return
     picsAddFamily(famName, famName, true)
 }
 
@@ -708,7 +720,7 @@ function triggerAddCube(intoFam) {
     var cubeName = window.prompt("Cube Name?","");
     if (cubeName == null || cubeName == "")
         return
-    picsAddCube(cubeName, cubeName, -1, true)
+    picsAddCube(cubeName, cubeName, -1, true, intoFam)
 }
 
 var IPIC_TSZ = 15
@@ -799,6 +811,25 @@ function triggerNext()
     else
         newRestart(NR_KEEP_PREV)
 }
+
+var shscratch = ""
+function sha1(txt) {
+    var x = new jsSHA('SHA-1', 'TEXT', {numRounds:3})
+    x.update(txt)
+    return x.getHash('HEX')
+}
+
+function passPrompt(oninput) {
+    addTextChild(body, '<div id="keyCenter" style="position: absolute; left: 50%; top:0">\
+        <div id="keyBack" style="position: relative; left: -50%;"><input id="inKey" type="password"/></div></div>')
+    inKey.focus()
+    inKey.onchange = function() { oninput(inKey.value); body.removeChild(keyCenter) }
+}
+
+function enableKey() {
+    addTextChild(side_rel, '<label id="addFamBtn" class="sc-btn" onclick="triggerAddFam()"/><span id="addFamBtnIn"></span></label>')
+}
+
 
 //--------------------------------------------------------------------------------------
 
@@ -1940,6 +1971,12 @@ h1 {
     height: 34px;
     margin: 0 7px 7px 7px;
 }
+#addFamBtnIn {
+    background: url(plus.png) center no-repeat; 
+    display: inline-block; 
+    width: 34px; 
+    height: 33px;
+}
 .addCubeBtn {
     width: 34px;
     height: 25px;
@@ -2012,7 +2049,7 @@ input:checked + .sc-btn
 }
 
 #editRotL {
-    top: 110px;
+    top: 120px;
     right: 45px;
     width: 40px;
 }
@@ -2169,11 +2206,25 @@ input:checked + .sc-btn
 #ipic5Lbl { left: 170px; top: 50px; }
 #ipic6Lbl { left: 170px; top: 110px;}
 
-
+#keyBack {
+    top: 10px;
+    background: #666;
+    width: 200px; 
+    height: 40px;    
+    border-radius: 6px;
+    display: inline-block;
+}
+#inKey {
+    display: block;
+    margin: 8px auto 0 auto;
+    height: 17px;
+    width: 180px;
+    font-family: monospace;
+}
 
 </style>
 </head>
-<body onload="start()" onresize="doResize()" >
+<body id="body" onload="start()" onresize="doResize()" >
     <div id="side_ctrl">
     <input id="addingCubeCheck" class="hidden" onclick="triggerAdd()" type="checkbox">
     <label id="addingCube" class="sc-btn" for="addingCubeCheck" >Add</label>
@@ -2194,8 +2245,6 @@ input:checked + .sc-btn
     
     <div id="side_rel" class="in_rel">
       <div id="fams_cont"></div>
-      <label id="addFamBtn" class="sc-btn" onclick="triggerAddFam()"/>
-      <span style="background: url(plus.png) center no-repeat; display: inline-block; width: 34px; height: 33px;"></span></label>
     </div>
 
     <div id="editBack" class="popupBack"><div id="picEditWin" class="popupWin">
@@ -2268,7 +2317,7 @@ input:checked + .sc-btn
     
     <canvas id="mycanvas" width="800" height="700"></canvas>
     
-    <div id="aboutBack" onclick="triggerAbout(false)" class="popupBack"><div id="aboutWin" class="popupWin">
+    <div id="aboutBack" class="popupBack"><div id="aboutWin" class="popupWin">
     <h1>Happy Cube Solver</h1><br>
     <h2>Designed and implemented by Shy Shalom (1995 - 2016)<br>
     <a href="mailto:shooshx@gmail.com" target="_blank">shooshx@gmail.com</a><br></h2>
@@ -2290,5 +2339,6 @@ If you have any questions concerning the usage of HAPPY materials, please send y
     <img id="dummy_anim" src="gears/gear_anim.gif" style="display:none;"/>
     <img id="dummy_pause" src="pause.png" style="display:none;"/>
     <div id="stat"></div>
+    
 </body>
 </html>

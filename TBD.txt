@@ -8,20 +8,27 @@ firefox
     zoom
 not enough pieces - show best effort
     
-universal slv
-    remove added array
-rid of gind?
 
 rid of shared_ptr
 fix tranparents - depth pass
     https://docs.google.com/presentation/d/12AGAUmElB0oOBgbEEBfhABkIMCL3CUX7kdAPLuwZ964/edit#slide=id.i158
 handle lost context webgl https://www.khronos.org/webgl/wiki/HandlingContextLost
 
-display selected pieces count
+- engine optimization - read plc, don't go through PicArr
 
-buttons
+------ missing features
+- dismiss url
+- all standard pieces in js
+- display selected pieces count
+- encode editor to url
+- remove standard pieces
+- editor show flat, with frame
+- error messages
+- enable admin mode
+- export OBJ
+- compilation - closure, check hiding
+- better pieces display
 
-    in full enum, error?
 
 EDITOR
 ------
@@ -32,7 +39,7 @@ Black Lines mis-features
 flip colors back and front button
 
 read stdpcs js
-    count change from 20
+
 save all params to an object
 
    

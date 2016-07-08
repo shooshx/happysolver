@@ -197,13 +197,13 @@ void populatePicsSide(PicBucket& bucket)
             lc = c;
         }
         fam.ctrlId = initials;
-        EM_ASM_(picsAddFamily(Pointer_stringify($0), Pointer_stringify($1)), fam.name.c_str(), initials.c_str());
+        EM_ASM_(lastFamAdded = picsAddFamily(Pointer_stringify($0), Pointer_stringify($1)), fam.name.c_str(), initials.c_str());
         for(int gi = 0; gi < fam.numGroups; ++gi)
         {
             int grpi = fam.startIndex + gi;
             auto& grp = bucket.grps[grpi];
             string dispName = grp.name.substr(grp.name.find('-') + 1);
-            EM_ASM_(picsAddCube(Pointer_stringify($0), Pointer_stringify($1), $2), dispName.c_str(), grp.name.c_str(), grpi);
+            EM_ASM_(picsAddCube(Pointer_stringify($0), Pointer_stringify($1), $2, false, lastFamAdded), dispName.c_str(), grp.name.c_str(), grpi);
         }
     }
     
@@ -778,5 +778,22 @@ void goToSlv(int n) {
 }
 
 
-} // extern "C"
+void aboutClick(int x, int y) {
+    if (x > 10 || y > 10) {
+        return;
+    }
 
+    int len = EM_ASM_INT_V(return shscratch.length);
+    if (len == 0) {
+        EM_ASM_(passPrompt(function(s) { shscratch = sha1(s); aboutClick($0,$1) }), x, y );
+        return;
+    }
+    string s;
+    s.resize(len);
+    for(int i = 0; i < len; ++i)
+        s[i] = EM_ASM_INT(return shscratch.charCodeAt($0), i);
+    if (s == "ac455a78726da3f1f11f5c08a72169b0c339d645")
+        EM_ASM(enableKey());
+}
+
+} // extern "C"
