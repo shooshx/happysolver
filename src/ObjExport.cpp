@@ -39,15 +39,6 @@ void ObjExport::addMesh(const PicGroupDef *def, Mesh& mesh, const Mat4& fMatrix)
         meshout << "v " << filterZero(v.x) << " " << filterZero(v.y) << " " << filterZero(v.z) << "\n";
     }
 
-    /*
-    addTexCoord |= mesh.m_hasTexCoord;
-    if (addTexCoord)	{
-        for (int i = 0; i < mesh.m_texCoord.size(); ++i) {
-            Vec2& t = mesh.m_texCoord[i];
-            meshout << "vt " << t.x << " " << t.y << "\n";
-        }
-    }
-    */
 
     int elemSize = mesh.elemSize();
     for(int idxi = 0; idxi < mesh.m_idx.size(); idxi += elemSize) 
@@ -84,27 +75,3 @@ void ObjExport::addMesh(const PicGroupDef *def, Mesh& mesh, const Mat4& fMatrix)
 
 }
 
-/*
-    addTexCoord |= mesh.m_hasTexCoord;
-    map<string, int> dedTex; // string is serialization of the coordinates
-    vector<int> mi2fi(mesh.m_texCoord.size()+1); // mesh index to file index
-    int fi = 1;
-    if (addTexCoord)	{
-        // deduplicate 
-        for (int i = 0; i < mesh.m_texCoord.size(); ++i) {
-            stringstream ss;
-            Vec2& t = mesh.m_texCoord[i];
-            ss << t.x << " " << t.y;
-            string st = ss.str();
-            auto it = dedTex.find(st);
-            if (it != dedTex.end()) {
-                mi2fi[i + 1] = it->second;
-                continue; // it's already there
-            }
-            dedTex[st] = fi;
-            mi2fi[i+1] = fi;
-            ++fi;
-            meshout << "vt " << st << "\n";
-        }
-    }
-    */

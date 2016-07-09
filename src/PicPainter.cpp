@@ -278,9 +278,6 @@ void PicDisp::init(const DisplayConf& dpc)
     ss << "c:/temp/orig/piece_" << hex << m_arr.getBits() << "_" << rand() << ".obj";
     m_mesh.save(ss.str(), true);
 
-    //ObjExport oe(f, nullptr);
-    //oe.asTriangles = true;
-    //oe.addMesh(nullptr, m_mesh, Mat4::ident());
 
     g_smoothAllocator.clear();
 }

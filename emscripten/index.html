@@ -36,7 +36,7 @@ var resizeGl, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseWheel, cpp_draw
 var setGrpCount, setEditAction, runningRestart, serializeCurrent, deserializeAndLoad, readCubeFromEditor, newRestart, conf
 var stackState, textureParamCube, getCubeTextureHandle, readCubeTexCoord, loadSlvSimple, freeMeshAllocator
 var readCubeToEditor, textureParamToEditor, getToothPossibilities, solveGo, readCubeFromSig, bucketAddFam, setPicCount
-var postReadAllPics, goToSlv, stopSlvRun, aboutClick
+var postReadAllPics, goToSlv, stopSlvRun, aboutClick, exportModel
 
 var ctrlPressed = false
 var editCtx = null
@@ -121,6 +121,7 @@ function start()
     goToSlv = Module.cwrap('goToSlv', null, ['number'])
     stopSlvRun = Module.cwrap('stopSlvRun', null)
     aboutClick = Module.cwrap('aboutClick', null, ['number', 'number'])
+    exportModel = Module.cwrap('exportModel', 'number', [])
    
     var pcsNum = countPcs(uni_pcs)     
     Module.ccall('cpp_start', null, ['number'], [(pcsNum + 12)*6]); // add 12 for possible additions using editor
@@ -637,6 +638,10 @@ function triggerRemove() {
 
 }
 
+function eventStopProp(e) {
+    e.stopPropagation()
+}
+
 function triggerAbout(v, ev) {
     aboutBtn.checked = v
     if (v) {
@@ -647,9 +652,7 @@ function triggerAbout(v, ev) {
         aboutBack.style.display = "none"
     }
     
-    aboutWin.onclick = function(e) {
-        e.stopPropagation()
-    }
+    aboutWin.onclick = eventStopProp
 }
 
 
@@ -692,9 +695,7 @@ function triggerUrl() {
     urlEdit.value = url + '?l=' + b
     urlEdit.select()
     
-    urlPopup.onclick = function(e) { // click in the window should not go to urlBack and dismiss it
-        e.stopPropagation()
-    }
+    urlPopup.onclick = eventStopProp // click in the window should not go to urlBack and dismiss it
 }
 
 //loadUrl("AQoAAAgAQAAAAARAAQAQAAEAEAQAAQAgCARBHXRogCOG8YptBGEKWzg=")
@@ -831,7 +832,35 @@ function passPrompt(oninput) {
 }
 
 function enableKey() {
-    addTextChild(side_rel, '<label id="addFamBtn" class="sc-btn" onclick="triggerAddFam()"/><span id="addFamBtnIn"></span></label>')
+    addTextChild(side_rel, '<label id="addFamBtn" class="sc-btn sc-keyed" onclick="triggerAddFam()"/><span id="addFamBtnIn"></span></label>')
+    
+    addTextChild(side_ctrl, '<label id="exportBtn" class="sc-btn sc-keyed" title="Export" onclick="triggerExport()">\
+        <span style="background: url(export.png) center no-repeat; display: inline-block; width: 30px; height: 30px;"></span></label>')
+}
+
+var expScratchObj = null, expScratchMtl = null, expScratchName = null  // used by exportModel
+function triggerExport() {
+   if (exportBack.style.visibility == "visible") {
+        exportBack.style.visibility = "hidden"
+        return
+    }
+    exportBack.style.visibility = "visible"
+
+    exportModel()
+    
+    function setDownload(file, elem, ext) {
+        var blob = new Blob([file], {type: "octet/stream"})
+        var url = window.URL.createObjectURL(blob)
+        elem.href = url
+        elem.innerHTML = expScratchName + ext
+        elem.download = expScratchName + ext
+        return url
+    }
+    
+    var objUrl = setDownload(expScratchObj, linkObj, ".obj")
+    var mtlUrl = setDownload(expScratchMtl, linkMtl, ".mtl")
+    
+    exportPopup.onclick = eventStopProp 
 }
 
 
@@ -1639,6 +1668,7 @@ body {
     -ms-user-select: none;
      user-select: none;
     background: #b2b2b2; 
+    font-family: Verdana;
 }
 #mycanvas {
     margin: 8px 0 0 8px;
@@ -1791,7 +1821,6 @@ body {
 
 .sc-btn:hover {
   color: #222;
-  background-color: #d2d2d2;
   background-image: linear-gradient(to bottom, white, #d2d2d2);
   background-color: #fdfdfd;   
 }
@@ -1820,6 +1849,13 @@ body {
 
 input[type="range"]:disabled {
     opacity: 0.4;
+}
+
+.sc-keyed {
+  background-image: linear-gradient(to bottom, white, #96fc96);
+}
+.sc-keyed:hover {
+  background-image: linear-gradient(to bottom, white, #d2ffd2);
 }
 
 
@@ -1861,9 +1897,14 @@ input:disabled + .sc-btn:active,
    height: 30px;
    line-height: 30px;
 }
-
 #urlBtn {
    right: 50px;
+   bottom: 8px;
+   width: 40px;
+   height: 30px;
+}
+#exportBtn {
+   right: 92px;
    bottom: 8px;
    width: 40px;
    height: 30px;
@@ -1952,7 +1993,7 @@ h1 {
     font-size: 30px;
     margin: 0 0 0 30px;
 }
-#urlBack {
+.transBack {
     visibility: hidden;
     position: absolute;
     width: 100%;
@@ -1975,7 +2016,19 @@ h1 {
     height: 20px;
     margin: 5px;
     width: 286px;
-    
+}
+
+#exportPopup {
+    position: absolute;
+    bottom: 50px;
+    right: 96px;
+    width: 220px;
+    height: 70px;
+    background: #ededed;
+    border-radius: 6px;
+    border: 2px outset #A9A7A7;
+    padding: 4px;
+    font-size: 12pt;
 }
 
 #addFamBtn{
@@ -2237,7 +2290,7 @@ input:checked + .sc-btn
 </style>
 </head>
 <body id="body" onload="start()" onresize="doResize()" >
-    <div id="side_ctrl">
+  <div id="side_ctrl">
     <input id="addingCubeCheck" class="hidden" onclick="triggerAdd()" type="checkbox">
     <label id="addingCube" class="sc-btn" for="addingCubeCheck" >Add</label>
     <input id="removingCubeCheck" class="hidden" onclick="triggerRemove()" type="checkbox"/>
@@ -2246,6 +2299,7 @@ input:checked + .sc-btn
     <label id="urlBtn" class="sc-btn" onclick="triggerUrl()">
         <span style="background: url(url-icon_s3.png) center no-repeat; display: inline-block; width: 30px; height: 30px;"></span>
     </label>
+    
     <label id="prevBtn" class="sc-btn" onclick="triggerPrev()">
         <span id="prevBtnIn" class="sc-span"></span>
     </label>
@@ -2254,7 +2308,7 @@ input:checked + .sc-btn
         <span id="nextBtnIn2" class="sc-span"></span>
     </label>
     <div id="slvNum"></div>
-    
+
     <div id="side_rel" class="in_rel">
       <div id="fams_cont"></div>
     </div>
@@ -2304,7 +2358,8 @@ input:checked + .sc-btn
 
         <canvas id="canvas_scratch" style="display:none;"></canvas>
 
-    </div></div></div>
+    </div></div>
+  </div>
 
     <div id="ipicWin">
         <div id="inputsContainer">
@@ -2325,9 +2380,12 @@ input:checked + .sc-btn
         <canvas id="ipicCanvas"></canvas>
     </div>
     
-    <div id="urlBack" onclick="triggerUrl()">
+    <div id="urlBack" class="transBack" onclick="triggerUrl()">
         <div id="urlPopup"><input id="urlEdit" type="text" onchange="urlEditChanged()"/></div>
     </div>    
+    <div id="exportBack" class="transBack" onclick="triggerExport()">
+        <div id="exportPopup">Exported Model:<br><a id="linkObj" href="">file.obj</a><br><a id="linkMtl" href="">file.mtl</a></div>
+    </div>
     
     <canvas id="mycanvas" width="800" height="700"></canvas>
     

@@ -23,9 +23,10 @@ handle lost context webgl https://www.khronos.org/webgl/wiki/HandlingContextLost
 - ability to remove standard pieces in edit mode
 - editor show flat 2x3 solution, with generated frame mesh
 - error messages
-- export OBJ
 - compilation - closure, check hiding
 - better indivudual pieces display
+- xyz indicator
+- button reset view angle
 
 
 EDITOR

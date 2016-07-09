@@ -15,8 +15,8 @@ public:
 
     void addMesh(const PicGroupDef *def, Mesh& obj, const Mat4& fMatrix);
 
-    bool asTriangles;
-    bool addTexCoord;
+    bool asTriangles = false;
+    bool addTexCoord = false;
 
 private:
     DISALLOW_COPY(ObjExport);

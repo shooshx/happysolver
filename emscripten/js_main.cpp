@@ -13,6 +13,7 @@
 #include "../src/SlvCube.h"
 #include "../src/Cube.h"
 #include "../src/BinWriter.h"
+#include "../src/ObjExport.h"
 
 using namespace std;
 
@@ -794,6 +795,31 @@ void aboutClick(int x, int y) {
         s[i] = EM_ASM_INT(return shscratch.charCodeAt($0), i);
     if (s == "ac455a78726da3f1f11f5c08a72169b0c339d645")
         EM_ASM(enableKey());
+}
+
+bool exportModel()
+{
+    const SlvCube* slv = g_ctrl->m_doc.getCurrentSolve();
+    if (slv == nullptr)
+        return false;
+    stringstream sobj, smtl;  
+    stringstream sname;
+    auto shp_sz = (slv->shape->size - Vec3i(5,5,5))/4.0;
+    uint32_t tmnow = EM_ASM_INT_V(return new Date().valueOf());
+
+    sname << "model_" << shp_sz.x << "x" << shp_sz.y << "x" << shp_sz.z << "_" << hex << (tmnow % 0xfff);
+    string name = sname.str();
+
+    sobj << "mtllib " << name << ".mtl" << "\n";
+    EM_ASM_(expScratchName = Pointer_stringify($0), name.c_str());
+    
+    ObjExport oe(sobj, &smtl);
+
+    if (!slv->painter.exportToObj(oe))
+        return false;
+    EM_ASM_(expScratchObj = Pointer_stringify($0); expScratchMtl = Pointer_stringify($1), sobj.str().c_str(), smtl.str().c_str());
+
+    return true;
 }
 
 } // extern "C"

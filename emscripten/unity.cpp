@@ -20,3 +20,4 @@
 #include "../src/OpenGL/Shaders.cpp"
 #include "../src/BuildControlBase.cpp"
 #include "../src/MyObject.cpp"
+#include "../src/ObjExport.cpp"
