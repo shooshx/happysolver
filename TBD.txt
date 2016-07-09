@@ -17,17 +17,15 @@ handle lost context webgl https://www.khronos.org/webgl/wiki/HandlingContextLost
 - engine optimization - read plc, don't go through PicArr
 
 ------ missing features
-- dismiss url
 - all standard pieces in js
 - display selected pieces count
 - encode editor to url
-- remove standard pieces
-- editor show flat, with frame
+- ability to remove standard pieces in edit mode
+- editor show flat 2x3 solution, with generated frame mesh
 - error messages
-- enable admin mode
 - export OBJ
 - compilation - closure, check hiding
-- better pieces display
+- better indivudual pieces display
 
 
 EDITOR

@@ -675,22 +675,26 @@ function base64ToBuffer(base64) {
     }
 }
 
-function triggerUrl(v) {
-    if (urlPopup.style.visibility == "visible") {
-        urlPopup.style.visibility = "hidden"
+function triggerUrl() {
+    if (urlBack.style.visibility == "visible") {
+        urlBack.style.visibility = "hidden"
         return
     }
     scratchArr = []
     serializeCurrent()
     var b = bufferToBase64(scratchArr)
     console.log(b)
-    urlPopup.style.visibility = "visible"
+    urlBack.style.visibility = "visible"
     var url = window.location.toString()
     var qmark = url.indexOf('?')
     if (qmark > 0)
         url = url.substr(0, qmark)
     urlEdit.value = url + '?l=' + b
     urlEdit.select()
+    
+    urlPopup.onclick = function(e) { // click in the window should not go to urlBack and dismiss it
+        e.stopPropagation()
+    }
 }
 
 //loadUrl("AQoAAAgAQAAAAARAAQAQAAEAEAQAAQAgCARBHXRogCOG8YptBGEKWzg=")
@@ -706,7 +710,7 @@ function loadUrl(b) {
 
 function urlEditChanged() {
     loadUrl(urlEdit.value)
-    urlPopup.style.visibility = "hidden"
+    urlBack.style.visibility = "hidden"
 }
 
 function triggerAddFam() {
@@ -823,7 +827,7 @@ function passPrompt(oninput) {
     addTextChild(body, '<div id="keyCenter" style="position: absolute; left: 50%; top:0">\
         <div id="keyBack" style="position: relative; left: -50%;"><input id="inKey" type="password"/></div></div>')
     inKey.focus()
-    inKey.onchange = function() { oninput(inKey.value); body.removeChild(keyCenter) }
+    inKey.onchange = function() { oninput(inKey.value); shscratch=""; body.removeChild(keyCenter) }
 }
 
 function enableKey() {
@@ -1948,6 +1952,15 @@ h1 {
     font-size: 30px;
     margin: 0 0 0 30px;
 }
+#urlBack {
+    visibility: hidden;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0, 0);
+    top: 0;
+    left: 0;
+}
 #urlPopup {
     position: absolute;
     bottom: 50px;
@@ -1957,7 +1970,6 @@ h1 {
     background: #ededed;
     border-radius: 6px;
     border: 1px outset #A9A7A7;
-    visibility: hidden;
 }
 #urlEdit {
     height: 20px;
@@ -2231,7 +2243,7 @@ input:checked + .sc-btn
     <input id="removingCubeCheck" class="hidden" onclick="triggerRemove()" type="checkbox"/>
     <label id="removingCube" class="sc-btn" for="removingCubeCheck">Remove</label>
     <label id="aboutBtn" class="sc-btn" onclick="triggerAbout(true)">?</label>
-    <label id="urlBtn" class="sc-btn" onclick="triggerUrl(true)">
+    <label id="urlBtn" class="sc-btn" onclick="triggerUrl()">
         <span style="background: url(url-icon_s3.png) center no-repeat; display: inline-block; width: 30px; height: 30px;"></span>
     </label>
     <label id="prevBtn" class="sc-btn" onclick="triggerPrev()">
@@ -2313,7 +2325,9 @@ input:checked + .sc-btn
         <canvas id="ipicCanvas"></canvas>
     </div>
     
-    <div id="urlPopup"><input id="urlEdit" type="text" onchange="urlEditChanged()"/></div>
+    <div id="urlBack" onclick="triggerUrl()">
+        <div id="urlPopup"><input id="urlEdit" type="text" onchange="urlEditChanged()"/></div>
+    </div>    
     
     <canvas id="mycanvas" width="800" height="700"></canvas>
     
