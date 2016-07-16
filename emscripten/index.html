@@ -400,7 +400,10 @@ function on_fam_check(id, v, doSolve) {
     var fcubes = pics_families[id].cubes;
     for(var i in fcubes) {
         var c = fcubes[i]
-        document.getElementById(c.cid + "_ccheck").checked = v
+        var e = document.getElementById(c.cid + "_ccheck")
+        e.checked = v
+        e.indeterminate = false
+        
         dispCCount(c.cid, v)
         sendGrpCount(c.cid, v, c.grpi)
         resetPicSel(c.cid, v)
@@ -437,10 +440,12 @@ function picFamCheck(cubeId) {
     var allTrue = true, allFalse = true
     for(var i in fcubes) {
         var cid = fcubes[i].cid
-        var iv = document.getElementById(cid + "_ccheck").checked
+        var e = document.getElementById(cid + "_ccheck")
+        var cv = e.checked
+        var itv = e.indeterminate
 
-        allTrue = allTrue && iv
-        allFalse = allFalse && !iv
+        allTrue = allTrue && cv && !itv
+        allFalse = allFalse && !cv && !itv
     }
     var famCheck = document.getElementById(famid + "_fcheck")
     var famLabel = document.getElementById(famid + "_fcheck_label")
@@ -1717,6 +1722,7 @@ body {
 #canvasCont {
     position: relative;
     display: inline-block;
+    z-index: -1;
 }
 
 #side_ctrl {
@@ -1836,7 +1842,7 @@ body {
 /*------------------------------------------------------------*/
 .hidden {
     position:absolute;
-    z-index:-1;
+    z-index:-2;
     }
 .sc-btn {
   display: inline-block;
@@ -1999,6 +2005,16 @@ input:disabled + .sc-btn:active,
     color: #666;
 }
 
+#picNum {
+    position: absolute;
+    top: 60px;
+    width: 180px;
+    font-family: monospace;
+    left: 24px;
+    font-size: 18pt;
+    color: #414141;
+    text-align: center;
+}
 
 .popupBack {
     display: none;
@@ -2048,6 +2064,7 @@ h1 {
     background: rgba(0,0,0, 0);
     top: 0;
     left: 0;
+    z-index: 2;
 }
 #urlPopup {
     position: absolute;
@@ -2344,6 +2361,7 @@ input:checked + .sc-btn
     <label id="addingCube" class="sc-btn" for="addingCubeCheck" >Add</label>
     <input id="removingCubeCheck" class="hidden" onclick="triggerRemove()" type="checkbox"/>
     <label id="removingCube" class="sc-btn" for="removingCubeCheck">Remove</label>
+    <div id="picNum">10/20</div>
     <label id="aboutBtn" class="sc-btn" onclick="triggerAbout(true)">?</label>
     <label id="urlBtn" class="sc-btn" onclick="triggerUrl()">
         <span style="background: url(url-icon_s3.png) center no-repeat; display: inline-block; width: 30px; height: 30px;"></span>

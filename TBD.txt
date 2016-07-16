@@ -17,6 +17,7 @@ handle lost context webgl https://www.khronos.org/webgl/wiki/HandlingContextLost
 - engine optimization - read plc, don't go through PicArr
 
 ------ missing features
+- too small arrows to change selection count
 - all standard pieces in js
 - display selected pieces count
 - encode editor to url
@@ -26,6 +27,7 @@ handle lost context webgl https://www.khronos.org/webgl/wiki/HandlingContextLost
 - better indivudual pieces display in selection
 - xyz indicator
 - button reset view angle
+
 
 
 EDITOR
