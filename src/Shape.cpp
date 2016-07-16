@@ -141,7 +141,8 @@ bool Shape::loadFrom(MyFile *rdfl)
 
 void Shape::deallocate()
 {
-    if (faces != nullptr) delete[] faces;
+    if (faces != nullptr) 
+        delete[] faces;
     faces = nullptr;
     sides.clear();
     corners.clear();
@@ -566,6 +567,7 @@ EGenResult Shape::orderFacesInSequence(int reqf)
     EGenResult aret = reArrangeFacesDFS(faces, revis, trans);
     if (aret != GEN_RESULT_OK) {
         delete[] faces;
+        faces = nullptr;
         return aret;
     }
 

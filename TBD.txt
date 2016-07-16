@@ -22,9 +22,8 @@ handle lost context webgl https://www.khronos.org/webgl/wiki/HandlingContextLost
 - encode editor to url
 - ability to remove standard pieces in edit mode
 - editor show flat 2x3 solution, with generated frame mesh
-- error messages
 - compilation - closure, check hiding
-- better indivudual pieces display
+- better indivudual pieces display in selection
 - xyz indicator
 - button reset view angle
 

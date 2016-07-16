@@ -145,10 +145,10 @@ bool CubeDocBase::callGenerate(Shape *shape, bool bSilent)
             complain("Generation of shape failed.\nMake sure your shape has a yellow starting piece.");
             break;
         case GEN_RESULT_NOT_CONNECT:
-            complain("Generation of shape failed.\nShape is made of several disconnected parts.\nThe shape must be a single volume or surface.");
+            complain("The Shape is made of several disconnected parts. it must be a single volume or surface for the solver to work");
             break;
         case GEN_RESULT_ILLEGAL_SIDE:
-            complain("Generation of shape failed.\nIllegal side discovered.");
+            complain("Bad Shape - Illegal sides of cubes found");
             break;
         case GEN_RESULT_UNKNOWN:
             complain("Generation of shape failed.\nUnknown error, this is a bug!!!");
@@ -199,6 +199,7 @@ void CubeDocBase::solveGo(SlvCube *starter, bool keepPrev)
     cout << "solveGo!" << endl;
 
     m_sthread->m_keepPrevSlvs = keepPrev;
+    dismissComplain();
 
     if (m_shp.get() == nullptr || m_build->getChangedFromGen())
     {

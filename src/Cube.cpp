@@ -513,6 +513,13 @@ void SolveContext::doRun(int doSteps)
 
 void Cube::puttgr(Solutions *slvs, SolveContext *thread, SlvCube* starter, int doSteps)
 {
+    if (pics->picCount == 0) { // this will cause notify confusion later on, better deal with it now
+        cout << "NO-PICS" << endl;
+        thread->notifyNotEnoughPieces();
+        thread->selfExit = true;
+        return;
+    }
+
     int p = thread->p;
     int didSteps = 0;
 
@@ -537,7 +544,7 @@ void Cube::puttgr(Solutions *slvs, SolveContext *thread, SlvCube* starter, int d
 
 
         if (pics->picCount < shape->fcn - p) {// we suddently don't have enough pieces to fill all the places
-            cout << "NOT-ENOUGH steps=" << didSteps << " count=" << pics->picCount << endl;
+            cout << "NOT-ENOUGH steps=" << didSteps << " count=" << pics->picCount << " fcn=" << shape->fcn << " p=" << p << endl;
             thread->notifyNotEnoughPieces();
             thread->selfExit = true;
             break;

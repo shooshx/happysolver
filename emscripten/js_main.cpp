@@ -38,7 +38,12 @@ int makeShader(int type, const char* text)
 
 void complain(const char* msg) {
     cout << "ERROR: " << msg << endl;
+    EM_ASM_(notifyError(Pointer_stringify($0)), msg);
 }
+void dismissComplain() {
+    EM_ASM(hideError());
+}
+
 void sendIsRunning();
 
 class RunContext : public SolveContext
@@ -47,6 +52,7 @@ public:
     virtual void notifyLastSolution(bool firstInGo) override;
     virtual void notifyFullEnum() override;
     virtual void notifyNotEnoughPieces() override;
+
 
     // called from CubeDocBase::solveGo
     virtual void doStart() override {
@@ -65,6 +71,8 @@ public:
     void runAll() {
         doRun(-1);
     }
+    
+    
 };
 
 
@@ -152,8 +160,15 @@ void RunContext::notifyFullEnum() {
     sendSlvStat();
     g_ctrl->requestDraw();
 }
+
+bool isInEditMode() {
+    return EM_ASM_INT_V(return editingCubeId) >= 0;
+}
+
 void RunContext::notifyNotEnoughPieces() {
-    cout << "Not enough pieces" << endl;
+    if (!isInEditMode()) // in editor, don't complain since this happens whenever editing the pieces
+        complain("Not enough pieces");
+        
     g_ctrl->m_doc.clearSlvs();
     sendSlvStat();
     g_ctrl->requestDraw();
@@ -266,6 +281,7 @@ void mouseMove(int buttons, int ctrlPressed, int x, int y) {
     }
 }
 void mouseDblClick(int ctrlPressed, int x, int y) {
+
     bool needUpdate = g_ctrl->m_gl.mouseDoubleClick(ctrlPressed, x, y);
     sendIsRunning();
     if (needUpdate)

@@ -70,3 +70,5 @@ void complain(const char* msg)
 {
     QMessageBox::critical(g_main, APP_NAME, msg, QMessageBox::Ok, 0);
 }
+void dismissComplain()
+{}

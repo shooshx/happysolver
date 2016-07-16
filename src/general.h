@@ -128,6 +128,7 @@ private:
 #define M_CHECK(cond) do { if (!(cond)) throw HCException(#cond); } while(0)
 
 void complain(const char* msg);
+void dismissComplain();
 
 // profile command line VC6
 // /SF ?CubeEngineProc@@YAIPAX@Z
