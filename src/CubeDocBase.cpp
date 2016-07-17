@@ -173,7 +173,10 @@ bool CubeDocBase::onGenShape(bool resetSlv, const GenTemplate* temp, const Order
     if (ret)
     {
         m_build->justGen();
+
         m_shp.reset(newshp.release());
+
+        m_sthread->haveNewShape(m_shp->fcn);
 
         clearRemoveFlags();
         m_flagPiece.resize(m_shp->fcn);

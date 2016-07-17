@@ -181,6 +181,9 @@ public:
     virtual void doWait()
     {}
 
+    virtual void haveNewShape(int fcn)
+    {}
+
 public:
     // config
     bool m_keepPrevSlvs = false;

@@ -72,7 +72,9 @@ public:
         doRun(-1);
     }
     
-    
+    virtual void haveNewShape(int fcn) override {
+        EM_ASM_(updateShapeFcn($0), fcn);
+    }
 };
 
 

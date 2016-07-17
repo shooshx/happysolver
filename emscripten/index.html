@@ -123,7 +123,7 @@ function start()
     aboutClick = Module.cwrap('aboutClick', null, ['number', 'number'])
     exportModel = Module.cwrap('exportModel', 'number', [])
    
-    var pcsNum = countPcs(uni_pcs)     
+    var pcsNum = countAllDefs(uni_pcs)     
     Module.ccall('cpp_start', null, ['number'], [(pcsNum + 12)*6]); // add 12 for possible additions using editor
     conf(true)
     
@@ -182,7 +182,7 @@ function start()
     
 }
 
-function countPcs(pcs)
+function countAllDefs(pcs)
 {
     var c = 0;
     for(var fami in pcs) {
@@ -316,6 +316,7 @@ var pics_families = {} // make family id to { cubes: list of { cid: cube-id, grp
 var pics_cubes = {} // make cube id to { famid, picSel: array of 6 booleans for each piece (count is same as grp) }
 var max_grpi = 0; // the largest cube number we've seen. used for adding more cubes in the ui
 var currentOpenGrpPics = null; // the {id:str in html,index:int grpi} of the grp of the currently open individual pics selection or null if it's not open
+var piece_sel_count = 0, pieces_needed = 0;
 
 function addTextChild(elem, txt) {
     var dummy = document.createElement("DIV")
@@ -408,6 +409,8 @@ function on_fam_check(id, v, doSolve) {
         sendGrpCount(c.cid, v, c.grpi)
         resetPicSel(c.cid, v)
     }
+    countSelected()
+    countSelected()
     if (doSolve) // on inialization select, don't want to do this
         runningRestart()
 }
@@ -431,6 +434,30 @@ function triState(elem, allTrue, allFalse)
         elem.indeterminate = true   
         elem.checked = false
     }
+}
+
+function countSelected() {
+    var total = 0
+    for(var cid in pics_cubes) {
+        var ccount = document.getElementById(cid + "_ccount")
+        var sel = pics_cubes[cid].picSel
+        var c = 0
+        for(var si = 0; si < 6; ++si)
+            if (sel[si])
+                ++c 
+        total += c * ccount.value
+    }
+    piece_sel_count = total
+    writeCounts()
+}
+
+function updateShapeFcn(num) {
+    pieces_needed = num
+    writeCounts()
+}
+
+function writeCounts() {
+    picNum.innerHTML = "" + pieces_needed + "/" + piece_sel_count
 }
 
 // set the state of the family checkbox according the the selection
@@ -459,6 +486,7 @@ function on_cube_check(id, v, gind) {
     picFamCheck(id)
     resetPicSel(id, v)
     runningRestart()
+    countSelected()
 }
 
 // set a value to all of the individual booleans
@@ -480,10 +508,10 @@ function on_cube_count(id, gind) {
     var ccount = document.getElementById(id + "_ccount")
     var ccheck = document.getElementById(id + "_ccheck")
 
-    var prevCh = ccheck.checked || ccheck.indeterminate
+    var prevCh = ccheck.checked
     var newCh = (parseInt(ccount.value) > 0)
     //console.log("COUNT " + prevCh + " " + newCh)
-    if (prevCh != newCh) {
+    if (prevCh != newCh || ccheck.indeterminate) {
         ccheck.checked = newCh
         ccheck.indeterminate = false // changing the checkbox or count resets the individual selection so no indeterminate
         picFamCheck(id)
@@ -492,6 +520,7 @@ function on_cube_count(id, gind) {
     
     // set the individual booleans
     resetPicSel(id, newCh)
+    countSelected()
     runningRestart()
 }
 
@@ -516,6 +545,7 @@ function on_pic_check(rel_index, v)
     dispCCount(currentOpenGrpPics.id, !allFalse) // as long as it's not all turned off, we still want the count to be visible
     var send_count = v ? parseInt(ccount.value) : 0
     setPicCount(currentOpenGrpPics.index, rel_index-1, send_count)
+    countSelected()
     runningRestart()
 }
 
@@ -1722,7 +1752,7 @@ body {
 #canvasCont {
     position: relative;
     display: inline-block;
-    z-index: -1;
+
 }
 
 #side_ctrl {
@@ -2314,6 +2344,7 @@ input:checked + .sc-btn
     top: 100px;   
     background: #fff;
     visibility: hidden;
+    z-index: 1;
 }
 #ipicCanvas {
     position: absolute;
