@@ -268,6 +268,8 @@ var lastX = null, lastY = null
 function handleMouseMove(event) {
     if (lastEditDrag)
         return handleEditCanvasMove(event)
+    if (!pressedInCanvas)
+        return true// avoid reacting to move outside the canvas (editor, input number breaks in chrome)
     if (event.clientX == lastX && event.clientY == lastY)
         return false; // for some reason this event arrives in clicks as well
     lastX = event.clientX
@@ -276,8 +278,6 @@ function handleMouseMove(event) {
     if (but === undefined)
         but = event.which // for safari
 
-    if (but != 0 && !pressedInCanvas)
-        return true// if pressed, avoid reacting to pressed move outside the canvas (editor)
         
     mouseMove(but, ctrlPressed?1:0, event.clientX, event.clientY)
     return false
@@ -365,7 +365,7 @@ function picsAddCube(cubeName, id, grpi, editable, intoFam)
     <input class="cube_check_box hidden mycheck" id="ID_ccheck" type="checkbox" onchange="on_cube_check(\'ID\', ID_ccheck.checked, INDEX);"/>\
     <label class="cube_check mycheck_label" id="ID_ccheck_label" for="ID_ccheck" ></label>\
     <span class="EDITCLASS" onclick="EDITCALL(true,INDEX,\'ID\')">LABEL</span>\
-    <input class="cube_count" id="ID_ccount" type="number" min="0" oninput="on_cube_count(\'ID\', INDEX)">\
+    <input class="cube_count" id="ID_ccount" type="number" min="0" step="1" pattern="\d*" oninput="on_cube_count(\'ID\', INDEX)">\
     </div>'.replace(/EDITCLASS/g, editClass).replace(/EDITCALL/g,editCall).replace(/ID/g, id).replace(/LABEL/g, cubeName).replace(/INDEX/g, grpi)
     
     addTextChild( document.getElementById(intoFam + "_famframe"), txt)
@@ -391,7 +391,7 @@ function dispCCount(id, v) {
 function sendGrpCount(id, v, gind) {
     var ccount = document.getElementById(id + "_ccount")
     if (v)
-        setGrpCount(gind, ccount.value)
+        setGrpCount(gind, parseInt(ccount.value))
     else
         setGrpCount(gind, 0)
 }
@@ -440,12 +440,14 @@ function countSelected() {
     var total = 0
     for(var cid in pics_cubes) {
         var ccount = document.getElementById(cid + "_ccount")
+        if (ccount.value == "")
+            continue
         var sel = pics_cubes[cid].picSel
         var c = 0
         for(var si = 0; si < 6; ++si)
             if (sel[si])
                 ++c 
-        total += c * ccount.value
+        total += c * parseInt(ccount.value)
     }
     piece_sel_count = total
     writeCounts()
@@ -516,7 +518,7 @@ function on_cube_count(id, gind) {
         ccheck.indeterminate = false // changing the checkbox or count resets the individual selection so no indeterminate
         picFamCheck(id)
     }
-    setGrpCount(gind, ccount.value)
+    setGrpCount(gind, parseInt(ccount.value))
     
     // set the individual booleans
     resetPicSel(id, newCh)

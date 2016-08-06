@@ -17,9 +17,7 @@ handle lost context webgl https://www.khronos.org/webgl/wiki/HandlingContextLost
 - engine optimization - read plc, don't go through PicArr
 
 ------ missing features
-- too small arrows to change selection count
 - all standard pieces in js
-- display selected pieces count
 - encode editor to url
 - ability to remove standard pieces in edit mode
 - editor show flat 2x3 solution, with generated frame mesh
@@ -38,7 +36,6 @@ Black Lines mis-features
 
 flip colors back and front button
 
-read stdpcs js
 
 save all params to an object
 
