@@ -359,6 +359,9 @@
     <ClCompile Include="..\src\CubeDocBase.cpp">
       <Filter>DocView</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\CubeMesher.cpp">
+      <Filter>3D</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\src\about.ui">
@@ -811,6 +814,9 @@
     </ClInclude>
     <ClInclude Include="..\src\BinWriter.h">
       <Filter>DocView</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\CubeMesher.h">
+      <Filter>3D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

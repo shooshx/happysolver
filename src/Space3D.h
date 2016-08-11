@@ -40,7 +40,10 @@ class Space3D
 public:
 	Space3D() :szx(-1), szy(-1), szz(-1), szxTy(-1), data(nullptr) {};
 	Space3D(int _szx, int _szy, int _szz)
-		:szx(_szx), szy(_szy), szz(_szz), szxTy(szx * szy), data(new T[szxTy * szz]) {}
+		:szx(_szx), szy(_szy), szz(_szz), szxTy(szx * szy) 
+    {
+        data = new T[szxTy * szz];
+    }
 	~Space3D()
 	{
 		delete[] data;
@@ -95,8 +98,8 @@ private:
 struct BoundedBlock
 {
 	// initialized with 1s, filled with 0s
-	BoundedBlock() :fill(1), left(false), right(false), up(false), down(false), front(false), back(false) {}
-	BoundedBlock(int v) :fill(v), left(false), right(false), up(false), down(false), front(false), back(false) {}
+	BoundedBlock() :fill(0), left(false), right(false), up(false), down(false), front(false), back(false) {}
+	//BoundedBlock(int v) :fill(v), left(false), right(false), up(false), down(false), front(false), back(false) {}
 	// walls that exist
 
 	uchar fill:1;
@@ -116,8 +119,11 @@ public:
 	BoundedBlockSpace3D(int _szx, int _szy, int _szz)
 		:Space3D<BoundedBlock>(_szx, _szy, _szz) {}
 
-	int FloodFill(int x, int y, int z);
-	void ErectWalls(int dim, Vec3i front, Vec3i back);
+	void erectWalls(int dim, Vec3i front, Vec3i back);
+
+    int passFill();
+
+
 };
 
 

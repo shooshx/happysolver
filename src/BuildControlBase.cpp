@@ -780,13 +780,17 @@ void BuildControlBase::reCalcBldMinMax()
     m_buildmin.pmin(Vec3(lXY.minx, lXY.miny, lXY.minpage));
     m_buildmax.pmax(Vec3(lXY.maxx, lXY.maxy, lXY.maxpage));
 
-    //double dx = aqmax[0] - aqmin[0], dy = aqmax[1] - aqmin[1], dz = aqmax[2] - aqmin[2];
+    //cout << "~BLD " << m_buildmax << " : " << m_buildmin << " = " << m_buildmax - m_buildmin << endl;
 
-    m_buildmin += Vec3(1, 1, 1);
-    m_buildmax += Vec3(-1, -1, -1);
+    //m_buildmax += Vec3(-1, -1, -1); - instead this-
+    // I have really no idea why this is needed but it works. previous -1,-1,-1 had trouble with flat 2x3
+    if (!build.m_limits[YZ_PLANE].isInverse(BUILD_SIZE))
+        m_buildmax.x -= 1;
+    if (!build.m_limits[XZ_PLANE].isInverse(BUILD_SIZE))
+        m_buildmax.y -= 1;
+    if (!build.m_limits[XY_PLANE].isInverse(BUILD_SIZE))
+        m_buildmax.z -= 1;
 
-    // needed because of the adjustment in reCalcLimits
-    m_buildmin += Vec3(-1, -1, -1);
 
 }
 

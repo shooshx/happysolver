@@ -153,6 +153,9 @@ bool CubeDocBase::callGenerate(Shape *shape, bool bSilent)
         case GEN_RESULT_UNKNOWN:
             complain("Generation of shape failed.\nUnknown error, this is a bug!!!");
             break;
+        case GEM_RESULT_BUILD_EMPTY:
+            complain("BUG Build is empty!!!");
+            break;
         case GEN_RESULT_OK: // shut gcc up.
             break;
         }
@@ -293,6 +296,10 @@ void CubeDocBase::generateFromFaces(OrderTemplate& ort)
         f.dr = t.dr;
         ldBounds.MaxMin(f.ex.z, f.ex.x, f.ex.y);
     }
+    if (ldBounds.isInverse(BUILD_SIZE * 4)) {
+        cout << "ERROR: did not load faces " << ort.faces.size() << endl;
+        return;
+    }
     tmp.initSizeAndBounds(ldBounds); // needed for unGenerate
     ort.bounds.Inverse(BUILD_SIZE * 4);
     m_build->unGenerate(&tmp, &ort.bounds); // ort.bounds is centered in the world properly
@@ -322,6 +329,10 @@ void CubeDocBase::loadMinText(const string& s)
     istringstream is(s);
     int fcn = 0, x, y, z, dr, sc, rt;
     is >> fcn;
+    if (fcn == 0) {
+        cout << "unexpected fcn==0" << endl;
+        return;
+    }
     OrderTemplate ort;
     //vector<tuple<Vec3i, int>> faces;
     for(int i = 0; i < fcn; ++i) {
@@ -334,11 +345,12 @@ void CubeDocBase::loadMinText(const string& s)
     }
     vector<pair<int, int>> slv; // sc, dt
     for(int i = 0; i < fcn; ++i) {
-        is >> sc >> rt;
+        is >> sc;
         if (!is.good()) {
             cout << "unexpected end read solution " << i << endl;
             return;
         }
+        is >> rt; // avoid reporting error if reached end just after reading the number
         slv.push_back(make_pair(sc, rt));
     }
 
@@ -399,9 +411,16 @@ string CubeDocBase::serializeMinBin()
 bool CubeDocBase::loadMinBin(const string& s)
 {
     BinWriter rd(const_cast<string&>(s));
-    if (rd.readBits(8) != 0x01)
+    if (rd.readBits(8) != 0x01) {
+        cout << "unexpected header" << endl;
         return false;
+    }
     int fcn = rd.readBits(8);
+    if (fcn == 0) {
+        cout << "unexpected bin fcn==0" << endl;
+        return false;
+    }
+
     int x, y, z, dr, sc, rt;
     OrderTemplate ort;
     //vector<tuple<Vec3i, int>> faces;
@@ -411,7 +430,7 @@ bool CubeDocBase::loadMinBin(const string& s)
         z = rd.readBits(6) * 4;
         dr = rd.readBits(2);
         if (rd.m_reachedEnd) {
-            cout << "unexpected end reading faces " << i << endl;
+            cout << "unexpected bin end reading faces " << i << endl;
             return false;
         }
         ort.faces.push_back(OrderTemplate::LoadedFace(Vec3i(x, y, z), (EPlane)dr));
@@ -422,7 +441,7 @@ bool CubeDocBase::loadMinBin(const string& s)
         sc = rd.readBits(8);
         rt = rd.readBits(3);
         if (rd.m_reachedEnd) {
-            cout << "unexpected end reading slv " << i << endl;
+            cout << "unexpected bin end reading slv " << i << endl;
             return false;
         }
         slv.push_back(make_pair(sc, rt));
@@ -438,7 +457,7 @@ bool CubeDocBase::loadMinBin(const string& s)
 void CubeDocBase::pushState()
 {
     auto& bucket = PicBucket::mutableInstance();
-    cout << "SSS " << &m_stateStack << " " << m_stateStack.size() << "," << m_stateStack.capacity() << endl;
+    //cout << "SSS " << &m_stateStack << " " << m_stateStack.size() << "," << m_stateStack.capacity() << endl;
     m_stateStack.emplace_back();
     auto& s = m_stateStack.back();
     s.picSelect.reserve(bucket.pdefs.size());

@@ -261,6 +261,7 @@
     <ClCompile Include="..\src\BuildControlBase.cpp" />
     <ClCompile Include="..\src\BuildGLControl.cpp" />
     <ClCompile Include="..\src\CubeDocBase.cpp" />
+    <ClCompile Include="..\src\CubeMesher.cpp" />
     <ClCompile Include="..\src\ModelControlBase.cpp" />
     <ClCompile Include="..\src\ModelGLControl.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_ActFocusComboBox.cpp">
@@ -2917,6 +2918,7 @@
     <ClInclude Include="..\src\BinWriter.h" />
     <ClInclude Include="..\src\BuildControlBase.h" />
     <ClInclude Include="..\src\CubeDocBase.h" />
+    <ClInclude Include="..\src\CubeMesher.h" />
     <ClInclude Include="..\src\ImgBuf.h" />
     <ClInclude Include="..\src\ModelControlBase.h" />
     <CustomBuild Include="..\src\ModelGLControl.h">

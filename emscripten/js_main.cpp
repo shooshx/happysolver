@@ -196,6 +196,7 @@ void solveGo() {
         g_ctrl->m_doc.solveGo();
         g_ctrl->m_runctx.runAll(); // find first solution
         dispFirstSlv();
+        
     }
     catch(const std::exception& e) {
         cout << "GO-GOT-EXCEPTION " << e.what() << endl;
@@ -288,6 +289,10 @@ void mouseDblClick(int ctrlPressed, int x, int y) {
     sendIsRunning();
     if (needUpdate)
         g_ctrl->requestDraw();
+        
+    // recenter after every solve (for debug)
+    //g_ctrl->m_modelGl.reCalcSlvMinMax(); - not working well (moves only build)
+        
         
 #ifdef __EMSCRIPTEN_TRACING__
     emscripten_trace_report_memory_layout();
@@ -449,20 +454,32 @@ int serializeCurrent()
 }
 
 // AQoAAAgAQAAAAARAAQAQAAEAEAQAAQAgCARBHXRogCOG8YptBGEKWzg=
-void deserializeAndLoad(int len) // shape and solution
+void deserializeAndLoad(int len, bool bin) // shape and solution
 {
     string s;
     s.resize(len);
     for(int i = 0; i < s.size(); ++i) {
         s[i] = EM_ASM_INT( return scratchArr[$0], i);
     }
-    g_ctrl->m_doc.loadMinBin(s);
-    g_ctrl->m_modelGl.m_buildCtrl.reloadWorld();
-    
-    g_ctrl->m_doc.setCurSlvToLast();
-    dispFirstSlv();
-    g_ctrl->m_gl.reCalcProj(true);
-    g_ctrl->requestDraw();
+    try {
+        if (bin)
+            g_ctrl->m_doc.loadMinBin(s);
+        else
+            g_ctrl->m_doc.loadMinText(s);
+        
+        g_ctrl->m_modelGl.m_buildCtrl.reloadWorld();
+        
+        g_ctrl->m_doc.setCurSlvToLast();
+        dispFirstSlv();
+        g_ctrl->m_gl.reCalcProj(true);
+        g_ctrl->requestDraw();
+    }
+    catch(const exception& e) {
+        cout << "DESER exception: " << e.what() << endl;
+    }
+    catch(...) {
+        cout << "EHH" << endl;
+    }
 }
 
 struct Tooth {

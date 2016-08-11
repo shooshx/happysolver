@@ -73,6 +73,7 @@ struct SqrLimits
     Vec3i getMin() const {
         return Vec3i(minx, miny, minpage);
     }
+    bool isInverse(int size) const; // for detecting if anything was added
 
     int minpage, maxpage;
     int minx, maxx;
@@ -87,6 +88,7 @@ enum EGenResult
     GEN_RESULT_NO_START, ///< no yellow start tile was found
     GEN_RESULT_NOT_CONNECT,  ///< shape is made of several unconnected volumes
     GEN_RESULT_ILLEGAL_SIDE, ///< there is a side with more the two faces agaist it
+    GEM_RESULT_BUILD_EMPTY,
     GEN_RESULT_UNKNOWN = 0xFF  ///< should not occur...
 };
 
@@ -134,11 +136,12 @@ public:
         NeiTransform() {}
         NeiTransform(int px, int py, EAngleType angleType, int rx, int ry, int rz, bool _flip=false, bool _flipDiag=false) 
             : planeMove(px, py), angleType(angleType), rotAxis(rx, ry, rz), flip(_flip), flipDiag(_flipDiag) {}
+        
         Vec2i planeMove; // same plane as the piece
         //int rotAngle;
-        EAngleType angleType;
+        EAngleType angleType = ANG_ZERO;
         Vec3i rotAxis;
-        bool flip, flipDiag;
+        bool flip = false, flipDiag = false;
 
     };
 
@@ -148,8 +151,17 @@ public:
     */
     struct FaceDef
     {
-        FaceDef() {}
-        FaceDef(EPlane setdr, Vec3i setex) :dr(setdr), ex(setex) {}
+        FaceDef() {
+            init();
+        }
+        FaceDef(EPlane setdr, Vec3i setex) :dr(setdr), ex(setex) {
+            init();
+        }
+        void init() {
+            corners[0] = -1; corners[1] = -1; corners[2] = -1; corners[3] = -1;
+            sides[0] = -1; sides[1] = -1; sides[2] = -1; sides[3] = -1;
+            nei[0] = -1; nei[1] = -1; nei[2] = -1; nei[3] = -1;
+        }
 
         EPlane dr = PLANE_NONE;		///< directions of the face	
         Vec3i ex;		///< start point of the face
@@ -338,6 +350,7 @@ public:
     set< tuple<int, int, int, EPlane, Shape::EFacing> > faces;
 };
 
+// instead of running generate, take the faces from here in this order, which might be a different order from what we would have generated
 class OrderTemplate
 {
 public:

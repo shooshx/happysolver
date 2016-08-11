@@ -40,13 +40,17 @@ void ModelControlBase::reCalcSlvMinMax()
     m_bgl->aqmin = m_modelmin = pnt.qmin; // always 0,0,0 from genPainter
     m_bgl->aqmax = m_modelmax = pnt.qmax;
 
-    //cout << "MIN-MAX " << m_bgl->aqmin << " : " << m_bgl->aqmax << endl;
+
+    //cout << "~MDL " << m_bgl->aqmax << " : " << m_bgl->aqmin << endl;
 
     m_buildCtrl.reCalcBldMinMax();
     m_bldDiff = (Vec3(23, 23, 23) - m_buildCtrl.m_buildmin) * 4;
+   // m_bldDiff = BUILD_START_CUBE * 4 - m_doc->getCurrentShape()->buildBounds; - results in the same thing
     // this accounts for the difference in coordinates between the build and the generated shape
 
-    //cout << "DFF " << m_modelmin << "  " << m_bldDiff << endl;
+    //cout << "DFF " << m_bldDiff << endl;
+    //auto b = m_doc->getCurrentShape()->buildBounds;
+    //cout << "BND " << b.minx -96 << "," << b.miny -96<< "," << b.minpage -96<< endl;
 }
 
 

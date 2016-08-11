@@ -98,7 +98,7 @@ function start()
     setEditAction = Module.cwrap('setEditAction', null, ['number'])
     runningRestart  = Module.cwrap('runningRestart', null, [])
     serializeCurrent  = Module.cwrap('serializeCurrent', 'number', [])
-    deserializeAndLoad = Module.cwrap('deserializeAndLoad', null, ['number'])
+    deserializeAndLoad = Module.cwrap('deserializeAndLoad', null, ['number', 'number'])
     readCubeFromEditor = Module.cwrap('readCubeFromEditor', null, ['number'])
     newRestart  = Module.cwrap('newRestart', null, ['number'])
     conf = Module.cwrap('conf', null, ['number'])
@@ -265,22 +265,25 @@ function handleMouseUp(event) {
     //return false
 }
 var lastX = null, lastY = null
-function handleMouseMove(event) {
-    if (lastEditDrag)
-        return handleEditCanvasMove(event)
-    if (!pressedInCanvas)
-        return true// avoid reacting to move outside the canvas (editor, input number breaks in chrome)
+// needs to return true, otherwise input number is broken in chrome
+function handleMouseMove(event) 
+{
+    if (lastEditDrag) {
+        handleEditCanvasMove(event)
+        return true;
+    }
     if (event.clientX == lastX && event.clientY == lastY)
-        return false; // for some reason this event arrives in clicks as well
+        return true; // for some reason this event arrives in clicks as well
     lastX = event.clientX
     lastY = event.clientY
     var but = event.buttons
     if (but === undefined)
         but = event.which // for safari
-
+    if (but != 0 && !pressedInCanvas)
+        return true // if pressed, avoid reacting to pressed move outside the canvas (editor)
         
     mouseMove(but, ctrlPressed?1:0, event.clientX, event.clientY)
-    return false
+    return true
 }
 function handleMouseDblClick(event) {
     mouseDblClick(ctrlPressed?1:0, event.clientX, event.clientY);
@@ -292,11 +295,14 @@ function handleMouseWheel(event) {
     return false
 }
 
+// flat frame - 6  0 0 0 1 0 0 4 1 4 0 0 1 4 0 4 1 8 0 0 1 8 0 4 1  0 0 1 0 2 0 3 0 4 0 5 0
 function handleKeyDown(event) {
     if (event.keyCode == '65' && event.ctrlKey) { //ctrl+A
         var s = window.prompt("slv data")
-        if (s != "") {
-            loadSlvSimple(s)
+        if (s != "" && s !== null) {
+            //loadSlvSimple(s)
+            scratchArr = strToBuffer(s)
+            deserializeAndLoad(scratchArr.length, false)
             return
         }
     }
@@ -718,6 +724,13 @@ function base64ToBuffer(base64) {
         return "";
     }
 }
+function strToBuffer(s) {
+   var buf = new Uint8Array(s.length);
+   Array.prototype.forEach.call(s, function (ch, i) {
+      buf[i] = ch.charCodeAt(0);
+   });
+   return buf;
+}
 
 function triggerUrl() {
     if (urlBack.style.visibility == "visible") {
@@ -747,7 +760,7 @@ function loadUrl(b) {
     if (b.length == 0)
         return;
     scratchArr = base64ToBuffer(b)
-    deserializeAndLoad(scratchArr.length)
+    deserializeAndLoad(scratchArr.length, true)
 }
 
 function urlEditChanged() {

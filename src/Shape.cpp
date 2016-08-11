@@ -397,12 +397,14 @@ int Shape::faceNeiFirstOpt(int whos, vector<TransType>& trans)
                 continue;
         }
 
-        if (trans[cand].to == -1)
+        // nei[] might be -1 if the shape is open
+        if (cand != -1 && trans[cand].to == -1)
         {
             int rank = 0;
             for(j = 0; j < 4; ++j)
             {
-                if (trans[faces[cand].nei[j]].to != -1) // occupied
+                int fi = faces[cand].nei[j];
+                if (fi != -1 && trans[fi].to != -1) // occupied
                     ++rank;
             }
             if (rank > wrank)
@@ -451,6 +453,7 @@ EGenResult Shape::reArrangeFacesDFS(FaceDef faces[], FaceDef revis[], vector<Tra
 
 void Shape::initSizeAndBounds(const SqrLimits& bounds)
 {
+    //cout << "BNDS " << bounds.maxx << "-" << bounds.minx << " , " << bounds.maxy << "-" << bounds.miny << " , " << bounds.maxpage << "-" << bounds.minpage << endl;
     buildBounds = bounds;
     //cout << "BOUNDS=" << bounds.minx << "," << bounds.miny << "," << bounds.minpage << endl;
     // fix it all according to the discovered bounds
@@ -475,6 +478,8 @@ EGenResult Shape::readWorld(const BuildWorld *build, int* reqf)
         readAxis(build, fcSize.y, fcSize.z, fcSize.x, YZ_PLANE, flst, reqf, bounds);
         readAxis(build, fcSize.x, fcSize.z, fcSize.y, XZ_PLANE, flst, reqf, bounds);
         readAxis(build, fcSize.x, fcSize.y, fcSize.z, XY_PLANE, flst, reqf, bounds);
+        if (bounds.isInverse(BUILD_SIZE * 4))
+            return GEM_RESULT_BUILD_EMPTY;
         build->m_gen_bounds = bounds; // save the bounds of the last generate
         initSizeAndBounds(bounds);
 
@@ -497,6 +502,8 @@ EGenResult Shape::readWorld(const BuildWorld *build, int* reqf)
     else { // have m_orderTemplate
         faces = m_orderTemplate->faceDefs;
         fcn = m_orderTemplate->faces.size();
+        if (m_orderTemplate->bounds.isInverse(BUILD_SIZE * 4))
+            return GEM_RESULT_BUILD_EMPTY;
         initSizeAndBounds(m_orderTemplate->bounds);
         *reqf = 0;
     }
@@ -616,8 +623,6 @@ EGenResult Shape::generate(const BuildWorld *build)
     if (gret != GEN_RESULT_OK)
         return gret;
 
-
-
     gret = buildSidesAndCorners();
     if (gret != GEN_RESULT_OK)
         return gret;
@@ -708,6 +713,8 @@ void Shape::makeVolumeAndFacing()
 {
     // space of cubes. the pieces are thin sheets between the cubes
     BoundedBlockSpace3D space(size.x/4 + 2, size.y/4 + 2, size.z/4 + 2); // pad with one layer from every direction
+    //cout << "VOL " << space.szx << "," << space.szy << "," << space.szz << endl;
+
     int i, x, y, z, d;
     for (i = 0; i < fcn; ++i)
     {	// the coordinates of the two adjucent cubes (in single cube space)
@@ -715,10 +722,11 @@ void Shape::makeVolumeAndFacing()
         
         Vec3i front(x, y, z);
         Vec3i back((d == YZ_PLANE)?(x - 1):x, (d == XZ_PLANE)?(y - 1):y, (d == XY_PLANE)?(z - 1):z);
-        space.ErectWalls(d, front, back);
+        space.erectWalls(d, front, back);
     }
     
-    volume = (space.szx * space.szy * space.szz) - space.FloodFill(0, 0, 0);
+    volume = space.passFill();
+    //cout << "VOLL " << volume << endl;
 
 
     for (i = 0; i < fcn; ++i)
@@ -828,10 +836,14 @@ void Shape::makeReverseNei()
             if (curcorn == -1)
                 continue;
             Vec3i &cex = corners[curcorn].ex;
-            if (cex == cfc.ex) trans[0] = curcorn;
-            else if (cex == sides[cfc.sides[1]].ex) trans[1] = curcorn;
-            else if (cex == sides[cfc.sides[2]].ex) trans[3] = curcorn;
-            else trans[2] = curcorn;
+            if (cex == cfc.ex) 
+                trans[0] = curcorn;
+            else if (cfc.sides[1] != -1 && cex == sides[cfc.sides[1]].ex)
+                trans[1] = curcorn;
+            else if (cfc.sides[2] != -1 && cex == sides[cfc.sides[2]].ex)
+                trans[3] = curcorn;
+            else
+                trans[2] = curcorn;
         }
 
         for (j = 0; j < 4; ++j)
@@ -870,7 +882,13 @@ void Shape::faceNei(int whos, int fnei[4])
 {
     for(int i = 0; i < 4; ++i)
     {
-        const SideDef &sd = sides[faces[whos].sides[i]];
+        int si = faces[whos].sides[i];
+        if (si == -1) 
+        {
+            fnei[i] = -1;
+            continue;
+        }
+        const SideDef &sd = sides[si];
         if (sd.nei[0] == whos)
         {
             fnei[i] = sd.nei[1];

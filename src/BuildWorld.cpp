@@ -47,9 +47,9 @@ void BuildWorld::initializeNew(bool boxed)
         fClosed = false; // it's clearly not closed
         doTransparent();
     }
-    else
+    else if (1)
     { // boxed mode
-        m_space.clear(BoundedBlock(0));
+        m_space.clear(BoundedBlock());
 
         setBox(BUILD_START_CUBE);
         //setBox(Vec3i(24, 24, 25));
@@ -58,7 +58,19 @@ void BuildWorld::initializeNew(bool boxed)
         fClosed = true;
         reClacLimits();
     }
+    else { // flat frame
+        set(1, 4, 24, 24, FACE_STRT); 
+        set(1, 4, 24, 25, FACE_NORM); 
+        set(1, 4, 25, 24, FACE_NORM); 
+        set(1, 4, 25, 25, FACE_NORM); 
+        set(1, 4, 26, 24, FACE_NORM); 
+        set(1, 4, 26, 25, FACE_NORM); 
 
+        nFaces = 6;
+        fClosed = false;
+        reClacLimits();
+
+    }
 }
 
 
@@ -412,6 +424,12 @@ void SqrLimits::Inverse(int size)
     miny = size;
 }
 
+bool SqrLimits::isInverse(int size) const {
+    return (maxpage == 0 && minpage == size && 
+           maxx == 0 && minx == size && 
+           maxy == 0 && miny == size);
+}
+
 void SqrLimits::Init(int size)
 {
     maxpage = size;
@@ -517,7 +535,7 @@ void BuildWorld::bootstrapSpace()
         // find the min max 3d points.. using the limits
         // initialize the bounded box to 1
 
-    m_space.clear(BoundedBlock(1));
+    m_space.clear(BoundedBlock());
 
     int dim, page, x, y;
 
@@ -534,7 +552,7 @@ void BuildWorld::bootstrapSpace()
                     {
                         Vec3i g1, g2;
                         get3dCoords(CoordBuild(dim, page, x, y), g1, g2);
-                        m_space.ErectWalls(dim, g1, g2);
+                        m_space.erectWalls(dim, g1, g2);
                         // this somehow, automagically works.
                     }
                 }
@@ -542,9 +560,10 @@ void BuildWorld::bootstrapSpace()
         }
     }
 
+    //cout << "BSVOL " << m_space.szx << "," << m_space.szy << "," << m_space.szz << endl;
     // you really need the following line for this gig to work. don't remove it.
-    int volume = (m_space.szx * m_space.szy * m_space.szz) - m_space.FloodFill(0, 0, 0);
-
+    int volume = m_space.passFill();
+    //cout << "BS " << volume  << endl;
 
 }
 

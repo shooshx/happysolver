@@ -91,6 +91,9 @@ void CubeDoc::OnSolveReadyS(int slvind)
 
 	Q_ASSERT(m_slvs->size() > slvind);
 	m_nCurSlv = slvind; // re-set it from -1
+
+    cout << "TXT " << serializeMinText() << endl;
+
 	
 	emit solveIndexChanged(m_nCurSlv);
 	emit updateViews(HINT_SLV_READY | HINT_PIC_READSLVCHECK | 0);
@@ -119,7 +122,7 @@ void CubeDoc::OnNewBuild() //SLOT
 	emit slvProgUpdated(SHINT_ALL, 0);
 	emit allReset();
 
-
+    loadMinText("6  0 0 0 1 0 0 4 1 4 0 4 1 4 0 0 1 8 0 0 1 8 0 4 1  0 0 1 0 2 0 3 0 4 0 5 0");
 }
 
 

@@ -18,44 +18,42 @@
 #include "Space3D.h"
 
 
-// fill with zeros!
-int BoundedBlockSpace3D::FloodFill(int x, int y, int z)
+
+// this is similar to scan line algorithm, only in 3d 
+int BoundedBlockSpace3D::passFill()
 {
-	if ((x < 0) || (y < 0) || (z < 0) || (x >= szx) || (y >= szy) || (z >= szz)) 
-		return 0;
-
-	if (axx(x, y, z).fill == 0) 
-		return 0;
-
-	axx(x, y, z).fill = 0;
-	int ret = 1;
-
-	// run the scan line
-	int minz = z, maxz = z;
-	while ((minz > 0) && (!axx(x, y, minz).back))
-	{
-		axx(x, y, --minz).fill = 0;
-		++ret;
-	}
-	while ((maxz < szz-1) && (!axx(x, y, maxz).front))
-	{
-		axx(x, y, ++maxz).fill = 0;
-		++ret;
-	}
-
-	for(z = minz; z <= maxz; ++z)
-	{
-		BoundedBlock& block =  axx(x, y, z);
-		if (!block.left)  ret += FloodFill(x - 1, y, z);
-		if (!block.right) ret += FloodFill(x + 1, y, z);
-		if (!block.up)    ret += FloodFill(x, y - 1, z);
-		if (!block.down)  ret += FloodFill(x, y + 1, z);
-	}
-
-	return ret;
+    int vol = 0;
+    for(int x = 0; x < szx; ++x) 
+    {
+        for(int y = 0; y < szy; ++y)
+        {
+            int start = -1;
+            int fillValue = 1;
+            for (int z = 0; z < szz; ++z)
+            {
+                auto& c = axx(x, y, z);
+                if (c.back)
+                    start = z;
+                if (c.front) {
+                    if (start != -1) {
+                        // fill segment only if it ended
+                        if (fillValue == 1) {
+                            for(int r = start; r <= z; ++r) {
+                                c.fill = fillValue;
+                                vol += fillValue;
+                            }
+                        }
+                        fillValue = 1 - fillValue; // swich scan line from fill to no fill
+                    }
+                    start = -1;
+                }
+            }
+        }
+    }
+    return vol;
 }
 
-void BoundedBlockSpace3D::ErectWalls(int dim, Vec3i front, Vec3i back)
+void BoundedBlockSpace3D::erectWalls(int dim, Vec3i front, Vec3i back)
 {
 	if ((front.x < 0) || (front.y < 0) || (front.z < 0) || (front.x >= szx) || (front.y >= szy) || (front.z >= szz) ||
 		(back.x < 0) || (back.y < 0) || (back.z < 0) || (back.x >= szx) || (back.y >= szy) || (back.z >= szz))
