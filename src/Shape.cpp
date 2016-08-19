@@ -726,7 +726,7 @@ void Shape::makeVolumeAndFacing()
     }
     
     volume = space.passFill();
-    //cout << "VOLL " << volume << endl;
+    cout << "VOLL " << volume << endl;
 
 
     for (i = 0; i < fcn; ++i)

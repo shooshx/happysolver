@@ -560,10 +560,10 @@ void BuildWorld::bootstrapSpace()
         }
     }
 
-    //cout << "BSVOL " << m_space.szx << "," << m_space.szy << "," << m_space.szz << endl;
+    cout << "BSVOL " << m_space.szx << "," << m_space.szy << "," << m_space.szz << endl;
     // you really need the following line for this gig to work. don't remove it.
     int volume = m_space.passFill();
-    //cout << "BS " << volume  << endl;
+    cout << "BS " << volume  << endl;
 
 }
 

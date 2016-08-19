@@ -592,7 +592,7 @@ bool BuildControlBase::getChoiseTiles(int choise, bool remove, CoordBuild bb[6],
 
     Vec3i g1, g2;
     BuildWorld::get3dCoords(c, g1, g2);
-
+    //cout << "FILLE " << (int)build.m_space.axx(g1).fill << endl;
     if (hXor(build.m_space.axx(g1).fill == 1, remove))
         g = g2;
     else
@@ -638,11 +638,14 @@ void BuildControlBase::clearChoise() // for when we're moving the mouse rotating
 
 bool BuildControlBase::choiseMouseMove(int choise, bool ctrlPressed)
 {
+   // cout << "c" << endl;
     m_bInternalBoxRemove = ctrlPressed;
     bool remove = isInRemove();
-    if ((choise == m_lastChoise) && (remove == m_bLastBoxRemove))
+    if ((choise == m_lastChoise) && (remove == m_bLastBoxRemove)) {
+       // cout << "err " << choise << " " << m_lastChoise << " " << remove << " " << m_bLastBoxRemove << endl;
         return false; // check if remove state just changed so we need to redraw
-    //cout << "MOVE " << remove << " " << m_bLastBoxRemove << " " << choise << endl;
+    }
+  //  cout << "MOVE " << remove << " " << m_bLastBoxRemove << " " << choise << endl;
 
     m_lastChoise = choise;
     m_bLastBoxRemove = remove;
@@ -653,12 +656,12 @@ bool BuildControlBase::choiseMouseMove(int choise, bool ctrlPressed)
     if (choise >= 0) // -1 comes from above
     { // something chosen
 
-        int theget;
         CoordBuild bb[6];
         Vec3i g;
         if ((getChoiseTiles(choise, remove, bb, g) && (g != m_lastCubeChoise)))
         { // selection was changed
             m_doc->clearRemoveFlags();
+          //  cout << "get " << choise << " " << hex << choise << dec << "  " << g << "  fill=" << (int)build.m_space.axx(g).fill << endl;
 
             //printf("%8X (%d,%d,%d) != (%d,%d,%d)\n", choise, g.x, g.y, g.z, m_lastCubeChoise.x, m_lastCubeChoise.y, m_lastCubeChoise.z);
             if (choise < 0x10000)
@@ -673,11 +676,14 @@ bool BuildControlBase::choiseMouseMove(int choise, bool ctrlPressed)
                 {
                     for (int j = 0; j < 6; ++j) // record the actions needed,
                     {
-                        if (GET_TYPE(build.get(bb[j])) != TYPE_REAL)  //do the removes
+                        auto t = GET_TYPE(build.get(bb[j]));
+                        if (t != TYPE_REAL)  //do the removes
                         {
                             build.set(bb[j], FACE_TRANS_SEL);
-                            //cout << "TTT " << bb[j].x << endl;
+                           // cout << "TTT " << t << "  " << bb[j].x << "," << bb[j].y << "," << bb[j].page << "," << bb[j].dim << endl;
                         }
+                        //else
+                        //    cout << "XXX " << t << endl;
                     }
                     m_fadeFactor = 0.0f;
                     m_inFade = true;
@@ -686,7 +692,7 @@ bool BuildControlBase::choiseMouseMove(int choise, bool ctrlPressed)
                 {
                     for (int j = 0; j < 6; ++j) // record the actions needed,
                     {
-                        theget = build.get(bb[j]);
+                        int theget = build.get(bb[j]);
                         if (GET_TYPE(theget) == TYPE_REAL)  //do the removes
                         {
                             build.set(bb[j], theget | SHOW_REOMOVE);

@@ -39,8 +39,9 @@ int BoundedBlockSpace3D::passFill()
                         // fill segment only if it ended
                         if (fillValue == 1) {
                             for(int r = start; r <= z; ++r) {
-                                c.fill = fillValue;
+                                axx(x, y, r).fill = fillValue;
                                 vol += fillValue;
+                               // cout << "FILLD " << x << "," << y << "," << r << endl;
                             }
                         }
                         fillValue = 1 - fillValue; // swich scan line from fill to no fill
