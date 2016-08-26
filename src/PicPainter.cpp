@@ -275,9 +275,9 @@ void PicDisp::init(const DisplayConf& dpc)
     obj.clacNormals(dpc.bVtxNormals);
     obj.toMesh(m_mesh, true);
 
-    stringstream ss;
-    ss << "c:/temp/orig/piece_" << hex << m_arr.getBits() << "_" << rand() << ".obj";
-    m_mesh.save(ss.str(), true);
+   // stringstream ss;
+   // ss << "c:/temp/orig/piece_" << hex << m_arr.getBits() << "_" << rand() << ".obj";
+   // m_mesh.save(ss.str(), true);
 
 
     g_smoothAllocator.clear();
@@ -320,6 +320,7 @@ void PicPainter::paint(bool fTargets, const Vec3& name, BaseGLWidget *context, b
             prog->drawtype.set(def->drawtype);
             prog->colorAu.set(def->color);
             prog->colorB.set(def->exColor);
+         //   cout << "COL " << def->color << " -- " << def->exColor << endl;
             prog->flag.set(flag); // used for red marking cube to be removed
 
 
@@ -337,7 +338,7 @@ void PicPainter::paint(bool fTargets, const Vec3& name, BaseGLWidget *context, b
             {
                 prog->texOffset.set(Vec3(m_pdef->texX, m_pdef->texY, invertTex?1.0f:0.0f));
                 prog->texScale.set(Vec2(m_pdef->texScaleX / 5.0f, m_pdef->texScaleY / 5.0f)); // div my 5 since the position coordinates are [0,4], not [0,1]
-                switch(dispRot) {
+                switch(dispRot) { // rotate texture according to the piece rotation
                 case 1:  prog->texTrans.set(Mat2(0,-1,1,0));  break;
                 case 3:  prog->texTrans.set(Mat2(0,1,-1,0));  break;
                 case 4:  prog->texTrans.set(Mat2(0,1,1,0));  break;

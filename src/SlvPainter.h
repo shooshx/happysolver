@@ -64,7 +64,7 @@ public:
     void makeMats();
 
 public:
-    Vec3 qmin, qmax; // 2 opposites for bounding box
+ //   Vec3 qmin, qmax; // 2 opposites for bounding box
 
     LinesCollection m_linesIFS;
 

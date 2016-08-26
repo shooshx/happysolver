@@ -68,12 +68,12 @@ void SlvCube::genPainter()
 	// no need to consider symmetry, even if it was considered when this solution was built since we only take things
 	// from added, which is not affected by symmetry
 
-	painter.qmin = Vec3(0.0, 0.0, 0.0);
+/*	painter.qmin = Vec3(0.0, 0.0, 0.0); this was moved to shape generate
 	painter.qmax = painter.qmin;
 	for (int i = 0; i < shape->fcn; ++i)
 	{
 		painter.qmax.pmax(Vec3(shape->faces[i].ex + shape->faces[i].size()));
-	}
+	}*/
     //cout << "GEN-PAINTER " << painter.qmax << endl;
 
 	// lines - not needed anymore, using shader

@@ -111,6 +111,7 @@ void BaseGLWidget::reCalcProj(bool fFromScratch) // = true default
     //cout << "WndSize=" << m_cxClient << "x" << m_cyClient << endl;
     if (fFromScratch)
     {
+        //cout << "reCalc " << aqmin << "," << aqmax << endl;
         double figX = mMax(aqmax[0] - aqmin[0], (float)m_minScaleReset),
                figY = mMax(aqmax[1] - aqmin[1], (float)m_minScaleReset),
                figZ = mMax(aqmax[2] - aqmin[2], (float)m_minScaleReset);
@@ -165,6 +166,7 @@ void BaseGLWidget::resize(int width, int height) {
 
 void BaseGLWidget::setNewMinMax(const Vec3& min, const Vec3& max, bool scale)
 {
+    //cout << "MINMAX " << min << "," << max << endl;
     aqmin = min; aqmax = max;
     if (scale) {
         reCalcProj();

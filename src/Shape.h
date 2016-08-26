@@ -310,6 +310,8 @@ public:
 
     SqrLimits buildBounds; ///< original bounds of the build space so we could recreate the build coordinates from the face coordinates
 
+    Vec3 qmin, qmax; // from SlvPainter - depends only in the shape
+
 private:
     int volume; ///< volume == 0 means it's an open shape. volume == -1 means it was not calculated
 

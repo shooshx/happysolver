@@ -93,7 +93,9 @@ void main (void)
 
         vec4 tc = texture2D(noisef, t);
 
-        color = (1.0 - tc.a) * colorA + tc.a * mix(tc.rgb, colorA, smoothstep(0.475, 0.525, tx));
+        //color = (1.0 - tc.a) * colorB + tc.a * mix(tc.rgb, colorA, smoothstep(0.475, 0.525, tx)); 
+        vec3 mtc = (1.0 - tc.a) * colorB + tc.a * tc.rgb;
+        color =  mix(mtc, colorA, smoothstep(0.475, 0.525, tx));
 
         color *= LightIntensity;
     }

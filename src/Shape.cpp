@@ -643,6 +643,14 @@ EGenResult Shape::generate(const BuildWorld *build)
     makePieceCheckBits();
     makeNeiTransforms();
 
+    // calc qmin for solutions
+    qmin = Vec3(0.0, 0.0, 0.0);
+    qmax = qmin;
+    for (int i = 0; i < fcn; ++i)
+    {
+        qmax.pmax(Vec3(faces[i].ex + faces[i].size()));
+    }
+
     return GEN_RESULT_OK;
 }
 

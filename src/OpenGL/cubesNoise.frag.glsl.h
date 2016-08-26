@@ -96,7 +96,9 @@ const char *code_cubesNoise_frag_glsl = " \
    \n\
           vec4 tc = texture2D(noisef, t); \n\
    \n\
-          color = (1.0 - tc.a) * colorA + tc.a * mix(tc.rgb, colorA, smoothstep(0.475, 0.525, tx)); \n\
+          //color = (1.0 - tc.a) * colorB + tc.a * mix(tc.rgb, colorA, smoothstep(0.475, 0.525, tx));  \n\
+          vec3 mtc = (1.0 - tc.a) * colorB + tc.a * tc.rgb; \n\
+          color =  mix(mtc, colorA, smoothstep(0.475, 0.525, tx)); \n\
    \n\
           color *= LightIntensity; \n\
       } \n\

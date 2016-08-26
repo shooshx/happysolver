@@ -410,6 +410,10 @@ void stackState(int op)
         g_ctrl->m_doc.popState();
         g_ctrl->requestDraw();
     }
+    // make it recenter around the current shape
+    g_ctrl->m_modelGl.reCalcSlvMinMax();
+    g_ctrl->m_gl.reCalcProj(true);
+    
     g_ctrl->m_modelGl.m_buildCtrl.reloadWorld();
     
 }
@@ -690,6 +694,9 @@ shared_ptr<GlTexture> g_lastTexture;
 void textureParamCube(int grpi, int dtype, float r1, float g1, float b1, float r2, float g2, float b2, int isBlack, 
                       const char* backHex, const char* frontHex, const char* blackSelect, int rotate, const char* url)
 {
+  //  cout << "TEX-PARAMs " << grpi << " " << dtype << " " << r1 << "," << g1 << "," << b1 << "  " 
+  //                        << r2 << "," << g2 << "," << b2 << "   `" << url << "`" << endl;
+                          
     auto& bucket = PicBucket::mutableInstance();
     if (grpi < 0 || grpi >= bucket.grps.size()) {
         cout << "no-such-cube(tpc) " << grpi << endl;
@@ -767,7 +774,7 @@ int getCubeTextureHandle(int grpi, int width, int height)
             return cgrp.gtex->handle();
         }
     }
-    cout << "creating New-Tex " << grpi << " " << cgrp.gtex.get() << " drawType=" << cgrp.drawtype << endl;
+    cout << "creating New-Tex " << grpi << " " << cgrp.gtex.get() << " drawType=" << cgrp.drawtype << " sz=" << width << "x" << height << endl;
     auto curTex = make_shared<GlTexture>();
     g_lastTexture = curTex;
     curTex->init(GL_TEXTURE_2D, Vec2i(width, height), 1, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, nullptr, GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE);

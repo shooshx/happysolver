@@ -32,14 +32,21 @@ void ModelControlBase::reCalcSlvMinMax()
         return; // HACK, don't want to recenter each time so that the build and model would be in sync (in js, I take of not to call this func when not needed)
     did = true;  // don't recenter every time TBD hack
 #endif
+
+    const Shape* measureShp = nullptr;
     auto slv = m_doc->getCurrentSolve();
-    if (slv == nullptr)
+    if (slv != nullptr) 
+        measureShp = slv->shape;
+    else 
+        measureShp = m_doc->getCurrentShape(); // happens when moving to the editor and there is just a shape that was just generated
+
+    if (measureShp == nullptr) {
         return;
-    SlvPainter &pnt = slv->painter;
+    }
+  //  SlvPainter &pnt = slv->painter;
 
-    m_bgl->aqmin = m_modelmin = pnt.qmin; // always 0,0,0 from genPainter
-    m_bgl->aqmax = m_modelmax = pnt.qmax;
-
+    m_bgl->aqmin = m_modelmin = measureShp->qmin; // always 0,0,0 from genPainter
+    m_bgl->aqmax = m_modelmax = measureShp->qmax;
 
     //cout << "~MDL " << m_bgl->aqmax << " : " << m_bgl->aqmin << endl;
 
@@ -48,7 +55,7 @@ void ModelControlBase::reCalcSlvMinMax()
    // m_bldDiff = BUILD_START_CUBE * 4 - m_doc->getCurrentShape()->buildBounds; - results in the same thing
     // this accounts for the difference in coordinates between the build and the generated shape
 
-    //cout << "DFF " << m_bldDiff << endl;
+   // cout << "DFF " << m_bldDiff << " :: " << m_modelmin << endl;
     //auto b = m_doc->getCurrentShape()->buildBounds;
     //cout << "BND " << b.minx -96 << "," << b.miny -96<< "," << b.minpage -96<< endl;
 }

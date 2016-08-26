@@ -172,13 +172,13 @@ function start()
     
     // editor init
     editCtx = editCanvas.getContext("2d")
-    blank_tex.loadedOk = true
+    //blank_tex.loadedOk = true
 
     ipicCanvas.height = 11*IPIC_TSZ + 2*EDIT_MARGIN
     ipicCanvas.width = 15*IPIC_TSZ + 2*EDIT_MARGIN
 
- //   var fid = picsAddFamily("Test Fam", "Test Fam", true)
- //   picsAddCube("Test Cube", "Test Cube", -1, true, fid)
+    //var fid = picsAddFamily("Test Fam", "Test Fam", true)
+    //picsAddCube("Test Cube", "Test Cube", -1, true, fid)
     
 }
 
@@ -242,8 +242,22 @@ function loadStdPieces(pcs)
                      p.cb.rgb.r, p.cb.rgb.g, p.cb.rgb.b, 
                      p.cf.rgb.r, p.cf.rgb.g, p.cf.rgb.b, 
                      isColorsBlack(p.lines, p.cb, p.cf, p.drawType), 
-                     p.cb.HEX, p.cb.HEX, p.lines, p.rotate, p.img) 
-
+                     p.cb.HEX, p.cb.HEX, p.lines, p.rotate, p.img)
+            
+            if (p.img != "") 
+            { // has a url to load
+                var grpPrm = { imgOffset: {x:0, y:0}, imgZoom: 1 }
+                if (p.img.startsWith("ID:")) { // element from the html
+                    setGlTexture(grpi, p.img.substr(3), grpPrm, { noEditCanvas: true })
+                }
+                else {
+                    var mtype = mimeTypeByExt(p.img)
+                    loadTexImage(p.img, mtype, grpi, { noEditCanvas: true, noCommit:true, ondone:function(newImg) {
+                        setGlTexture(grpi, newImg, grpPrm, { noEditCanvas: true })
+                        console.log("loaded " + p.img + " for cube " + grpi)
+                    }});
+                }
+            }
         }
         
     }
@@ -897,6 +911,11 @@ var expScratchObj = null, expScratchMtl = null, expScratchName = null  // used b
 function triggerExport() {
    if (exportBack.style.visibility == "visible") {
         exportBack.style.visibility = "hidden"
+        // deallocate generated urls and make them unclickable
+        URL.revokeObjectURL(linkObj.href) 
+        linkObj.removeAttribute('href')
+        URL.revokeObjectURL(linkMtl.href)
+        linkMtl.removeAttribute('href')
         return
     }
     exportBack.style.visibility = "visible"
@@ -1032,66 +1051,78 @@ function paintCubeSpec(cnvs, ctx, TSZ)
     }
 }
 
-function setGlTexture() 
+//editingCubeId, loadedImg, jsgrp
+// opt.noEditCanvas for loading from stdpcs
+function setGlTexture(cubeId, imgObj, grpPrm, opt) 
 {
-    var obj = getCubeTextureHandle(editingCubeId, loadedImg.width, loadedImg.height)
+    var obj = getCubeTextureHandle(cubeId, imgObj.width, imgObj.height)
     if (obj == 0)
         return
     console.log("setting img to texture " + obj)
     _glBindTexture(GLctx.TEXTURE_2D, obj)
-    GLctx.texImage2D(GLctx.TEXTURE_2D, 0, GLctx.RGBA, GLctx.RGBA, GLctx.UNSIGNED_BYTE, loadedImg)
+    GLctx.texImage2D(GLctx.TEXTURE_2D, 0, GLctx.RGBA, GLctx.RGBA, GLctx.UNSIGNED_BYTE, imgObj)
     
     // need to setTexCoord here since the width and height might have changed and we need to recalculate them
-    sendTexCoord()
-    paintCube()
+    sendTexCoord(cubeId, imgObj, grpPrm)
+    if (!opt || !opt.noEditCanvas)
+        paintCube()
 }
 
 
 // called with the default image on initialization
-function loadTexImage(url, type, opt)
+// type - image/png, image/svg+xml
+// editingCubeId
+// opt has noCommit, ondone, keepOrig
+function loadTexImage(url, type, cubeId, opt)
 {   
     if (!opt) // keepOrig, ondone, onerr, 
         opt = {}
     if (url.length == 0)
         return
+    if (cubeId == -1) {
+        console.log("no cube id to add texture to")
+        return;
+    }
     var onload = function() {
        // loadedImg.loadedOk = true
         if (newImg.width == 1 && newImg.height == 1) 
-        { // indicates its an SVG
+        { // indicates its an SVG wrapped in a PNG
             // get it again, now as a blob (should come from cache and should not fail)
             var oReq = new XMLHttpRequest();
             oReq.open("GET", url, true);
             oReq.responseType = "arraybuffer";
             oReq.onload = function(oEvent) 
-            {
+            {  // skipping the PNG header
                 var blob = new Blob([new Uint8Array(oReq.response, minimalPng.length)], {type: "image/svg+xml"});
-                loadTexImageBlob(blob, opt)
+                loadTexImageBlob(blob, cubeId, opt)
             };
             oReq.send()
             return
         }
         
         // if an SVG is smaller than 1500px, draw it on the scratch canvas to scale it and take that as the image
+        // or bigger than 2666
         var f = 1500 / newImg.width
-        if (type == "image/svg+xml" && f > 1) 
+        if (type == "image/svg+xml" && (f > 1 || f < 0.6) ) 
         {
+            console.log("RESCALING svg " + newImg.width + "," + newImg.height)
             canvas_scratch.width = 1500
             canvas_scratch.height = newImg.height/newImg.width*1500
             var ctx = canvas_scratch.getContext('2d')
             ctx.drawImage(newImg, 0, 0, canvas_scratch.width, canvas_scratch.height)
             var durl = canvas_scratch.toDataURL("image/png")
-            loadTexImage(durl, "image/png", opt)            
+            loadTexImage(durl, "image/png", cubeId, opt)            
             return
         }
         
-        if (!opt.noCommit) {
+        if (!opt.noCommit) { // if this is true, loadedImg will be set later by ondone (see edit initialization)
             loadedImg = newImg // switch to the new image
-            setGlTexture()
+            setGlTexture(cubeId, loadedImg, jsgrp, opt)
         }
         if (!opt.keepOrig) // default is false, don't keep the original (only needed on rotate)
             origLoadedImg = newImg
         if (opt.ondone)
-            opt.ondone()
+            opt.ondone(newImg)
     }
 
     var newImg = new Image()
@@ -1222,10 +1253,10 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
         // something to show in the mean time while the url is downloading
         // do the texture loading anyway no depending on drawType since we might return to textur any time
         loadedImg = blank_tex
-        origLoadedImg = loadedImg 
-        setGlTexture()            
+        origLoadedImg = loadedImg // before rotation
+        setGlTexture(editingCubeId, loadedImg, jsgrp)            
         var mtype = mimeTypeByExt(jsgrp.lastUrl)
-        loadTexImage(jsgrp.lastUrl, mtype, { noCommit: true, ondone: function() { // lastUrl was set by the above call
+        loadTexImage(jsgrp.lastUrl, mtype, editingCubeId, { noCommit: true, ondone: function() { // lastUrl was set by the above call
             makeTransformedImg() // takes rotAngle, sets the image and gl instead of loadTexImage which has noCommit
         }}) 
             
@@ -1234,7 +1265,7 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
             editBlackSel.value = 'auto'
             
         // read from grp image offset and zoom
-        sendTexCoord() // need to actually create the texture coordinates from the imgOffset and imgZoom
+        sendTexCoord(editingCubeId, loadedImg, jsgrp) // need to actually create the texture coordinates from the imgOffset and imgZoom
         updateZoomValue() 
         
         // transfer the marble,profi images to the canvase so they could be accessed when the time comes
@@ -1302,7 +1333,7 @@ function handleEditCanvasMove(event)
     lastEditDrag = {x:event.clientX, y:event.clientY}
     
     paintCube()
-    sendTexCoord()
+    sendTexCoord(editingCubeId, loadedImg, jsgrp)
     return false
 }
 
@@ -1510,11 +1541,11 @@ function triggerEditUpload(ondone)
 }
 
 
-function loadTexImageBlob(blob, opt)
+function loadTexImageBlob(blob, cubeId, opt)
 {    
     var reader = new FileReader();
     reader.onload = function(e) { 
-        loadTexImage(e.target.result, blob.type, opt) 
+        loadTexImage(e.target.result, blob.type, cubeId, opt) 
     }
     reader.onerror = function(e) {
         console.log(e)
@@ -1530,14 +1561,14 @@ function triggerFileChanged()
     editFileInput.value = null
     lastFile = file
 
-    loadTexImageBlob(file, { ondone:function() {
+    loadTexImageBlob(file, editingCubeId, { ondone:function() {
         // new image from the user - reset parameters
         jsgrp.imgOffset = {x:0, y:0}
         jsgrp.imgZoom = 1
         jsgrp.rotAngle = 0 
         updateZoomValue()
         paintCube()
-        sendTexCoord()
+        sendTexCoord(editingCubeId, loadedImg, jsgrp)
     }})
     
     editFileName.value = file.name
@@ -1547,13 +1578,13 @@ function triggerFileChanged()
     return false
 }
 
-
-function sendTexCoord()
+// editingCubeId, loadedImg, jsgrp
+function sendTexCoord(cubeId, imgObj, grpPrm)
 {
-    if (loadedImg === null)
+    if (imgObj === null)
         return
 
-    readCubeTexCoord(editingCubeId, jsgrp.imgOffset.x, jsgrp.imgOffset.y, jsgrp.imgZoom, loadedImg.width, loadedImg.height, EDIT_TSZ) 
+    readCubeTexCoord(cubeId, grpPrm.imgOffset.x, grpPrm.imgOffset.y, grpPrm.imgZoom, imgObj.width, imgObj.height, EDIT_TSZ) 
 }
 
 function triggerAction(bpr)
@@ -1581,7 +1612,7 @@ function changeImgZoom(widget, v)
     jsgrp.imgZoom = v / 100.0
     
     paintCube()
-    sendTexCoord()
+    sendTexCoord(editingCubeId, loadedImg, jsgrp)
 }
 
 function uploadDisabled() {
@@ -1681,7 +1712,7 @@ function triggerEditChanged()
     }
     resetErrMsg()
     var type = mimeTypeByExt(fileName)
-    loadTexImage(fileName, type, {ondone:function() {
+    loadTexImage(fileName, type, editingCubeId, {ondone:function() {
         jsgrp.lastUrl = fileName // on success, save the entered url
         sentTexParam() // save url
     }, 
@@ -1705,7 +1736,7 @@ function makeTransformedImg()
 {    
     if (jsgrp.rotAngle == 0) {
         loadedImg = origLoadedImg
-        setGlTexture()
+        setGlTexture(editingCubeId, loadedImg, jsgrp)
         return
     }
     
@@ -1724,7 +1755,7 @@ function makeTransformedImg()
     ctx.drawImage(origLoadedImg, -origLoadedImg.width/2, -origLoadedImg.height/2);
     
     var url = canvas_scratch.toDataURL("image/png")
-    loadTexImage(url, "image/png", {keepOrig:true})
+    loadTexImage(url, "image/png", editingCubeId, {keepOrig:true})
 
 }
     

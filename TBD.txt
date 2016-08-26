@@ -27,6 +27,8 @@ handle lost context webgl https://www.khronos.org/webgl/wiki/HandlingContextLost
 - button reset view angle
 
 
+mipmap?
+
 
 EDITOR
 ------

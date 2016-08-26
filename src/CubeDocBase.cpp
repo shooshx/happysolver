@@ -477,7 +477,10 @@ void CubeDocBase::pushState()
     s.curSlv = m_nCurSlv;
     m_nCurSlv = -1;
     m_nUpToStep = -1;
+
+    onGenShape(); // new basic cube shape, generate it so it will have min-max to center itself, need to be after swapping m_slv
 }
+
 
 void CubeDocBase::popState()
 {
@@ -497,6 +500,7 @@ void CubeDocBase::popState()
 
     m_slvs.reset(s.slvs.release());
     m_nCurSlv = s.curSlv;
+    //cout << "POP " << m_slvs->size() << " at " << m_nCurSlv << endl;
     m_nUpToStep = m_shp->fcn;
 
     m_stateStack.pop_back();
