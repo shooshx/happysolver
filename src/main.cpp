@@ -85,7 +85,7 @@ void console()
 #endif
 
 
-
+void makeArrowObject(ostream& os);
 
 
 int main(int argc, char *argv[])
@@ -114,6 +114,10 @@ int main(int argc, char *argv[])
 // 
 // 	return 0;
     console();
+
+    makeArrowObject(cout);
+    getchar();
+    return 0;
 
     //PicBucket::buildAllMeshes();
     //return 1;

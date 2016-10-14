@@ -69,6 +69,9 @@
     <Filter Include="MyLib\QtAdd">
       <UniqueIdentifier>{59f0a50f-9717-44c9-8ad7-1e85080076a8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Misc\glu_quad">
+      <UniqueIdentifier>{04827a70-1508-415e-a637-e5364861e333}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GeneratedFiles\Debug\moc_ActFocusComboBox.cpp">
@@ -361,6 +364,9 @@
     </ClCompile>
     <ClCompile Include="..\src\CubeMesher.cpp">
       <Filter>3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sglu\QuadMaker.cpp">
+      <Filter>Misc\glu_quad</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -818,5 +824,10 @@
     <ClInclude Include="..\src\CubeMesher.h">
       <Filter>3D</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\src\sglu\myobj_quad.cpp">
+      <Filter>Misc\glu_quad</Filter>
+    </None>
   </ItemGroup>
 </Project>

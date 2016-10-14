@@ -115,7 +115,7 @@ function start()
     textureParamToEditor = Module.cwrap('textureParamToEditor', null, ['number'])
     getToothPossibilities = Module.cwrap('getToothPossibilities', null, ['number', 'number'])
     readCubeFromSig = Module.cwrap('readCubeFromSig', 'number', ['number', 'string', 'string'])
-    bucketAddFam = Module.cwrap('bucketAddFam', null, ['string', 'number', 'number', 'number'])
+    bucketAddFam = Module.cwrap('bucketAddFam', null, ['string', 'number', 'number', 'number', 'number'])
     setPicCount = Module.cwrap('setPicCount', null, ['number', 'number', 'number'])
     postReadAllPics = Module.cwrap('postReadAllPics', null, [])
     goToSlv = Module.cwrap('goToSlv', null, ['number'])
@@ -210,6 +210,8 @@ function loadStdPieces(pcs)
             else
                 return o[key]
         }
+        if (typeof(defVal) === 'undefined')
+            throw "StdPcs did not find field " + key
         return defVal
     }
 
@@ -221,13 +223,14 @@ function loadStdPieces(pcs)
         var fam = pcs[fami]
         var famDrawType = drawTypeFromStr(fam.drawType)
         var onResetSel = objGet(fam, 'onResetSel', 0)
+        var menuIndex = objGet(fam, 'menuIndex')
         var first = true
         for(var pi in fam.p) 
         {
             var p = fam.p[pi]
             var grpi = readCubeFromSig(-1, p.sig, p.name) 
             if (first) {
-                bucketAddFam(fam.famName, grpi, fam.p.length, onResetSel)
+                bucketAddFam(fam.famName, grpi, fam.p.length, onResetSel, menuIndex)
                 first = false
             }
             
@@ -252,10 +255,11 @@ function loadStdPieces(pcs)
                 }
                 else {
                     var mtype = mimeTypeByExt(p.img)
-                    loadTexImage(p.img, mtype, grpi, { noEditCanvas: true, noCommit:true, ondone:function(newImg) {
-                        setGlTexture(grpi, newImg, grpPrm, { noEditCanvas: true })
-                        console.log("loaded " + p.img + " for cube " + grpi)
-                    }});
+                    var donef = function(ci) { return function(newImg) {
+                        setGlTexture(ci, newImg, grpPrm, { noEditCanvas: true })
+                        console.log("loaded " + p.img + " for cube " + ci)
+                    }}(grpi) // need to capture this iteration grpi to send it to the function
+                    loadTexImage(p.img, mtype, grpi, { noEditCanvas: true, noCommit:true, ondone:donef });
                 }
             }
         }
@@ -927,7 +931,7 @@ function triggerExport() {
         var url = window.URL.createObjectURL(blob)
         elem.href = url
         elem.innerHTML = expScratchName + ext
-        elem.download = expScratchName + ext
+        elem.download = expScratchName + ext // file name that will be 
         return url
     }
     
@@ -1068,6 +1072,7 @@ function setGlTexture(cubeId, imgObj, grpPrm, opt)
         paintCube()
 }
 
+var MIN_SVG_WIDTH = 900
 
 // called with the default image on initialization
 // type - image/png, image/svg+xml
@@ -1100,14 +1105,14 @@ function loadTexImage(url, type, cubeId, opt)
             return
         }
         
-        // if an SVG is smaller than 1500px, draw it on the scratch canvas to scale it and take that as the image
-        // or bigger than 2666
-        var f = 1500 / newImg.width
+        // if an SVG is smaller than 900px, draw it on the scratch canvas to scale it and take that as the image
+        // or bigger than 1500
+        var f = MIN_SVG_WIDTH / newImg.width
         if (type == "image/svg+xml" && (f > 1 || f < 0.6) ) 
         {
-            console.log("RESCALING svg " + newImg.width + "," + newImg.height)
-            canvas_scratch.width = 1500
-            canvas_scratch.height = newImg.height/newImg.width*1500
+            console.log("RESCALING svg " + newImg.width + "," + newImg.height + " f=" + f + "  " + url)
+            canvas_scratch.width = MIN_SVG_WIDTH
+            canvas_scratch.height = newImg.height/newImg.width*MIN_SVG_WIDTH
             var ctx = canvas_scratch.getContext('2d')
             ctx.drawImage(newImg, 0, 0, canvas_scratch.width, canvas_scratch.height)
             var durl = canvas_scratch.toDataURL("image/png")

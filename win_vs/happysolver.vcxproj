@@ -264,6 +264,8 @@
     <ClCompile Include="..\src\CubeMesher.cpp" />
     <ClCompile Include="..\src\ModelControlBase.cpp" />
     <ClCompile Include="..\src\ModelGLControl.cpp" />
+    <None Include="..\src\sglu\myobj_quad.cpp" />
+    <ClCompile Include="..\src\sglu\QuadMaker.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_ActFocusComboBox.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>

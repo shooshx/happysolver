@@ -217,6 +217,7 @@ public:
         string backHex, frontHex, blackSelect;
         int rotate = 0; // 0,1,2,3 * 90 degrees  -rotate the image - only for texture drawType
         string url; // url for the image download in case of texture drawType, otherwise, empty string
+        bool fromEditor = true; // false if it's a preset piece 
     };
 
     EditorData editorData;

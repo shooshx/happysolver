@@ -672,11 +672,13 @@ void postReadAllPics()
     bucket.doReCompress();
 }
 
-void bucketAddFam(const char* name, int startDefi, int count, int resetSelCount)
+void bucketAddFam(const char* name, int startDefi, int count, int resetSelCount, int atIndex)
 {
     auto& bucket = PicBucket::mutableInstance();
-    bucket.families.resize(bucket.families.size() + 1);
-    PicFamily& f = bucket.families.back();
+    if (atIndex >= bucket.families.size()) {
+        bucket.families.resize(atIndex + 1);
+    }
+    PicFamily& f = bucket.families[atIndex];
     f.name = name;
     f.startIndex = startDefi;
     f.numGroups = count;

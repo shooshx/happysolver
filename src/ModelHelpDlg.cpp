@@ -75,7 +75,7 @@ void PieceGLWidget::setSelectAll(int piece)
 
 		SlvCube *slv = m_doc->getCurrentSolve();
 
-		setNewMinMax(slv->shape.qmin, slv->shape.qmax, true);
+		setNewMinMax(slv->shape->qmin, slv->shape->qmax, true);
 	}
 	else
 	{
