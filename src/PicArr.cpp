@@ -121,7 +121,7 @@ string PicArr::prn(bool oneLine) const {
         if (oneLine)
             ss << " ";
         else
-            ss << endl;            
+            ss << "\n";            
 	}
     return ss.str();
 }

@@ -711,8 +711,13 @@ void PicBucket::distinctMeshes(ProgressCallback* progress)
         }
             
         if (pd == nullptr) { // did not find signatutre in preloaded meshes
-            pd = new PicDisp(PicArr(sig));
+            PicArr pa(sig);
+            pd = new PicDisp(pa);
             cout << "Generating mesh for " << hex << sig << dec << endl;
+            //cout << pa.prn() << endl;
+            //for(int i = 0; i < comp.rtnnum; ++i)
+            //    cout << hex << comp.bits[i] << dec << endl;
+            
             pd->initNoSubdiv();
             pd->m_mesh.makeSelfBos(true);
 

@@ -680,6 +680,7 @@ void bucketAddFam(const char* name, int startDefi, int count, int resetSelCount,
     }
     PicFamily& f = bucket.families[atIndex];
     f.name = name;
+    //cout << "FAM " << name << " start=" << startDefi << endl;
     f.startIndex = startDefi;
     f.numGroups = count;
     f.onResetSetCount = resetSelCount;
@@ -694,7 +695,8 @@ void freeMeshAllocator()
 shared_ptr<GlTexture> g_lastTexture;
 
 void textureParamCube(int grpi, int dtype, float r1, float g1, float b1, float r2, float g2, float b2, int isBlack, 
-                      const char* backHex, const char* frontHex, const char* blackSelect, int rotate, const char* url)
+                      const char* backHex, const char* frontHex, const char* blackSelect, int rotate, const char* url,
+                      bool isInEditor)
 {
   //  cout << "TEX-PARAMs " << grpi << " " << dtype << " " << r1 << "," << g1 << "," << b1 << "  " 
   //                        << r2 << "," << g2 << "," << b2 << "   `" << url << "`" << endl;
@@ -723,7 +725,7 @@ void textureParamCube(int grpi, int dtype, float r1, float g1, float b1, float r
         cgrp.gtex = bucket.gtexs[0]; break;
     case DRAW_TEXTURE_INDIVIDUAL_HALF:
         cgrp.gtex = g_lastTexture; 
-        if (prevDrawType != DRAW_TEXTURE_INDIVIDUAL_HALF) {
+        if (isInEditor && prevDrawType != DRAW_TEXTURE_INDIVIDUAL_HALF) {
             bucket.makeAllComp();
             // need to redo the compressed pics since the symmetry consideration changed for some pieces
         }
@@ -738,8 +740,8 @@ void textureParamCube(int grpi, int dtype, float r1, float g1, float b1, float r
     ed.frontHex = frontHex; // without #
     ed.blackSelect = blackSelect; // "black", "white", "auto" from GUI
     
-    
-    g_ctrl->requestDraw();
+    if (isInEditor)
+        g_ctrl->requestDraw();
 }
 
 void textureParamToEditor(int grpi) {

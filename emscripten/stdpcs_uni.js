@@ -31,8 +31,8 @@ var uni_pcs = [
         famName: "Marble Cube",
         drawType: "marble",
         menuIndex: 5,
-        p: [
-        { name: "MC-M.L. King",   sig:"94a8c46eea54966a4d", cb:"#3778FF", cf:"#8BD9FF" }, //blue
+        p: [                           
+        { name: "MC-M.L. King",   sig:"94a8c46eea54d66a4d", cb:"#3778FF", cf:"#8BD9FF" }, //blue
         { name: "MC-O. Khayyam",  sig:"9b105aad6b6b496a2b", cb:"#44D115", cf:"#A7FF88"}, // green
         { name: "MC-Marie Curie", sig:"846c532b9a0da78a2b", cb:"#FFF499", cf:"#FFE708" }, // yellow
         { name: "MC-B. Fuller",   sig:"aa54ba746a1335ad2a", cb:"#E01361", cf:"#FA83A2"}, // pink

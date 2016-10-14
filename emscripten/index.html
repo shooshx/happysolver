@@ -105,8 +105,8 @@ function start()
     stackState = Module.cwrap('stackState', null, ['number'])
     textureParamCube = Module.cwrap('textureParamCube', null, ['number','number','number','number','number','number','number','number','number',
                                                                 // grpi,drawtype,r,g,b,r,g,b,isBlack
-                                                               'string', 'string', 'string', 'number', 'string']) 
-                                                               // back-hex, front-hex, black-selector, rot-angle, url
+                                                               'string', 'string', 'string', 'number', 'string', 'number']) 
+                                                               // back-hex, front-hex, black-selector, rot-angle, url, isInEditor
     getCubeTextureHandle = Module.cwrap('getCubeTextureHandle', 'number', ['number', 'number', 'number'])
     readCubeTexCoord = Module.cwrap('readCubeTexCoord', null, ['number','number','number','number','number','number','number'])
     loadSlvSimple = Module.cwrap('loadSlvSimple', null, ['string'])
@@ -245,7 +245,7 @@ function loadStdPieces(pcs)
                      p.cb.rgb.r, p.cb.rgb.g, p.cb.rgb.b, 
                      p.cf.rgb.r, p.cf.rgb.g, p.cf.rgb.b, 
                      isColorsBlack(p.lines, p.cb, p.cf, p.drawType), 
-                     p.cb.HEX, p.cb.HEX, p.lines, p.rotate, p.img)
+                     p.cb.HEX, p.cb.HEX, p.lines, p.rotate, p.img, false)
             
             if (p.img != "") 
             { // has a url to load
@@ -1217,7 +1217,7 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
     if (v) 
     {
         editBack.style.display = "inline" // make it visible
-        side_ctrl.editMode = true // for resize
+        side_ctrl.editMode = true // for resize and others
         doResize()
         editActionPiecesCheck.checked = true
         editActionMoveCheck.checked = false
@@ -1447,7 +1447,7 @@ function sentTexParam() {
                      bc.rgb.r, bc.rgb.g, bc.rgb.b, 
                      fc.rgb.r, fc.rgb.g, fc.rgb.b, 
                      isColorsBlack(editBlackSel.value, bc, fc, jsgrp.drawType), 
-                     bc.HEX, fc.HEX, editBlackSel.value, jsgrp.rotAngle, jsgrp.lastUrl) // things saved for the editor
+                     bc.HEX, fc.HEX, editBlackSel.value, jsgrp.rotAngle, jsgrp.lastUrl, true) // things saved for the editor
 }
 
 // a minimal 1x1 SVG file 
