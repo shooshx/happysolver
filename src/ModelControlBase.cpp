@@ -98,7 +98,7 @@ void ModelControlBase::initTex()
     bucket.gtexs.push_back(nullptr); // marble
 
 	// little genius textures
-    tex = make_shared<JsGlTexture>();
+ /*   tex = make_shared<JsGlTexture>(); disabled since everthing moved to svg
     tex->init(GL_TEXTURE_2D, Vec2i(1024, 1024), 1, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, nullptr, GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE);
     tex->registerBind("genious");
     bucket.gtexs.push_back(tex);
@@ -107,7 +107,7 @@ void ModelControlBase::initTex()
     tex->init(GL_TEXTURE_2D, Vec2i(1024, 1024), 1, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, nullptr, GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE);
     tex->registerBind("newgenious");
     bucket.gtexs.push_back(tex);
-   
+   */
 #endif
 }
 

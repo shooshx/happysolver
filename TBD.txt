@@ -29,7 +29,7 @@ mobile css
 - xyz indicator
 - button reset view angle
 
-- BUG - two colors tex has reversed colors
+
 
 mipmap?
 

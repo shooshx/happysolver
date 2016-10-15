@@ -120,10 +120,13 @@
 							colorPicker.setColor(extractValue(elm), undefined, undefined, true);
 							colorPicker.saveAsBackground();
 						}
+                        if (colorPickers.current && colorPickers.current != colorPickers[index])
+                            colorPickers.current.nodes.colorPicker.style.display = 'none'
 						colorPickers.current = colorPickers[index];
 						(options.appendTo || document.body).appendChild(colorPickerUI);
 						setTimeout(function() { // compensating late style on onload in colorPicker
-							colorPickerUI.style.display = 'block';
+							//colorPickerUI.style.display = 'block';
+                            colorPickers.current.nodes.colorPicker.style.display = 'block';
 						}, 0);
 					},
 					mousDownListener = function(e) {
@@ -147,7 +150,7 @@
 								// ...
 							}
 						} else if (inputIndex !== -1) {
-                            if (colorPickerUI) { // Shy - closes the other open window, if its open
+                            if (colorPickerUI && colorPickers[inputIndex] != colorPicker) { // Shy - closes the other open window, if its open
                                 colorPickerUI.style.display = 'none';
                             }
 							// ...

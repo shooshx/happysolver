@@ -242,7 +242,7 @@ function loadStdPieces(pcs)
             p.img = objGet(p, 'img', "")
             
             textureParamCube(grpi, p.drawType, 
-                     p.cb.rgb.r, p.cb.rgb.g, p.cb.rgb.b, 
+                     p.cb.rgb.r, p.cb.rgb.g, p.cb.rgb.b, // back-front order of colors is opposite from editor, this was a mistake
                      p.cf.rgb.r, p.cf.rgb.g, p.cf.rgb.b, 
                      isColorsBlack(p.lines, p.cb, p.cf, p.drawType), 
                      p.cb.HEX, p.cb.HEX, p.lines, p.rotate, p.img, false)
@@ -1441,11 +1441,12 @@ function isColorsBlack(linesSel, backColors, frontColors, drawType) {
 }
 
 function sentTexParam() {
-    var bc = jsgrp.colorBack.colors
+    // for two color, the color changing is the textured one because if there's no alpha in the tex, there's should be no effect
+    var bc = editTwoColorCheck.checked ? jsgrp.colorBack.colors : jsgrp.colorFront.colors
     var fc = jsgrp.colorFront.colors
     textureParamCube(editingCubeId, jsgrp.drawType, 
-                     bc.rgb.r, bc.rgb.g, bc.rgb.b, 
                      fc.rgb.r, fc.rgb.g, fc.rgb.b, 
+                     bc.rgb.r, bc.rgb.g, bc.rgb.b, 
                      isColorsBlack(editBlackSel.value, bc, fc, jsgrp.drawType), 
                      bc.HEX, fc.HEX, editBlackSel.value, jsgrp.rotAngle, jsgrp.lastUrl, true) // things saved for the editor
 }
@@ -1648,6 +1649,8 @@ function updateTexDisabledWidgets()
     
     editRotR.setAttribute("disabled", d)
     editRotL.setAttribute("disabled", d)
+    
+    editTwoColorCheck.disabled = d
 }
 
 function updateZoomValue() {
@@ -1688,6 +1691,11 @@ function triggerBlackSel()
     sentTexParam()
 }
 
+function triggerTwoColor()
+{
+    sentTexParam()
+}
+
 function mimeTypeByExt(fileName) {
     var ext = fileName.substr(fileName.lastIndexOf('.') + 1).toLowerCase();
     var type = ""
@@ -1710,9 +1718,20 @@ function resetErrMsg(msg) {
 function triggerEditChanged()
 {
     var fileName = editFileName.value
+    if (fileName.length == 0) { // reset to the blank texture
+        loadedImg = blank_tex
+        origLoadedImg = loadedImg 
+        setGlTexture(editingCubeId, loadedImg, jsgrp)
+        lastFile = null
+        updateUploadBtnDisabled()
+        resetErrMsg()
+        return;
+    }
     var lowName = fileName.toLowerCase()
     if (!lowName.startsWith("http://") && !lowName.startsWith("https://")) {
-        resetErrMsg("Not a well formed URL")
+        resetErrMsg("Input string should be a well formed URL")
+        lastFile = null
+        updateUploadBtnDisabled()
         return
     }
     resetErrMsg()
@@ -1919,6 +1938,11 @@ body {
 .mycheck:indeterminate + .mycheck_label {
     background-image: url(check_int.png);
 }
+
+.mycheck:disabled + .mycheck_label {
+    opacity: 0.4;
+}
+
 
 /*------------------------------------------------------------*/
 .hidden {
@@ -2369,19 +2393,30 @@ input:checked + .sc-btn
 
 #editUploadProgress {
     position: absolute;
-    top: 470px;
+    top: 480px;
     left: 185px;
-    width: 338px;
+    width: 390px;    
     height: 25px;
     visibility: hidden;
 }
 #editErrMsg {
     position: absolute;
-    top: 460px;
-    left: 280px;
+    top: 490px;
+    left: 240px;
     color: red;
     font-family: tahoma;
     font-weight: bold;
+}
+
+#editTwoColorCheck_label {
+    position: absolute;
+    top: 450px;
+    left: 274px;
+}
+#editTwoColorCheck_text {
+    margin: -2px 0 0 21px; /* hack to make the text align with the box*/
+    display: inline-block;    
+    vertical-align: text-top;
 }
 
 /*--------------- ipic (single piece picker)*/
@@ -2432,6 +2467,7 @@ input:checked + .sc-btn
     width: 180px;
     font-family: monospace;
 }
+
 
 
 
@@ -2495,6 +2531,9 @@ input:checked + .sc-btn
             <span id="editUploadBtnIn" title="Upload Now" class="sc-span"></span></label>
           <br>
           <progress id="editUploadProgress" max="100" value="0"></progress>
+          <input id="editTwoColorCheck" class="mycheck hidden" type="checkbox" onclick="triggerTwoColor()">
+          <label id="editTwoColorCheck_label" class="mycheck_label" for="editTwoColorCheck">
+            <span id="editTwoColorCheck_text">Two Colors</span></label>
           <span id="editErrMsg"></span>
         <input id="editFillMarbleRadio" class="hidden" type="radio" name="fill" onclick="changeFillSelect(4)">
         <label id="editFillMarble" class ="sc-btn fillRadio" for="editFillMarbleRadio">Marble Mix</label><br>
@@ -2558,8 +2597,6 @@ If you have any questions concerning the usage of HAPPY materials, please send y
     <img id="noisetex" src='cubeTex.png' style="display:none;"/>
     <img src="arrow_up.png" style="display:none;"/>
     <img src="arrow_down.png" style="display:none;"/>
-    <img id="newgenious" src="../new_genious128.png" style="display:none;"/>
-    <img id="genious" src="../littlegenious128_2.png" style="display:none;"/>
     <img id="dummy_check1" src="check_int.png" style="display:none;"/> <!-- avoid flicker -->
     <img id="blank_tex" src="blank_tex.png" style="display:none;"/>
     <img id="dummy_anim" src="gears/gear_anim.gif" style="display:none;"/>
