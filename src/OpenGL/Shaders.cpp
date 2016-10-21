@@ -1,4 +1,5 @@
 #include "Shaders.h"
+#include "../Mat.h"
 
 #include "build.vtx.glsl.h"
 #include "build.frag.glsl.h"
@@ -25,3 +26,7 @@ void NoiseSlvProgram::getCodes() {
 }
 
 
+void NoiseSlvProgram::setModelMat(const Mat4& m) {
+    modelMat.set(m);
+    normalMat.set(m.toNormalsTrans());
+}

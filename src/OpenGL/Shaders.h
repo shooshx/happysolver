@@ -18,28 +18,31 @@ enum ProgClass {
 class BaseProgram : public ShaderProgram {
 public:
 	BaseProgram()
-        :trans("trans", this), colorAatt("colorA", this), colorAu("colorA", this), vtx("vtx", this), fadeFactor("fadeFactor", this)
+        :trans("trans", this), vtx("vtx", this), colorAu("colorA", this), fadeFactor("fadeFactor", this)
 	{}
 
 	Mat4Uniform trans;
-	UniformParam colorAu;
-	AttribParam colorAatt;
 	Vec3Attrib vtx;
-    FloatUniform fadeFactor; 
+
+    FloatUniform fadeFactor; // common to noise and build
+    Vec3Uniform colorAu; // common to noise and build
+
 };
 
 
 class BuildProgram : public BaseProgram {
 public:
 	BuildProgram()
-		:tag("tag", this)
+        :tag("tag", this), colorAatt("colorAtt", this)
 	{}
 	virtual void getCodes() override;
     DEF_CLASS(PCLS_BUILD);
 
-	FloatAttrib tag;
-	
+	FloatAttrib tag; // the type of color to use
+    AttribParam colorAatt;
+
 };
+
 
 class FlatProgram : public BaseProgram {
 public:
@@ -51,14 +54,15 @@ public:
 class NoiseSlvProgram : public BaseProgram {
 public:
 	NoiseSlvProgram()
-		:noisef("noisef", this), colorB("colorB", this), drawtype("drawtype", this)
+        :noisef("noisef", this),  colorB("colorB", this), drawtype("drawtype", this)
 		,modelMat("modelMat", this), normalMat("normalMat", this), normal("normal", this)
 		,texOffset("texOffset", this), lightPos("lightPos", this), flag("flag", this)
-        ,texScale("texScale", this), texTrans("texTrans", this), isBlackSign("isBlackSign", this)
+        , texScale("texScale", this), texTrans("texTrans", this), isBlackSign("isBlackSign", this)
 	{}
 	virtual void getCodes() override;
     DEF_CLASS(PCLS_NOISE);
 
+    void setModelMat(const Mat4& gl);
 
 	IntUniform noisef; 
 
@@ -74,6 +78,7 @@ public:
     Vec2Uniform texScale;
     Mat2Uniform texTrans;
     FloatUniform isBlackSign; // 0 for not black, -1 or 1 depending on the side of the piece facing outside
+
 };
 
 

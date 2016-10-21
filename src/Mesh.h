@@ -30,8 +30,9 @@ public:
         m_name.clear();
         m_tag.clear();
         m_idx.clear();
-        m_uColor = Vec4();
+        m_uColor = Vec3();
         m_addIdx.clear();
+        m_singleColorForAtt = Vec4();
     }
 
     void paint(bool names = false) const;
@@ -66,6 +67,8 @@ public:
     void makeSelfBos(bool andDealloc);
     void makeIdxBo(bool dealloc);
 
+    void load(const char* name);
+
 public:
     shared_ptr<CommonData> m_common;
     vector<Vec3> m_vtx;
@@ -76,7 +79,8 @@ public:
     vector<Vec4b> m_name;
     vector<float> m_tag; // general purpose data used by the shaders - type of build tile
     vector<ushort> m_idx;
-    Vec4 m_uColor;
+    Vec3 m_uColor;
+    Vec4 m_singleColorForAtt;
 
     bool m_hasNormals = false;
     //bool m_hasTexCoord;
@@ -85,6 +89,7 @@ public:
     bool m_hasIdx = false; // drawElements or drawArrays
     bool m_uniformColor = false;
     bool m_hasTag = false;
+    bool m_singleAttColor = false;
 
     Type m_type = NONE;
 

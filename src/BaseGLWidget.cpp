@@ -106,31 +106,33 @@ static void sgluPerspective(double fovy, double aspect, double zNear, double zFa
 }
 
 
-void BaseGLWidget::reCalcProj(bool fFromScratch) // = true default
+void BaseGLWidget::reCalcProj() // = true default
 {
     //cout << "WndSize=" << m_cxClient << "x" << m_cyClient << endl;
-    if (fFromScratch)
-    {
-        //cout << "reCalc " << aqmin << "," << aqmax << endl;
-        double figX = mMax(aqmax[0] - aqmin[0], (float)m_minScaleReset),
-               figY = mMax(aqmax[1] - aqmin[1], (float)m_minScaleReset),
-               figZ = mMax(aqmax[2] - aqmin[2], (float)m_minScaleReset);
 
-        m_scrScale = mMin(mMin(4/figX, 4/figY), 4/figZ)*0.7;
-        m_realScale = mMin(mMin(m_cxClient/figX, m_cyClient/figY), m_cxClient/figZ)*0.7; // for translate
+    //cout << "reCalc " << aqmin << "," << aqmax << endl;
+    double figX = mMax(aqmax[0] - aqmin[0], (float)m_minScaleReset),
+            figY = mMax(aqmax[1] - aqmin[1], (float)m_minScaleReset),
+            figZ = mMax(aqmax[2] - aqmin[2], (float)m_minScaleReset);
 
-        m_aspectRatio = (double)m_cxClient/(double)m_cyClient;
-        //cout << "proj " << m_cxClient << "x" << m_cyClient << endl;
+    m_scrScale = mMin(mMin(4/figX, 4/figY), 4/figZ)*0.7;
+    m_realScale = mMin(mMin(m_cxClient/figX, m_cyClient/figY), m_cxClient/figZ)*0.7; // for translate
 
-        glViewport(0, 0, m_cxClient, m_cyClient);
-        proj.cur().identity();
-    }
+    m_aspectRatio = (double)m_cxClient/(double)m_cyClient;
+    //cout << "proj " << m_cxClient << "x" << m_cyClient << endl;
 
-    Mat4 p;
-    sgluPerspective(60.0, m_aspectRatio, 1.0, 10.0, p.m );
-    proj.mult(p);
+    glViewport(0, 0, m_cxClient, m_cyClient);
+    
+    //proj.cur().identity();
+
+    //Mat4 p;
+    sgluPerspective(60.0, m_aspectRatio, 1.0, 10.0, proj.cur().m);
+    //proj.mult(p);
     proj.translate(0.0f, 0.0f, -4.0f);
     proj.scale(m_scrScale, m_scrScale, m_scrScale);
+    
+    sgluPerspective(60.0, 1.0, 1.0, 10.0, m_fixedAspectProj.m);
+    m_fixedAspectProj.translate(0.0f, 0.0f, -4.0f);
 
 }
 
@@ -144,7 +146,7 @@ void BaseGLWidget::reset()
 {
     m_zoomVal = 100;
 
-    reCalcProj(true);
+    reCalcProj();
     // now select the modelview matrix and clear it
     // this is the mode we do most of our calculations in
     // so we leave it as the default mode.
@@ -161,7 +163,7 @@ void BaseGLWidget::reset()
 void BaseGLWidget::resize(int width, int height) {
     m_cxClient = width;
     m_cyClient = height;
-    reCalcProj(true);
+    reCalcProj();
 }
 
 void BaseGLWidget::setNewMinMax(const Vec3& min, const Vec3& max, bool scale)

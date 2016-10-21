@@ -22,6 +22,7 @@
 #include <QIcon>
 #include <QtGui>
 #include <iostream>
+#include <fstream>
 
 
 QWidget* g_main = nullptr;
@@ -115,7 +116,8 @@ int main(int argc, char *argv[])
 // 	return 0;
     console();
 
-    makeArrowObject(cout);
+    ofstream af("C:/projects/cubeGL/happysolver/arrow.obj");
+    makeArrowObject(af);
     getchar();
     return 0;
 

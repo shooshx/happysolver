@@ -1,7 +1,7 @@
 #include "Mat.h"
 
 
-Mat3 Mat4::toNormalsTrans() {
+Mat3 Mat4::toNormalsTrans() const {
 	Mat3 v;
 	v.m[0] = m[0]; v.m[1] = m[4]; v.m[2] = m[8];
 	v.m[3] = m[1]; v.m[4] = m[5]; v.m[5] = m[9];

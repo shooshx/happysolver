@@ -2,9 +2,11 @@ precision highp float;
 
 uniform mat4 trans;
 uniform vec3 colorA;
-varying vec3 color;
 attribute vec3 vtx;
 
+varying vec3 color;
+
+// used for piece selection, not build selection
 void main()
 {	
 	color = colorA;

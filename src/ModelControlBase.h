@@ -31,9 +31,11 @@ protected:
 
     SlvCube* m_lastSlv = nullptr; // for knowing if we need to invalidate the choise
     int m_lastUpTo = -1;
+    unique_ptr<Mesh> m_arrowMesh;
 
 public:
     BuildControlBase m_buildCtrl;
+    bool m_addArrows = false; // rotation indicators arrows
 
 protected:
     virtual void initialized() override;
@@ -53,6 +55,7 @@ protected:
     virtual void clearChoise() override {
         m_buildCtrl.clearChoise();
     }
+    void drawAxisArrows();
 
 
 public:

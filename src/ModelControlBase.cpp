@@ -16,6 +16,8 @@ ModelControlBase::ModelControlBase(BaseGLWidget* gl, CubeDocBase *doc)
     m_nLastHoveChs = -1;
 
  //   m_buildCtrl.m_preZoomFactor = 4.0; // factor to fit the scale the the solutions
+
+
 }
 
 void ModelControlBase::switchIn() {
@@ -64,11 +66,21 @@ void ModelControlBase::reCalcSlvMinMax()
 void ModelControlBase::initialized()
 {
     m_progFlat.init();
-    m_progNoise.init();
     mglCheckErrorsC("progs");
+
+    m_progNoise.init();
+    {
+        ProgramUser pu(&m_progNoise);
+        m_progNoise.lightPos.set(Vec3(0.0f, 0.0f, 1000.0f));    
+    }
 
     m_buildCtrl.initialized();
 
+    if (m_addArrows) {
+        m_arrowMesh.reset(new Mesh);
+        m_arrowMesh->load("arrow_mesh");
+        m_arrowMesh->m_uniformColor = true;
+    }
 }
 
 #ifdef EMSCRIPTEN
@@ -111,7 +123,46 @@ void ModelControlBase::initTex()
 #endif
 }
 
+void ModelControlBase::drawAxisArrows()
+{
+    glViewport(0, 0, 120, 120);
 
+    m_bgl->proj.push();
+    m_bgl->proj.cur() = m_bgl->m_fixedAspectProj;
+
+    m_bgl->model.push();
+    // m_bgl->model.identity();
+    m_bgl->model.scale(0.105, 0.105, 0.105);
+    // m_bgl->model.translate(-50, 0, 0);
+
+
+    // m_bgl->model.mult(m_bgl->model.peek(1)); // do the rotation
+    ProgramUser pu(&m_progNoise);
+    m_progNoise.drawtype.set(DRAW_COLOR);
+
+    m_progNoise.setModelMat(m_bgl->model.cur());
+    m_progNoise.trans.set(m_bgl->transformMat());
+    m_arrowMesh->m_uColor = Vec3(1.0, 0.2, 0.2);
+    m_arrowMesh->paint();
+
+    m_bgl->model.rotate(90, -1, 0, 0);
+    m_progNoise.setModelMat(m_bgl->model.cur());
+    m_progNoise.trans.set(m_bgl->transformMat());
+    m_arrowMesh->m_uColor = Vec3(0.2, 0.7, 0.2);
+    m_arrowMesh->paint();
+
+    m_bgl->model.rotate(90, 0, 1, 0);
+    m_progNoise.setModelMat(m_bgl->model.cur());
+    m_progNoise.trans.set(m_bgl->transformMat());
+    m_arrowMesh->m_uColor = Vec3(0.2, 0.2, 1.0);
+    m_arrowMesh->paint();
+
+    m_bgl->model.pop();
+    m_bgl->proj.pop();
+
+    glViewport(0, 0, m_bgl->m_cxClient, m_bgl->m_cyClient);
+
+}
 
 void ModelControlBase::myPaintGL(bool inChoise)
 {
@@ -124,6 +175,10 @@ void ModelControlBase::myPaintGL(bool inChoise)
         else
             glClearColor(bkc.r, bkc.g, bkc.b, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        if (m_addArrows) {
+            drawAxisArrows();
+        }
     }
 
     // draw the object
@@ -217,7 +272,6 @@ void ModelControlBase::drawTargets(bool inChoise)
     ProgramUser u(sel);
 
     if (!inChoise) {
-        m_progNoise.lightPos.set(Vec3(0.0f, 0.0f, 1000.0f));
         m_progNoise.fadeFactor.set(m_buildCtrl.m_fadeFactor);
     }
 

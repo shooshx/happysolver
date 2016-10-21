@@ -331,8 +331,7 @@ void PicPainter::paint(bool fTargets, const Vec3& name, BaseGLWidget *context, b
                 prog->noisef.set(0);
             }
 
-            prog->modelMat.set(context->model.cur());
-            prog->normalMat.set(context->model.cur().toNormalsTrans());
+            prog->setModelMat(context->model.cur());
 
             if (def->isIndividual()) 
             {

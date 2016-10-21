@@ -5,9 +5,11 @@ const char *code_flat_vtx_glsl = " \
    \n\
   uniform mat4 trans; \n\
   uniform vec3 colorA; \n\
-  varying vec3 color; \n\
   attribute vec3 vtx; \n\
    \n\
+  varying vec3 color; \n\
+   \n\
+  // used for piece selection, not build selection \n\
   void main() \n\
   {	 \n\
   	color = colorA; \n\

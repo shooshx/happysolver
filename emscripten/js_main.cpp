@@ -83,6 +83,7 @@ class MainCtrl
 public:
     MainCtrl() : m_modelGl(&m_gl, &m_doc)
     {
+        m_modelGl.m_addArrows = true;
         m_gl.m_handlers.push_back(&m_modelGl);
         m_handler = &m_modelGl;
         m_doc.m_sthread = &m_runctx;
@@ -412,7 +413,7 @@ void stackState(int op)
     }
     // make it recenter around the current shape
     g_ctrl->m_modelGl.reCalcSlvMinMax();
-    g_ctrl->m_gl.reCalcProj(true);
+    g_ctrl->m_gl.reCalcProj();
     
     g_ctrl->m_modelGl.m_buildCtrl.reloadWorld();
     
@@ -475,7 +476,7 @@ void deserializeAndLoad(int len, bool bin) // shape and solution
         
         g_ctrl->m_doc.setCurSlvToLast();
         dispFirstSlv();
-        g_ctrl->m_gl.reCalcProj(true);
+        g_ctrl->m_gl.reCalcProj();
         g_ctrl->requestDraw();
     }
     catch(const exception& e) {

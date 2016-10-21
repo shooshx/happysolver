@@ -266,6 +266,14 @@ inline bool operator==(const Vec3& a, const Vec3& b)
 {
     return ((a.v[0] == b.v[0]) && (a.v[1] == b.v[1]) && (a.v[2] == b.v[2]));
 }
+inline bool operator<(const Vec3& a, const Vec3& b) 
+{
+    if (a.x != b.x)
+        return a.x < b.x;
+    if (a.y != b.y)
+        return a.y < b.y;
+    return a.z < b.z;
+}
 
 ostream& operator<<(ostream& o, const Vec3& v);
 

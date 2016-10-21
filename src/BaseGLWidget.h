@@ -74,15 +74,18 @@ public:
     list<int> m_textures;
     list<GLHandler*> m_handlers;
     MatStack proj, model;
+    Mat4 m_fixedAspectProj; // for arrows view
 
     int m_minScaleReset;  //a view can set this member for to limit the maximal size of an object at reset. default is 0 for no effect
     bool m_cullFace;
     Vec3 aqmin, aqmax; // bbox for everything, floats as an optinimazation, no conversion 
     bool m_screenNeedUpdate = false; // used by the javascript wrapper to detect if we need to draw the screen again since this cleared it for the choise
+    int m_cxClient, m_cyClient; ///< hold the windows width, width
+    double m_aspectRatio;		///< hold the fixed Aspect Ration
 
 public:
 
-    void reCalcProj(bool fFromScratch = true);
+    void reCalcProj();
 
     void init();    
     void paint(bool inChoise);
@@ -116,9 +119,6 @@ protected:
 private:
     Vec2i m_lastPos;					// hold last mouse x,y coord
 
-    int m_cxClient;			///< hold the windows width
-    int m_cyClient;			///< hold the windows height
-    double m_aspectRatio;		///< hold the fixed Aspect Ration
     double m_scrScale, m_realScale;
 
     bool m_choiceBufferValid = false;

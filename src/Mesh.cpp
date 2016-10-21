@@ -2,7 +2,9 @@
 #include "OpenGL/Shaders.h"
 #include "OpenGL/glGlob.h"
 #include <fstream>
-
+#ifdef EMSCRIPTEN
+#include <emscripten.h>
+#endif
 
 static uint glType(Mesh::Type t) {
     switch (t){
@@ -112,29 +114,40 @@ void Mesh::paint(bool names) const
         else 
             nprog->normal.disableArr();
     }
+    //cout << "~1-----------" << endl;
     if (names) {
-        if (m_hasNames) {
-            bprog->colorAatt.setArr<Vec4b>(m_namesBo);
-        }
-        else {
-            bprog->colorAatt.disableArr();
-        }
-        if (lprog != nullptr) {
+      //  cout << "~2" << endl;
+        if (lprog != nullptr) 
+        {
+            if (m_hasNames) {
+                lprog->colorAatt.setArr<Vec4b>(m_namesBo);
+            }
+            else {
+                lprog->colorAatt.disableArr();
+            }
             lprog->tag.set(0);
             lprog->tag.disableArr();
         }
     }
     else {
         if (m_hasColors) {
-            bprog->colorAatt.setArr<Vec4>(m_colBo);
+            if (lprog != nullptr) {
+                lprog->colorAatt.setArr<Vec4>(m_colBo);
+            }
         }
-        else {
-            bprog->colorAatt.disableArr();
+        else 
+        {
             if (m_uniformColor) {
-                if (bprog->colorAu.isValid()) 
+                if (bprog->colorAu.isValid()) {
                     bprog->colorAu.set(m_uColor);
-                else 
-                    bprog->colorAatt.set(m_uColor);
+                }
+            }
+            else if (m_singleAttColor) {
+                // happens in build that needs to set a uniform color to the lines
+                if (lprog != nullptr) {
+                    lprog->colorAatt.disableArr(); // disable it as an array to get a single color below
+                    lprog->colorAatt.set(m_singleColorForAtt);
+                }
             }
         }
 
@@ -235,3 +248,28 @@ void Mesh::save(const string& path, bool asObj)
         throw HCException("can't save triangles");
     }
 }
+
+
+void Mesh::load(const char* name) 
+{
+#ifdef EMSCRIPTEN
+    // this is rather uglu looking it up in window each time but there's not much choice...
+    // possibly replace with emscripten::val
+
+    m_vtxBo.bind();
+    EM_ASM_(GLctx.bufferData(GLctx.ARRAY_BUFFER, window[Pointer_stringify($0)].vtx, GLctx.STATIC_DRAW), name);
+    m_vtxBo.m_size = EM_ASM_INT(return window[Pointer_stringify($0)].vtx.length, name);
+
+    m_normBo.bind();
+    EM_ASM_(GLctx.bufferData(GLctx.ARRAY_BUFFER, window[Pointer_stringify($0)].norm, GLctx.STATIC_DRAW), name);
+    m_normBo.m_size = EM_ASM_INT(return window[Pointer_stringify($0)].norm.length, name);
+
+    m_idxBo.bind();
+    EM_ASM_(GLctx.bufferData(GLctx.ELEMENT_ARRAY_BUFFER, window[Pointer_stringify($0)].idx, GLctx.STATIC_DRAW), name);
+    m_idxBo.m_size = EM_ASM_INT(return window[Pointer_stringify($0)].idx.length, name);
+    m_type = Mesh::TRIANGLES;
+    m_hasIdx = m_hasNormals = true;
+    
+#endif
+}
+

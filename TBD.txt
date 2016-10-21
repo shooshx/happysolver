@@ -20,7 +20,7 @@ mobile css
 - engine optimization - read plc, don't go through PicArr
 
 ------ missing features
-- all standard pieces in js
+
 - encode editor to url
 - ability to remove standard pieces in edit mode
 - editor show flat 2x3 solution, with generated frame mesh

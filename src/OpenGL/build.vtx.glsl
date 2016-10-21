@@ -2,14 +2,14 @@ precision highp float;
 varying vec4 color;
 
 uniform mat4 trans;
-attribute vec4 colorA;
+attribute vec4 colorAtt;
 attribute vec3 vtx;
 attribute float tag;
 uniform float fadeFactor;
 
 void main()
 {	
-	color = colorA;
+	color = colorAtt;
 	if (tag == 1.0) 
 		color *= fadeFactor;
 	else if (tag == 2.0) 

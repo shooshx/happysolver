@@ -104,6 +104,7 @@ void ShaderProgram::clear()
 
 bool ShaderProgram::init(const ProgCompileConf& conf)
 {
+    //cout << "***** compiling " << typeid(*this).name() << endl;
     shadersInit();
 
     mglCheckErrorsC("clear errors");

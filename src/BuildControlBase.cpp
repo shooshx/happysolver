@@ -214,7 +214,7 @@ public:
         m_mesh.m_hasColors = false;
         m_mesh.m_hasNames = true;
         m_mesh.m_hasIdx = true;
-        m_mesh.m_uniformColor = true;
+        m_mesh.m_singleAttColor = true;
         m_mesh.clear();
     }
 
@@ -246,7 +246,7 @@ public:
         int ia, ib, ic, id;
         m_rep.add(a, &ia); m_rep.add(b, &ib); m_rep.add(c, &ic); m_rep.add(d, &id);
         addPair(ia, ib);   addPair(ib, ic);   addPair(ic, id);   addPair(id, ia);
-        m_mesh.m_uColor = color;
+        m_mesh.m_singleColorForAtt = color;
     }
 
     void addWithDir(const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d, const Vec4& color)
@@ -421,12 +421,12 @@ void BuildControlBase::drawTargets(bool inChoise)
         drawErrorCyliders();
 
         glPolygonOffset(0, 0);
-        m_realLines.paint();
+        m_realLines.paint(false);
 
         glPolygonOffset(1.0, 1.0);
-        m_transTiles.paint();
+        m_transTiles.paint(false);
         glPolygonOffset(0, 0);
-        m_transLines.paint();
+        m_transLines.paint(false);
 
     }
 }

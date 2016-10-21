@@ -160,7 +160,7 @@ public:
         m[15] = 1.0;
     }
 
-    Mat3 toNormalsTrans();
+    Mat3 toNormalsTrans() const;
 
     float m[16];
 };
