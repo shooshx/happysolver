@@ -206,6 +206,16 @@ struct Vec3
                    a.x * b.y - a.y * b.x);
     }
 
+    static float dotProd(const Vec3 &a, const Vec3& b)
+    {
+        return a.x*b.x + a.y*b.y + a.z*b.z;
+    }
+
+    float length() const
+    {
+        return sqrt(x*x + y*y + z*z);
+    }
+
     static Vec3 triangleNormal(const Vec3& a, const Vec3& b, const Vec3& c) {
         return crossProd(a - b, c - b);
     }
@@ -315,3 +325,18 @@ public:
 
 inline Vec3i::Vec3i(const Vec3& src) :x((int)src.x), y((int)src.y), z(src.z) 
 {}
+
+
+struct Recti
+{
+    Recti() {}
+    Recti(int x, int y, int width, int height) // top left corner
+        :x1(x), y1(y), x2(x+width), y2(y+height)
+    {}
+    bool isInside(int qx, int qy) {
+        return (qx >= x1 && qx <= x2 && qy >= y1 && qy <= y2);
+    }
+
+    int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+
+};

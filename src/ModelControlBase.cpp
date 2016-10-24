@@ -3,12 +3,18 @@
 #include "SlvCube.h"
 #include "NoiseGenerator.h"
 
+
 #ifdef EMSCRIPTEN
 #include <emscripten.h>
 #endif
 
+#define ARROW_BUTTON_ANIM_TIME 0.6
+#define RESET_ROTATION_TIME 0.5
+
 ModelControlBase::ModelControlBase(BaseGLWidget* gl, CubeDocBase *doc)
     : GLHandler(gl), m_doc(doc), m_buildCtrl(gl, doc)
+    , m_spherePopAnim(ARROW_BUTTON_ANIM_TIME)
+    , m_resetPositionAnim(RESET_ROTATION_TIME, gl)
 {
 
     m_nSingleChoise = -1;
@@ -80,6 +86,10 @@ void ModelControlBase::initialized()
         m_arrowMesh.reset(new Mesh);
         m_arrowMesh->load("arrow_mesh");
         m_arrowMesh->m_uniformColor = true;
+
+        m_sphereMesh.reset(new Mesh);
+        m_sphereMesh->load("sphere_mesh");
+        m_sphereMesh->m_uniformColor = true;
     }
 }
 
@@ -125,20 +135,35 @@ void ModelControlBase::initTex()
 
 void ModelControlBase::drawAxisArrows()
 {
-    glViewport(0, 0, 120, 120);
+    int sz = min(m_bgl->m_cxClient, m_bgl->m_cyClient) * 0.14;
+    glViewport(0, 0, sz, sz);
+
+    // area for clicking
+    float sphereMargin = sz * 0.3;
+    m_arrowPressArea = Recti(sphereMargin, m_bgl->m_cyClient - sz + sphereMargin, sz - 2 * sphereMargin, sz - 2 * sphereMargin);
+    EM_ASM_(testRect($0, $1, $2, $3), m_arrowPressArea.x1, m_arrowPressArea.y1, m_arrowPressArea.x2, m_arrowPressArea.y2);
+   // cout << "Arrows SZ=" << sz << " mr=" << sphereMargin << "  " << m_arrowPressArea.x1 << "," << m_arrowPressArea.y1 << "," << m_arrowPressArea.x2 << "," << m_arrowPressArea.y2 << endl;
+
+    ProgramUser pu(&m_progNoise);
+    m_progNoise.drawtype.set(DRAW_COLOR);
 
     m_bgl->proj.push();
     m_bgl->proj.cur() = m_bgl->m_fixedAspectProj;
 
+    // sphere
     m_bgl->model.push();
-    // m_bgl->model.identity();
+    m_bgl->model.identity();  
+    float animv = m_spherePopAnim.m_value;
+    m_bgl->model.scale(0.6 + (animv * 0.25)); // when hovering make it bigger
+    m_progNoise.setModelMat(m_bgl->model.cur());
+    m_progNoise.trans.set(m_bgl->transformMat());
+    m_sphereMesh->m_uColor = Vec3(1.0, 1.0 - animv*0.4 - 0.3*m_arrowSpherePressed, 0.0); // when hovering fade from yellow to orange
+    m_sphereMesh->paint();
+    m_bgl->model.pop();
+
+    // arrows
+    m_bgl->model.push();
     m_bgl->model.scale(0.105, 0.105, 0.105);
-    // m_bgl->model.translate(-50, 0, 0);
-
-
-    // m_bgl->model.mult(m_bgl->model.peek(1)); // do the rotation
-    ProgramUser pu(&m_progNoise);
-    m_progNoise.drawtype.set(DRAW_COLOR);
 
     m_progNoise.setModelMat(m_bgl->model.cur());
     m_progNoise.trans.set(m_bgl->transformMat());
@@ -156,8 +181,8 @@ void ModelControlBase::drawAxisArrows()
     m_progNoise.trans.set(m_bgl->transformMat());
     m_arrowMesh->m_uColor = Vec3(0.2, 0.2, 1.0);
     m_arrowMesh->paint();
-
     m_bgl->model.pop();
+    
     m_bgl->proj.pop();
 
     glViewport(0, 0, m_bgl->m_cxClient, m_bgl->m_cyClient);
@@ -297,31 +322,49 @@ void ModelControlBase::scrPress(bool rightButton, int x, int y)
         if (m_nSingleChoise != -1)
             emitChosenPiece(m_nSingleChoise);
     }
+
+    m_arrowSpherePressed = m_addArrows && m_arrowPressArea.isInside(x, y);
 }
 
-void ModelControlBase::scrRelease(bool rightButton) 
+void ModelControlBase::scrRelease(bool rightButton, int x, int y) 
 {
     if (rightButton) {
         m_nSingleChoise = -1;
         emitChosenPiece(-1);
     }
+
+    if (m_arrowSpherePressed && m_arrowPressArea.isInside(x, y)) {
+        m_resetPositionAnim.reset(m_bgl->model.cur(), m_bgl->getInitRotation());
+        m_bgl->addProgressable(&m_resetPositionAnim);
+    }
+    m_arrowSpherePressed = false;
 }
 
-bool ModelControlBase::scrMove(bool rightButton, bool ctrlPressed, int x, int y)
+
+bool SlerpProgress::reset(const Mat4 startt, const Mat4& endt)
 {
-    int choise = m_bgl->doChoise(x, y) - 1;
+    m_qstart = Quaternion::fromMat(startt);
+    m_qend = Quaternion::fromMat(endt);
+    return FloatProgress::reset();
+}
+bool SlerpProgress::progress(float deltaSec)
+{
+    bool stillGoing = FloatProgress::progress(deltaSec);
+    // need to make the final adjustments even if the anim was just done
+    Quaternion qm = Quaternion::slerp(m_qstart, m_qend, m_value);
+    Mat4 mm = qm.toMatrix();
+    m_bgl->model.set(mm);
 
-#ifndef EMSCRIPTEN
-    if (m_doc->solvesExist())
-    {
-        m_nLastHoveChs = m_nHoverChoise;
-        m_nHoverChoise = choise;
-        //printf("%8X\n", m_nHoverChoise);
-        if (m_nHoverChoise != m_nLastHoveChs)
-            emitHoverPiece(m_nHoverChoise);
+    if (!stillGoing) {
+        m_bgl->invalidateChoice(); // do it only not because selection is not needed during the animation and it will just waste cpu
+        return false;
     }
-#endif
+    return true;
+}
 
+
+bool ModelControlBase::shapeHoverForBuild(int choise, bool rightButton, bool ctrlPressed, int x, int y)
+{
     const Shape* shp = m_doc->getCurrentShape();
     if (shp == nullptr)
         return false;
@@ -331,11 +374,45 @@ bool ModelControlBase::scrMove(bool rightButton, bool ctrlPressed, int x, int y)
         CoordBuild cb = shp->fcToBuildCoord(choise);
         ret = m_buildCtrl.choiseMouseMove(MAKE_NAME(cb.dim, cb.page, cb.x, cb.y), ctrlPressed);
     }
-    else 
+    else
     {
         ret = m_buildCtrl.scrMove(rightButton, ctrlPressed, x, y); //outside a piece, maybe its on the build?
     }
     return ret;
+}
+
+bool ModelControlBase::scrMove(bool rightButton, bool ctrlPressed, int x, int y)
+{
+    if (m_arrowPressArea.isInside(x, y)) {
+        //   cout << "POP-START " << x << " " << y << endl;
+        m_bgl->addProgressable(&m_spherePopAnim);
+        return true;
+    }
+    else {
+        if (m_spherePopAnim.reset()) {
+            m_arrowSpherePressed = false;
+            return true; // need to make sure we make an update frame, never mind we loose a single move event
+        }
+    }
+
+
+    // if buttons are pressed, don't sample because it lowers the FPS of rotating significantly
+    if (rightButton)
+        return false;
+
+    int choise = m_bgl->doChoise(x, y) - 1;
+
+#ifndef EMSCRIPTEN // used to be used in QT to show the current selected piece
+    if (m_doc->solvesExist())
+    {
+        m_nLastHoveChs = m_nHoverChoise;
+        m_nHoverChoise = choise;
+        if (m_nHoverChoise != m_nLastHoveChs)
+            emitHoverPiece(m_nHoverChoise);
+    }
+#endif
+
+    return shapeHoverForBuild(choise, rightButton, ctrlPressed, x, y);
 }
 
 bool ModelControlBase::scrDblClick(bool hasCtrl, int x, int y) 
@@ -356,6 +433,19 @@ bool ModelControlBase::scrDblClick(bool hasCtrl, int x, int y)
     restartSolve(true, false);
     return true;
 }
+
+
+
+bool FloatProgress::progress(float deltaSec) {
+    m_value += deltaSec / m_ttime;
+   // cout << "POP " << m_value << endl;
+    if (m_value >= 1.0) {
+        m_value = 1.0;
+        return false;
+    }
+    return true;
+}
+
 
 void ModelControlBase::restartSolve(bool withCurrentAsStarter, bool keepPrev)
 {

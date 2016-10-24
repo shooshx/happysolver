@@ -29,7 +29,7 @@ public:
 
     // return true for default handling
     virtual void scrPress(bool rightButton, int x, int y) {  }
-    virtual void scrRelease(bool rightButton) {  }
+    virtual void scrRelease(bool rightButton, int x, int y) {  }
     // returns true if need update
     virtual bool scrMove(bool rightButton, bool ctrlPressed, int x, int y) { return false; }
     virtual bool scrDblClick(bool ctrlPressed, int x, int y) { return false; }
@@ -42,6 +42,11 @@ protected:
 
 #define MBUTTON_LEFT 1
 #define MBUTTON_RIGHT 2
+
+class IProgressable {
+public:
+    virtual bool progress(float deltaSec) = 0;
+};
 
 
 class BaseGLWidget
@@ -60,7 +65,7 @@ public:
     int doChoise(int chX, int chY);
 
     void mousePress(int button, int x, int y);
-    void mouseRelease(int button);
+    void mouseRelease(int button, int x, int y);
     bool mouseMove(int buttons, int hasCtrl, int x, int y);
     bool mouseDoubleClick(bool hasCtrl, int x, int y);
     void mouseWheelEvent(int delta);
@@ -68,6 +73,10 @@ public:
     void invalidateChoice() {
         m_choiceBufferValid = false;
     }
+
+    void addProgressable(IProgressable* p);
+    bool progress(float deltaSec);
+    Mat4 getInitRotation() const;
 
 public: 
     // this needs to be public for the PicPainter to be able to access it.
@@ -115,6 +124,8 @@ protected:
     //float m_lightAmbient, m_lightDiffuse, m_lightSpecular;
     bool m_bSkewReset; // should the reset be slighty rotated for better view or not
     GLHandler *m_handler;
+
+    vector<IProgressable*> m_progressables;
 
 private:
     Vec2i m_lastPos;					// hold last mouse x,y coord

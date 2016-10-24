@@ -48,6 +48,8 @@ var ACT_NONE = 0, ACT_ADD = 1, ACT_REMOVE = 2
 var NR_KEEP_PREV = 1 // for newRestart
 
 var colorPickCfg = null 
+
+var CANVAS_MARGIN = 8
     
 function start() 
 {
@@ -87,7 +89,7 @@ function start()
 
     resizeGl = Module.cwrap('resizeGl', null, ['number', 'number'])
     mouseDown = Module.cwrap('mouseDown', null, ['number', 'number', 'number'])
-    mouseUp = Module.cwrap('mouseUp', null, ['number'])
+    mouseUp = Module.cwrap('mouseUp', null, ['number', 'number', 'number'])
     mouseMove = Module.cwrap('mouseMove', null, ['number', 'number', 'number', 'number'])
     mouseDblClick = Module.cwrap('mouseDblClick', null, ['number', 'number', 'number'])
     mouseWheel = Module.cwrap('mouseWheel', null, ['number'])
@@ -274,12 +276,12 @@ function loadStdPieces(pcs)
 var pressedInCanvas = false
 function handleMouseDown(event) {
     pressedInCanvas = true
-    mouseDown( (event.button == 2)?1:0, event.clientX, event.clientY)
+    mouseDown( (event.button == 2)?1:0, event.clientX-CANVAS_MARGIN , event.clientY-CANVAS_MARGIN)
     //return false
 }
 function handleMouseUp(event) {
     pressedInCanvas = false
-    mouseUp( (event.button == 2)?1:0)
+    mouseUp( (event.button == 2)?1:0, event.clientX-CANVAS_MARGIN, event.clientY-CANVAS_MARGIN)
     // returning false here breaks the spinbox
     //return false
 }
@@ -301,11 +303,11 @@ function handleMouseMove(event)
     if (but != 0 && !pressedInCanvas)
         return true // if pressed, avoid reacting to pressed move outside the canvas (editor)
         
-    mouseMove(but, ctrlPressed?1:0, event.clientX, event.clientY)
+    mouseMove(but, ctrlPressed?1:0, event.clientX-CANVAS_MARGIN, event.clientY-CANVAS_MARGIN)
     return true
 }
 function handleMouseDblClick(event) {
-    mouseDblClick(ctrlPressed?1:0, event.clientX, event.clientY);
+    mouseDblClick(ctrlPressed?1:0, event.clientX-CANVAS_MARGIN, event.clientY-CANVAS_MARGIN);
     return false
 }
 function handleMouseWheel(event) {
@@ -585,12 +587,21 @@ function registerTexBind(imgname, obj) {
     GLctx.texImage2D(GLctx.TEXTURE_2D, 0, GLctx.RGBA, GLctx.RGBA, GLctx.UNSIGNED_BYTE, img)
 }
 
+var lastTimeSec = null
 function requestAnim() {
     requestAnimationFrame(animProgress)
+    lastTimeSec = null
 }
 
 function animProgress() {
-    var again = cpp_draw(0.2);
+    var delta = 0;
+    var now = new Date().getTime() / 1000.0
+    if (lastTimeSec != null) { // not the first frame in the anim
+        delta = now - lastTimeSec;
+    }
+    lastTimeSec = now
+    
+    var again = cpp_draw(delta);
     if (again)
         requestAnimationFrame(animProgress)
     
@@ -1783,6 +1794,11 @@ function makeTransformedImg()
     loadTexImage(url, "image/png", editingCubeId, {keepOrig:true})
 
 }
+
+function testRect(x1, y1, x2, y2) {
+    //testRect.style.left = x1 + 
+}
+
     
 </script>
 <script src="js_main.js"></script>
@@ -2419,6 +2435,7 @@ input:checked + .sc-btn
     display: inline-block;    
     vertical-align: text-top;
 }
+
 
 /*--------------- ipic (single piece picker)*/
 

@@ -824,6 +824,9 @@
     <ClInclude Include="..\src\CubeMesher.h">
       <Filter>3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Quaternion.h">
+      <Filter>3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\sglu\myobj_quad.cpp">

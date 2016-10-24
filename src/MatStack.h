@@ -53,11 +53,17 @@ public:
     void scale(float x, float y, float z) {
         m_cur.m.scale(x, y, z);
     }
+    void scale(float v) {
+        m_cur.m.scale(v, v, v);
+    }
     void mult(const Mat4& o) {
         m_cur.m.mult(o);
     }
     void identity() {
         m_cur.m.identity();
+    }
+    void set(const Mat4& o) {
+        m_cur.m = o;
     }
 
 private:

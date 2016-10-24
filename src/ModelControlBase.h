@@ -4,8 +4,33 @@
 #include "CubeDocBase.h"
 #include "OpenGL/Shaders.h"
 #include "BuildControlBase.h"
+#include "Quaternion.h"
 
 class SlvCube;
+
+// enlarges the arrows button when mouse hovers above it
+struct FloatProgress : public IProgressable
+{
+    FloatProgress(float totalTimeSec) :m_ttime(totalTimeSec) {}
+    bool reset() {
+        bool wasReset = m_value != 0.0;
+        m_value = 0.0f;
+        return wasReset;
+    }
+    virtual bool progress(float deltaSec) override;
+    float m_value = 0.0; // [0-1]
+    const float m_ttime = 0.0;
+};
+
+struct SlerpProgress : public FloatProgress
+{
+    SlerpProgress(float totalTimeSec, BaseGLWidget* bgl) : FloatProgress(totalTimeSec), m_bgl(bgl){}
+    bool reset(const Mat4 startt, const Mat4& endt);
+    virtual bool progress(float deltaSec) override;
+
+    Quaternion m_qstart, m_qend;
+    BaseGLWidget* m_bgl = nullptr;
+};
 
 class ModelControlBase : public GLHandler
 {
@@ -31,7 +56,13 @@ protected:
 
     SlvCube* m_lastSlv = nullptr; // for knowing if we need to invalidate the choise
     int m_lastUpTo = -1;
+
     unique_ptr<Mesh> m_arrowMesh;
+    unique_ptr<Mesh> m_sphereMesh; // arrows center
+    Recti m_arrowPressArea // rect around the arrows sphere
+    bool m_arrowSpherePressed = false; // makes sure both press and release are on the the sphere to do the reset, make sphere oranger
+    FloatProgress m_spherePopAnim; // sphere turns orange
+    SlerpProgress m_resetPositionAnim; // slerp movement
 
 public:
     BuildControlBase m_buildCtrl;
@@ -44,7 +75,7 @@ protected:
 
     // events
     virtual void scrPress(bool rightButton, int x, int y) override;
-    virtual void scrRelease(bool rightButton) override;
+    virtual void scrRelease(bool rightButton, int x, int y) override;
     virtual bool scrMove(bool rightButton, bool ctrlPressed, int x, int y) override;
     virtual bool scrDblClick(bool ctrlPressed, int x, int y) override;
 
@@ -55,6 +86,9 @@ protected:
     virtual void clearChoise() override {
         m_buildCtrl.clearChoise();
     }
+
+
+    bool shapeHoverForBuild(int choise, bool rightButton, bool ctrlPressed, int x, int y);
     void drawAxisArrows();
 
 

@@ -11,7 +11,7 @@ void main()
 {	
 	color = colorAtt;
 	if (tag == 1.0) 
-		color *= fadeFactor;
+		color.a *= fadeFactor;
 	else if (tag == 2.0) 
 		color = vec4(1.0, 1.0, 1.0, 1.0) - color*fadeFactor;
 	else if (tag != 0.0)

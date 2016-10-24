@@ -562,15 +562,23 @@ void BuildControlBase::reloadWorld()
     m_bgl->invalidateChoice();
 }
 
+bool BuildControlBase::progress(float deltaSec) {
+    return fadeTimeout(deltaSec);
+}
+
+#define FADE_TIME 0.2
 
 bool BuildControlBase::fadeTimeout(float delta)
 {
     bool ret = false;
     if (m_inFade) {
-        m_fadeFactor += delta;
-        if (m_fadeFactor >= 1.0)
+        m_fadeFactor += delta / FADE_TIME;
+       // cout << "FADE " << m_fadeFactor << endl;
+        if (m_fadeFactor >= 1.0) {
+            m_fadeFactor = 1.0;
             m_inFade = false;
-        ret = true;
+        }
+        ret = m_inFade;
     }
 
    /* BuildWorld& build = m_doc->getBuild();
@@ -636,6 +644,7 @@ void BuildControlBase::clearChoise() // for when we're moving the mouse rotating
     choiseMouseMove(-1, false);
 }
 
+// returns true if redraw needed
 bool BuildControlBase::choiseMouseMove(int choise, bool ctrlPressed)
 {
    // cout << "c" << endl;
@@ -653,6 +662,7 @@ bool BuildControlBase::choiseMouseMove(int choise, bool ctrlPressed)
 
     BuildWorld& build = m_doc->getBuild();
     
+    bool startFade = false;
     if (choise >= 0) // -1 comes from above
     { // something chosen
 
@@ -685,8 +695,7 @@ bool BuildControlBase::choiseMouseMove(int choise, bool ctrlPressed)
                         //else
                         //    cout << "XXX " << t << endl;
                     }
-                    m_fadeFactor = 0.0f;
-                    m_inFade = true;
+                    startFade = true;
                 }
                 else if (build.nFaces > 6) // if its the last one, don't show the red
                 {
@@ -707,8 +716,7 @@ bool BuildControlBase::choiseMouseMove(int choise, bool ctrlPressed)
                             }
                         }
                     }
-                    m_fadeFactor = 0.0f;
-                    m_inFade = true;
+                    startFade = true;
                 }
                 else
                     act = CANT_REMOVE;
@@ -732,6 +740,12 @@ bool BuildControlBase::choiseMouseMove(int choise, bool ctrlPressed)
         m_lastCubeChoise = Vec3i(-1,-1,-1);
         makeBuffers();
         emitTileHover(choise, act);
+    }
+
+    if (startFade) {
+        m_bgl->addProgressable(this);
+        m_fadeFactor = 0.0f;
+        m_inFade = true;
     }
     //printf("end move\n");
     return true;

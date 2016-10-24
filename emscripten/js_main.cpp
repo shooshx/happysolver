@@ -109,8 +109,8 @@ public:
     void draw(float delta) {
         m_requested = false;
         try {
-            m_requested = m_modelGl.m_buildCtrl.fadeTimeout(delta);
-            m_gl.paint(false);
+            m_requested = m_gl.progress(delta); //m_modelGl.m_buildCtrl.fadeTimeout(delta);
+            m_gl.paint(false); // not inChoise
         }
         catch(const std::exception& e) {
             cout << "GOT-EXCEPTION " << e.what() << endl;
@@ -170,7 +170,7 @@ bool isInEditMode() {
 
 void RunContext::notifyNotEnoughPieces() {
     if (!isInEditMode()) // in editor, don't complain since this happens whenever editing the pieces
-        complain("Not enough pieces");
+        complain("Not enough pieces selected");
         
     g_ctrl->m_doc.clearSlvs();
     sendSlvStat();
@@ -270,8 +270,8 @@ void mouseDown(int rightButton, int x, int y) {
     g_ctrl->m_gl.mousePress(rightButton, x, y);
     g_ctrl->requestDraw();
 }
-void mouseUp(int rightButton) {
-    g_ctrl->m_gl.mouseRelease(rightButton);
+void mouseUp(int rightButton, int x, int y) {
+    g_ctrl->m_gl.mouseRelease(rightButton, x, y);
     g_ctrl->requestDraw();
 }
 void mouseMove(int buttons, int ctrlPressed, int x, int y) {

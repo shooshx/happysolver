@@ -141,23 +141,23 @@ Mat4 BaseGLWidget::transformMat() {
     return Mat4::multt(proj.cur(), model.cur());
 }
 
+Mat4 BaseGLWidget::getInitRotation() const {
+    Mat4 m;
+    m.identity();
+    if (m_bSkewReset) {
+        m.rotate(-20, 0, 1, 0);
+        m.rotate(20, 1, 0, 0);
+        m.rotate(-5, 0, 0, 1);
+    }
+    return m;
+}
 
 void BaseGLWidget::reset()
 {
     m_zoomVal = 100;
 
     reCalcProj();
-    // now select the modelview matrix and clear it
-    // this is the mode we do most of our calculations in
-    // so we leave it as the default mode.
-
-    model.identity();
-
-    // this is controvercial.
-    if (m_bSkewReset) {
-        rotate(XYaxis, -20, 20);
-        rotate(Zaxis, -5, 0);
-    }
+    model.set(getInitRotation());
 } 
 
 void BaseGLWidget::resize(int width, int height) {
@@ -411,10 +411,10 @@ void BaseGLWidget::mousePress(int button, int x, int y)
     m_lastPos = Vec2i(x, y);
 }
 
-void BaseGLWidget::mouseRelease(int button)
+void BaseGLWidget::mouseRelease(int button, int x, int y)
 {
     if (m_handler)
-        m_handler->scrRelease(button);
+        m_handler->scrRelease(button != 0, x, y);
 }
 
 bool BaseGLWidget::mouseDoubleClick(bool hasCtrl, int x, int y)
@@ -433,12 +433,10 @@ void BaseGLWidget::mouseWheelEvent(int delta)
 
 bool BaseGLWidget::mouseMove(int buttons, int hasCtrl, int x, int y)
 {
-    // if buttons are pressed, don't sample because it lowers the FPS of rotating significantly
-    if (buttons == 0) 
-    {
-        bool needupdate = false;
-        if (m_handler)
-            needupdate = m_handler->scrMove(buttons, hasCtrl, x, y);
+    bool needupdate = false;
+    if (m_handler)
+        needupdate = m_handler->scrMove(buttons != 0, hasCtrl, x, y);
+    if (buttons == 0) {
         return needupdate;
     }
     if (m_handler) // don't want to see selection while moving
@@ -465,3 +463,24 @@ bool BaseGLWidget::mouseMove(int buttons, int hasCtrl, int x, int y)
     return true;
 
 }
+
+void BaseGLWidget::addProgressable(IProgressable* p) {
+    m_progressables.push_back(p);
+}
+
+bool BaseGLWidget::progress(float deltaSec)
+{
+    bool needMore = false;
+    auto it = m_progressables.begin();
+    while (it != m_progressables.end())
+    {
+        bool b = (*it)->progress(deltaSec);
+        needMore |= b;
+        if (!b) 
+            it = m_progressables.erase(it); // remove those who return false
+        else
+            ++it;
+    }
+    return needMore;
+}
+

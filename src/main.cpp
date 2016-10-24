@@ -24,6 +24,8 @@
 #include <iostream>
 #include <fstream>
 
+#include "Quaternion.h"
+
 
 QWidget* g_main = nullptr;
 
@@ -87,6 +89,76 @@ void console()
 
 
 void makeArrowObject(ostream& os);
+void makeSphere(ostream& os);
+
+void mainQuadObj() {
+    //ofstream af("C:/projects/cubeGL/happysolver/arrow.obj");
+    //makeArrowObject(af);
+
+    ofstream af("C:/projects/cubeGL/happysolver/sphere.obj");
+    makeSphere(af);
+    getchar();
+}
+
+void testQuat() 
+{
+    Mat4 m;
+    m.identity();
+    m.rotate(45, 1, 0, 0);
+    //m.transpose();
+
+    Quaternion q = Quaternion::fromMat(m);
+
+    Mat4 m2 = q.toMatrix();
+
+    Quaternion q2 = Quaternion::fromMat(m2);
+
+    getchar();
+}
+
+void testQuat2()
+{
+    Mat4 m1, m2, m3;
+    m1.identity();
+    m1.rotate(0, 1, 0, 0);
+
+    m2.identity();
+    m2.rotate(90, 1, 0, 0);
+
+    m3.identity();
+    m3.rotate(90, 0, 1, 0);
+
+    Quaternion q1 = Quaternion::fromMat(m1);
+    Quaternion q2 = Quaternion::fromMat(m2);
+    Quaternion q3 = Quaternion::fromMat(m3);
+
+    Quaternion t;
+    t = Quaternion::slerp(q1, q2, 0);
+    t = Quaternion::slerp(q1, q2, 1);
+    t = Quaternion::slerp(q1, q2, 0.5);
+
+    t = Quaternion::slerp(q1, q3, 0);
+    t = Quaternion::slerp(q1, q3, 1);
+    t = Quaternion::slerp(q1, q3, 0.5);
+
+
+
+    Vec3 v0(0,1,0);
+    Vec3 v_s = m1.transformVec(v0);
+    Vec3 v_e = m2.transformVec(v0);
+    for(double t = 0; t < 1.0; t += 0.1)
+    {
+        auto qs = Quaternion::slerp(q1, q2, t);
+        Mat4 ms = qs.toMatrix();
+        Vec3 v = ms.transformVec(v0);
+        cout << v << endl;
+
+    }
+
+
+    getchar();
+}
+
 
 
 int main(int argc, char *argv[])
@@ -116,9 +188,7 @@ int main(int argc, char *argv[])
 // 	return 0;
     console();
 
-    ofstream af("C:/projects/cubeGL/happysolver/arrow.obj");
-    makeArrowObject(af);
-    getchar();
+    mainQuadObj();
     return 0;
 
     //PicBucket::buildAllMeshes();

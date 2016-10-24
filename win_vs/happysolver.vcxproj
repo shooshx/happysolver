@@ -2923,6 +2923,7 @@
     <ClInclude Include="..\src\CubeMesher.h" />
     <ClInclude Include="..\src\ImgBuf.h" />
     <ClInclude Include="..\src\ModelControlBase.h" />
+    <ClInclude Include="..\src\Quaternion.h" />
     <CustomBuild Include="..\src\ModelGLControl.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing ModelGLControl.h...</Message>

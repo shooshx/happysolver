@@ -13,7 +13,7 @@
 
 class CubeDocBase;
 
-class BuildControlBase : public GLHandler
+class BuildControlBase : public GLHandler, public IProgressable
 {
 public:
     BuildControlBase(BaseGLWidget* gl, CubeDocBase* doc);
@@ -27,21 +27,22 @@ public:
         EDIT_DISABLE ///< a double click would do nothing because edits are disable which solution engine is running.
     };
 
-    virtual void initialized();
-    virtual void drawTargets(bool inChoise);
-    virtual void myPaintGL(bool inChoise);
-    virtual void switchIn();
-    virtual void switchOut();
+    virtual void initialized() override;
+    virtual void myPaintGL(bool inChoise) override;
+    virtual void switchIn() override;
+    virtual void switchOut() override;
+    virtual bool scrDblClick(bool hasCtrl, int x, int y) override;
+    virtual bool scrMove(bool rightButton, bool ctrlPressed, int x, int y) override;
+    virtual void clearChoise() override;
 
-    virtual bool scrDblClick(bool hasCtrl, int x, int y);
     bool choiseDblClick(int choise);
 
-    // implemeted by inheriting
+    virtual void drawTargets(bool inChoise);
+
+    // implemeted by qt control inheriting
     virtual void emitTilesCount(int n) {}
     virtual void emitTileHover(int tile, EActStatus act) {}
 
-    virtual bool scrMove(bool rightButton, bool ctrlPressed, int x, int y);
-    virtual void clearChoise();
 
     bool doMouseMove(int x, int y, bool ctrlPressed);
     bool choiseMouseMove(int choise, bool ctrlPressed);
@@ -54,6 +55,8 @@ public:
     virtual bool fadeTimeout(float delta);
 
     void reloadWorld();
+
+    virtual bool progress(float deltaSec) override;
 
 private:
     bool tiledDblClick(int choise);

@@ -65,6 +65,18 @@ public:
         }
         return *this;
     }
+    // 0  1  2  3
+    // 4  5  6  7
+    // 8  9  10 11
+    // 12 13 14 15
+    void transpose() {
+        mswap(m[1], m[4]);
+        mswap(m[6], m[9]);
+        mswap(m[11], m[14]);
+        mswap(m[8], m[2]);
+        mswap(m[13], m[7]);
+        mswap(m[3], m[12]);
+    }
 
     static Mat4 rotation(float angle, float x, float y, float z)
     {
