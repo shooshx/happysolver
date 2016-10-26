@@ -21,7 +21,6 @@
 
 <script type="text/javascript" src="colorPick/color.all.min.js"></script> <!-- https://github.com/PitPik/colorPicker  -->
 <script type="text/javascript" src="colorPick/jsColor.js"></script>
-<script type="text/javascript" src="sha1.js"></script>
 
 <script type="text/javascript">
 "use strict"
@@ -32,12 +31,6 @@
 var gl = null
 var prog = null
 var model = { vtxBuf: null }
-
-var resizeGl, mouseUp, mouseDown, mouseMove, mouseDblClick, mouseWheel, cpp_draw, cpp_slvrun, getTms
-var setGrpCount, setEditAction, runningRestart, serializeCurrent, deserializeAndLoad, readCubeFromEditor, newRestart, conf
-var stackState, textureParamCube, getCubeTextureHandle, readCubeTexCoord, loadSlvSimple, freeMeshAllocator
-var readCubeToEditor, textureParamToEditor, getToothPossibilities, solveGo, readCubeFromSig, bucketAddFam, setPicCount
-var postReadAllPics, goToSlv, stopSlvRun, aboutClick, exportModel
 
 var ctrlPressed = false
 var editCtx = null
@@ -87,52 +80,14 @@ function start()
     //return
 */
 
-    resizeGl = Module.cwrap('resizeGl', null, ['number', 'number'])
-    mouseDown = Module.cwrap('mouseDown', null, ['number', 'number', 'number'])
-    mouseUp = Module.cwrap('mouseUp', null, ['number', 'number', 'number'])
-    mouseMove = Module.cwrap('mouseMove', null, ['number', 'number', 'number', 'number'])
-    mouseDblClick = Module.cwrap('mouseDblClick', null, ['number', 'number', 'number'])
-    mouseWheel = Module.cwrap('mouseWheel', null, ['number'])
-    cpp_draw = Module.cwrap('cpp_draw', 'boolean', ['number'])
-    cpp_slvrun = Module.cwrap('cpp_slvrun', 'boolean', [])
-    getTms = Module.cwrap('getTms', 'number', [])
-    solveGo = Module.cwrap('solveGo', null, [])
-    setGrpCount = Module.cwrap('setGrpCount', null, ['number', 'number'])
-    setEditAction = Module.cwrap('setEditAction', null, ['number'])
-    runningRestart  = Module.cwrap('runningRestart', null, [])
-    serializeCurrent  = Module.cwrap('serializeCurrent', 'number', [])
-    deserializeAndLoad = Module.cwrap('deserializeAndLoad', null, ['number', 'number'])
-    readCubeFromEditor = Module.cwrap('readCubeFromEditor', null, ['number'])
-    newRestart  = Module.cwrap('newRestart', null, ['number'])
-    conf = Module.cwrap('conf', null, ['number'])
-    stackState = Module.cwrap('stackState', null, ['number'])
-    textureParamCube = Module.cwrap('textureParamCube', null, ['number','number','number','number','number','number','number','number','number',
-                                                                // grpi,drawtype,r,g,b,r,g,b,isBlack
-                                                               'string', 'string', 'string', 'number', 'string', 'number']) 
-                                                               // back-hex, front-hex, black-selector, rot-angle, url, isInEditor
-    getCubeTextureHandle = Module.cwrap('getCubeTextureHandle', 'number', ['number', 'number', 'number'])
-    readCubeTexCoord = Module.cwrap('readCubeTexCoord', null, ['number','number','number','number','number','number','number'])
-    loadSlvSimple = Module.cwrap('loadSlvSimple', null, ['string'])
-    freeMeshAllocator = Module.cwrap('freeMeshAllocator', null, [])
-    readCubeToEditor = Module.cwrap('readCubeToEditor', null, ['number', 'string'])
-    textureParamToEditor = Module.cwrap('textureParamToEditor', null, ['number'])
-    getToothPossibilities = Module.cwrap('getToothPossibilities', null, ['number', 'number'])
-    readCubeFromSig = Module.cwrap('readCubeFromSig', 'number', ['number', 'string', 'string'])
-    bucketAddFam = Module.cwrap('bucketAddFam', null, ['string', 'number', 'number', 'number', 'number'])
-    setPicCount = Module.cwrap('setPicCount', null, ['number', 'number', 'number'])
-    postReadAllPics = Module.cwrap('postReadAllPics', null, [])
-    goToSlv = Module.cwrap('goToSlv', null, ['number'])
-    stopSlvRun = Module.cwrap('stopSlvRun', null)
-    aboutClick = Module.cwrap('aboutClick', null, ['number', 'number'])
-    exportModel = Module.cwrap('exportModel', 'number', [])
    
     var pcsNum = countAllDefs(uni_pcs)     
-    Module.ccall('cpp_start', null, ['number'], [(pcsNum + 12)*6]); // add 12 for possible additions using editor
-    conf(true)
+    Module.cpp_start((pcsNum + 12)*6); // add 12 for possible additions using editor
+    Module.conf(true)
     
     loadStdPieces(uni_pcs)
     
-    Module.ccall('initCubeEngine', 'boolean', ['string', 'number'], ["", 0])
+    Module.initCubeEngine()
     
     if (window.location.search.length > 0) {
         loadUrl(window.location.toString())
@@ -171,7 +126,7 @@ function start()
 
     removingCubeCheck.checked = false
 
-    setEditAction(ACT_ADD) 
+    Module.setEditAction(ACT_ADD) 
     
     // editor init
     editCtx = editCanvas.getContext("2d")
@@ -180,8 +135,9 @@ function start()
     ipicCanvas.height = 11*IPIC_TSZ + 2*EDIT_MARGIN
     ipicCanvas.width = 15*IPIC_TSZ + 2*EDIT_MARGIN
 
-    //var fid = picsAddFamily("Test Fam", "Test Fam", true)
-    //picsAddCube("Test Cube", "Test Cube", -1, true, fid)
+    // debug editor
+    var fid = picsAddFamily("Test Fam", "Test Fam", true)
+    picsAddCube("Test Cube", "Test Cube", -1, true, fid)
     
 }
 
@@ -231,9 +187,9 @@ function loadStdPieces(pcs)
         for(var pi in fam.p) 
         {
             var p = fam.p[pi]
-            var grpi = readCubeFromSig(-1, p.sig, p.name) 
+            var grpi = Module.readCubeFromSig(-1, p.sig, p.name) 
             if (first) {
-                bucketAddFam(fam.famName, grpi, fam.p.length, onResetSel, menuIndex)
+                Module.bucketAddFam(fam.famName, grpi, fam.p.length, onResetSel, menuIndex)
                 first = false
             }
             
@@ -244,7 +200,7 @@ function loadStdPieces(pcs)
             p.rotate = objGet(p, 'rotate', 0)
             p.img = objGet(p, 'img', "")
             
-            textureParamCube(grpi, p.drawType, 
+            Module.textureParamCube(grpi, p.drawType, 
                      p.cb.rgb.r, p.cb.rgb.g, p.cb.rgb.b, // back-front order of colors is opposite from editor, this was a mistake
                      p.cf.rgb.r, p.cf.rgb.g, p.cf.rgb.b, 
                      isColorsBlack(p.lines, p.cb, p.cf, p.drawType), 
@@ -269,19 +225,19 @@ function loadStdPieces(pcs)
         
     }
     
-    postReadAllPics();
+    Module.postReadAllPics();
 }
 
 
 var pressedInCanvas = false
 function handleMouseDown(event) {
     pressedInCanvas = true
-    mouseDown( (event.button == 2)?1:0, event.clientX-CANVAS_MARGIN , event.clientY-CANVAS_MARGIN)
+    Module.mouseDown( (event.button == 2)?1:0, event.clientX-CANVAS_MARGIN , event.clientY-CANVAS_MARGIN)
     //return false
 }
 function handleMouseUp(event) {
     pressedInCanvas = false
-    mouseUp( (event.button == 2)?1:0, event.clientX-CANVAS_MARGIN, event.clientY-CANVAS_MARGIN)
+    Module.mouseUp( (event.button == 2)?1:0, event.clientX-CANVAS_MARGIN, event.clientY-CANVAS_MARGIN)
     // returning false here breaks the spinbox
     //return false
 }
@@ -303,16 +259,16 @@ function handleMouseMove(event)
     if (but != 0 && !pressedInCanvas)
         return true // if pressed, avoid reacting to pressed move outside the canvas (editor)
         
-    mouseMove(but, ctrlPressed?1:0, event.clientX-CANVAS_MARGIN, event.clientY-CANVAS_MARGIN)
+    Module.mouseMove(but, ctrlPressed?1:0, event.clientX-CANVAS_MARGIN, event.clientY-CANVAS_MARGIN)
     return true
 }
 function handleMouseDblClick(event) {
-    mouseDblClick(ctrlPressed?1:0, event.clientX-CANVAS_MARGIN, event.clientY-CANVAS_MARGIN);
+    Module.mouseDblClick(ctrlPressed?1:0, event.clientX-CANVAS_MARGIN, event.clientY-CANVAS_MARGIN);
     return false
 }
 function handleMouseWheel(event) {
     var d = event.wheelDelta
-    mouseWheel( (d > 0) ? 16 : -16)
+    Module.mouseWheel( (d > 0) ? 16 : -16)
     return false
 }
 
@@ -321,9 +277,8 @@ function handleKeyDown(event) {
     if (event.keyCode == '65' && event.ctrlKey) { //ctrl+A
         var s = window.prompt("slv data")
         if (s != "" && s !== null) {
-            //loadSlvSimple(s)
             scratchArr = strToBuffer(s)
-            deserializeAndLoad(scratchArr.length, false)
+            Module.deserializeAndLoad(scratchArr.length, false)
             return
         }
     }
@@ -334,7 +289,7 @@ function handleKey(event) {
     if (event.ctrlKey == ctrlPressed)
         return;
     ctrlPressed = event.ctrlKey;
-    mouseMove(0, ctrlPressed?1:0, lastX, lastY)
+    Module.mouseMove(0, ctrlPressed?1:0, lastX, lastY)
     return false
 }
 
@@ -418,9 +373,9 @@ function dispCCount(id, v) {
 function sendGrpCount(id, v, gind) {
     var ccount = document.getElementById(id + "_ccount")
     if (v)
-        setGrpCount(gind, parseInt(ccount.value))
+        Module.setGrpCount(gind, parseInt(ccount.value))
     else
-        setGrpCount(gind, 0)
+        Module.setGrpCount(gind, 0)
 }
 
 
@@ -439,7 +394,7 @@ function on_fam_check(id, v, doSolve) {
     countSelected()
     countSelected()
     if (doSolve) // on inialization select, don't want to do this
-        runningRestart()
+        Module.runningRestart()
 }
 
 // from C++ on initialization. just need to take care of the checkboxes and count display. the counts are already there
@@ -514,7 +469,7 @@ function on_cube_check(id, v, gind) {
     sendGrpCount(id, v, gind)
     picFamCheck(id)
     resetPicSel(id, v)
-    runningRestart()
+    Module.runningRestart()
     countSelected()
 }
 
@@ -545,12 +500,12 @@ function on_cube_count(id, gind) {
         ccheck.indeterminate = false // changing the checkbox or count resets the individual selection so no indeterminate
         picFamCheck(id)
     }
-    setGrpCount(gind, parseInt(ccount.value))
+    Module.setGrpCount(gind, parseInt(ccount.value))
     
     // set the individual booleans
     resetPicSel(id, newCh)
     countSelected()
-    runningRestart()
+    Module.runningRestart()
 }
 
 // individual piece selected in the ipicWin
@@ -573,9 +528,9 @@ function on_pic_check(rel_index, v)
     picFamCheck(currentOpenGrpPics.id)
     dispCCount(currentOpenGrpPics.id, !allFalse) // as long as it's not all turned off, we still want the count to be visible
     var send_count = v ? parseInt(ccount.value) : 0
-    setPicCount(currentOpenGrpPics.index, rel_index-1, send_count)
+    Module.setPicCount(currentOpenGrpPics.index, rel_index-1, send_count)
     countSelected()
-    runningRestart()
+    Module.runningRestart()
 }
 
 // obj is the int handle of the opengl object
@@ -601,7 +556,7 @@ function animProgress() {
     }
     lastTimeSec = now
     
-    var again = cpp_draw(delta);
+    var again = Module.cpp_draw(delta);
     if (again)
         requestAnimationFrame(animProgress)
     
@@ -618,12 +573,12 @@ function slvRun() {
     if (!enterSlv)
         return
     setTimeout(slvRun, 0)  // pre-schedule the next time to avoid delay
-    enterSlv = cpp_slvrun()
+    enterSlv = Module.cpp_slvrun()
 }
 
 var lastTms = 0
 function sampleTms() {
-    var tms = getTms()
+    var tms = Module.getTms()
     var delta = tms - lastTms
     if (delta != 0)
         stat.innerHTML = "" + delta
@@ -691,26 +646,26 @@ function doResize() {
     side_rel.style.height = "" + (window.innerHeight - 220) + "px"
     picEditWin.style.top = (side_ctrl.clientHeight - picEditWin.clientHeight) * 0.5 + "px"
     
-    resizeGl(mycanvas.width, mycanvas.height)
+    Module.resizeGl(mycanvas.width, mycanvas.height)
     requestAnim()
 }
 
 function triggerAdd() {
     if (addingCubeCheck.checked) {
         removingCubeCheck.checked = false
-        setEditAction(ACT_ADD) 
+        Module.setEditAction(ACT_ADD) 
     }
     else {
-        setEditAction(ACT_NONE)
+        Module.setEditAction(ACT_NONE)
     }
 }
 function triggerRemove() {
     if (removingCubeCheck.checked) {
         addingCubeCheck.checked = false
-        setEditAction(ACT_REMOVE)
+        Module.setEditAction(ACT_REMOVE)
     }
     else {
-        setEditAction(ACT_NONE)
+        Module.setEditAction(ACT_NONE)
     }
 
 }
@@ -725,7 +680,7 @@ function triggerAbout(v, ev) {
         aboutBack.style.display = "inline"
     }
     else {
-        aboutClick(ev.clientX, ev.clientY)
+        Module.aboutClick(ev.clientX, ev.clientY, ev.ctrlKey)
         aboutBack.style.display = "none"
     }
     
@@ -768,7 +723,7 @@ function triggerUrl() {
         return
     }
     scratchArr = []
-    serializeCurrent()
+    Module.serializeCurrent()
     var b = bufferToBase64(scratchArr)
     console.log(b)
     urlBack.style.visibility = "visible"
@@ -790,7 +745,7 @@ function loadUrl(b) {
     if (b.length == 0)
         return;
     scratchArr = base64ToBuffer(b)
-    deserializeAndLoad(scratchArr.length, true)
+    Module.deserializeAndLoad(scratchArr.length, true)
 }
 
 function urlEditChanged() {
@@ -813,7 +768,7 @@ function triggerAddCube(intoFam) {
     picsAddCube(cubeName, cubeName, -1, true, intoFam)
 }
 
-var IPIC_TSZ = 15
+var IPIC_TSZ = 15 // individual piece selection
 
 function eventInElement(ev, elem)
 {
@@ -830,7 +785,7 @@ function triggerPicSel(v, index, id)
     var inframe = document.getElementById(id + "_inframe")
     var rect = inframe.getBoundingClientRect()
     ipicWin.style.top = rect.top + "px"
-    readCubeToEditor(index)
+    Module.readCubeToEditor(index)
     jsgrp = defaultJsGrp()
     paintCubeSpec(ipicCanvas, ipicCanvas.getContext('2d'), IPIC_TSZ)
     currentOpenGrpPics = {id:id, index:index}
@@ -883,37 +838,34 @@ function updateIsRunning(v) {
 function triggerPrev()
 {
     if (isRunning) {
-        stopSlvRun()
+        Module.stopSlvRun()
     }
     if (prevBtn.getAttribute('disabled') == 'true')
         return;
-    goToSlv(nCurSlv - 1) // calls back to slvStat
+    Module.goToSlv(nCurSlv - 1) // calls back to slvStat
 }
 
 function triggerNext()
 {
     if (isRunning) {
-        stopSlvRun()
+        Module.stopSlvRun()
         return;
     }
     if (nCurSlv < countSlvs - 1)
-        goToSlv(nCurSlv + 1)
+        Module.goToSlv(nCurSlv + 1)
     else
-        newRestart(NR_KEEP_PREV)
+        Module.newRestart(NR_KEEP_PREV)
 }
 
-var shscratch = ""
-function sha1(txt) {
-    var x = new jsSHA('SHA-1', 'TEXT', {numRounds:3})
-    x.update(txt)
-    return x.getHash('HEX')
-}
 
 function passPrompt(oninput) {
     addTextChild(body, '<div id="keyCenter" style="position: absolute; left: 50%; top:0">\
         <div id="keyBack" style="position: relative; left: -50%;"><input id="inKey" type="password"/></div></div>')
     inKey.focus()
-    inKey.onchange = function() { oninput(inKey.value); shscratch=""; body.removeChild(keyCenter) }
+    inKey.onchange = function() { 
+        oninput(inKey.value); 
+        body.removeChild(keyCenter) 
+    }
 }
 
 function enableKey() {
@@ -936,7 +888,7 @@ function triggerExport() {
     }
     exportBack.style.visibility = "visible"
 
-    exportModel()
+    Module.exportModel()
     
     function setDownload(file, elem, ext) {
         var blob = new Blob([file], {type: "octet/stream"})
@@ -1071,7 +1023,7 @@ function paintCubeSpec(cnvs, ctx, TSZ)
 // opt.noEditCanvas for loading from stdpcs
 function setGlTexture(cubeId, imgObj, grpPrm, opt) 
 {
-    var obj = getCubeTextureHandle(cubeId, imgObj.width, imgObj.height)
+    var obj = Module.getCubeTextureHandle(cubeId, imgObj.width, imgObj.height)
     if (obj == 0)
         return
     console.log("setting img to texture " + obj)
@@ -1237,21 +1189,21 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
         editCanvas.height = 11*EDIT_TSZ + 2*EDIT_MARGIN
         editCanvas.width = 15*EDIT_TSZ + 2*EDIT_MARGIN
         
-        setEditAction(ACT_NONE) // prevent hovering on the cube from editing
+        Module.setEditAction(ACT_NONE) // prevent hovering on the cube from editing
 
         editingCubeId = cubeId
-        stackState(0) // push and clear
-        conf(false) // make it not randomized so that the solution would be more or less the same
+        Module.stackState(0) // push and clear
+        Module.conf(false) // make it not randomized so that the solution would be more or less the same
         
-        readCubeToEditor(editingCubeId, "ab1255a96529b5522b")  // from grp or default to the editor
-        readCubeFromEditor(editingCubeId) // first update of the grp pieces (if this is the first time)
+        Module.readCubeToEditor(editingCubeId, "ab1255a96529b5522b")  // from grp or default to the editor
+        Module.readCubeFromEditor(editingCubeId) // first update of the grp pieces (if this is the first time)
 
-        setGrpCount(editingCubeId, 1) // set it to be selected, need to be here after the parts were added from the editor
+        Module.setGrpCount(editingCubeId, 1) // set it to be selected, need to be here after the parts were added from the editor
 
         jsgrp = defaultJsGrp()      
         
         // read from grp color, drawType, black select
-        textureParamToEditor(editingCubeId);
+        Module.textureParamToEditor(editingCubeId);
         editFileName.value = jsgrp.lastUrl
         
         switch(jsgrp.drawType) { // needs to be before doing any paintCube because that would fail about current_src
@@ -1300,7 +1252,7 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
         }
         
         paintCube()   
-        newRestart(0) // don't keep prev       
+        Module.newRestart(0) // don't keep prev       
     }
     else 
     {
@@ -1310,22 +1262,22 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
             })
             return
         }
-        readCubeFromEditor(editingCubeId)
+        Module.readCubeFromEditor(editingCubeId)
         editingCubeId = -1
         jsgrp = null
         
-        freeMeshAllocator()
-        conf(true)  // revert back to randomized
-        stackState(1) // pop last
+        Module.freeMeshAllocator()
+        Module.conf(true)  // revert back to randomized
+        Module.stackState(1) // pop last
 
         editBack.style.display = "none"
         side_ctrl.style.width = "230px"
         side_ctrl.editMode = false
         doResize()
         if (addingCubeCheck.checked)
-            setEditAction(ACT_ADD)
+            Module.setEditAction(ACT_ADD)
         else if (removingCubeCheck.checked)
-            setEditAction(ACT_REMOVE)
+            Module.setEditAction(ACT_REMOVE)
     }
 }
 
@@ -1373,7 +1325,7 @@ function checkToothClick(event)
     }
     var didSomething = false;
     toothScratch = []
-    getToothPossibilities(x, y); //  writes toothScratch
+    Module.getToothPossibilities(x, y); //  writes toothScratch
     if (toothScratch.length == 0) // didn't find
         return;
     do {
@@ -1381,9 +1333,9 @@ function checkToothClick(event)
     } while(!toothScratch.includes(cube[y][x]) || !hasSameNei(cube[y][x], x, y))
 
     paintCube()
-    readCubeFromEditor(editingCubeId)
+    Module.readCubeFromEditor(editingCubeId)
     
-    newRestart(0)
+    Module.newRestart(0)
 }
 
 function triggerEditDone()
@@ -1454,9 +1406,10 @@ function isColorsBlack(linesSel, backColors, frontColors, drawType) {
 
 function sentTexParam() {
     // for two color, the color changing is the textured one because if there's no alpha in the tex, there's should be no effect
-    var bc = editTwoColorCheck.checked ? jsgrp.colorBack.colors : jsgrp.colorFront.colors
+    var twoCol = (jsgrp.drawType == DRAW_TEX && editTwoColorCheck.checked) || jsgrp.drawType == DRAW_PROFI || jsgrp.drawType == DRAW_MARBLE
+    var bc = twoCol ? jsgrp.colorBack.colors : jsgrp.colorFront.colors
     var fc = jsgrp.colorFront.colors
-    textureParamCube(editingCubeId, jsgrp.drawType, 
+    Module.textureParamCube(editingCubeId, jsgrp.drawType, 
                      fc.rgb.r, fc.rgb.g, fc.rgb.b, 
                      bc.rgb.r, bc.rgb.g, bc.rgb.b, 
                      isColorsBlack(editBlackSel.value, bc, fc, jsgrp.drawType), 
@@ -1602,7 +1555,7 @@ function sendTexCoord(cubeId, imgObj, grpPrm)
     if (imgObj === null)
         return
 
-    readCubeTexCoord(cubeId, grpPrm.imgOffset.x, grpPrm.imgOffset.y, grpPrm.imgZoom, imgObj.width, imgObj.height, EDIT_TSZ) 
+    Module.readCubeTexCoord(cubeId, grpPrm.imgOffset.x, grpPrm.imgOffset.y, grpPrm.imgZoom, imgObj.width, imgObj.height, EDIT_TSZ) 
 }
 
 function triggerAction(bpr)
@@ -1680,8 +1633,8 @@ function changeFillSelect(dtype)
 
     resetErrMsg() // don't want this to stick around after we changed the type
     paintCube()
-    if (jsgrp.drawType == DRAW_TEX)
-        newRestart(0)  // setting individual half need a new solution with all textures out
+    if (jsgrp.drawType == DRAW_TEX) // TBD - only actually need to do this on the first time we choose texture
+        Module.newRestart(0)  // setting individual half need a new solution with all textures out
 }
     
 function updateForDrawType()
@@ -2497,7 +2450,7 @@ input:checked + .sc-btn
     <label id="addingCube" class="sc-btn" for="addingCubeCheck" >Add</label>
     <input id="removingCubeCheck" class="hidden" onclick="triggerRemove()" type="checkbox"/>
     <label id="removingCube" class="sc-btn" for="removingCubeCheck">Remove</label>
-    <div id="picNum">10/20</div>
+    <div id="picNum"></div>
     <label id="aboutBtn" class="sc-btn" onclick="triggerAbout(true)">?</label>
     <label id="urlBtn" class="sc-btn" onclick="triggerUrl()">
         <span style="background: url(url-icon_s3.png) center no-repeat; display: inline-block; width: 30px; height: 30px;"></span>

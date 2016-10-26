@@ -22,3 +22,4 @@
 #include "../src/MyObject.cpp"
 #include "../src/ObjExport.cpp"
 #include "../src/CubeMesher.cpp"
+#include "sha1.cpp"

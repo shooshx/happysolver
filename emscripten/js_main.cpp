@@ -1,6 +1,7 @@
 #include <emscripten.h>
 #include <html5.h>
 #include <trace.h>
+#include <emscripten/bind.h>
 
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
@@ -14,6 +15,7 @@
 #include "../src/Cube.h"
 #include "../src/BinWriter.h"
 #include "../src/ObjExport.h"
+#include "sha1.h"
 
 using namespace std;
 
@@ -177,33 +179,6 @@ void RunContext::notifyNotEnoughPieces() {
     g_ctrl->requestDraw();
 }
 
-extern "C" { // ----------------------- interface to js -------------------------
-
-
-
-
-// read a string with just sc,rt for th
-void loadSlvSimple(const char* str)
-{
-    g_ctrl->m_doc.openSimple(str);
-
-    g_ctrl->m_doc.setCurSlvToLast();
-    //g_ctrl->slvReady();
-    g_ctrl->requestDraw();
-}
-
-void solveGo() {
-    try {
-        g_ctrl->m_doc.solveGo();
-        g_ctrl->m_runctx.runAll(); // find first solution
-        dispFirstSlv();
-        
-    }
-    catch(const std::exception& e) {
-        cout << "GO-GOT-EXCEPTION " << e.what() << endl;
-    }      
-}
-
 void populatePicsSide(PicBucket& bucket)
 {
     for(auto& fam: bucket.families) 
@@ -237,7 +212,36 @@ void populatePicsSide(PicBucket& bucket)
     }    
 }
 
-bool initCubeEngine(const char* stdpcs, const char* unimesh)
+extern "C" { // ----------------------- interface to js -------------------------
+
+
+
+
+// read a string with just sc,rt for th
+/*void loadSlvSimple(const char* str)
+{
+    g_ctrl->m_doc.openSimple(str);
+
+    g_ctrl->m_doc.setCurSlvToLast();
+    //g_ctrl->slvReady();
+    g_ctrl->requestDraw();
+}*/
+
+void solveGo() {
+    try {
+        g_ctrl->m_doc.solveGo();
+        g_ctrl->m_runctx.runAll(); // find first solution
+        dispFirstSlv();
+        
+    }
+    catch(const std::exception& e) {
+        cout << "GO-GOT-EXCEPTION " << e.what() << endl;
+    }      
+}
+
+
+
+bool initCubeEngine()
 {
     try {
 
@@ -419,6 +423,7 @@ void stackState(int op)
     
 }
 
+// 0-None, 1-Add, 2-Remove
 void setEditAction(int a)
 {
     //cout << "EDIT "  << a << endl;
@@ -541,7 +546,7 @@ void getToothPossibilities(int x, int y)
     }
 }
 
-void readCubeToEditor(int grpi, const char* defaultCubeBits)
+void readCubeToEditor(int grpi, const string& defaultCubeBits)
 {
     auto& bucket = PicBucket::mutableInstance();
     if (grpi < 0) {
@@ -631,7 +636,7 @@ void readCubeFromEditor(int grpi) // fromEditor
 #endif
 }
 
-int readCubeFromSig(int grpi, const char* sig, const char* name)
+int readCubeFromSig(int grpi, const string& sig, const string& name)
 {
     PicArr pcs[6];
     for(int i = 0; i < 6; ++i)
@@ -673,7 +678,7 @@ void postReadAllPics()
     bucket.doReCompress();
 }
 
-void bucketAddFam(const char* name, int startDefi, int count, int resetSelCount, int atIndex)
+void bucketAddFam(const string& name, int startDefi, int count, int resetSelCount, int atIndex)
 {
     auto& bucket = PicBucket::mutableInstance();
     if (atIndex >= bucket.families.size()) {
@@ -687,7 +692,7 @@ void bucketAddFam(const char* name, int startDefi, int count, int resetSelCount,
     f.onResetSetCount = resetSelCount;
 }
 
-
+// done when stopping the editor
 void freeMeshAllocator()
 {
     PicDisp::g_smoothAllocator.clear();
@@ -696,7 +701,7 @@ void freeMeshAllocator()
 shared_ptr<GlTexture> g_lastTexture;
 
 void textureParamCube(int grpi, int dtype, float r1, float g1, float b1, float r2, float g2, float b2, int isBlack, 
-                      const char* backHex, const char* frontHex, const char* blackSelect, int rotate, const char* url,
+                      const string& backHex, const string& frontHex, const string& blackSelect, int rotate, const string& url,
                       bool isInEditor)
 {
   //  cout << "TEX-PARAMs " << grpi << " " << dtype << " " << r1 << "," << g1 << "," << b1 << "  " 
@@ -825,23 +830,30 @@ void goToSlv(int n) {
     g_ctrl->requestDraw();
 }
 
-
-void aboutClick(int x, int y) {
-    if (x > 10 || y > 10) {
-        return;
-    }
-
-    int len = EM_ASM_INT_V(return shscratch.length);
-    if (len == 0) {
-        EM_ASM_(passPrompt(function(s) { shscratch = sha1(s); aboutClick($0,$1) }), x, y );
-        return;
-    }
-    string s;
-    s.resize(len);
-    for(int i = 0; i < len; ++i)
-        s[i] = EM_ASM_INT(return shscratch.charCodeAt($0), i);
-    if (s == "ac455a78726da3f1f11f5c08a72169b0c339d645")
+void aboutContinue(const string& s)
+{
+    const char* p = s.c_str();
+    int len = s.size();
+    char buf[20];
+    char hbuf[41] = {0};
+    for(int i = 0; i < 3; ++i) // 3 iterations of sha1
+    {
+        SHA1 enc;
+        enc.addBytes(p, len);
+        enc.getDigest((unsigned char*)buf, 20);
+        SHA1::hexPrinter((unsigned char*)buf, 20, hbuf);
+        p = buf; len = 20;
+    }    
+    if (strcmp(hbuf, "AC455A78726DA3F1F11F5C08A72169B0C339D645") == 0)
         EM_ASM(enableKey());
+}
+
+
+void aboutClick(int x, int y, bool ctrlPressed) {
+    if (x > 10 || y > 10 || !ctrlPressed) {
+        return;
+    }
+    EM_ASM(passPrompt(Module.aboutContinue));
 }
 
 bool exportModel()
@@ -870,3 +882,53 @@ bool exportModel()
 }
 
 } // extern "C"
+
+
+
+EMSCRIPTEN_BINDINGS(my_module) 
+{
+    emscripten::function("initCubeEngine", &initCubeEngine);
+    emscripten::function("cpp_draw", &cpp_draw);
+    emscripten::function("cpp_start", &cpp_start);
+    emscripten::function("cpp_draw", &cpp_draw);
+    emscripten::function("resizeGl", &resizeGl);
+
+    emscripten::function("mouseDown", &mouseDown);
+    emscripten::function("mouseUp", &mouseUp);
+    emscripten::function("mouseMove", &mouseMove);
+    emscripten::function("mouseDblClick", &mouseDblClick);
+    emscripten::function("mouseWheel", &mouseWheel);
+
+    emscripten::function("getTms", &getTms);
+    emscripten::function("conf", &conf);
+    emscripten::function("cpp_slvrun", &cpp_slvrun);
+    emscripten::function("setGrpCount", &setGrpCount);
+    emscripten::function("setPicCount", &setPicCount);
+    emscripten::function("stackState", &stackState);
+    emscripten::function("setEditAction", &setEditAction);
+    emscripten::function("runningRestart", &runningRestart);
+    emscripten::function("newRestart", &newRestart);
+    emscripten::function("stopSlvRun", &stopSlvRun);
+
+    emscripten::function("serializeCurrent", &serializeCurrent);
+    emscripten::function("deserializeAndLoad", &deserializeAndLoad);
+
+    emscripten::function("getToothPossibilities", &getToothPossibilities);
+    emscripten::function("readCubeToEditor", &readCubeToEditor);
+    emscripten::function("readCubeFromEditor", &readCubeFromEditor);
+    emscripten::function("readCubeFromSig", &readCubeFromSig);
+    emscripten::function("postReadAllPics", &postReadAllPics);
+    emscripten::function("bucketAddFam", &bucketAddFam);
+    emscripten::function("freeMeshAllocator", &freeMeshAllocator);
+    emscripten::function("textureParamCube", &textureParamCube);
+    emscripten::function("textureParamToEditor", &textureParamToEditor);
+    emscripten::function("getCubeTextureHandle", &getCubeTextureHandle);
+    emscripten::function("readCubeTexCoord", &readCubeTexCoord);
+    emscripten::function("goToSlv", &goToSlv);
+    emscripten::function("aboutClick", &aboutClick);
+    emscripten::function("aboutContinue", &aboutContinue);
+    emscripten::function("exportModel", &exportModel);
+    
+}
+
+

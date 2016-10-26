@@ -59,7 +59,7 @@ protected:
 
     unique_ptr<Mesh> m_arrowMesh;
     unique_ptr<Mesh> m_sphereMesh; // arrows center
-    Recti m_arrowPressArea // rect around the arrows sphere
+    Recti m_arrowPressArea; // rect around the arrows sphere
     bool m_arrowSpherePressed = false; // makes sure both press and release are on the the sphere to do the reset, make sphere oranger
     FloatProgress m_spherePopAnim; // sphere turns orange
     SlerpProgress m_resetPositionAnim; // slerp movement

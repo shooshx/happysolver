@@ -26,9 +26,9 @@ mobile css
 - editor show flat 2x3 solution, with generated frame mesh
 - compilation - closure, check hiding
 - better indivudual pieces display in selection
-- xyz indicator
-- button reset view angle
 
+- little-genious on demand textures?
+- embind
 
 
 mipmap?
