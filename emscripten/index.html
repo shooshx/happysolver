@@ -136,9 +136,9 @@ function start()
     ipicCanvas.width = 15*IPIC_TSZ + 2*EDIT_MARGIN
 
     // debug editor
-    var fid = picsAddFamily("Test Fam", "Test Fam", true)
-    picsAddCube("Test Cube", "Test Cube", -1, true, fid)
-    
+ //   var fid = picsAddFamily("Test Fam", "Test Fam", true)
+ //   picsAddCube("Test Cube", "Test Cube", -1, true, fid)
+ //   enableKey()
 }
 
 function countAllDefs(pcs)
@@ -194,9 +194,10 @@ function loadStdPieces(pcs)
             }
             
             p.drawType = objGet(p, 'drawType', famDrawType, drawTypeFromStr)
+            p.twoColor = (typeof(p['cf']) !== 'undefined')
             p.cb = objGet(p, 'cb', defBack, function(s) { return (new Colors({color:s})).colors })
             p.cf = objGet(p, 'cf', defFront, function(s) { return (new Colors({color:s})).colors })
-            p.lines = objGet(p, 'lines', 'auto')
+            p.lines = objGet(p, 'lines', '')
             p.rotate = objGet(p, 'rotate', 0)
             p.img = objGet(p, 'img', "")
             
@@ -204,7 +205,7 @@ function loadStdPieces(pcs)
                      p.cb.rgb.r, p.cb.rgb.g, p.cb.rgb.b, // back-front order of colors is opposite from editor, this was a mistake
                      p.cf.rgb.r, p.cf.rgb.g, p.cf.rgb.b, 
                      isColorsBlack(p.lines, p.cb, p.cf, p.drawType), 
-                     p.cb.HEX, p.cb.HEX, p.lines, p.rotate, p.img, false)
+                     p.cb.HEX, p.cb.HEX, p.lines, p.rotate, p.img, p.twoColor, false)
             
             if (p.img != "") 
             { // has a url to load
@@ -785,7 +786,7 @@ function triggerPicSel(v, index, id)
     var inframe = document.getElementById(id + "_inframe")
     var rect = inframe.getBoundingClientRect()
     ipicWin.style.top = rect.top + "px"
-    Module.readCubeToEditor(index)
+    Module.readCubeToEditor(index, "")
     jsgrp = defaultJsGrp()
     paintCubeSpec(ipicCanvas, ipicCanvas.getContext('2d'), IPIC_TSZ)
     currentOpenGrpPics = {id:id, index:index}
@@ -875,7 +876,6 @@ function enableKey() {
         <span style="background: url(export.png) center no-repeat; display: inline-block; width: 30px; height: 30px;"></span></label>')
 }
 
-var expScratchObj = null, expScratchMtl = null, expScratchName = null  // used by exportModel
 function triggerExport() {
    if (exportBack.style.visibility == "visible") {
         exportBack.style.visibility = "hidden"
@@ -888,19 +888,20 @@ function triggerExport() {
     }
     exportBack.style.visibility = "visible"
 
-    Module.exportModel()
+    var exported = { obj: null, mtl: null, name: null }
+    Module.exportModel(exported)
     
     function setDownload(file, elem, ext) {
         var blob = new Blob([file], {type: "octet/stream"})
         var url = window.URL.createObjectURL(blob)
         elem.href = url
-        elem.innerHTML = expScratchName + ext
-        elem.download = expScratchName + ext // file name that will be 
+        elem.innerHTML = exported.name + ext
+        elem.download = exported.name + ext // file name that will be 
         return url
     }
     
-    var objUrl = setDownload(expScratchObj, linkObj, ".obj")
-    var mtlUrl = setDownload(expScratchMtl, linkMtl, ".mtl")
+    var objUrl = setDownload(exported.obj, linkObj, ".obj")
+    var mtlUrl = setDownload(exported.mtl, linkMtl, ".mtl")
     
     exportPopup.onclick = eventStopProp 
 }
@@ -1172,8 +1173,16 @@ function defaultJsGrp() {
              rotAngle: 0,
              lastUrl: null,
              imgOffset: {x:0, y:0},
-             imgZoom: 1
+             imgZoom: 1,
+             twoColor: false,
+             blackSel: ''
              }  
+}
+
+function convertColors(jgrp) {
+    jgrp.colorBack = new Colors({color:jgrp.colorBackStr})
+    jgrp.colorFront = new Colors({color:jgrp.colorFrontStr})
+    return jgrp
 }
 
 function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
@@ -1195,15 +1204,18 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
         Module.stackState(0) // push and clear
         Module.conf(false) // make it not randomized so that the solution would be more or less the same
         
-        Module.readCubeToEditor(editingCubeId, "ab1255a96529b5522b")  // from grp or default to the editor
+        var initEditSig = "ab1255a96529b5522b"
+        Module.readCubeToEditor(editingCubeId, initEditSig)  // from grp or default to the editor
         Module.readCubeFromEditor(editingCubeId) // first update of the grp pieces (if this is the first time)
 
         Module.setGrpCount(editingCubeId, 1) // set it to be selected, need to be here after the parts were added from the editor
 
-        jsgrp = defaultJsGrp()      
+        //jsgrp = defaultJsGrp()      
         
         // read from grp color, drawType, black select
-        Module.textureParamToEditor(editingCubeId);
+        jsgrp = convertColors(Module.textureParamToEditor(editingCubeId));
+        
+        // update the UI according to what was read
         editFileName.value = jsgrp.lastUrl
         
         switch(jsgrp.drawType) { // needs to be before doing any paintCube because that would fail about current_src
@@ -1212,11 +1224,13 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
         case DRAW_MARBLE: editFillMarbleRadio.checked = true; break
         case DRAW_COLOR:  editFillColorRadio.checked = true;  break    
         }
-        
         updateColorWidget(jsgrp.colorBack, editBackColor, COLOR_BACK_DEFAULT, 0)
         updateColorWidget(jsgrp.colorFront, editFrontColor, COLOR_FRONT_DEFAULT, 1)
-       
-        
+        // mark the checkbox only if we're in texture mode when it is relevant.
+        // the grp twoColor also controls marble and profi
+        editTwoColorCheck.checked = jsgrp.twoColor 
+        editBlackSel.value = jsgrp.blackSel
+
         updateForDrawType() // needs to be after the setting of the colors (going to mix them) but before loadTexImage
         
         // something to show in the mean time while the url is downloading
@@ -1228,10 +1242,6 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
         loadTexImage(jsgrp.lastUrl, mtype, editingCubeId, { noCommit: true, ondone: function() { // lastUrl was set by the above call
             makeTransformedImg() // takes rotAngle, sets the image and gl instead of loadTexImage which has noCommit
         }}) 
-            
-        
-        if (editBlackSel.value == '')
-            editBlackSel.value = 'auto'
             
         // read from grp image offset and zoom
         sendTexCoord(editingCubeId, loadedImg, jsgrp) // need to actually create the texture coordinates from the imgOffset and imgZoom
@@ -1404,16 +1414,16 @@ function isColorsBlack(linesSel, backColors, frontColors, drawType) {
     return false // shouldn't happen
 }
 
-function sentTexParam() {
+function sentTexParam() { 
     // for two color, the color changing is the textured one because if there's no alpha in the tex, there's should be no effect
-    var twoCol = (jsgrp.drawType == DRAW_TEX && editTwoColorCheck.checked) || jsgrp.drawType == DRAW_PROFI || jsgrp.drawType == DRAW_MARBLE
-    var bc = twoCol ? jsgrp.colorBack.colors : jsgrp.colorFront.colors
     var fc = jsgrp.colorFront.colors
+    var bc = jsgrp.colorBack.colors
     Module.textureParamCube(editingCubeId, jsgrp.drawType, 
-                     fc.rgb.r, fc.rgb.g, fc.rgb.b, 
                      bc.rgb.r, bc.rgb.g, bc.rgb.b, 
-                     isColorsBlack(editBlackSel.value, bc, fc, jsgrp.drawType), 
-                     bc.HEX, fc.HEX, editBlackSel.value, jsgrp.rotAngle, jsgrp.lastUrl, true) // things saved for the editor
+                     fc.rgb.r, fc.rgb.g, fc.rgb.b, 
+                     isColorsBlack(jsgrp.blackSel, bc, fc, jsgrp.drawType), 
+                     bc.HEX, fc.HEX, jsgrp.blackSel, jsgrp.rotAngle, jsgrp.lastUrl, jsgrp.twoColor, true) 
+                     // 'true' things saved for the editor so pieces need to be generated now rather than later
 }
 
 // a minimal 1x1 SVG file 
@@ -1652,12 +1662,14 @@ function updateForDrawType()
 
 function triggerBlackSel()
 {
+    jsgrp.blackSel = editBlackSel.value
     paintCube()
     sentTexParam()
 }
 
 function triggerTwoColor()
 {
+    jsgrp.twoColor = editTwoColorCheck.checked
     sentTexParam()
 }
 
@@ -2475,7 +2487,7 @@ input:checked + .sc-btn
         <input id="editBackColor" class="color" oninput="changedColorText(0, true)"/>
         <input id="editFrontColor" class="color" oninput="changedColorText(1, true)"/>
         <select id="editBlackSel" oninput="triggerBlackSel()">
-            <option value="auto">Auto Lines</option>
+            <option value="">Auto Lines</option>
             <option value="normal">Normal Lines</option>
             <option value="white">White Lines</option>
         </select>

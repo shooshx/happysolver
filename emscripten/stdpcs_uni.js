@@ -45,12 +45,12 @@ var uni_pcs = [
         drawType: "tex",
         menuIndex: 0,
         p: [
-        { name: "LG-Nature", sig:"64558b2e8aaa4aad2a", cb:"#2BDD38", cf:"#419ae8", img:"genius/nature.svg"},
-        { name: "LG-Fruits", sig:"84d0a4524b6d49925a", cb:"#419AE8", cf:"#48de44", img:"genius/fruits.svg"}, 
-        { name: "LG-Animals", sig:"64934415446d55522b", cb:"#F8A632", cf:"#ffff00", img:"genius/animals.svg"}, 
-        { name: "LG-Emotions", sig:"a46844135a53a9ad5a", cb:"#FFFF00", cf:"#ff9b12", img:"genius/emoticons.svg"}, 
-        { name: "LG-Transport", sig:"84109b565b6d555555", cb:"#BC00B1", cf:"#ff3d3d", img:"genius/transport.svg"}, 
-        { name: "LG-Symbols", sig:"94524a295a5155555b", cb:"#FF3D3D", cf:"#bc00b1", img:"genius/symbols.svg"} 
+        { name: "LG-Nature",    sig:"64558b2e8aaa4aad2a", cf:"#2BDD38", cb:"#419ae8", img:"genius/nature.svg"},
+        { name: "LG-Fruits",    sig:"84d0a4524b6d49925a", cf:"#419AE8", cb:"#48de44", img:"genius/fruits.svg"}, 
+        { name: "LG-Animals",   sig:"64934415446d55522b", cf:"#F8A632", cb:"#ffff00", img:"genius/animals.svg"}, 
+        { name: "LG-Emotions",  sig:"a46844135a53a9ad5a", cf:"#FFFF00", cb:"#ff9b12", img:"genius/emoticons.svg"}, 
+        { name: "LG-Transport", sig:"84109b565b6d555555", cf:"#BC00B1", cb:"#ff3d3d", img:"genius/transport.svg"}, 
+        { name: "LG-Symbols",   sig:"94524a295a5155555b", cf:"#FF3D3D", cb:"#bc00b1", img:"genius/symbols.svg"} 
         ]
     },   
     {
@@ -97,12 +97,12 @@ var uni_pcs = [
         drawType: "tex",
         menuIndex: 1,
         p: [
-        { name: "NLG-Fruit",    sig:"64558b2e8aaa4aad2a", cb:"#008fc5", cf:"#008fc5", img:"genius/nlg_fruit.svg"},
-        { name: "NLG-Animals",  sig:"84d0a4524b6d49925a", cb:"#c1d82f", cf:"#c1d82f", img:"genius/nlg_animals.svg"}, 
-        { name: "NLG-Vehicles", sig:"64934415446d55522b", cb:"#ffd200", cf:"#ffd200", img:"genius/nlg_vehicles.svg"}, 
-        { name: "NLG-Sports",   sig:"a46844135a53a9ad5a", cb:"#f78e1e", cf:"#f78e1e", img:"genius/nlg_sports.svg"}, 
-        { name: "NLG-Weather",  sig:"84109b565b6d555555", cb:"#ee3124", cf:"#ee3124", img:"genius/nlg_weather.svg"}, 
-        { name: "NLG-Nature",   sig:"94524a295a5155555b", cb:"#7f3f98", cf:"#7f3f98", img:"genius/nlg_nature.svg"} 
+        { name: "NLG-Fruit",    sig:"64558b2e8aaa4aad2a", cb:"#008fc5", img:"genius/nlg_fruit.svg"},
+        { name: "NLG-Animals",  sig:"84d0a4524b6d49925a", cb:"#c1d82f", img:"genius/nlg_animals.svg"}, 
+        { name: "NLG-Vehicles", sig:"64934415446d55522b", cb:"#ffd200", img:"genius/nlg_vehicles.svg"}, 
+        { name: "NLG-Sports",   sig:"a46844135a53a9ad5a", cb:"#f78e1e", img:"genius/nlg_sports.svg"}, 
+        { name: "NLG-Weather",  sig:"84109b565b6d555555", cb:"#ee3124", img:"genius/nlg_weather.svg"}, 
+        { name: "NLG-Nature",   sig:"94524a295a5155555b", cb:"#7f3f98", img:"genius/nlg_nature.svg"} 
         ]
     }, 
         

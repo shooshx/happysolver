@@ -120,7 +120,7 @@ void PicDisp::placeSidePolygon(MyObject& obj, int b, bool is1, int x, int y) con
     rby = by = double(y)/5.0;
 
 /*	const PicGroupDef *mygrp = m_pdef->mygrp();
-    if (mygrp->drawtype == DRAW_TEXTURE_INDIVIDUAL_HALF)
+    if (mygrp->drawtype == DRAW_TEXTURE_IMAGE)
     {
         rbx = 0.0; rby = 0.0; // side patches of this has their own coordinates
     }
@@ -136,7 +136,7 @@ void PicDisp::placeSidePolygon(MyObject& obj, int b, bool is1, int x, int y) con
     baseancs[2] = TexAnchor(rbx + 0.2, rby + 0.2);
     baseancs[3] = TexAnchor(rbx, rby + 0.2);
 
-/*	if (mygrp->drawtype == DRAW_TEXTURE_INDIVIDUAL_HALF)
+/*	if (mygrp->drawtype == DRAW_TEXTURE_IMAGE)
     { // rescale it since the texture is a big one
         double xfact = mygrp->sideTex->img.width(), yfact = mygrp->sideTex->img.height();
         for(i = 0; i < 4; ++i) // pntn == 4
@@ -167,7 +167,7 @@ void PicDisp::placeSidePolygon(MyObject& obj, int b, bool is1, int x, int y) con
     if (b < 0)
         return; // enough of this shananigan, we're not on the sides.
 
-    if (false) //mygrp->drawtype == DRAW_TEXTURE_INDIVIDUAL_HALF)
+    if (false) //mygrp->drawtype == DRAW_TEXTURE_IMAGE)
     {
         for (i = 0; i < 4; ++i)
         {
@@ -319,7 +319,9 @@ void PicPainter::paint(bool fTargets, const Vec3& name, BaseGLWidget *context, b
         {
             prog->drawtype.set(def->drawtype);
             prog->colorAu.set(def->color);
-            prog->colorB.set(def->exColor);
+            // textured pieces can be either one color or half and half
+            prog->colorB.set((!def->twoColor && def->drawtype == DRAW_TEXTURE_IMAGE) ? def->color : def->exColor);
+
          //   cout << "COL " << def->color << " -- " << def->exColor << endl;
             prog->flag.set(flag); // used for red marking cube to be removed
 

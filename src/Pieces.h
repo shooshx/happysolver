@@ -45,8 +45,8 @@ enum EDrawType
     DRAW_COLOR = 0, ///< a single uniform color (Happy Cube)
     DRAW_TEXTURE_NORM = 1, ///< a normal unblended texture. Not used nowadays
     DRAW_TEXTURE_BLEND = 2, ///< a texture blended with a background and foreground color (Marble Cube, Profi Cube)
-    DRAW_TEXTURE_INDIVIDUAL_HALF = 0x14, ///< half piece uniformly colored and half with an unblended texture (Little Genius)
-    DRAW_TEXTURE_INDIVIDUAL_WHOLE = 0x18,
+    DRAW_TEXTURE_IMAGE = 0x14, ///< half piece uniformly colored and half with an unblended texture (Little Genius)
+    //DRAW_TEXTURE_INDIVIDUAL_WHOLE = 0x18,
     DRAW_TEXTURE_MARBLE = 4,
     DRAW_FLAT = 0x100
 };
@@ -208,6 +208,7 @@ public:
     Vec3 exColor;
 
     EBlackness blackness; // means that the color is a dark one. use white lines with this group
+    bool twoColor = false; // relevant only in drawtype texture
 
     // data from the editor from which other data of the cube is derived from
     struct EditorData {

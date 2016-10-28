@@ -212,7 +212,7 @@ void populatePicsSide(PicBucket& bucket)
     }    
 }
 
-extern "C" { // ----------------------- interface to js -------------------------
+//extern "C" { // ----------------------- interface to js -------------------------
 
 
 
@@ -558,15 +558,14 @@ void readCubeToEditor(int grpi, const string& defaultCubeBits)
     
     if (grpi >= bucket.grps.size() || bucket.grps[grpi].editorData.piecesFrame.empty()) 
     {// wasn't created yet, use default pieces cube
-        string sbits(defaultCubeBits);
-        M_CHECK(!sbits.empty());
-        sigParse.unrepr(sbits);
+        M_CHECK(!defaultCubeBits.empty());
+        sigParse.unrepr(defaultCubeBits);
     }
     else {
         bits = bucket.grps[grpi].editorData.piecesFrame;
     }
     
-    cout << "GOTSIG " << sigParse.repr() << endl;
+    cout << "readCubeToEditor GOTSIG " << sigParse.repr() << endl;
     M_CHECK(bits.size() == 9);
 
     int tlen = ARRAY_SIZE(teeth);
@@ -625,7 +624,8 @@ void readCubeFromEditor(int grpi) // fromEditor
         //cout << "--" << valIndex << "," << ((plen == 2)?1:2) << "  =" << hex << cubeSig << dec << endl;
     }
     sigWriter.flush();
-    cout << countBits << " SIG=" << sigWriter.repr() << endl;
+    //auto sigText = sigWriter.repr();
+    cout << "readCubeFromEditor SIG=" << sigWriter.repr() << " bitCount=" << countBits << endl;
     auto& bucket = PicBucket::mutableInstance();
     bucket.updateGrp(grpi, pcs, true); // from editor, we want to reCompress every time so that we'll have a working set
     bucket.grps[grpi].editorData.piecesFrame = cubeSig;
@@ -634,6 +634,7 @@ void readCubeFromEditor(int grpi) // fromEditor
     emscripten_trace_report_memory_layout();
     emscripten_trace_report_off_heap_data();
 #endif
+    //return sigText;
 }
 
 int readCubeFromSig(int grpi, const string& sig, const string& name)
@@ -702,7 +703,7 @@ shared_ptr<GlTexture> g_lastTexture;
 
 void textureParamCube(int grpi, int dtype, float r1, float g1, float b1, float r2, float g2, float b2, int isBlack, 
                       const string& backHex, const string& frontHex, const string& blackSelect, int rotate, const string& url,
-                      bool isInEditor)
+                      bool twoColor, bool isInEditor)
 {
   //  cout << "TEX-PARAMs " << grpi << " " << dtype << " " << r1 << "," << g1 << "," << b1 << "  " 
   //                        << r2 << "," << g2 << "," << b2 << "   `" << url << "`" << endl;
@@ -720,6 +721,7 @@ void textureParamCube(int grpi, int dtype, float r1, float g1, float b1, float r
     cgrp.exColor = Vec3(r2, g2, b2);
     cgrp.drawtype = (EDrawType)dtype;
     cgrp.blackness = (isBlack == 0)?BLACK_NOT:BLACK_ONE;
+    cgrp.twoColor = twoColor;
     auto& ed = cgrp.editorData;
 
     switch(cgrp.drawtype) {
@@ -729,9 +731,9 @@ void textureParamCube(int grpi, int dtype, float r1, float g1, float b1, float r
     case DRAW_TEXTURE_MARBLE: 
         M_CHECK(bucket.gtexs.size() > 0);
         cgrp.gtex = bucket.gtexs[0]; break;
-    case DRAW_TEXTURE_INDIVIDUAL_HALF:
+    case DRAW_TEXTURE_IMAGE:
         cgrp.gtex = g_lastTexture; 
-        if (isInEditor && prevDrawType != DRAW_TEXTURE_INDIVIDUAL_HALF) {
+        if (isInEditor && prevDrawType != DRAW_TEXTURE_IMAGE) {
             bucket.makeAllComp();
             // need to redo the compressed pics since the symmetry consideration changed for some pieces
         }
@@ -750,23 +752,36 @@ void textureParamCube(int grpi, int dtype, float r1, float g1, float b1, float r
         g_ctrl->requestDraw();
 }
 
-void textureParamToEditor(int grpi) {
+class JsGrp {
+public:
+    string colorBackStr, colorFrontStr, blackSel, lastUrl;
+    int drawType = 0, rotAngle = 0;
+    float imgZoom = 0;
+    Vec2i imgOffset;
+    bool twoColor = false; // the meaning of this is just the state of the UI checkbox. it is relevant only in drawType texture
+};
+
+JsGrp textureParamToEditor(int grpi) {
     auto& bucket = PicBucket::mutableInstance();
     if (grpi < 0 || grpi >= bucket.grps.size()) {
         cout << "no-such-cube(tpe) " << grpi << endl;
-        return;
+        return JsGrp();
     }
     PicGroupDef& cgrp = bucket.grps[grpi];
     auto& ed = cgrp.editorData;
-    EM_ASM_(jsgrp.colorBack.setColor('#'+Pointer_stringify($0)), ed.backHex.c_str());
-    EM_ASM_(jsgrp.colorFront.setColor('#'+Pointer_stringify($0)), ed.frontHex.c_str());
-    EM_ASM_(editBlackSel.value = Pointer_stringify($0), ed.blackSelect.c_str());
-    EM_ASM_(jsgrp.drawType = $0, cgrp.drawtype);
-    EM_ASM_(jsgrp.rotAngle = $0, ed.rotate);
-    EM_ASM_(jsgrp.lastUrl = Pointer_stringify($0), ed.url.c_str());
     
-    EM_ASM_(jsgrp.imgOffset.x = $0; jsgrp.imgOffset.y=$1, cgrp.editorData.imageOffset.x, cgrp.editorData.imageOffset.y);
-    EM_ASM_(jsgrp.imgZoom = $0, cgrp.editorData.imageZoom);    
+    JsGrp jsgrp;
+    jsgrp.colorBackStr = "#"+ed.backHex;
+    jsgrp.colorFrontStr = "#"+ed.frontHex;
+    jsgrp.blackSel = ed.blackSelect;
+    jsgrp.drawType = cgrp.drawtype;
+    jsgrp.rotAngle = ed.rotate;
+    jsgrp.lastUrl = ed.url;
+    jsgrp.imgOffset = ed.imageOffset;
+    jsgrp.imgZoom = ed.imageZoom;
+    jsgrp.twoColor = cgrp.twoColor;
+    return jsgrp;
+    
 }
 
 int getCubeTextureHandle(int grpi, int width, int height)
@@ -789,7 +804,7 @@ int getCubeTextureHandle(int grpi, int width, int height)
     g_lastTexture = curTex;
     curTex->init(GL_TEXTURE_2D, Vec2i(width, height), 1, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, nullptr, GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE);
 
-    if (cgrp.drawtype == DRAW_TEXTURE_INDIVIDUAL_HALF)
+    if (cgrp.drawtype == DRAW_TEXTURE_IMAGE)
         cgrp.gtex = curTex; // we might be updating it in the editor start but the drawType is something else
     g_ctrl->requestDraw();
     return curTex->handle();  
@@ -856,7 +871,7 @@ void aboutClick(int x, int y, bool ctrlPressed) {
     EM_ASM(passPrompt(Module.aboutContinue));
 }
 
-bool exportModel()
+bool exportModel(emscripten::val output)
 {
     const SlvCube* slv = g_ctrl->m_doc.getCurrentSolve();
     if (slv == nullptr)
@@ -870,18 +885,19 @@ bool exportModel()
     string name = sname.str();
 
     sobj << "mtllib " << name << ".mtl" << "\n";
-    EM_ASM_(expScratchName = Pointer_stringify($0), name.c_str());
+    output.set("name", name);
     
     ObjExport oe(sobj, &smtl);
 
     if (!slv->painter.exportToObj(oe))
         return false;
-    EM_ASM_(expScratchObj = Pointer_stringify($0); expScratchMtl = Pointer_stringify($1), sobj.str().c_str(), smtl.str().c_str());
+    output.set("obj", sobj.str());
+    output.set("mtl", smtl.str());
 
     return true;
 }
 
-} // extern "C"
+//} // extern "C"
 
 
 
@@ -913,6 +929,21 @@ EMSCRIPTEN_BINDINGS(my_module)
     emscripten::function("serializeCurrent", &serializeCurrent);
     emscripten::function("deserializeAndLoad", &deserializeAndLoad);
 
+    emscripten::value_object<Vec2i>("Vec2i")
+        .field("x", &Vec2i::x)
+        .field("y", &Vec2i::y);
+
+    emscripten::value_object<JsGrp>("JsGrp")
+        .field("colorBackStr", &JsGrp::colorBackStr)
+        .field("colorFrontStr", &JsGrp::colorFrontStr)
+        .field("blackSel", &JsGrp::blackSel)
+        .field("lastUrl", &JsGrp::lastUrl)
+        .field("drawType", &JsGrp::drawType)
+        .field("rotAngle", &JsGrp::rotAngle)
+        .field("imgZoom", &JsGrp::imgZoom)
+        .field("imgOffset", &JsGrp::imgOffset)
+        .field("twoColor", &JsGrp::twoColor);
+    
     emscripten::function("getToothPossibilities", &getToothPossibilities);
     emscripten::function("readCubeToEditor", &readCubeToEditor);
     emscripten::function("readCubeFromEditor", &readCubeFromEditor);

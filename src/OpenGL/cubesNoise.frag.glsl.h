@@ -82,8 +82,8 @@ const char *code_cubesNoise_frag_glsl = " \
           color *= LightIntensity; \n\
    \n\
       } \n\
-      if (drawtype == 0x14 || drawtype == 0x18)  \n\
-      {  // DRAW_TEXTURE_INDIVIDUAL_HALF  \n\
+      if (drawtype == 0x14)  \n\
+      {  // DRAW_TEXTURE  \n\
          //  DRAW_TEXTURE_INDIVIDUAL_WHOLE, no need for smoothstep since its the same color but, meh \n\
    \n\
    \n\
@@ -97,8 +97,8 @@ const char *code_cubesNoise_frag_glsl = " \
           vec4 tc = texture2D(noisef, t); \n\
    \n\
           //color = (1.0 - tc.a) * colorB + tc.a * mix(tc.rgb, colorA, smoothstep(0.475, 0.525, tx));  \n\
-          vec3 mtc = (1.0 - tc.a) * colorB + tc.a * tc.rgb; \n\
-          color =  mix(mtc, colorA, smoothstep(0.475, 0.525, tx)); \n\
+          vec3 mtc = (1.0 - tc.a) * colorA + tc.a * tc.rgb; \n\
+          color =  mix(mtc, colorB, smoothstep(0.475, 0.525, tx)); \n\
    \n\
           color *= LightIntensity; \n\
       } \n\

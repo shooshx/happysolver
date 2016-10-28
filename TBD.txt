@@ -30,8 +30,11 @@ mobile css
 - little-genious on demand textures?
 - embind
 
-
+BUG-missing piece in re-edit
+BUG-redit inverted colors
 mipmap?
+
+SLV 6:288,2:[0,0,0:2]  291,6:[0,0,0:1]  289,7:[0,0,0:0]  292,3:[0,0,4:2]  293,3:[0,4,0:1]  290,0:[4,0,0:0]  
 
 
 EDITOR

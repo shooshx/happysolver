@@ -16,7 +16,8 @@ public:
 
     void addBits(uint8_t v, int bitCount) {
         M_ASSERT((v & (~s_bitMasks[bitCount])) == 0); // check other bits not in bit count are 0
-        if (m_curShift + bitCount > 8) {
+        if (m_curShift + bitCount > 8) 
+        {
             m_curByte |= v << m_curShift;
             m_buf.push_back(m_curByte);
             m_curByte = v >> (8 - m_curShift);
@@ -26,8 +27,10 @@ public:
             m_curByte |= v << m_curShift;
             m_curShift += bitCount;
         }
+        //cout << " WR" << bitCount << ":" << (int)v;
     }
     void flush() {
+        //cout << endl;
         m_buf.push_back(m_curByte);
         m_curByte = 0;
         m_curShift = 0;
@@ -53,7 +56,9 @@ public:
             r = m_curByte >> m_curShift;
             m_curShift += bitCount;
         }
-        return r & s_bitMasks[bitCount];
+        auto ret = r & s_bitMasks[bitCount];
+        //cout << " RD" << bitCount << ":"  << (int)ret;
+        return ret;
     }
     bool rdEnd() {
         m_reachedEnd = m_rdOffset >= m_buf.size();
@@ -90,7 +95,7 @@ public:
     static const uint8_t s_bitMasks[];
     string& m_buf;
     int m_curShift = 0;
-    uint8_t m_curByte;
+    uint8_t m_curByte = 0;
     int m_rdOffset = 0; // next byte to read
     bool m_reachedEnd = false;
 };

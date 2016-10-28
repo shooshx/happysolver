@@ -304,8 +304,8 @@ static EDrawType getDrawType(const string& s)
     if (s == "TEXTURE_NORM") return DRAW_TEXTURE_NORM;
     if (s == "TEXTURE_BLEND") return DRAW_TEXTURE_BLEND;
     if (s == "TEXTURE_MARBLE") return DRAW_TEXTURE_MARBLE;
-    if (s == "TEXTURE_INDIVIDUAL_HALF") return DRAW_TEXTURE_INDIVIDUAL_HALF;
-    if (s == "TEXTURE_INDIVIDUAL_WHOLE") return DRAW_TEXTURE_INDIVIDUAL_WHOLE;
+    if (s == "TEXTURE_INDIVIDUAL_HALF") return DRAW_TEXTURE_IMAGE;
+    if (s == "TEXTURE_INDIVIDUAL_WHOLE") return DRAW_TEXTURE_IMAGE;
     M_ASSERT(false);
     return (EDrawType)0;
 }

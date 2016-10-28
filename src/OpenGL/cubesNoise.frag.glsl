@@ -79,8 +79,8 @@ void main (void)
         color *= LightIntensity;
 
     }
-    if (drawtype == 0x14 || drawtype == 0x18) 
-    {  // DRAW_TEXTURE_INDIVIDUAL_HALF 
+    if (drawtype == 0x14) 
+    {  // DRAW_TEXTURE_IMAGE 
        //  DRAW_TEXTURE_INDIVIDUAL_WHOLE, no need for smoothstep since its the same color but, meh
 
 
@@ -94,8 +94,8 @@ void main (void)
         vec4 tc = texture2D(noisef, t);
 
         //color = (1.0 - tc.a) * colorB + tc.a * mix(tc.rgb, colorA, smoothstep(0.475, 0.525, tx)); 
-        vec3 mtc = (1.0 - tc.a) * colorB + tc.a * tc.rgb;
-        color =  mix(mtc, colorA, smoothstep(0.475, 0.525, tx));
+        vec3 mtc = (1.0 - tc.a) * colorA + tc.a * tc.rgb;
+        color =  mix(mtc, colorB, smoothstep(0.475, 0.525, tx));
 
         color *= LightIntensity;
     }
