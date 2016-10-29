@@ -450,27 +450,39 @@ void stopSlvRun()
     g_ctrl->m_doc.solveStop();
 }
 
-int serializeCurrent()
+
+emscripten::val serializeCurrent()
 {
-    static string s;
-    s = g_ctrl->m_doc.serializeMinBin();
+    string s = g_ctrl->m_doc.serializeMinBin();
+    vector<int> ret(s.size());
+    auto arr = emscripten::val::global("Array").new_();
     //cout << "**** " << s.size() << "::";
     for(int i = 0;i < s.size(); ++i) {
-        //cout << (uint32_t)(uint8_t)s[i] << " ";
-        EM_ASM_( scratchArr.push($0), (uint8_t)s[i] );
+     //   cout << (uint32_t)(uint8_t)s[i] << " ";
+        arr.call<void>("push", (uint8_t)s[i] );
     }
-    cout << endl;
-    return 0;
+   // cout << endl;
+    return arr;
 }
 
-// AQoAAAgAQAAAAARAAQAQAAEAEAQAAQAgCARBHXRogCOG8YptBGEKWzg=
-void deserializeAndLoad(int len, bool bin) // shape and solution
-{
+string strFromJSArray(emscripten::val v) {
+    auto l = v["length"].as<unsigned>();
     string s;
-    s.resize(len);
-    for(int i = 0; i < s.size(); ++i) {
-        s[i] = EM_ASM_INT( return scratchArr[$0], i);
+    s.resize(l);
+    //cout << "---- " << s.size() << "::";
+    for(unsigned i = 0; i < l; ++i) {
+        auto c = v[i].as<int>();
+      //  cout << c << " ";
+        s[i] = c;
     }
+    //cout << endl;
+    return s;
+};
+
+// AQoAAAgAQAAAAARAAQAQAAEAEAQAAQAgCARBHXRogCOG8YptBGEKWzg=
+void deserializeAndLoad(emscripten::val arr, bool bin) // shape and solution
+{
+    auto s = strFromJSArray(arr);
     try {
         if (bin)
             g_ctrl->m_doc.loadMinBin(s);
@@ -532,14 +544,14 @@ struct Tooth {
 
 #define ARRAY_SIZE(array) (sizeof((array))/sizeof((array[0])))
 
-void getToothPossibilities(int x, int y)
+void getToothPossibilities(int x, int y, emscripten::val result)
 {
     int tlen = ARRAY_SIZE(teeth);
     for(int i = 0; i < tlen; ++i) 
     {
         if (teeth[i].x == x && teeth[i].y == y) {
             for(int j = 0; j < teeth[i].plen; ++j) {
-                EM_ASM_(toothScratch.push($0), teeth[i].p[j]);
+                result.call<void>("push", teeth[i].p[j]);
             }
             return;
         }

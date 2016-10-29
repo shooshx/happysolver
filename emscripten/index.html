@@ -278,8 +278,8 @@ function handleKeyDown(event) {
     if (event.keyCode == '65' && event.ctrlKey) { //ctrl+A
         var s = window.prompt("slv data")
         if (s != "" && s !== null) {
-            scratchArr = strToBuffer(s)
-            Module.deserializeAndLoad(scratchArr.length, false)
+            var arr = strToBuffer(s)
+            Module.deserializeAndLoad(arr, false)
             return
         }
     }
@@ -689,8 +689,6 @@ function triggerAbout(v, ev) {
 }
 
 
-var scratchArr = [] // used from cpp by serialize, deserialize
-
 function bufferToBase64(buf) {
     var binstr = Array.prototype.map.call(buf, function (ch) {
         return String.fromCharCode(ch);
@@ -723,9 +721,8 @@ function triggerUrl() {
         urlBack.style.visibility = "hidden"
         return
     }
-    scratchArr = []
-    Module.serializeCurrent()
-    var b = bufferToBase64(scratchArr)
+    var sv = Module.serializeCurrent()
+    var b = bufferToBase64(sv)
     console.log(b)
     urlBack.style.visibility = "visible"
     var url = window.location.toString()
@@ -745,8 +742,8 @@ function loadUrl(b) {
         b = b.substr(srchAt + 3)
     if (b.length == 0)
         return;
-    scratchArr = base64ToBuffer(b)
-    Module.deserializeAndLoad(scratchArr.length, true)
+    var arr = base64ToBuffer(b)
+    Module.deserializeAndLoad(arr, true)
 }
 
 function urlEditChanged() {
@@ -1322,7 +1319,6 @@ function handleEditCanvasClick(event)
         checkToothClick(event)
 }
  
-var toothScratch = null
  
 function checkToothClick(event)
 { 
@@ -1334,13 +1330,13 @@ function checkToothClick(event)
         return cube[y][x-1] == v || cube[y][x+1] == v || cube[y-1][x] == v || cube[y+1][x] == v
     }
     var didSomething = false;
-    toothScratch = []
-    Module.getToothPossibilities(x, y); //  writes toothScratch
-    if (toothScratch.length == 0) // didn't find
+    var toothPoss = []
+    Module.getToothPossibilities(x, y, toothPoss); 
+    if (toothPoss.length == 0) // didn't find
         return;
     do {
         cube[y][x] = (cube[y][x] + 1) % 7
-    } while(!toothScratch.includes(cube[y][x]) || !hasSameNei(cube[y][x], x, y))
+    } while(!toothPoss.includes(cube[y][x]) || !hasSameNei(cube[y][x], x, y))
 
     paintCube()
     Module.readCubeFromEditor(editingCubeId)
