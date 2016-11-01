@@ -205,7 +205,7 @@ function loadStdPieces(pcs)
                      p.cb.rgb.r, p.cb.rgb.g, p.cb.rgb.b, // back-front order of colors is opposite from editor, this was a mistake
                      p.cf.rgb.r, p.cf.rgb.g, p.cf.rgb.b, 
                      isColorsBlack(p.lines, p.cb, p.cf, p.drawType), 
-                     p.cb.HEX, p.cb.HEX, p.lines, p.rotate, p.img, p.twoColor, false)
+                     p.cb.HEX, p.cf.HEX, p.lines, p.rotate, p.img, p.twoColor, false)
             
             if (p.img != "") 
             { // has a url to load
@@ -779,12 +779,19 @@ function eventInElement(ev, elem)
 
 function triggerPicSel(v, index, id) 
 {
+    if (currentOpenGrpPics != null && currentOpenGrpPics.index == index && currentOpenGrpPics.id == id)
+        return // same one pressed
     ipicWin.style.visibility = 'visible'
     var inframe = document.getElementById(id + "_inframe")
     var rect = inframe.getBoundingClientRect()
     ipicWin.style.top = rect.top + "px"
     Module.readCubeToEditor(index, "")
-    jsgrp = defaultJsGrp()
+   // jsgrp = defaultJsGrp()
+    jsgrp = convertColors(Module.textureParamToEditor(index))
+    ///#### tests
+    checkInitColoredTex(IPIC_TSZ); // init the profi and marble canvases if needed
+    updateForDrawType(); // create the colored profi and marble
+    
     paintCubeSpec(ipicCanvas, ipicCanvas.getContext('2d'), IPIC_TSZ)
     currentOpenGrpPics = {id:id, index:index}
     
@@ -1110,6 +1117,7 @@ var editingCubeId = -1
 var src_marble = null, src_profi = null // ImageData of the B&W images
 var current_src = null // select between src_marble or src_profi or null
 var colored_tex = null // resulting colored image that will be displayed (tinted in makeColoredTex)
+var colored_tex_size = null // editor inits to one size and ipic inits to another
 
 function makeColoredTex()
 {
@@ -1182,6 +1190,29 @@ function convertColors(jgrp) {
     return jgrp
 }
 
+function checkInitColoredTex(sz)
+{
+    // transfer the marble,profi images to the canvase so they could be accessed when the time comes
+    if (!colored_tex || colored_tex_size != sz) 
+    { // happen only in the first time the dialog opens  - TBD needs to be HIGHER
+        var ctx = canvas_scratch.getContext('2d')
+        var run_image = function(img) {
+            canvas_scratch.width = 15*sz
+            canvas_scratch.height = 11*sz
+            if (canvas_scratch.width == img.width)
+                ctx.drawImage(img, 0,0) // editor case, 1-1 size with the images
+            else
+                ctx.drawImage(img, 0,0, canvas_scratch.width,canvas_scratch.height) // ipic case, need to scale
+            return ctx.getImageData(0,0, canvas_scratch.width, canvas_scratch.height)
+        }
+        src_marble = run_image(edit_marble)
+        src_profi = run_image(edit_profi)
+        colored_tex = editCtx.createImageData(15*sz, 11*sz)
+        colored_tex_size = sz
+    }
+
+}
+
 function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
 {
     if (v) 
@@ -1229,6 +1260,8 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
         editBlackSel.value = jsgrp.blackSel
 
         updateForDrawType() // needs to be after the setting of the colors (going to mix them) but before loadTexImage
+        updateTexDisabledWidgets()
+
         
         // something to show in the mean time while the url is downloading
         // do the texture loading anyway no depending on drawType since we might return to textur any time
@@ -1244,20 +1277,7 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
         sendTexCoord(editingCubeId, loadedImg, jsgrp) // need to actually create the texture coordinates from the imgOffset and imgZoom
         updateZoomValue() 
         
-        // transfer the marble,profi images to the canvase so they could be accessed when the time comes
-        if (!colored_tex) { // happen only in the first time the dialog opens  - TBD needs to be HIGHER
-            var run_image = function(img) {
-                canvas_scratch.width = 15*EDIT_TSZ
-                canvas_scratch.height = 11*EDIT_TSZ
-                var ctx = canvas_scratch.getContext('2d')
-                ctx.drawImage(img, 0,0)
-                return ctx.getImageData(0,0, canvas_scratch.width, canvas_scratch.height)
-            }
-            src_marble = run_image(edit_marble)
-            src_profi = run_image(edit_profi)
-            colored_tex = editCtx.createImageData(15*EDIT_TSZ, 11*EDIT_TSZ)
-        }
-        
+        checkInitColoredTex(EDIT_TSZ)
         paintCube()   
         Module.newRestart(0) // don't keep prev       
     }
@@ -1636,6 +1656,7 @@ function changeFillSelect(dtype)
     jsgrp.drawType = dtype
     sentTexParam() // send it to grp first so that the following will be able to take care of the tex-coordinates
     updateForDrawType()
+    updateTexDisabledWidgets()
 
     resetErrMsg() // don't want this to stick around after we changed the type
     paintCube()
@@ -1652,7 +1673,6 @@ function updateForDrawType()
     case DRAW_COLOR:
     case DRAW_TEX:   current_src = null; break
     }
-    updateTexDisabledWidgets()
     makeColoredTex()
 }
 
@@ -1760,7 +1780,7 @@ function testRect(x1, y1, x2, y2) {
     //testRect.style.left = x1 + 
 }
 
-    
+    // ||
 </script>
 <script src="js_main.js"></script>
 <style>
