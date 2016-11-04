@@ -136,9 +136,9 @@ function start()
     ipicCanvas.width = 15*IPIC_TSZ + 2*EDIT_MARGIN
 
     // debug editor
- //   var fid = picsAddFamily("Test Fam", "Test Fam", true)
- //   picsAddCube("Test Cube", "Test Cube", -1, true, fid)
- //   enableKey()
+    //var fid = picsAddFamily("Test Fam", "Test Fam", true)
+    //picsAddCube("Test Cube", "Test Cube", -1, true, fid)
+    //enableKey()
 }
 
 function countAllDefs(pcs)
@@ -149,6 +149,8 @@ function countAllDefs(pcs)
     }
     return c;   
 }
+
+var grpImages = {} // map grpi to {orig:unrotated img, disp:rotated img}
 
 function loadStdPieces(pcs)
 {
@@ -211,15 +213,19 @@ function loadStdPieces(pcs)
             { // has a url to load
                 var grpPrm = { imgOffset: {x:0, y:0}, imgZoom: 1 }
                 if (p.img.startsWith("ID:")) { // element from the html
-                    setGlTexture(grpi, p.img.substr(3), grpPrm, { noEditCanvas: true })
+                    var imgelem = document.getElementById(p.img.substr(3))
+                    // untested
+                    setGlTexture(grpi, imgelem, grpPrm, { noEditCanvas: true })
+                    grpImages[grpi] = {orig:imgelem, disp:imgelem} // no rotation
                 }
                 else {
                     var mtype = mimeTypeByExt(p.img)
                     var donef = function(ci) { return function(newImg) {
                         setGlTexture(ci, newImg, grpPrm, { noEditCanvas: true })
+                        grpImages[ci] = {orig:newImg, disp:newImg} // no rotation
                         console.log("loaded " + p.img + " for cube " + ci)
                     }}(grpi) // need to capture this iteration grpi to send it to the function
-                    loadTexImage(p.img, mtype, grpi, { noEditCanvas: true, noCommit:true, ondone:donef });
+                    loadTexImage(p.img, mtype, grpi, { noEditCanvas: true, noCommit:true, keepOrig:true, ondone:donef });
                 }
             }
         }
@@ -791,6 +797,11 @@ function triggerPicSel(v, index, id)
     ///#### tests
     checkInitColoredTex(IPIC_TSZ); // init the profi and marble canvases if needed
     updateForDrawType(); // create the colored profi and marble
+    // and for the case of texture
+    if (grpImages[index]) {
+        jsgrp.loadedImg = grpImages[index].disp 
+        jsgrp.origLoadedImg = grpImages[index].orig
+    }
     
     paintCubeSpec(ipicCanvas, ipicCanvas.getContext('2d'), IPIC_TSZ)
     currentOpenGrpPics = {id:id, index:index}
@@ -953,11 +964,11 @@ var DRAW_TEX = 0x14
 
 var EDIT_MARGIN = 5
 
-var loadedImg = null  // the image reference being displayed, the image loaded
-var origLoadedImg = null // original before rotation
 var fileOpenedButNotUploaded = false  // used for enable of the upload button
-var lastFile = null // file object of the last file that was selected by the user
+var lastFile = null // file object of the last file that was selected by the user, for upload
 
+// loadedImg  // the image reference being displayed, the image loaded
+// origLoadedImg // original before rotation
 var jsgrp = null; // parameters of the currently edited cube
 
 function drawLine(ctx, x, y, w, h) {
@@ -978,15 +989,15 @@ function paintCubeSpec(cnvs, ctx, TSZ)
     
     switch(jsgrp.drawType) {
     case DRAW_TEX:
-        if (loadedImg) 
+        if (jsgrp.loadedImg) 
         {
             ctx.fillStyle = '#'+jsgrp.colorBack.colors.HEX
             ctx.fillRect(EDIT_MARGIN, EDIT_MARGIN, 15*TSZ, 11*TSZ) // need to show up below transparent pixels
             
             var cwidth = 15*TSZ 
-            var cheight = cwidth * loadedImg.height / loadedImg.width  // maintain same aspect ratio as the image
-            ctx.drawImage(loadedImg, 0,0, loadedImg.width, loadedImg.height, 
-                                       jsgrp.imgOffset.x + EDIT_MARGIN, jsgrp.imgOffset.y + EDIT_MARGIN, cwidth*jsgrp.imgZoom, cheight*jsgrp.imgZoom)
+            var cheight = cwidth * jsgrp.loadedImg.height / jsgrp.loadedImg.width  // maintain same aspect ratio as the image
+            ctx.drawImage(jsgrp.loadedImg, 0,0, jsgrp.loadedImg.width, jsgrp.loadedImg.height, 
+                          jsgrp.imgOffset.x + EDIT_MARGIN, jsgrp.imgOffset.y + EDIT_MARGIN, cwidth*jsgrp.imgZoom, cheight*jsgrp.imgZoom)
         }
         break
     case DRAW_PROFI:
@@ -1090,11 +1101,13 @@ function loadTexImage(url, type, cubeId, opt)
         }
         
         if (!opt.noCommit) { // if this is true, loadedImg will be set later by ondone (see edit initialization)
-            loadedImg = newImg // switch to the new image
-            setGlTexture(cubeId, loadedImg, jsgrp, opt)
+            jsgrp.loadedImg = newImg // switch to the new image
+            setGlTexture(cubeId, jsgrp.loadedImg, jsgrp, opt)
         }
+        // when rotating, we want loadedImg to be saved only and origLoadedImg to stay unrotated
+        // otherwise the are the same object
         if (!opt.keepOrig) // default is false, don't keep the original (only needed on rotate)
-            origLoadedImg = newImg
+            jsgrp.origLoadedImg = newImg
         if (opt.ondone)
             opt.ondone(newImg)
     }
@@ -1265,16 +1278,26 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
         
         // something to show in the mean time while the url is downloading
         // do the texture loading anyway no depending on drawType since we might return to textur any time
-        loadedImg = blank_tex
-        origLoadedImg = loadedImg // before rotation
-        setGlTexture(editingCubeId, loadedImg, jsgrp)            
-        var mtype = mimeTypeByExt(jsgrp.lastUrl)
-        loadTexImage(jsgrp.lastUrl, mtype, editingCubeId, { noCommit: true, ondone: function() { // lastUrl was set by the above call
-            makeTransformedImg() // takes rotAngle, sets the image and gl instead of loadTexImage which has noCommit
-        }}) 
+        if (!grpImages[editingCubeId])
+        {
+            jsgrp.loadedImg = blank_tex
+            jsgrp.origLoadedImg = jsgrp.loadedImg // before rotation
+            setGlTexture(editingCubeId, jsgrp.loadedImg, jsgrp)            
+            var mtype = mimeTypeByExt(jsgrp.lastUrl)
+            loadTexImage(jsgrp.lastUrl, mtype, editingCubeId, { noCommit: true, ondone: function() { // lastUrl was set by the above call
+                makeTransformedImg() // takes rotAngle, sets the image and gl instead of loadTexImage which has noCommit
+            }}) 
+        } 
+        else { // we saved the last image for it
+            // the saved image is the unrotated one
+            jsgrp.loadedImg = grpImages[editingCubeId].disp
+            jsgrp.origLoadedImg = grpImages[editingCubeId].orig
+            setGlTexture(editingCubeId, jsgrp.loadedImg, jsgrp)            
+            //makeTransformedImg()
+        }
             
         // read from grp image offset and zoom
-        sendTexCoord(editingCubeId, loadedImg, jsgrp) // need to actually create the texture coordinates from the imgOffset and imgZoom
+        sendTexCoord(editingCubeId, jsgrp.loadedImg, jsgrp) // need to actually create the texture coordinates from the imgOffset and imgZoom
         updateZoomValue() 
         
         checkInitColoredTex(EDIT_TSZ)
@@ -1290,6 +1313,8 @@ function triggerCubeEdit(v, cubeId) // cube link pressed or Done pressed
             return
         }
         Module.readCubeFromEditor(editingCubeId)
+        // orig is the unrotated, needed if we want to go to the editor, disp is the rotated, needed for ipic display
+        grpImages[editingCubeId] = {orig:jsgrp.origLoadedImg ,disp:jsgrp.loadedImg}
         editingCubeId = -1
         jsgrp = null
         
@@ -1329,7 +1354,7 @@ function handleEditCanvasMove(event)
     lastEditDrag = {x:event.clientX, y:event.clientY}
     
     paintCube()
-    sendTexCoord(editingCubeId, loadedImg, jsgrp)
+    sendTexCoord(editingCubeId, jsgrp.loadedImg, jsgrp)
     return false
 }
 
@@ -1565,7 +1590,7 @@ function triggerFileChanged()
         jsgrp.rotAngle = 0 
         updateZoomValue()
         paintCube()
-        sendTexCoord(editingCubeId, loadedImg, jsgrp)
+        sendTexCoord(editingCubeId, jsgrp.loadedImg, jsgrp)
     }})
     
     editFileName.value = file.name
@@ -1609,7 +1634,7 @@ function changeImgZoom(widget, v)
     jsgrp.imgZoom = v / 100.0
     
     paintCube()
-    sendTexCoord(editingCubeId, loadedImg, jsgrp)
+    sendTexCoord(editingCubeId, jsgrp.loadedImg, jsgrp)
 }
 
 function uploadDisabled() {
@@ -1668,12 +1693,20 @@ function updateForDrawType()
 {    
     switch(jsgrp.drawType) 
     {
-    case DRAW_PROFI: current_src = src_profi; break
-    case DRAW_MARBLE: current_src = src_marble; break
+    case DRAW_PROFI: 
+        current_src = src_profi; 
+        makeColoredTex()
+        break
+    case DRAW_MARBLE: 
+        current_src = src_marble; 
+        makeColoredTex()
+        break
     case DRAW_COLOR:
-    case DRAW_TEX:   current_src = null; break
+    case DRAW_TEX:   
+        current_src = null; 
+        break
     }
-    makeColoredTex()
+    
 }
 
 function triggerBlackSel()
@@ -1712,9 +1745,9 @@ function triggerEditChanged()
 {
     var fileName = editFileName.value
     if (fileName.length == 0) { // reset to the blank texture
-        loadedImg = blank_tex
-        origLoadedImg = loadedImg 
-        setGlTexture(editingCubeId, loadedImg, jsgrp)
+        jsgrp.loadedImg = blank_tex
+        jsgrp.origLoadedImg = jsgrp.loadedImg 
+        setGlTexture(editingCubeId, jsgrp.loadedImg, jsgrp)
         lastFile = null
         updateUploadBtnDisabled()
         resetErrMsg()
@@ -1752,24 +1785,24 @@ function triggerRotate(dir)
 function makeTransformedImg()
 {    
     if (jsgrp.rotAngle == 0) {
-        loadedImg = origLoadedImg
-        setGlTexture(editingCubeId, loadedImg, jsgrp)
+        jsgrp.loadedImg = jsgrp.origLoadedImg
+        setGlTexture(editingCubeId, jsgrp.loadedImg, jsgrp)
         return
     }
     
     if (jsgrp.rotAngle == 1 || jsgrp.rotAngle == 3) {
-        canvas_scratch.width = origLoadedImg.height
-        canvas_scratch.height = origLoadedImg.width
+        canvas_scratch.width = jsgrp.origLoadedImg.height
+        canvas_scratch.height = jsgrp.origLoadedImg.width
     }
     else {
-        canvas_scratch.width = origLoadedImg.width
-        canvas_scratch.height = origLoadedImg.height
+        canvas_scratch.width = jsgrp.origLoadedImg.width
+        canvas_scratch.height = jsgrp.origLoadedImg.height
     }
     var ctx = canvas_scratch.getContext('2d')
     ctx.setTransform(1,0, 0,1, 0,0)
     ctx.translate(canvas_scratch.width/2, canvas_scratch.height/2);
     ctx.rotate(jsgrp.rotAngle * Math.PI/2);
-    ctx.drawImage(origLoadedImg, -origLoadedImg.width/2, -origLoadedImg.height/2);
+    ctx.drawImage(jsgrp.origLoadedImg, -jsgrp.origLoadedImg.width/2, -jsgrp.origLoadedImg.height/2);
     
     var url = canvas_scratch.toDataURL("image/png")
     loadTexImage(url, "image/png", editingCubeId, {keepOrig:true})
