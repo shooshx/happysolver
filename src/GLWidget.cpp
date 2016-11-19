@@ -185,7 +185,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 
 void GLWidget::mouseReleaseEvent(QMouseEvent *event)
 {
-    BaseGLWidget::mouseRelease((int)event->button());
+    BaseGLWidget::mouseRelease((int)event->button(), -1, -1); // TBD
 
     if (m_bContinuous && (m_mouseAct == Rotate) && (m_nXDelt != 0 || m_nYDelt != 0))
     {

@@ -141,9 +141,10 @@ void ModelControlBase::drawAxisArrows()
     // area for clicking
     float sphereMargin = sz * 0.3;
     m_arrowPressArea = Recti(sphereMargin, m_bgl->m_cyClient - sz + sphereMargin, sz - 2 * sphereMargin, sz - 2 * sphereMargin);
+#ifdef EMSCRIPTEN
     EM_ASM_(testRect($0, $1, $2, $3), m_arrowPressArea.x1, m_arrowPressArea.y1, m_arrowPressArea.x2, m_arrowPressArea.y2);
    // cout << "Arrows SZ=" << sz << " mr=" << sphereMargin << "  " << m_arrowPressArea.x1 << "," << m_arrowPressArea.y1 << "," << m_arrowPressArea.x2 << "," << m_arrowPressArea.y2 << endl;
-
+#endif
     ProgramUser pu(&m_progNoise);
     m_progNoise.drawtype.set(DRAW_COLOR);
 

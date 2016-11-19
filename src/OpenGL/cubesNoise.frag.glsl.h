@@ -83,7 +83,7 @@ const char *code_cubesNoise_frag_glsl = " \
    \n\
       } \n\
       if (drawtype == 0x14)  \n\
-      {  // DRAW_TEXTURE  \n\
+      {  // DRAW_TEXTURE_IMAGE  \n\
          //  DRAW_TEXTURE_INDIVIDUAL_WHOLE, no need for smoothstep since its the same color but, meh \n\
    \n\
    \n\
