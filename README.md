@@ -11,6 +11,7 @@ the most recent version of the Happy Cube Solver is online at:
 old desktop version:  
 http://happysolver.sourceforge.net/
 
+<div style="font-size: 10px;">
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU General
 Public License as published by the Free Software Foundation.
 
@@ -35,6 +36,6 @@ Happy bvba, Zoersel, Belgium. If you have any questions concerning the usage of 
 send your detailed request in writing to info@happy.be. See http://www.happy.be for more information
 
 Happy Cube is also known as "CubeIt"
-
+</div>
 
 
