@@ -80,6 +80,8 @@ public:
 
 	SlvPainter painter;
 	const Shape* shape = nullptr; ///< the shape this solution is based on. the shape is held by CubeDoc
+	
+	std::set<int> sc_set; // for dedup
 
 private:
 	void makeDt(ShapePlace *plc);

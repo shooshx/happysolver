@@ -257,16 +257,16 @@ void Mesh::load(const char* name)
     // possibly replace with emscripten::val
 
     m_vtxBo.bind();
-    EM_ASM_(GLctx.bufferData(GLctx.ARRAY_BUFFER, window[Pointer_stringify($0)].vtx, GLctx.STATIC_DRAW), name);
-    m_vtxBo.m_size = EM_ASM_INT(return window[Pointer_stringify($0)].vtx.length, name);
+    EM_ASM_(GLctx.bufferData(GLctx.ARRAY_BUFFER, window[UTF8ToString($0)].vtx, GLctx.STATIC_DRAW), name);
+    m_vtxBo.m_size = EM_ASM_INT(return window[UTF8ToString($0)].vtx.length, name);
 
     m_normBo.bind();
-    EM_ASM_(GLctx.bufferData(GLctx.ARRAY_BUFFER, window[Pointer_stringify($0)].norm, GLctx.STATIC_DRAW), name);
-    m_normBo.m_size = EM_ASM_INT(return window[Pointer_stringify($0)].norm.length, name);
+    EM_ASM_(GLctx.bufferData(GLctx.ARRAY_BUFFER, window[UTF8ToString($0)].norm, GLctx.STATIC_DRAW), name);
+    m_normBo.m_size = EM_ASM_INT(return window[UTF8ToString($0)].norm.length, name);
 
     m_idxBo.bind();
-    EM_ASM_(GLctx.bufferData(GLctx.ELEMENT_ARRAY_BUFFER, window[Pointer_stringify($0)].idx, GLctx.STATIC_DRAW), name);
-    m_idxBo.m_size = EM_ASM_INT(return window[Pointer_stringify($0)].idx.length, name);
+    EM_ASM_(GLctx.bufferData(GLctx.ELEMENT_ARRAY_BUFFER, window[UTF8ToString($0)].idx, GLctx.STATIC_DRAW), name);
+    m_idxBo.m_size = EM_ASM_INT(return window[UTF8ToString($0)].idx.length, name);
     m_type = Mesh::TRIANGLES;
     m_hasIdx = m_hasNormals = true;
     

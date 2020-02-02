@@ -98,7 +98,7 @@ class JsGlTexture : public GlTexture
 {
 public:
     void registerBind(const char* imgname) {
-        EM_ASM_( registerTexBind(Pointer_stringify($0), $1), imgname, m_obj);
+        EM_ASM_( registerTexBind(UTF8ToString($0), $1), imgname, m_obj);
     }
 };
 #endif

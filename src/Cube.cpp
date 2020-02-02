@@ -588,7 +588,7 @@ void Cube::puttgr(Solutions *slvs, SolveContext *thread, SlvCube* starter, int d
                 p = 0;
                 thread->sessionSlvNum = 0;
             }
-            cout << "done " << lconf.fAfter << " " << thread->goSlvNum << "/" << lconf.nAfter << endl;
+            //cout << "done " << lconf.fAfter << " " << thread->goSlvNum << "/" << lconf.nAfter << endl;
             if (lconf.fAfter && thread->goSlvNum >= lconf.nAfter)
             {
                 thread->selfExit = true;

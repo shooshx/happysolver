@@ -1,6 +1,6 @@
 #include <emscripten.h>
-#include <html5.h>
-#include <trace.h>
+#include <emscripten/html5.h>
+#include <emscripten/trace.h>
 #include <emscripten/bind.h>
 
 #include <EGL/egl.h>
@@ -40,7 +40,7 @@ int makeShader(int type, const char* text)
 
 void complain(const char* msg) {
     cout << "ERROR: " << msg << endl;
-    EM_ASM_(notifyError(Pointer_stringify($0)), msg);
+    EM_ASM_(notifyError(UTF8ToString($0)), msg);
 }
 void dismissComplain() {
     EM_ASM(hideError());
@@ -192,13 +192,13 @@ void populatePicsSide(PicBucket& bucket)
             lc = c;
         }
         fam.ctrlId = initials;
-        EM_ASM_(lastFamAdded = picsAddFamily(Pointer_stringify($0), Pointer_stringify($1)), fam.name.c_str(), initials.c_str());
+        EM_ASM_(lastFamAdded = picsAddFamily(UTF8ToString($0), UTF8ToString($1)), fam.name.c_str(), initials.c_str());
         for(int gi = 0; gi < fam.numGroups; ++gi)
         {
             int grpi = fam.startIndex + gi;
             auto& grp = bucket.grps[grpi];
             string dispName = grp.name.substr(grp.name.find('-') + 1);
-            EM_ASM_(picsAddCube(Pointer_stringify($0), Pointer_stringify($1), $2, false, lastFamAdded), dispName.c_str(), grp.name.c_str(), grpi);
+            EM_ASM_(picsAddCube(UTF8ToString($0), UTF8ToString($1), $2, false, lastFamAdded), dispName.c_str(), grp.name.c_str(), grpi);
         }
     }
     
@@ -207,7 +207,7 @@ void populatePicsSide(PicBucket& bucket)
         // need to do this after all the additions, otherwise it is reset for some reason
         if (fam.onResetSetCount > 0) {
             M_CHECK(fam.onResetSetCount == 1); // setting count not supported
-            EM_ASM_(setFamCheck(Pointer_stringify($0), true), fam.ctrlId.c_str());
+            EM_ASM_(setFamCheck(UTF8ToString($0), true), fam.ctrlId.c_str());
         }
     }    
 }
@@ -326,7 +326,7 @@ void cpp_start(int pcsCount)
     emscripten_webgl_init_context_attributes(&attr);
 //    attr.premultipliedAlpha = false;
     attr.alpha = false;
-    auto ctx = emscripten_webgl_create_context("mycanvas", &attr);
+    auto ctx = emscripten_webgl_create_context("#mycanvas", &attr);
     auto ret = emscripten_webgl_make_context_current(ctx);
 
     
@@ -350,7 +350,7 @@ void cpp_start(int pcsCount)
 void conf(bool rand) 
 {
     g_ctrl->m_doc.m_conf.engine.fRand = rand;
-    g_ctrl->m_doc.m_conf.engine.nPersist = PERSIST_ONLY_ONE; // otherwise solutions just stores past solutions which we don't care about
+    g_ctrl->m_doc.m_conf.engine.nPersist = PERSIST_ALL; //PERSIST_ONLY_ONE; // otherwise solutions just stores past solutions which we don't care about
 }
 
 bool cpp_draw(float deltaSec) 
@@ -911,6 +911,10 @@ bool exportModel(emscripten::val output)
 
 //} // extern "C"
 
+int main() // called when everything was loaded
+{
+    EM_ASM(start_from_cpp());
+}
 
 
 EMSCRIPTEN_BINDINGS(my_module) 

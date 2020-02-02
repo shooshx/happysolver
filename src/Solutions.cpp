@@ -31,12 +31,50 @@ void Solutions::clear(int solveSize)
 	resetChangedFromSave();
 }
 
+bool filterOnlySinglePiecePerFam(SlvCube* slv) 
+{
+	set<int> seenGinds;
+	for(const auto& slvpiece: slv->dt) {
+		int gind = -1, pind = -1;
+		PicBucket::instance().getGP(slvpiece.abs_sc, &gind, &pind);
+		
+		if (seenGinds.find(gind) != seenGinds.end()) {
+			return false;
+		}
+		seenGinds.insert(gind);
+	}
+	return true;
+}
 
+bool Solutions::filterDup(SlvCube* slv) 
+{
+	for(const auto& slvpiece: slv->dt) {
+		slv->sc_set.insert(slvpiece.abs_sc);
+	}
+	for(const auto* eslv: sv) {
+		if (slv->sc_set == eslv->sc_set) {
+			//cout << "found dup" << endl;
+			return false;
+		}
+	}
+	return true;
+}
 
 void Solutions::addBackCommon(SlvCube *tmp, bool keepOnlyOne)
 {
 //	M_ASSERT(tmp->slvsz == slvsz); // sanity check
 //    cout << "SLV adding at " << sv.size() << " ET:" << tmp->debug_prn() << endl;
+	if (true) {
+		if (!filterOnlySinglePiecePerFam(tmp)) {
+			delete tmp;
+			return;
+		}
+		if (!filterDup(tmp)) {
+			delete tmp;
+			return;
+		}
+	}
+
     if (keepOnlyOne)
         sv.clear();
 	sv.push_back(tmp);

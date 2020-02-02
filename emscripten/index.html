@@ -43,6 +43,18 @@ var NR_KEEP_PREV = 1 // for newRestart
 var colorPickCfg = null 
 
 var CANVAS_MARGIN = 8
+
+var started_cpp = false, started_js = false
+function start_from_cpp() {
+    started_cpp = true
+    if (started_js)
+        start()
+}
+function start_from_js() {
+    started_js = true
+    if (started_cpp)
+        start()
+}
     
 function start() 
 {
@@ -1815,6 +1827,20 @@ function testRect(x1, y1, x2, y2) {
 
     // ||
 </script>
+<script type='text/javascript'>
+  var Module = {
+	preRun: [],
+	postRun: [],
+	print: function(text) {
+		console.log(text)
+	},
+	printErr: function(text) {
+	  if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+	  console.error(text);
+	},
+
+  };
+</script>
 <script src="js_main.js"></script>
 <style>
 body {
@@ -2031,7 +2057,7 @@ body {
     box-shadow: initial;
 }
 .sc-btn[disabled="true"] > .sc-span { /* comes after */
-    opacity: 0.3; // for buttons with image
+    opacity: 0.3;  /* for buttons with image*/
 }
 
 input[type="range"]:disabled {
@@ -2515,7 +2541,7 @@ input:checked + .sc-btn
 
 </style>
 </head>
-<body id="body" onload="start()" onresize="doResize()" >
+<body id="body" onload="start_from_js()" onresize="doResize()" >
   <div id="side_ctrl">
     <input id="addingCubeCheck" class="hidden" onclick="triggerAdd()" type="checkbox">
     <label id="addingCube" class="sc-btn" for="addingCubeCheck" >Add</label>

@@ -122,7 +122,7 @@ public:
 	/// real defaults are in fromDefaults()
 	EngineConf()
 	: fRand(false), fRestart(true), fLuck(true), nRestart(2000), nLuck(8), nPersist(PERSIST_ONLY_ONE)
-    , nUpto(1), fAfter(true), nAfter(1), nAsym(ASYM_OUTSIDE)
+    , nUpto(1), fAfter(false), nAfter(1), nAsym(ASYM_OUTSIDE)
 	{
     } 
 

@@ -94,6 +94,8 @@ public:
     void setChangedNotifier(IChangeNotify* n) {
         changedFromSave = n;
     }
+	
+	bool filterDup(SlvCube* slv);
 
 private:
 
